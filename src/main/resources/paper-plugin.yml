@@ -1,0 +1,7 @@
+name: NiveriaAPI
+version: '${project.version}'
+main: toutouchien.niveriaapi.NiveriaAPI
+api-version: '1.20'
+load: STARTUP
+authors: [ Toutouchien ]
+website: niveria.fr
