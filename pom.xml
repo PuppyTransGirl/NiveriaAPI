@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>toutouchien.niveriaapi</groupId>
-    <artifactId>niveriaapi</artifactId>
+    <artifactId>NiveriaAPI</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
