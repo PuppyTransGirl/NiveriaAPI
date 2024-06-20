@@ -7,12 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.MessageUtils;
+import toutouchien.niveriaapi.utils.Task;
 import toutouchien.niveriaapi.utils.TimeUtils;
 
 import java.time.Duration;
@@ -32,6 +32,32 @@ public class DelayManager implements Listener {
 	public void initialize() {
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		pluginManager.registerEvents(this, plugin);
+
+		Task.taskTimerAsync(() -> Bukkit.getOnlinePlayers().forEach(player -> {
+			if (!teleportDelays.containsKey(player))
+				return;
+
+			Location to = player.getLocation();
+
+			Delay delay = teleportDelays.get(player);
+			if (!delay.cancelOnMove())
+				return;
+
+			Location originalLocation = delay.originalLocation();
+
+			if (to.getWorld() == originalLocation.getWorld()) {
+				double distance = to.distance(originalLocation);
+				if (!Double.isNaN(distance) && distance <= 1)
+					return;
+			}
+
+			Component message = MessageUtils.errorMessage(
+					Component.text("Votre demande de téléportation a été annulée car vous avez bougé.")
+			);
+
+			player.sendMessage(message);
+			reset(delay, true);
+		}), plugin, TimeUtils.secondsToTicks(3), 20L);
 	}
 
 	public void start(Delay delay) {
@@ -51,7 +77,7 @@ public class DelayManager implements Listener {
 				delay.delayRemaining(delay.delayRemaining() - 1);
 				updateDisplays(delay);
 			}
-		}.runTaskTimerAsynchronously(plugin, 20L, TimeUtils.secondsToTicks(1));
+		}.runTaskTimerAsynchronously(plugin, 20L, 20L);
 	}
 
 	private void updateDisplays(Delay delay) {
@@ -106,34 +132,6 @@ public class DelayManager implements Listener {
 			return;
 
 		failConsumer.accept(player);
-	}
-
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
-		if (!teleportDelays.containsKey(player))
-			return;
-
-		Location to = event.getTo();
-
-		Delay delay = teleportDelays.get(player);
-		if (!delay.cancelOnMove())
-			return;
-
-		Location originalLocation = delay.originalLocation();
-
-		if (to.getWorld() == originalLocation.getWorld()) {
-			double distance = to.distance(originalLocation);
-			if (!Double.isNaN(distance) && distance <= 1)
-				return;
-		}
-
-		Component message = MessageUtils.errorMessage(
-				Component.text("Votre demande de téléportation a été annulée car vous avez bougé.")
-		);
-
-		player.sendMessage(message);
-		reset(delay, true);
 	}
 
 	@EventHandler
