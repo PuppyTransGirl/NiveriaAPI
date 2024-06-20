@@ -22,8 +22,7 @@ public class MenuListener implements Listener {
 		if (!(holder instanceof Menu menu))
 			return;
 
-		if (!(event.getWhoClicked() instanceof Player player))
-			return;
+		Player player = (Player) event.getWhoClicked();
 
 		event.setCancelled(true);
 
