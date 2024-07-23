@@ -52,58 +52,52 @@ public class Command extends org.bukkit.command.Command {
 	}
 
 	public Component usageMessage(String label) {
-		return Component.text(commandData.usage().replace("<command>", label))
-				.color(NamedTextColor.RED);
+		return Component.text(commandData.usage().replace("<command>", label), NamedTextColor.RED);
 	}
 
 	@Override
 	public final boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
 		if (!commandData.permission().isEmpty()) {
 			if (!sender.hasPermission(commandData.permission())) {
-				sender.sendMessage(Component.text("Tu n'as pas la permission d'exécuter cette commande.")
-						.color(NamedTextColor.RED));
+				sender.sendMessage(Component.text("Tu n'as pas la permission d'exécuter cette commande.", NamedTextColor.RED));
 
+				return true;
+			}
+		}
+
+		List<SubCommand> subCommands = commandData.subCommands();
+		if (!subCommands.isEmpty() && args.length > 0) {
+			String[] finalArgs = args;
+			SubCommand subCommand = subCommands.stream()
+					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]))
+					.findAny().orElse(null);
+
+			if (subCommand != null) {
+				args = Arrays.copyOfRange(args, 1, args.length);
+
+				if (subCommand.data().playerRequired()) {
+					if (!(sender instanceof Player)) {
+						sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
+						return true;
+					}
+
+					subCommand.execute((Player) sender, args, commandLabel);
+					return true;
+				}
+
+				subCommand.execute(sender, args, commandLabel);
 				return true;
 			}
 		}
 
 		if (commandData.playerRequired()) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette commande.")
-						.color(NamedTextColor.RED));
+				sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette commande.", NamedTextColor.RED));
 				return true;
-			}
-
-			List<SubCommand> subCommands = commandData.subCommands();
-			if (!subCommands.isEmpty() && args.length > 0) {
-				String[] finalArgs = args;
-				SubCommand subCommand = subCommands.stream()
-						.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]))
-						.findAny().orElse(null);
-
-				if (subCommand != null) {
-					args = Arrays.copyOfRange(args, 1, args.length);
-					subCommand.execute((Player) sender, args, commandLabel);
-					return true;
-				}
 			}
 
 			execute((Player) sender, args, commandLabel);
 			return true;
-		}
-
-		List<SubCommand> subCommands = commandData.subCommands();
-		if (!subCommands.isEmpty() && args.length > 0) {
-			String[] finalArgs1 = args;
-			SubCommand subCommand = subCommands.stream()
-					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs1[0]))
-					.findAny().orElse(null);
-
-			if (subCommand != null) {
-				args = Arrays.copyOfRange(args, 1, args.length);
-				subCommand.execute(sender, args, commandLabel);
-				return true;
-			}
 		}
 
 		execute(sender, args, commandLabel);
