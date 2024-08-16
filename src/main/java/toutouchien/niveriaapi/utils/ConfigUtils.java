@@ -20,9 +20,9 @@ public class ConfigUtils {
 		double x = section.getDouble("x");
 		double y = section.getDouble("y");
 		double z = section.getDouble("z");
-		float yaw = (float) section.get("yaw");
-		float pitch = (float) section.get("pitch");
-		
+		float yaw = ((Number) section.get("yaw")).floatValue();
+		float pitch = ((Number) section.get("pitch")).floatValue();
+
 		return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 	}
 
