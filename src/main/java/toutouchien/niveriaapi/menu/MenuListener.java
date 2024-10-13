@@ -19,7 +19,11 @@ public class MenuListener implements Listener {
 		if (event.getCurrentItem() == null)
 			return;
 
-		InventoryHolder holder = event.getInventory().getHolder(false);
+		Inventory inventory = event.getClickedInventory();
+		if (inventory == null)
+			return;
+
+		InventoryHolder holder = inventory.getHolder(false);
 		if (!(holder instanceof Menu menu))
 			return;
 
