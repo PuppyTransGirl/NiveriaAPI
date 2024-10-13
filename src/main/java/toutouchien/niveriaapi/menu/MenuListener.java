@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
 import toutouchien.niveriaapi.menu.event.CustomInventoryClickEvent;
@@ -32,15 +33,15 @@ public class MenuListener implements Listener {
 				.findFirst();
 
 		optional.ifPresent(menuItem -> {
+			Sound clickSound = Sound.sound(org.bukkit.Sound.UI_BUTTON_CLICK, Sound.Source.MASTER, 1F, 1F);
+			player.playSound(clickSound, Sound.Emitter.self());
+
 			ClickEvent clickEvent = menuItem.clickEvent();
 			if (clickEvent == null)
 				return;
 
 			CustomInventoryClickEvent customEvent = new CustomInventoryClickEvent(event);
 			clickEvent.onClick(customEvent);
-
-			Sound clickSound = Sound.sound(org.bukkit.Sound.UI_BUTTON_CLICK, Sound.Source.MASTER, 1F, 1F);
-			player.playSound(clickSound, Sound.Emitter.self());
 		});
 	}
 }
