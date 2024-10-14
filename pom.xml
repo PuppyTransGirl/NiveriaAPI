@@ -6,7 +6,7 @@
 
     <groupId>toutouchien.niveriaapi</groupId>
     <artifactId>NiveriaAPI</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <packaging>jar</packaging>
 
     <name>NiveriaAPI</name>
