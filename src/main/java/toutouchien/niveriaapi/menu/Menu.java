@@ -17,12 +17,11 @@ public abstract class Menu implements InventoryHolder {
 	public Menu(@NotNull MenuInfos menuInfos) {
 		this.menuInfos = menuInfos;
 
-		inventory = Bukkit.createInventory(this, slots(), name());
-
-		items().forEach(menuItem -> inventory.setItem(menuItem.slot(), menuItem.itemStack()));
+		this.inventory = Bukkit.createInventory(this, slots(), name());
 	}
 
 	public void open() {
+		items().forEach(menuItem -> inventory.setItem(menuItem.slot(), menuItem.itemStack()));
 		menuInfos.player().openInventory(inventory);
 	}
 
