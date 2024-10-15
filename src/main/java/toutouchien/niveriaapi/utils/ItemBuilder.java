@@ -111,90 +111,65 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, int level) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.addEnchant(enchantment, level, false);
+		itemStack.addEnchantment(enchantment, level);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder enchantment(@NotNull Enchantment enchantment, int level) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
 		removeEnchantments();
-		itemMeta.addEnchant(enchantment, level, false);
-
+		itemStack.addEnchantment(enchantment, level);
 		return this;
 	}
 
 	@NotNull
 	public Map<Enchantment, Integer> enchantments() {
 		ItemMeta itemMeta = itemStack.getItemMeta();
-
 		return itemMeta.getEnchants();
 	}
 
 	@NotNull
 	public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
-		for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			itemMeta.addEnchant(entry.getKey(), entry.getValue(), false);
-
+		itemStack.addEnchantments(enchantments);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder enchantments(@NotNull Map<Enchantment, Integer> enchantments) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
 		removeEnchantments();
-		for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			itemMeta.addEnchant(entry.getKey(), entry.getValue(), false);
-
+		itemStack.addEnchantments(enchantments);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder addUnsafeEnchantment(@NotNull Enchantment enchantment, int level) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.addEnchant(enchantment, level, true);
+		itemStack.addUnsafeEnchantment(enchantment, level);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder unsafeEnchantment(@NotNull Enchantment enchantment, int level) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
 		removeEnchantments();
-		itemMeta.addEnchant(enchantment, level, true);
+		itemStack.addUnsafeEnchantment(enchantment, level);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder addUnsafeEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
-		for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			itemMeta.addEnchant(entry.getKey(), entry.getValue(), true);
-
+		itemStack.addUnsafeEnchantments(enchantments);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder unsafeEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
 		removeEnchantments();
-		for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			itemMeta.addEnchant(entry.getKey(), entry.getValue(), true);
-
+		itemStack.addUnsafeEnchantments(enchantments);
 		return this;
 	}
 
 	@NotNull
 	public ItemBuilder removeEnchantment(@NotNull Enchantment enchantment) {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.removeEnchant(enchantment);
+		itemStack.removeEnchantment(enchantment);
 		return this;
 	}
 
@@ -211,12 +186,7 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder removeEnchantments() {
-		ItemMeta itemMeta = itemStack.getItemMeta();
-
-		for (Map.Entry<Enchantment, Integer> entry : itemMeta.getEnchants().entrySet()) {
-			Enchantment enchantment = entry.getKey();
-			itemMeta.removeEnchant(enchantment);
-		}
+		itemStack.removeEnchantments();
 		return this;
 	}
 
