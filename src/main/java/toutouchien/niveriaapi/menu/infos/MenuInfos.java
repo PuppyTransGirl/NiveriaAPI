@@ -6,19 +6,19 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class MenuInfos {
-	private final OfflinePlayer player;
-	private Player adminPlayer;
+	private final Player player;
+	private OfflinePlayer playerForInfos;
 
-	public MenuInfos(OfflinePlayer player) {
+	public MenuInfos(Player player) {
 		this.player = player;
 	}
 
-	public MenuInfos(OfflinePlayer player, Player adminPlayer) {
+	public MenuInfos(Player player, OfflinePlayer playerForInfos) {
 		this.player = player;
-		this.adminPlayer = adminPlayer;
+		this.playerForInfos = playerForInfos;
 	}
 
-	public OfflinePlayer player() {
+	public Player player() {
 		return player;
 	}
 
@@ -26,11 +26,11 @@ public class MenuInfos {
 		return player.getUniqueId();
 	}
 
-	public void adminPlayer(Player adminPlayer) {
-		this.adminPlayer = adminPlayer;
+	public void playerForInfos(OfflinePlayer playerForInfos) {
+		this.playerForInfos = playerForInfos;
 	}
 
-	public Player adminPlayer() {
-		return adminPlayer;
+	public OfflinePlayer playerForInfos() {
+		return playerForInfos;
 	}
 }
