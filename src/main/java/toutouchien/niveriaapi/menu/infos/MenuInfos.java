@@ -1,21 +1,20 @@
 package toutouchien.niveriaapi.menu.infos;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class MenuInfos {
 	private final Player player;
-	private Material material;
+	private Player adminPlayer;
 
 	public MenuInfos(Player player) {
 		this.player = player;
 	}
 
-	public MenuInfos(Player player, Material material) {
+	public MenuInfos(Player player, Player adminPlayer) {
 		this.player = player;
-		this.material = material;
+		this.adminPlayer = adminPlayer;
 	}
 
 	public Player player() {
@@ -26,11 +25,11 @@ public class MenuInfos {
 		return player.getUniqueId();
 	}
 
-	public void material(Material material) {
-		this.material = material;
+	public void adminPlayer(Player adminPlayer) {
+		this.adminPlayer = adminPlayer;
 	}
 
-	public Material material() {
-		return material;
+	public Player adminPlayer() {
+		return adminPlayer;
 	}
 }
