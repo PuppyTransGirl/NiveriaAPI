@@ -1,23 +1,24 @@
 package toutouchien.niveriaapi.menu.infos;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class MenuInfos {
-	private final Player player;
+	private final OfflinePlayer player;
 	private Player adminPlayer;
 
-	public MenuInfos(Player player) {
+	public MenuInfos(OfflinePlayer player) {
 		this.player = player;
 	}
 
-	public MenuInfos(Player player, Player adminPlayer) {
+	public MenuInfos(OfflinePlayer player, Player adminPlayer) {
 		this.player = player;
 		this.adminPlayer = adminPlayer;
 	}
 
-	public Player player() {
+	public OfflinePlayer player() {
 		return player;
 	}
 
