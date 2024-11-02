@@ -33,31 +33,36 @@ public class DelayManager implements Listener {
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		pluginManager.registerEvents(this, plugin);
 
-		Task.taskTimerAsync(() -> Bukkit.getOnlinePlayers().forEach(player -> {
-			if (!teleportDelays.containsKey(player))
+		Task.taskTimerAsync(() -> {
+			if (teleportDelays.isEmpty())
 				return;
 
-			Location to = player.getLocation();
-
-			Delay delay = teleportDelays.get(player);
-			if (!delay.cancelOnMove())
-				return;
-
-			Location originalLocation = delay.originalLocation();
-
-			if (to.getWorld() == originalLocation.getWorld()) {
-				double distance = to.distance(originalLocation);
-				if (!Double.isNaN(distance) && distance <= 1)
+			Bukkit.getOnlinePlayers().forEach(player -> {
+				if (!teleportDelays.containsKey(player))
 					return;
-			}
 
-			Component message = MessageUtils.errorMessage(
-					Component.text("Votre demande de téléportation a été annulée car vous avez bougé.")
-			);
+				Location to = player.getLocation();
 
-			player.sendMessage(message);
-			reset(delay, true);
-		}), plugin, TimeUtils.secondsToTicks(3), 20L);
+				Delay delay = teleportDelays.get(player);
+				if (!delay.cancelOnMove())
+					return;
+
+				Location originalLocation = delay.originalLocation();
+
+				if (to.getWorld() == originalLocation.getWorld()) {
+					double distance = to.distance(originalLocation);
+					if (!Double.isNaN(distance) && distance <= 1)
+						return;
+				}
+
+				Component message = MessageUtils.errorMessage(
+						Component.text("Votre demande de téléportation a été annulée car vous avez bougé.")
+				);
+
+				player.sendMessage(message);
+				reset(delay, true);
+			});
+		}, plugin, TimeUtils.secondsToTicks(3), 20L);
 	}
 
 	public void start(Delay delay) {
