@@ -11,16 +11,11 @@ import toutouchien.niveriaapi.menu.event.ClickEvent;
 import toutouchien.niveriaapi.menu.event.CustomInventoryClickEvent;
 import toutouchien.niveriaapi.menu.items.MenuItem;
 
-import java.util.Optional;
-
 public class MenuListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
-		if (event.getCurrentItem() == null)
-			return;
-
 		Inventory inventory = event.getClickedInventory();
-		if (inventory == null)
+		if (event.getCurrentItem() == null || inventory == null)
 			return;
 
 		InventoryHolder holder = inventory.getHolder(false);
@@ -28,15 +23,13 @@ public class MenuListener implements Listener {
 			return;
 
 		Player player = (Player) event.getWhoClicked();
-
 		event.setCancelled(true);
 
-		// TODO: Remove the fact that it recalculate the menu items on each click
-		Optional<MenuItem> optional = menu.items().stream()
-				.filter(m -> m.slot() == event.getSlot())
-				.findFirst();
+		int slot = event.getSlot();
+		for (MenuItem menuItem : menu.itemsCache) {
+			if (menuItem.slot() != slot)
+				return;
 
-		optional.ifPresent(menuItem -> {
 			Sound clickSound = Sound.sound(org.bukkit.Sound.UI_BUTTON_CLICK, Sound.Source.MASTER, 1F, 1F);
 			player.playSound(clickSound, Sound.Emitter.self());
 
@@ -46,6 +39,6 @@ public class MenuListener implements Listener {
 
 			CustomInventoryClickEvent customEvent = new CustomInventoryClickEvent(event);
 			clickEvent.onClick(customEvent);
-		});
+		}
 	}
 }
