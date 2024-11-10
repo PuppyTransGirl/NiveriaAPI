@@ -139,6 +139,10 @@ public class DelayManager implements Listener {
 		failConsumer.accept(player);
 	}
 
+	public boolean inDelay(Player player) {
+		return teleportDelays.containsKey(player);
+	}
+
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
