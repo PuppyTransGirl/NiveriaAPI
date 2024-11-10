@@ -28,7 +28,7 @@ public class MenuListener implements Listener {
 		int slot = event.getSlot();
 		for (MenuItem menuItem : menu.itemsCache) {
 			if (menuItem.slot() != slot)
-				return;
+				continue;
 
 			Sound clickSound = Sound.sound(org.bukkit.Sound.UI_BUTTON_CLICK, Sound.Source.MASTER, 1F, 1F);
 			player.playSound(clickSound, Sound.Emitter.self());
