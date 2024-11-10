@@ -56,7 +56,7 @@ public class DelayManager implements Listener {
 				}
 
 				Component message = MessageUtils.errorMessage(
-						Component.text("Votre demande de téléportation a été annulée car vous avez bougé.")
+						Component.text("Ta demande de téléportation a été annulée car tu as bougé.")
 				);
 
 				player.sendMessage(message);
@@ -67,6 +67,15 @@ public class DelayManager implements Listener {
 
 	public void start(Delay delay) {
 		Player player = delay.player();
+
+		if (inDelay(player)) {
+			Component errorMessage = MessageUtils.errorMessage(
+					Component.text("Tu as déjà une demande de téléportation.")
+			);
+
+			player.sendMessage(errorMessage);
+			return;
+		}
 
 		teleportDelays.put(delay.player(), delay);
 		updateDisplays(delay);
