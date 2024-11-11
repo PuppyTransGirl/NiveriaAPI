@@ -18,11 +18,16 @@ public class MenuListener implements Listener {
 		if (event.getCurrentItem() == null || inventory == null)
 			return;
 
+		Player player = (Player) event.getWhoClicked();
+
+		InventoryHolder topHolder = player.getOpenInventory().getTopInventory().getHolder(false);
+		if (topHolder instanceof Menu)
+			event.setCancelled(true);
+
 		InventoryHolder holder = inventory.getHolder(false);
 		if (!(holder instanceof Menu menu))
 			return;
 
-		Player player = (Player) event.getWhoClicked();
 		event.setCancelled(true);
 
 		int slot = event.getSlot();
