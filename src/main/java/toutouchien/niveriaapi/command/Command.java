@@ -69,8 +69,9 @@ public class Command extends org.bukkit.command.Command {
 		if (!subCommands.isEmpty() && args.length > 0) {
 			String[] finalArgs = args;
 			SubCommand subCommand = subCommands.stream()
-					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]))
-					.findAny().orElse(null);
+					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]) || sc.data().aliases().contains(finalArgs[0]))
+					.findAny()
+					.orElse(null);
 
 			if (subCommand != null) {
 				args = Arrays.copyOfRange(args, 1, args.length);
@@ -145,7 +146,7 @@ public class Command extends org.bukkit.command.Command {
 
 			String[] finalArgs = args;
 			SubCommand subCommand = subCommands.stream()
-					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]))
+					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]) || sc.data().aliases().contains(finalArgs[0]))
 					.findAny().orElse(null);
 
 			if (subCommand != null) {
