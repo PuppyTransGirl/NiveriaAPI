@@ -1,7 +1,5 @@
 package toutouchien.niveriaapi.command;
 
-import org.bukkit.plugin.Plugin;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,7 +7,7 @@ import java.util.List;
 
 public final class CommandData {
 	private final String name;
-	private final Plugin plugin;
+	private final String pluginName;
 
 	private String description;
 	private String usage;
@@ -17,15 +15,16 @@ public final class CommandData {
 	private boolean playerRequired;
 	private List<String> aliases;
 	private List<SubCommand> subCommands;
+	private boolean hasParameterBeforeSubcommands;
 
-	public CommandData(String name, Plugin plugin) {
+	public CommandData(String name, String pluginName) {
 		this.name = name;
-		this.plugin = plugin;
+		this.pluginName = pluginName;
 		this.subCommands = new ArrayList<>();
 
 		this.description = "";
 		this.usage = "/<command>";
-		this.permission = plugin.getName().toLowerCase() + ".command." + name;
+		this.permission = pluginName + ".command." + name;
 		this.playerRequired = false;
 		this.aliases = Collections.emptyList();
 	}
@@ -60,16 +59,17 @@ public final class CommandData {
 		return this;
 	}
 
+	public CommandData hasParameterBeforeSubcommands(boolean hasParameterBeforeSubcommands) {
+		this.hasParameterBeforeSubcommands = hasParameterBeforeSubcommands;
+		return this;
+	}
+
 	public String name() {
 		return name;
 	}
 
-	public Plugin plugin() {
-		return plugin;
-	}
-
-	public List<SubCommand> subCommands() {
-		return subCommands;
+	public String pluginName() {
+		return pluginName;
 	}
 
 	public String description() {
@@ -90,5 +90,13 @@ public final class CommandData {
 
 	public List<String> aliases() {
 		return aliases;
+	}
+
+	public List<SubCommand> subCommands() {
+		return subCommands;
+	}
+
+	public boolean hasParameterBeforeSubcommands() {
+		return hasParameterBeforeSubcommands;
 	}
 }

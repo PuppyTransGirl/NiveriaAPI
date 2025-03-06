@@ -5,7 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,40 +14,48 @@ import java.util.List;
 
 public class Command extends org.bukkit.command.Command {
 	private final CommandData commandData;
-	private final Plugin plugin;
 
 	protected Command(CommandData commandData) {
 		super(commandData.name());
 		this.commandData = commandData;
-		this.plugin = commandData.plugin();
 
 		this.setAliases(commandData.aliases())
 				.setDescription(commandData.description())
 				.setUsage(commandData.usage());
 	}
 
-	public void execute(CommandSender sender, String[] args, String label) {
+	public void execute(CommandSender sender, String[] args, String[] fullArgs, String label) {
+		execute(sender, args, label);
+	}
 
+	public void execute(Player player, String[] args, String[] fullArgs, String label) {
+		execute(player, args, label);
+	}
+
+	public void execute(CommandSender sender, String[] args, String label) {
 	}
 
 	public void execute(Player player, String[] args, String label) {
+	}
 
+	public List<String> complete(CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
+		return complete(sender, args, argIndex);
+	}
+
+	public List<String> complete(Player player, String[] args, String[] fullArgs, int argIndex) {
+		return complete(player, args, argIndex);
 	}
 
 	public List<String> complete(CommandSender sender, String[] args, int argIndex) {
-		return Collections.emptyList();
+		return null;
 	}
 
 	public List<String> complete(Player player, String[] args, int argIndex) {
-		return Collections.emptyList();
+		return null;
 	}
 
 	public CommandData data() {
 		return commandData;
-	}
-
-	public Plugin plugin() {
-		return plugin;
 	}
 
 	public Component usageMessage(String label) {
@@ -57,37 +64,77 @@ public class Command extends org.bukkit.command.Command {
 
 	@Override
 	public final boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-		if (!commandData.permission().isEmpty()) {
-			if (!sender.hasPermission(commandData.permission())) {
-				sender.sendMessage(Component.text("Tu n'as pas la permission d'exécuter cette commande.", NamedTextColor.RED));
-
-				return true;
-			}
+		// Check permission
+		if (!commandData.permission().isEmpty() && !sender.hasPermission(commandData.permission())) {
+			sender.sendMessage(Component.text("Tu n'as pas la permission d'exécuter cette commande.", NamedTextColor.RED));
+			return true;
 		}
 
 		List<SubCommand> subCommands = commandData.subCommands();
 		if (!subCommands.isEmpty() && args.length > 0) {
-			String[] finalArgs = args;
 			SubCommand subCommand = subCommands.stream()
-					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]) || sc.data().aliases().contains(finalArgs[0]))
+					.filter(sc -> sc.data().name().equalsIgnoreCase(args[0]) || sc.data().aliases().contains(args[0]))
 					.findAny()
 					.orElse(null);
 
 			if (subCommand != null) {
-				args = Arrays.copyOfRange(args, 1, args.length);
-
-				if (subCommand.data().playerRequired()) {
-					if (!(sender instanceof Player)) {
+				// If this sub-command expects a parameter before nested sub-commands...
+				if (subCommand.data().hasParameterBeforeSubcommands()) {
+					if (args.length < 2) {
+						// Not enough arguments: missing the parameter
+						sender.sendMessage(usageMessage(commandLabel));
+						return true;
+					}
+					// args[1] is the parameter; remaining args may include a nested sub-command
+					String[] remainingArgs = Arrays.copyOfRange(args, 2, args.length);
+					if (!subCommand.data().subCommands().isEmpty() && remainingArgs.length > 0) {
+						SubCommand nestedSubCommand = subCommand.data().subCommands().stream()
+								.filter(sc -> sc.data().name().equalsIgnoreCase(remainingArgs[0]) || sc.data().aliases().contains(remainingArgs[0]))
+								.findAny()
+								.orElse(null);
+						if (nestedSubCommand != null) {
+							// Found a nested sub-command; execute it.
+							String[] nestedRemainingArgs = Arrays.copyOfRange(remainingArgs, 1, remainingArgs.length);
+							if (nestedSubCommand.data().playerRequired() && !(sender instanceof Player)) {
+								sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
+								return true;
+							}
+							if (sender instanceof Player)
+								nestedSubCommand.execute((Player) sender, nestedRemainingArgs, args, commandLabel);
+							else
+								nestedSubCommand.execute(sender, nestedRemainingArgs, args, commandLabel);
+							return true;
+						}
+					}
+					// No nested sub-command found: execute the sub-command itself.
+					// Pass the parameter (and any additional arguments) to the sub-command.
+					String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
+					if (subCommand.data().playerRequired() && !(sender instanceof Player)) {
 						sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
 						return true;
 					}
+					if (sender instanceof Player)
+						subCommand.execute((Player) sender, subArgs, args, commandLabel);
+					else
+						subCommand.execute(sender, subArgs, args, commandLabel);
+					return true;
+				} else {
+					// Regular sub-command execution (without parameter-before-subcommand)
+					String[] remainingArgs = Arrays.copyOfRange(args, 1, args.length);
+					if (!subCommand.data().subCommands().isEmpty() && remainingArgs.length != 0)
+						return subCommand.execute(sender, commandLabel, remainingArgs);
 
-					subCommand.execute((Player) sender, args, commandLabel);
+					if (subCommand.data().playerRequired()) {
+						if (!(sender instanceof Player)) {
+							sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
+							return true;
+						}
+						subCommand.execute((Player) sender, remainingArgs, args, commandLabel);
+						return true;
+					}
+					subCommand.execute(sender, remainingArgs, args, commandLabel);
 					return true;
 				}
-
-				subCommand.execute(sender, args, commandLabel);
-				return true;
 			}
 		}
 
@@ -96,67 +143,115 @@ public class Command extends org.bukkit.command.Command {
 				sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette commande.", NamedTextColor.RED));
 				return true;
 			}
-
-			execute((Player) sender, args, commandLabel);
+			execute((Player) sender, args, args, commandLabel);
 			return true;
 		}
 
-		execute(sender, args, commandLabel);
+		execute(sender, args, args, commandLabel);
 		return true;
 	}
 
 	@Override
-	public final @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+	public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+		return tabComplete(sender, alias, args, args);
+	}
+
+	public final @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, String[] fullArgs) throws IllegalArgumentException {
 		int argIndex = args.length - 1;
 
-		if (commandData.playerRequired()) {
-			if (!(sender instanceof Player))
-				return Collections.emptyList();
+		if (commandData.playerRequired() && !(sender instanceof Player))
+			return Collections.emptyList();
 
-			List<SubCommand> subCommands = commandData.subCommands();
-			if (!subCommands.isEmpty()) {
-				if (argIndex == 0) {
-					return subCommands.stream()
-							.map(subCommand -> subCommand.data().name())
+		List<SubCommand> subCommands = commandData.subCommands();
+		if (subCommands.isEmpty()) {
+			if (commandData.playerRequired())
+				return complete((Player) sender, args, fullArgs, argIndex);
+
+			return complete(sender, args, fullArgs, argIndex);
+		}
+
+		if (argIndex == 0) {
+			List<String> completion;
+			if (sender instanceof Player player)
+				completion = complete(player, args, fullArgs, argIndex);
+			else
+				completion = complete(sender, args, fullArgs, argIndex);
+
+			if (completion != null)
+				return completion;
+
+			return subCommands.stream()
+					.map(subCommand -> subCommand.data().name())
+					.toList();
+		}
+
+		SubCommand subCommand = subCommands.stream()
+				.filter(sc -> sc.data().name().equalsIgnoreCase(args[0]) || sc.data().aliases().contains(args[0]))
+				.findAny()
+				.orElse(null);
+
+		if (subCommand == null) {
+			if (commandData.playerRequired())
+				return complete((Player) sender, args, fullArgs, argIndex);
+			return complete(sender, args, fullArgs, argIndex);
+		}
+
+		String[] remainingArgs = Arrays.copyOfRange(args, 1, args.length);
+
+		if (subCommand.data().hasParameterBeforeSubcommands()) {
+			if (remainingArgs.length == 1)
+				return getCompletionOrEmpty(subCommand, sender, remainingArgs, fullArgs, 0);
+
+			if (remainingArgs.length == 2)
+				return subCommand.data().subCommands().stream()
+						.map(nestedCmd -> nestedCmd.data().name())
+						.toList();
+
+			if (remainingArgs.length > 2) {
+				SubCommand nestedSubCommand = findSubCommand(subCommand.data().subCommands(), remainingArgs[1]);
+
+				if (nestedSubCommand != null) {
+					String[] nestedRemainingArgs = Arrays.copyOfRange(remainingArgs, 2, remainingArgs.length);
+					return getCompletionOrEmpty(nestedSubCommand, sender, nestedRemainingArgs, fullArgs, nestedRemainingArgs.length - 1);
+				}
+			}
+		} else {
+			if (!subCommand.data().subCommands().isEmpty()) {
+				if (remainingArgs.length == 1) {
+					return subCommand.data().subCommands().stream()
+							.map(nestedCmd -> nestedCmd.data().name())
 							.toList();
 				}
 
-				String[] finalArgs = args;
-				SubCommand subCommand = subCommands.stream()
-						.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]))
-						.findAny().orElse(null);
+				if (remainingArgs.length > 1) {
+					SubCommand nestedSubCommand = findSubCommand(subCommand.data().subCommands(), remainingArgs[0]);
 
-				if (subCommand != null) {
-					args = Arrays.copyOfRange(args, 1, args.length);
-					argIndex -= 1;
-					return subCommand.complete(((Player) sender), args, argIndex);
+					if (nestedSubCommand != null) {
+						String[] nestedRemainingArgs = Arrays.copyOfRange(remainingArgs, 1, remainingArgs.length);
+						return nestedSubCommand.tabComplete(sender, alias, nestedRemainingArgs);
+					}
 				}
 			}
-
-			return complete((Player) sender, args, argIndex);
 		}
 
-		List<SubCommand> subCommands = commandData.subCommands();
-		if (!subCommands.isEmpty()) {
-			if (argIndex == 0) {
-				return subCommands.stream()
-						.map(subCommand -> subCommand.data().name())
-						.toList();
-			}
+		return getCompletionOrEmpty(subCommand, sender, remainingArgs, fullArgs, remainingArgs.length - 1);
+	}
 
-			String[] finalArgs = args;
-			SubCommand subCommand = subCommands.stream()
-					.filter(sc -> sc.data().name().equalsIgnoreCase(finalArgs[0]) || sc.data().aliases().contains(finalArgs[0]))
-					.findAny().orElse(null);
+	private SubCommand findSubCommand(List<SubCommand> subCommands, String arg) {
+		return subCommands.stream()
+				.filter(sc -> sc.data().name().equalsIgnoreCase(arg) || sc.data().aliases().contains(arg))
+				.findAny()
+				.orElse(null);
+	}
 
-			if (subCommand != null) {
-				args = Arrays.copyOfRange(args, 1, args.length);
-				argIndex -= 1;
-				return subCommand.complete(sender, args, argIndex);
-			}
-		}
+	private List<String> getCompletionOrEmpty(SubCommand subCommand, CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
+		List<String> completion;
+		if (sender instanceof Player player)
+			completion = subCommand.complete(player, args, fullArgs, argIndex);
+		else
+			completion = subCommand.complete(sender, args, fullArgs, argIndex);
 
-		return complete(sender, args, argIndex);
+		return completion == null ? Collections.emptyList() : completion;
 	}
 
 	@Override
