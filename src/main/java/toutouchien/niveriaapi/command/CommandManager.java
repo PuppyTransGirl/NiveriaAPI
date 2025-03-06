@@ -2,7 +2,6 @@ package toutouchien.niveriaapi.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +12,7 @@ public class CommandManager {
 
     public void registerCommand(Command command) {
         CommandMap commandMap = Bukkit.getCommandMap();
-        String fallbackPrefix = command.plugin().getName().toLowerCase();
+        String fallbackPrefix = command.data().pluginName();
 
         commandMap.register(fallbackPrefix, command);
     }
@@ -23,7 +22,7 @@ public class CommandManager {
             return;
 
         CommandMap commandMap = Bukkit.getCommandMap();
-        String fallbackPrefix = commands.get(0).plugin().getName().toLowerCase();
+        String fallbackPrefix = commands.get(0).data().pluginName();
 
         // Why java
         List<org.bukkit.command.Command> bukkitCommands = commands.stream()
