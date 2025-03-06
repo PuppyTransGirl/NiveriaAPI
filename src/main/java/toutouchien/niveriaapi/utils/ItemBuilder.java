@@ -3,10 +3,7 @@ package toutouchien.niveriaapi.utils;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -14,15 +11,16 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.MaterialData;
+import org.bukkit.profile.PlayerTextures;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.*;
 
 public class ItemBuilder {
-
 	private final ItemStack itemStack;
+	private static final UUID uuid = UUID.fromString("14030105-4f95-4a6d-9572-7cc1d6314ab2");
 
 	private ItemBuilder(ItemStack itemStack) {
 		this.itemStack = itemStack;
@@ -212,6 +210,34 @@ public class ItemBuilder {
 		return this;
 	}
 
+	@NotNull
+	public ItemBuilder skullOwner(OfflinePlayer player) {
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (!(itemMeta instanceof SkullMeta skullMeta))
+			throw new IllegalArgumentException(String.format("You can't set the skull owner of this item. Provided: %s", itemStack.getType().name()));
+
+		skullMeta.setOwningPlayer(player);
+
+		itemStack.setItemMeta(skullMeta);
+		return this;
+	}
+
+	@NotNull
+	public ItemBuilder skullOwner(URL url) {
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (!(itemMeta instanceof SkullMeta skullMeta))
+			throw new IllegalArgumentException(String.format("You can't set the skull owner of this item. Provided: %s", itemStack.getType().name()));
+
+		PlayerProfile profile = Bukkit.createProfile(uuid);
+		PlayerTextures textures = profile.getTextures();
+		textures.setSkin(url);
+		profile.setTextures(textures);
+		skullMeta.setPlayerProfile(profile);
+
+		itemStack.setItemMeta(skullMeta);
+		return this;
+	}
+
 	public boolean unbreakable() {
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		return itemMeta.isUnbreakable();
@@ -342,24 +368,6 @@ public class ItemBuilder {
 	@NotNull
 	public DyeColor dyeColor() {
 		return dyeColor(itemStack.getType());
-	}
-
-	@NotNull
-	public ItemBuilder dyeColor(@Nullable DyeColor color) {
-		MaterialData materialData = itemStack.getData();
-		materialData.setData(color.getDyeData());
-
-		itemStack.setData(materialData);
-		return this;
-	}
-
-	@NotNull
-	public ItemBuilder woolColor(@Nullable DyeColor color) {
-		MaterialData materialData = itemStack.getData();
-		materialData.setData(color.getWoolData());
-
-		itemStack.setData(materialData);
-		return this;
 	}
 
 	@NotNull
