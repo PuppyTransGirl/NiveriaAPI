@@ -1,9 +1,11 @@
 package toutouchien.niveriaapi.menu.event;
 
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.utils.ui.ComponentUtils;
 
 public class CustomInventoryClickEvent extends InventoryClickEvent {
 	public CustomInventoryClickEvent(@NotNull InventoryClickEvent event) {
@@ -15,9 +17,12 @@ public class CustomInventoryClickEvent extends InventoryClickEvent {
 		return (Player) getWhoClicked();
 	}
 
-	// TODO: Need to change the NotNull because getCurrentItem can return null
 	@NotNull
 	public String itemName() {
-		return PlainTextComponentSerializer.plainText().serialize(getCurrentItem().displayName());
+		Component data = getCurrentItem().getData(DataComponentTypes.ITEM_NAME);
+		if (data == null || data.equals(Component.empty()))
+			return "";
+
+		return ComponentUtils.serializePlainText(data);
 	}
 }

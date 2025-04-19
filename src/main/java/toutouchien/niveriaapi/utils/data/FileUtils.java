@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils;
+package toutouchien.niveriaapi.utils.data;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,6 +8,10 @@ public class FileUtils {
 	public static String[] invalidCharacters;
 	public static String[] invalidWords;
 	private static String os;
+
+	private FileUtils() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	public static String[] invalidCharacters() {
 		if (invalidCharacters != null)
@@ -19,14 +23,8 @@ public class FileUtils {
 		Set<String> temp = new HashSet<>(Arrays.asList(".", "*", "?", ":", ">", "\"", "|", "-"));
 
 		switch (os) {
-			case "Windows":
-				temp.addAll(Arrays.asList("<", "/", "\\"));
-				break;
-
-			case "Linux":
-			case "Mac":
-				temp.add("/");
-				break;
+			case "Linux", "Mac" -> temp.add("/");
+			case "Windows" -> temp.addAll(Arrays.asList("<", "/", "\\"));
 		}
 
 		return invalidCharacters = temp.toArray(new String[0]);
@@ -48,14 +46,14 @@ public class FileUtils {
 	private static String operatingSystem() {
 		String os = System.getProperty("os.name");
 
-		if (os.contains("Windows"))
-			return "Windows";
-
 		if (os.contains("Linux"))
 			return "Linux";
 
 		if (os.contains("Mac"))
 			return "Mac";
+
+		if (os.contains("Windows"))
+			return "Windows";
 
 		return "";
 	}

@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.delay;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import toutouchien.niveriaapi.utils.MessageUtils;
+import toutouchien.niveriaapi.utils.ui.MessageUtils;
 
 import java.util.function.Consumer;
 
@@ -82,6 +82,6 @@ public class DelayBuilder {
 		if (delay < 1)
 			throw new IllegalArgumentException("Delay must be more than 0. Delay: " + delay);
 
-		return new Delay(player, successConsumer, failConsumer, delay, cancelOnMove, actionbar, chat, title);
+		return new Delay(player, text, successConsumer, failConsumer, delay, cancelOnMove, actionbar, chat, title);
 	}
 }

@@ -1,7 +1,9 @@
 package toutouchien.niveriaapi.delay;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
+import io.papermc.paper.adventure.PaperAdventure;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,13 +13,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.MessageUtils;
-import toutouchien.niveriaapi.utils.Task;
-import toutouchien.niveriaapi.utils.TimeUtils;
+import toutouchien.niveriaapi.utils.base.Task;
+import toutouchien.niveriaapi.utils.common.TimeUtils;
+import toutouchien.niveriaapi.utils.game.NMSUtils;
+import toutouchien.niveriaapi.utils.ui.MessageUtils;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class DelayManager implements Listener {
@@ -33,47 +36,36 @@ public class DelayManager implements Listener {
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		pluginManager.registerEvents(this, plugin);
 
-		Task.taskTimerAsync(() -> {
+		Task.asyncRepeat(() -> {
 			if (teleportDelays.isEmpty())
 				return;
 
-			Bukkit.getOnlinePlayers().forEach(player -> {
-				if (!teleportDelays.containsKey(player))
-					return;
-
-				Location to = player.getLocation();
-
-				Delay delay = teleportDelays.get(player);
+			for (Map.Entry<Player, Delay> entry : teleportDelays.entrySet()) {
+				Delay delay = entry.getValue();
 				if (!delay.cancelOnMove())
-					return;
+					continue;
+
+				Player player = entry.getKey();
 
 				Location originalLocation = delay.originalLocation();
-
-				if (to.getWorld() == originalLocation.getWorld()) {
+				Location to = player.getLocation();
+				if (originalLocation.getWorld() == to.getWorld()) {
 					double distance = to.distance(originalLocation);
 					if (!Double.isNaN(distance) && distance <= 1)
-						return;
+						continue;
 				}
 
-				Component message = MessageUtils.errorMessage(
-						Component.text("Ta demande de téléportation a été annulée car tu as bougé.")
-				);
-
-				player.sendMessage(message);
+				MessageUtils.sendNMSErrorMessage(player, Component.literal("Ta demande de téléportation a été annulée car tu as bougé."));
 				reset(delay, true);
-			});
-		}, plugin, TimeUtils.secondsToTicks(3), 20L);
+			}
+		}, plugin, TimeUtils.ticks(3L, TimeUnit.SECONDS), 20L);
 	}
 
 	public void start(Delay delay) {
 		Player player = delay.player();
 
 		if (inDelay(player)) {
-			Component errorMessage = MessageUtils.errorMessage(
-					Component.text("Tu as déjà une demande de téléportation.")
-			);
-
-			player.sendMessage(errorMessage);
+			MessageUtils.sendNMSErrorMessage(player, Component.literal("Tu as déjà une demande de téléportation."));
 			return;
 		}
 
@@ -83,7 +75,7 @@ public class DelayManager implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (!teleportDelays.containsKey(player) || delay.delayRemaining() == 0) {
+				if (delay.delayRemaining() == 0 || !teleportDelays.containsKey(player)) {
 					this.cancel();
 					return;
 				}
@@ -101,25 +93,27 @@ public class DelayManager implements Listener {
 			return;
 		}
 
-		Player player = delay.player();
-		int delayRemaining = delay.delayRemaining();
+		ServerGamePacketListenerImpl connection = NMSUtils.getConnection(delay.player());
 
-		Component text = MessageUtils.infoMessage(
-				Component.text("Téléportation dans %s secondes".formatted(delayRemaining))
+		int delayRemaining = delay.delayRemaining();
+		Component text = PaperAdventure.asVanilla(
+				delay.text().replaceText(builder -> builder.matchLiteral("%s").replacement(String.valueOf(delayRemaining)))
 		);
 
-		if (delay.actionbar()) {
-			player.sendActionBar(text);
-		}
+		if (delay.actionbar())
+			connection.send(new ClientboundSetActionBarTextPacket(text));
 
-		if (delay.chat()) {
-			player.sendMessage(text);
-		}
+		if (delay.chat())
+			connection.send(new ClientboundSystemChatPacket(text, false));
 
 		if (delay.title()) {
-			Title.Times times = Title.Times.times(Duration.ofSeconds(0), Duration.ofMillis(1500), Duration.ofSeconds(0));
-			Title title = Title.title(text, Component.empty(), times);
-			player.showTitle(title);
+			ClientboundSetTitlesAnimationPacket titlesAnimationPacket = new ClientboundSetTitlesAnimationPacket(0, 30, 0);
+			ClientboundSetSubtitleTextPacket subtitleTextPacket = new ClientboundSetSubtitleTextPacket(Component.empty());
+			ClientboundSetTitleTextPacket titleTextPacket = new ClientboundSetTitleTextPacket(text);
+
+			connection.send(titlesAnimationPacket);
+			connection.send(subtitleTextPacket);
+			connection.send(titleTextPacket);
 		}
 	}
 
@@ -137,12 +131,11 @@ public class DelayManager implements Listener {
 		Player player = delay.player();
 		teleportDelays.remove(player);
 
-		if (delay.title()) {
-			player.clearTitle();
-		}
+		if (delay.title())
+			NMSUtils.sendPacket(player, new ClientboundClearTitlesPacket(true));
 
 		Consumer<Player> failConsumer = delay.failConsumer();
-		if (failConsumer == null || !fail)
+		if (!fail || failConsumer == null)
 			return;
 
 		failConsumer.accept(player);

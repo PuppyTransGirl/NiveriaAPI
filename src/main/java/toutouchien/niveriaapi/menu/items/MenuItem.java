@@ -11,13 +11,13 @@ public abstract class MenuItem {
 	private final ItemStack itemStack;
 	private final ClickEvent clickEvent;
 
-	public MenuItem(int slot, @NotNull ItemStack itemStack, @Nullable ClickEvent clickEvent) {
+	MenuItem(int slot, @NotNull ItemStack itemStack, @Nullable ClickEvent clickEvent) {
 		this.slot = slot;
 		this.itemStack = itemStack;
 		this.clickEvent = clickEvent;
 	}
 
-	public MenuItem(int slot, @NotNull Material material, @Nullable ClickEvent clickEvent) {
+	MenuItem(int slot, @NotNull Material material, @Nullable ClickEvent clickEvent) {
 		this(slot, new ItemStack(material), clickEvent);
 	}
 
