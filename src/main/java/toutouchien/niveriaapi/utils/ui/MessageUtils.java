@@ -4,6 +4,7 @@ import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import toutouchien.niveriaapi.utils.game.NMSUtils;
 
@@ -75,6 +76,26 @@ public class MessageUtils {
 	public static void sendMessage(Player player, Component content) {
 		net.minecraft.network.chat.Component nmsComponent = PaperAdventure.asVanilla(content);
 		NMSUtils.sendPacket(player, new ClientboundSystemChatPacket(nmsComponent, false));
+	}
+
+	public static void sendErrorMessage(CommandSender sender, Component content) {
+		sender.sendMessage(errorMessage(content));
+	}
+
+	public static void sendInfoMessage(CommandSender sender, Component content) {
+		sender.sendMessage(infoMessage(content));
+	}
+
+	public static void sendSuccessMessage(CommandSender sender, Component content) {
+		sender.sendMessage(successMessage(content));
+	}
+
+	public static void sendWarnMessage(CommandSender sender, Component content) {
+		sender.sendMessage(warnMessage(content));
+	}
+
+	public static void sendMessage(CommandSender sender, Component content) {
+		sender.sendMessage(content);
 	}
 
 	public static net.minecraft.network.chat.MutableComponent nmsErrorPrefix() {
