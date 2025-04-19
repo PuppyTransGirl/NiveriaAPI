@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils;
+package toutouchien.niveriaapi.utils.data;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,11 +8,19 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+/**
+ * @deprecated Use database to store data instead of YAML files
+ */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class ConfigUtils {
 	// It's to make a 1/16 (0.625) precision like the pixel of a block
-	private final static DecimalFormat decimalFormat = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
+	private static final DecimalFormat decimalFormat = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
 	static {
 		decimalFormat.setGroupingUsed(false);
+	}
+
+	private ConfigUtils() {
+		throw new IllegalStateException("Utility class");
 	}
 	
 	public static Location getLocation(ConfigurationSection section) {

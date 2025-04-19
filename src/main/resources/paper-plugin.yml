@@ -1,7 +1,37 @@
 name: NiveriaAPI
 version: '${project.version}'
 main: toutouchien.niveriaapi.NiveriaAPI
-api-version: '1.20'
+api-version: '1.21.4'
 load: STARTUP
+loader: toutouchien.niveriaapi.NiveriaAPILoader
 authors: [ Toutouchien ]
-website: niveria.fr
+website: https://niveria.fr
+
+dependencies:
+  server:
+    BlueMap:
+      required: false
+
+    dynmap:
+      required: false
+
+    ItemsAdder:
+      required: false
+
+    Lands:
+      required: false
+
+    LuckPerms:
+      required: false
+
+    Pl3xMap:
+      required: false
+
+    PlaceholderAPI:
+      required: false
+
+    squaremap:
+      required: false
+
+    WorldGuard:
+      required: false

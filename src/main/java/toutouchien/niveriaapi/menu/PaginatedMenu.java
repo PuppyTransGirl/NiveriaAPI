@@ -20,6 +20,9 @@ public abstract class PaginatedMenu extends Menu {
 	}
 
 	protected void decreasePage(int i) {
+		if (this.page <= 0)
+			return;
+
 		this.page = Math.max(0, this.page - i);
 
 		inventory.clear();

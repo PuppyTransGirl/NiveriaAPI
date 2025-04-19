@@ -112,3 +112,6 @@ buildNumber.properties
 
 # Ant
 build.xml
+
+# NMS
+.paper-nms/

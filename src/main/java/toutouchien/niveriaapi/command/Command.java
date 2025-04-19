@@ -24,33 +24,33 @@ public class Command extends org.bukkit.command.Command {
 				.setUsage(commandData.usage());
 	}
 
-	public void execute(CommandSender sender, String[] args, String[] fullArgs, String label) {
+	public void execute(@NotNull CommandSender sender, @NotNull String @NotNull [] args, @NotNull String @NotNull [] fullArgs, @NotNull String label) {
 		execute(sender, args, label);
 	}
 
-	public void execute(Player player, String[] args, String[] fullArgs, String label) {
+	public void execute(@NotNull Player player, @NotNull String @NotNull [] args, @NotNull String @NotNull [] fullArgs, @NotNull String label) {
 		execute(player, args, label);
 	}
 
-	public void execute(CommandSender sender, String[] args, String label) {
+	public void execute(@NotNull CommandSender sender, @NotNull String @NotNull [] args, @NotNull String label) {
 	}
 
-	public void execute(Player player, String[] args, String label) {
+	public void execute(@NotNull Player player, @NotNull String @NotNull [] args, @NotNull String label) {
 	}
 
-	public List<String> complete(CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
+	public List<String> complete(@NotNull CommandSender sender, @NotNull String @NotNull [] args, @NotNull String @NotNull [] fullArgs, int argIndex) {
 		return complete(sender, args, argIndex);
 	}
 
-	public List<String> complete(Player player, String[] args, String[] fullArgs, int argIndex) {
+	public List<String> complete(@NotNull Player player, @NotNull String @NotNull [] args, @NotNull String @NotNull [] fullArgs, int argIndex) {
 		return complete(player, args, argIndex);
 	}
 
-	public List<String> complete(CommandSender sender, String[] args, int argIndex) {
+	public List<String> complete(@NotNull CommandSender sender, @NotNull String @NotNull [] args, int argIndex) {
 		return null;
 	}
 
-	public List<String> complete(Player player, String[] args, int argIndex) {
+	public List<String> complete(@NotNull Player player, @NotNull String @NotNull [] args, int argIndex) {
 		return null;
 	}
 
@@ -63,7 +63,7 @@ public class Command extends org.bukkit.command.Command {
 	}
 
 	@Override
-	public final boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+	public final boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String @NotNull [] args) {
 		// Check permission
 		if (!commandData.permission().isEmpty() && !sender.hasPermission(commandData.permission())) {
 			sender.sendMessage(Component.text("Tu n'as pas la permission d'exécuter cette commande.", NamedTextColor.RED));
@@ -99,8 +99,8 @@ public class Command extends org.bukkit.command.Command {
 								sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
 								return true;
 							}
-							if (sender instanceof Player)
-								nestedSubCommand.execute((Player) sender, nestedRemainingArgs, args, commandLabel);
+							if (sender instanceof Player player)
+								nestedSubCommand.execute(player, nestedRemainingArgs, args, commandLabel);
 							else
 								nestedSubCommand.execute(sender, nestedRemainingArgs, args, commandLabel);
 							return true;
@@ -113,8 +113,8 @@ public class Command extends org.bukkit.command.Command {
 						sender.sendMessage(Component.text("Seuls les joueurs peuvent exécuter cette sous-commande.", NamedTextColor.RED));
 						return true;
 					}
-					if (sender instanceof Player)
-						subCommand.execute((Player) sender, subArgs, args, commandLabel);
+					if (sender instanceof Player player)
+						subCommand.execute(player, subArgs, args, commandLabel);
 					else
 						subCommand.execute(sender, subArgs, args, commandLabel);
 					return true;
@@ -200,7 +200,7 @@ public class Command extends org.bukkit.command.Command {
 
 		if (subCommand.data().hasParameterBeforeSubcommands()) {
 			if (remainingArgs.length == 1)
-				return getCompletionOrEmpty(subCommand, sender, remainingArgs, fullArgs, 0);
+				return completionOrEmpty(subCommand, sender, remainingArgs, fullArgs, 0);
 
 			if (remainingArgs.length == 2)
 				return subCommand.data().subCommands().stream()
@@ -212,7 +212,7 @@ public class Command extends org.bukkit.command.Command {
 
 				if (nestedSubCommand != null) {
 					String[] nestedRemainingArgs = Arrays.copyOfRange(remainingArgs, 2, remainingArgs.length);
-					return getCompletionOrEmpty(nestedSubCommand, sender, nestedRemainingArgs, fullArgs, nestedRemainingArgs.length - 1);
+					return completionOrEmpty(nestedSubCommand, sender, nestedRemainingArgs, fullArgs, nestedRemainingArgs.length - 1);
 				}
 			}
 		} else {
@@ -234,7 +234,7 @@ public class Command extends org.bukkit.command.Command {
 			}
 		}
 
-		return getCompletionOrEmpty(subCommand, sender, remainingArgs, fullArgs, remainingArgs.length - 1);
+		return completionOrEmpty(subCommand, sender, remainingArgs, fullArgs, remainingArgs.length - 1);
 	}
 
 	private SubCommand findSubCommand(List<SubCommand> subCommands, String arg) {
@@ -244,7 +244,7 @@ public class Command extends org.bukkit.command.Command {
 				.orElse(null);
 	}
 
-	private List<String> getCompletionOrEmpty(SubCommand subCommand, CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
+	private List<String> completionOrEmpty(SubCommand subCommand, CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
 		List<String> completion;
 		if (sender instanceof Player player)
 			completion = subCommand.complete(player, args, fullArgs, argIndex);

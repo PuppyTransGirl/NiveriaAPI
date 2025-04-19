@@ -32,7 +32,7 @@ public class CommandManager {
         commandMap.registerAll(fallbackPrefix, bukkitCommands);
     }
 
-    public Set<Command> getCommands() {
+    public Set<Command> commands() {
         return commands;
     }
 }

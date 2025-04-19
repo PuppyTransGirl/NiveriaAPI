@@ -1,6 +1,9 @@
 package toutouchien.niveriaapi.menu;
 
-import net.kyori.adventure.sound.Sound;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,6 +13,9 @@ import org.bukkit.inventory.InventoryHolder;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
 import toutouchien.niveriaapi.menu.event.CustomInventoryClickEvent;
 import toutouchien.niveriaapi.menu.items.MenuItem;
+import toutouchien.niveriaapi.utils.game.NMSUtils;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MenuListener implements Listener {
 	@EventHandler
@@ -35,8 +41,9 @@ public class MenuListener implements Listener {
 			if (menuItem.slot() != slot)
 				continue;
 
-			Sound clickSound = Sound.sound(org.bukkit.Sound.UI_BUTTON_CLICK, Sound.Source.MASTER, 1F, 1F);
-			player.playSound(clickSound, Sound.Emitter.self());
+			ServerPlayer serverPlayer = NMSUtils.getNMSPlayer(player);
+			ClientboundSoundEntityPacket soundPacket = new ClientboundSoundEntityPacket(SoundEvents.UI_BUTTON_CLICK, SoundSource.MASTER, serverPlayer, 1F, 1F, ThreadLocalRandom.current().nextLong());
+			serverPlayer.connection.send(soundPacket);
 
 			ClickEvent clickEvent = menuItem.clickEvent();
 			if (clickEvent == null)
