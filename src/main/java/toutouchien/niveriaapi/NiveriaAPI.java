@@ -9,6 +9,7 @@ import toutouchien.niveriaapi.command.CommandManager;
 import toutouchien.niveriaapi.cooldown.CooldownDatabase;
 import toutouchien.niveriaapi.cooldown.CooldownManager;
 import toutouchien.niveriaapi.database.MongoManager;
+import toutouchien.niveriaapi.database.PlayerListener;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 import toutouchien.niveriaapi.delay.DelayManager;
 import toutouchien.niveriaapi.hook.HookListener;
@@ -71,7 +72,8 @@ public final class NiveriaAPI extends JavaPlugin {
         Arrays.asList(
                 this.chatInputManager,
                 new HookListener(this.hookManager),
-                new MenuListener()
+                new MenuListener(),
+                new PlayerListener(this.niveriaDatabaseManager)
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
     }
 
