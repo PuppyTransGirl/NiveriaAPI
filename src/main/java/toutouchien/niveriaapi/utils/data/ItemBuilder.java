@@ -269,7 +269,7 @@ public class ItemBuilder {
 	public ItemBuilder addLoreLine(@NotNull Component line) {
 		ItemLore itemLore = ItemLore.lore()
 				.lines(itemStack.getData(DataComponentTypes.LORE).styledLines())
-				.addLine(line)
+				.addLine(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE))
 				.build();
 
 		itemStack.setData(DataComponentTypes.LORE, itemLore);
@@ -279,7 +279,7 @@ public class ItemBuilder {
 	@NotNull
 	public ItemBuilder setLoreLine(@NotNull Component line, int index) {
 		List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).styledLines());
-		lore.set(index, line);
+		lore.set(index, line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
 		itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
 		return this;
@@ -291,7 +291,7 @@ public class ItemBuilder {
 			throw new IllegalArgumentException(String.format("You can't remove a lore line from an item that doesn't contain any. Provided: %s", itemStack.getType().name()));
 
 		List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).styledLines());
-		lore.remove(line);
+		lore.remove(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
 		itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
 		return this;
