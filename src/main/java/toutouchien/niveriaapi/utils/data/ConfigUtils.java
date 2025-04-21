@@ -10,6 +10,7 @@ import java.util.Locale;
 
 /**
  * @deprecated Use database to store data instead of YAML files
+ * @see DatabaseUtils
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
 public class ConfigUtils {
