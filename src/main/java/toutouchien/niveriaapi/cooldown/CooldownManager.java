@@ -10,7 +10,10 @@ import toutouchien.niveriaapi.utils.base.Task;
 import toutouchien.niveriaapi.utils.common.TimeUtils;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -423,18 +426,8 @@ public class CooldownManager {
      */
     public void removeAllCooldowns(@NotNull UUID uuid, boolean alsoRemoveFromDatabase) {
         Objects.requireNonNull(uuid, "UUID must not be null");
-        Iterator<CompositeKey> iterator = cooldowns.keySet().iterator();
-        CompositeKey key;
 
-        while (iterator.hasNext()) {
-            key = iterator.next();
-            if (!key.uuid().equals(uuid))
-                continue;
-
-            Cooldown removed = cooldowns.remove(key);
-            if (removed != null && removed.persistent() && alsoRemoveFromDatabase)
-                iterator.remove();
-        }
+        cooldowns.entrySet().removeIf(entry -> entry.getKey().uuid() == uuid);
 
         if (alsoRemoveFromDatabase)
             database.deleteAllCooldowns(uuid);
