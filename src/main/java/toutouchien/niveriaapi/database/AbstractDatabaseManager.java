@@ -119,6 +119,32 @@ public class AbstractDatabaseManager {
         this.document(collection, id, document);
     }
 
+    public void remove(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        Document document = this.document(collection, id);
+        if (document == null) {
+            this.logger.warn("Attempted to remove value for non-existent document: database='{}', collection='{}', id='{}'",
+                    mongoDatabase.getName(), collection, id);
+            return;
+        }
+
+        if (key.isBlank()) {
+            this.logger.warn("Attempted to remove value with blank key: database='{}', collection='{}', id='{}'",
+                    mongoDatabase.getName(), collection, id);
+            return;
+        }
+
+        if (!removeValueInDocument(document, key, collection, id))
+            return;
+
+        this.document(collection, id, document);
+    }
+
+    public void remove(@NotNull String collection, @NotNull String id) {
+        MongoCollection<Document> mongoCollection = this.collection(collection);
+        Bson filter = Filters.eq("_id", id);
+        mongoCollection.deleteOne(filter);
+    }
+
     public void document(@NotNull String collection, @NotNull String id, @NotNull Document document) {
         try {
             MongoCollection<Document> mongoCollection = this.collection(collection);
@@ -218,6 +244,45 @@ public class AbstractDatabaseManager {
 
             return documentAsync(collection, id, document);
         });
+    }
+
+    public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        return documentAsync(collection, id).thenCompose(document -> {
+            if (document == null) {
+                this.logger.warn("Attempted to remove value for non-existent document (async): database='{}', collection='{}', id='{}'",
+                        mongoDatabase.getName(), collection, id);
+                return CompletableFuture.completedFuture(false);
+            }
+
+            if (key.isBlank()) {
+                this.logger.warn("Attempted to remove value with blank key (async): database='{}', collection='{}', id='{}'",
+                        mongoDatabase.getName(), collection, id);
+                return CompletableFuture.completedFuture(false);
+            }
+
+            if (!removeValueInDocument(document, key, collection, id))
+                return CompletableFuture.completedFuture(false);
+
+            return documentAsync(collection, id, document);
+        });
+    }
+
+    public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        scheduler.runTaskAsynchronously(plugin, () -> {
+            try {
+                MongoCollection<Document> mongoCollection = this.collection(collection);
+                Bson filter = Filters.eq("_id", id);
+                mongoCollection.deleteOne(filter);
+                future.complete(true);
+            } catch (MongoException e) {
+                this.logger.error("Failed to remove document asynchronously: database='{}', collection='{}', id='{}'",
+                        mongoDatabase.getName(), collection, id, e);
+                future.completeExceptionally(e);
+            }
+        });
+
+        return future;
     }
 
     public CompletableFuture<Boolean> documentAsync(@NotNull String collection, @NotNull String id, @NotNull Document document) {
@@ -437,5 +502,38 @@ public class AbstractDatabaseManager {
                     future.completeExceptionally(duplicateKeyException);
                     return null;
                 });
+    }
+
+    private boolean removeValueInDocument(@NotNull Document document, @NotNull String key, @NotNull String collection, @NotNull String id) {
+        if (key.isBlank()) {
+            this.logger.warn("Attempted to remove value with blank key: database='{}', collection='{}', id='{}'",
+                    mongoDatabase.getName(), collection, id);
+            return false;
+        }
+
+        String[] keyParts = key.split("\\.");
+        Document current = document;
+
+        try {
+            for (int i = 0; i < keyParts.length - 1; i++) {
+                String part = keyParts[i];
+                Object next = current.computeIfAbsent(part, k -> new Document());
+
+                if (!(next instanceof Document newCurrent)) {
+                    this.logger.error("Cannot remove nested value for key '{}'. Intermediate part '{}' exists but is not a Document (type: {}): database='{}', collection='{}', id='{}'",
+                            key, part, next.getClass().getName(), mongoDatabase.getName(), collection, id);
+                    return false;
+                }
+
+                current = newCurrent;
+            }
+
+            current.remove(keyParts[keyParts.length - 1]);
+            return true;
+        } catch (Exception e) {
+            this.logger.error("Error while removing value for key '{}' in document structure: database='{}', collection='{}', id='{}'",
+                    key, mongoDatabase.getName(), collection, id, e);
+            return false;
+        }
     }
 }
