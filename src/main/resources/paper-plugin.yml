@@ -10,28 +10,37 @@ website: https://niveria.fr
 dependencies:
   server:
     BlueMap:
+      load: BEFORE
       required: false
 
     dynmap:
+      load: BEFORE
       required: false
 
     ItemsAdder:
+      load: BEFORE
       required: false
 
     Lands:
+      load: BEFORE
       required: false
 
     LuckPerms:
+      load: BEFORE
       required: false
 
     Pl3xMap:
+      load: BEFORE
       required: false
 
     PlaceholderAPI:
+      load: BEFORE
       required: false
 
     squaremap:
+      load: BEFORE
       required: false
 
     WorldGuard:
+      load: BEFORE
       required: false
