@@ -22,7 +22,7 @@ public class HookManager {
 	public void registerHook(HookType type) {
 		try {
 			Plugin hookPlugin = this.plugin.getServer().getPluginManager().getPlugin(type.pluginName());
-			if (hookPlugin == null || !hookPlugin.isEnabled()) {
+			if (hookPlugin == null) {
 				this.plugin.getSLF4JLogger().warn("{} not found, disabling hook", type.pluginName());
 				return;
 			}
