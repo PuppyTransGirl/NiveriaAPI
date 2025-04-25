@@ -29,11 +29,11 @@ public class CooldownDatabase {
     }
 
     public void deleteCooldown(@NotNull UUID uuid, @NotNull Key key) {
-        this.database.documentAsync(PLAYERS,uuid.toString()).thenComposeAsync(document -> {
+        this.database.documentAsync(PLAYERS, uuid.toString()).thenComposeAsync(document -> {
             if (document == null)
                 return null;
 
-            return this.database.setAsync(PLAYERS, uuid.toString(), "cooldowns." + key.asString(), null)
+            return this.database.removeAsync(PLAYERS, uuid.toString(), "cooldowns." + key.asString())
                     .thenApply(success -> null);
         });
     }
@@ -97,7 +97,7 @@ public class CooldownDatabase {
             if (document == null)
                 return null;
 
-            return this.database.setAsync(PLAYERS, uuid.toString(), "cooldowns", null)
+            return this.database.removeAsync(PLAYERS, uuid.toString(), "cooldowns")
                     .thenApply(success -> null);
         });
     }

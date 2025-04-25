@@ -27,6 +27,9 @@ public class TimeUtils {
 	 * @return A formatted string representation of the duration
 	 */
 	public static String parseMillis(long millis) {
+		if (millis < 1000)
+			return "0 seconde";
+
 		long seconds = millis / 1000;
 		long minutes = seconds / 60;
 		long hours = minutes / 60;

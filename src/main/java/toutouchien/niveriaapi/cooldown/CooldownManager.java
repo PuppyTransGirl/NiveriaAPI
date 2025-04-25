@@ -29,8 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Example usage:
  * <pre>{@code
  * // Get the cooldown manager (assuming database is initialized elsewhere)
- * // CooldownDatabase database = new MyDatabaseImplementation(...);
- * // CooldownManager cooldownManager = new CooldownManager(plugin, database);
+ * // CooldownManager cooldownManager = NiveriaAPI.instance().cooldownManager();
  *
  * // Create cooldown keys
  * Key fireballKey = Key.key("plugin_name", "ability_fireball");
@@ -99,7 +98,7 @@ public class CooldownManager {
                 cooldowns.put(new CompositeKey(cooldown.key(), cooldown.uuid()), cooldown);
             });
 
-             plugin.getLogger().info("Loaded " + persistentCooldowns.size() + " active persistent cooldowns.");
+            plugin.getLogger().info("Loaded " + persistentCooldowns.size() + " active persistent cooldowns.");
         }, plugin);
     }
 
@@ -136,7 +135,7 @@ public class CooldownManager {
         if (duration.isZero() || duration.isNegative())
             return null;
 
-        Cooldown cooldown = new Cooldown(uuid, key, duration.toMillis(), persistent);
+        Cooldown cooldown = new Cooldown(uuid, key, duration.toMillis() + System.currentTimeMillis(), persistent);
         cooldowns.put(new CompositeKey(key, uuid), cooldown);
 
         if (persistent)
@@ -266,9 +265,8 @@ public class CooldownManager {
         CompositeKey compositeKey = new CompositeKey(key, uuid);
         Cooldown removed = cooldowns.remove(compositeKey);
 
-        if ((removed != null && removed.persistent() && alsoRemoveFromDatabase) || (removed == null && alsoRemoveFromDatabase)) {
+        if ((removed != null && removed.persistent() && alsoRemoveFromDatabase) || (removed == null && alsoRemoveFromDatabase))
             database.deleteCooldown(uuid, key);
-        }
 
         return removed != null;
     }
@@ -428,7 +426,11 @@ public class CooldownManager {
      */
     public void removeAllCooldowns(@NotNull UUID uuid, boolean alsoRemoveFromDatabase) {
         Objects.requireNonNull(uuid, "UUID must not be null");
-        database.deleteAllCooldowns(uuid);
+
+        cooldowns.entrySet().removeIf(entry -> entry.getKey().uuid() == uuid);
+
+        if (alsoRemoveFromDatabase)
+            database.deleteAllCooldowns(uuid);
     }
 
     /**
