@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage")
 public class ItemBuilder {
 	private static final UUID uuid = UUID.fromString("14030105-4f95-4a6d-9572-7cc1d6314ab2");
 	private final ItemStack itemStack;
