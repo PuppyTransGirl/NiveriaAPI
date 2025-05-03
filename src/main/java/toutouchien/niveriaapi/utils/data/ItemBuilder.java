@@ -170,7 +170,7 @@ public class ItemBuilder {
 		if (data == null)
 			return this;
 
-		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchants = data.enchantments();
+		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchants = new HashMap<>(data.enchantments());
 		Arrays.stream(enchantments).forEach(enchants::remove);
 
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
