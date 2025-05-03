@@ -68,13 +68,13 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder skullName(Component name) {
+	public ItemBuilder renamableName(Component name) {
 		itemStack.setData(DataComponentTypes.CUSTOM_NAME, name);
 		return this;
 	}
 
 	@Nullable
-	public Component skullName() {
+	public Component renamableName() {
 		return itemStack.getData(DataComponentTypes.CUSTOM_NAME);
 	}
 
