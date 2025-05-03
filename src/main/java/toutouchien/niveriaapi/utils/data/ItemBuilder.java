@@ -66,6 +66,17 @@ public class ItemBuilder {
 		return itemStack.getData(DataComponentTypes.ITEM_NAME);
 	}
 
+	@NotNull
+	public ItemBuilder skullName(Component name) {
+		itemStack.setData(DataComponentTypes.CUSTOM_NAME, name);
+		return this;
+	}
+
+	@NotNull
+	public Component skullName() {
+		return itemStack.getData(DataComponentTypes.CUSTOM_NAME);
+	}
+
 	public ItemBuilder durability(int durability) {
 		itemStack.setData(DataComponentTypes.DAMAGE, itemStack.getData(DataComponentTypes.MAX_DAMAGE) - durability);
 		return this;
