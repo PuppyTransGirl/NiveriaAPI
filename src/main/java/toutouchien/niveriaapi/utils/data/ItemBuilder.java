@@ -69,7 +69,7 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder renamableName(Component name) {
-		itemStack.setData(DataComponentTypes.CUSTOM_NAME, name);
+		itemStack.setData(DataComponentTypes.CUSTOM_NAME, name.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 		return this;
 	}
 
