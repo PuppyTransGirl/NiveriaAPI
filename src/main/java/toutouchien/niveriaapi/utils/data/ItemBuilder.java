@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("UnstableApiUsage")
 public class ItemBuilder {
 	private static final UUID uuid = UUID.fromString("14030105-4f95-4a6d-9572-7cc1d6314ab2");
 	private final ItemStack itemStack;
@@ -61,9 +62,20 @@ public class ItemBuilder {
 		return this;
 	}
 
-	@NotNull
+	@Nullable
 	public Component name() {
 		return itemStack.getData(DataComponentTypes.ITEM_NAME);
+	}
+
+	@NotNull
+	public ItemBuilder renamableName(Component name) {
+		itemStack.setData(DataComponentTypes.CUSTOM_NAME, name);
+		return this;
+	}
+
+	@Nullable
+	public Component renamableName() {
+		return itemStack.getData(DataComponentTypes.CUSTOM_NAME);
 	}
 
 	public ItemBuilder durability(int durability) {
@@ -81,15 +93,17 @@ public class ItemBuilder {
 		return this;
 	}
 
+	@Nullable
 	@NonNegative
-	public int damage() {
+	public Integer damage() {
 		return itemStack.getData(DataComponentTypes.DAMAGE);
 	}
 
 	@NotNull
 	public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, int level, boolean showInTooltip) {
+		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
-				.addAll(itemStack.getData(DataComponentTypes.ENCHANTMENTS).enchantments())
+				.addAll(data == null ? Collections.emptyMap() : data.enchantments())
 				.add(enchantment, level)
 				.showInTooltip(showInTooltip)
 				.build();
@@ -111,8 +125,9 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments, boolean showInTooltip) {
+		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
-				.addAll(itemStack.getData(DataComponentTypes.ENCHANTMENTS).enchantments())
+				.addAll(data == null ? Collections.emptyMap() : data.enchantments())
 				.addAll(enchantments)
 				.showInTooltip(showInTooltip)
 				.build();
@@ -134,7 +149,11 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder removeEnchantment(@NotNull Enchantment enchantment) {
-		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchantments = itemStack.getData(DataComponentTypes.ENCHANTMENTS).enchantments();
+		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
+		if (data == null)
+			return this;
+
+		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchantments = data.enchantments();
 		enchantments.remove(enchantment);
 
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
@@ -147,7 +166,11 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder removeEnchantments(@NotNull Enchantment... enchantments) {
-		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchants = itemStack.getData(DataComponentTypes.ENCHANTMENTS).enchantments();
+		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
+		if (data == null)
+			return this;
+
+		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchants = new HashMap<>(data.enchantments());
 		Arrays.stream(enchantments).forEach(enchants::remove);
 
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
@@ -169,9 +192,10 @@ public class ItemBuilder {
 		return itemStack.getData(DataComponentTypes.ENCHANTMENTS);
 	}
 
-	@NotNull
+	@Nullable
 	public Map<Enchantment, Integer> enchantmentsMap() {
-		return itemStack.getData(DataComponentTypes.ENCHANTMENTS).enchantments();
+		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
+		return data == null ? null : data.enchantments();
 	}
 
 	@NotNull
@@ -262,13 +286,22 @@ public class ItemBuilder {
 
 	@Nullable
 	public Component loreLine(int index) {
-		return itemStack.getData(DataComponentTypes.LORE).styledLines().get(index);
+		ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+		if (data == null)
+			return null;
+
+		List<Component> components = data.styledLines();
+		return components.size() > index ? components.get(index) : null;
 	}
 
 	@NotNull
 	public ItemBuilder addLoreLine(@NotNull Component line) {
+		ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+		if (data == null)
+			return this;
+
 		ItemLore itemLore = ItemLore.lore()
-				.lines(itemStack.getData(DataComponentTypes.LORE).styledLines())
+				.lines(data.styledLines())
 				.addLine(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE))
 				.build();
 
@@ -278,7 +311,13 @@ public class ItemBuilder {
 
 	@NotNull
 	public ItemBuilder setLoreLine(@NotNull Component line, int index) {
-		List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).styledLines());
+		ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+		if (data == null) {
+			itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(List.of(line)));
+			return this;
+		}
+
+		List<Component> lore = new ArrayList<>(data.styledLines());
 		lore.set(index, line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
 		itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
@@ -321,7 +360,8 @@ public class ItemBuilder {
 				.addModifier(attribute, modifier);
 
 		ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-		data.modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+		if (data != null)
+			data.modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
 
 		itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, itemAttributeModifiers);
 		return this;
@@ -330,7 +370,9 @@ public class ItemBuilder {
 	@NotNull
 	public ItemBuilder addAttributeModifiers(@NotNull Map<Attribute, AttributeModifier> attributeModifiers) {
 		ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
-		itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+		if (itemStack.hasData(DataComponentTypes.ATTRIBUTE_MODIFIERS))
+			itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+
 		attributeModifiers.forEach(itemAttributeModifiers::addModifier);
 
 		itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, itemAttributeModifiers.build());
@@ -359,6 +401,9 @@ public class ItemBuilder {
 	@NotNull
 	public ItemBuilder removeAttributeModifier(@NotNull Attribute attribute) {
 		ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
+		if (!itemStack.hasData(DataComponentTypes.ATTRIBUTE_MODIFIERS))
+			return this;
+
 		itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().stream()
 				.filter(attModifier -> !attModifier.attribute().equals(attribute))
 				.forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
@@ -371,6 +416,8 @@ public class ItemBuilder {
 	public ItemBuilder removeAttributeModifiers(@NotNull Attribute... attributes) {
 		List<Attribute> list = Arrays.asList(attributes);
 		ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
+		if (!itemStack.hasData(DataComponentTypes.ATTRIBUTE_MODIFIERS))
+			return this;
 
 		itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().stream()
 				.filter(attModifier -> !list.contains(attModifier.attribute()))
@@ -428,8 +475,8 @@ public class ItemBuilder {
 		return this;
 	}
 
-	@IntRange(from = 1, to = 99)
-	public int maxStackSize() {
+	@NotNull
+	public Integer maxStackSize() {
 		return itemStack.getData(DataComponentTypes.MAX_STACK_SIZE);
 	}
 
