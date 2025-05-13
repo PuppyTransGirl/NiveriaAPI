@@ -30,11 +30,11 @@ public class CustomInventoryClickEvent extends InventoryClickEvent {
 		return ComponentUtils.serializePlainText(data);
 	}
 
-	public void changeItem(ItemStack newItem) {
+	public void changeItem(@NotNull ItemStack newItem) {
 		this.setCurrentItem(newItem);
 	}
 
-	public void changeItem(Consumer<ItemBuilder> modifier) {
+	public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
 		ItemStack item = this.getCurrentItem();
 		if (item == null)
 			return;
