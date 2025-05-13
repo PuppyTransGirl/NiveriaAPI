@@ -18,7 +18,7 @@ public abstract class MenuItem {
 	}
 
 	MenuItem(int slot, @NotNull Material material, @Nullable ClickEvent clickEvent) {
-		this(slot, new ItemStack(material), clickEvent);
+		this(slot, ItemStack.of(material), clickEvent);
 	}
 
 	public int slot() {
