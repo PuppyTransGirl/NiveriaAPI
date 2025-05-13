@@ -37,7 +37,7 @@ public class ItemBuilder {
 		if (material.isAir())
 			throw new IllegalArgumentException("Material cannot be air.");
 
-		return new ItemBuilder(new ItemStack(material));
+		return new ItemBuilder(ItemStack.of(material));
 	}
 
 	@NotNull
@@ -53,7 +53,7 @@ public class ItemBuilder {
 		if (material.isAir())
 			throw new IllegalArgumentException("Material cannot be air.");
 
-		return new ItemBuilder(new ItemStack(material, amount));
+		return new ItemBuilder(ItemStack.of(material, amount));
 	}
 
 	@NotNull

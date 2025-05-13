@@ -4,8 +4,12 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.utils.data.ItemBuilder;
 import toutouchien.niveriaapi.utils.ui.ComponentUtils;
+
+import java.util.function.Consumer;
 
 public class CustomInventoryClickEvent extends InventoryClickEvent {
 	public CustomInventoryClickEvent(@NotNull InventoryClickEvent event) {
@@ -24,5 +28,19 @@ public class CustomInventoryClickEvent extends InventoryClickEvent {
 			return "";
 
 		return ComponentUtils.serializePlainText(data);
+	}
+
+	public void changeItem(@NotNull ItemStack newItem) {
+		this.setCurrentItem(newItem);
+	}
+
+	public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
+		ItemStack item = this.getCurrentItem();
+		if (item == null)
+			return;
+
+		ItemBuilder builder = ItemBuilder.of(item);
+		modifier.accept(builder);
+		this.setCurrentItem(builder.build());
 	}
 }
