@@ -202,10 +202,17 @@ public class Command extends org.bukkit.command.Command {
 			if (remainingArgs.length == 1)
 				return completionOrEmpty(subCommand, sender, remainingArgs, fullArgs, 0);
 
-			if (remainingArgs.length == 2)
+			if (remainingArgs.length == 2) {
+				List<String> customCompletion = completionOrNull(subCommand, sender, remainingArgs, fullArgs, 1);
+				if (customCompletion != null) { // not null means the command completion actually returned something and not our api
+					return customCompletion;
+				}
+
+				// Fall back to subcommand names if no custom completion
 				return subCommand.data().subCommands().stream()
 						.map(nestedCmd -> nestedCmd.data().name())
 						.toList();
+			}
 
 			if (remainingArgs.length > 2) {
 				SubCommand nestedSubCommand = findSubCommand(subCommand.data().subCommands(), remainingArgs[1]);
@@ -252,6 +259,16 @@ public class Command extends org.bukkit.command.Command {
 			completion = subCommand.complete(sender, args, fullArgs, argIndex);
 
 		return completion == null ? Collections.emptyList() : completion;
+	}
+
+	private List<String> completionOrNull(SubCommand subCommand, CommandSender sender, String[] args, String[] fullArgs, int argIndex) {
+		List<String> completion;
+		if (sender instanceof Player player)
+			completion = subCommand.complete(player, args, fullArgs, argIndex);
+		else
+			completion = subCommand.complete(sender, args, fullArgs, argIndex);
+
+		return completion;
 	}
 
 	@Override
