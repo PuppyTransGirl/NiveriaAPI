@@ -63,3 +63,9 @@ jobs:
 
       - name: Build NiveriaAPI
         run: mvn -B clean verify
+
+      - name: Upload NiveriaAPI JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: NiveriaAPI
+          path: target/NiveriaAPI-*.jar
