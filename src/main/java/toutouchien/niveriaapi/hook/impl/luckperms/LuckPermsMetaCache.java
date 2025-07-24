@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.hook.impl.luckperms;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedMetaData;
-import net.luckperms.api.event.node.NodeMutateEvent;
+import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.platform.PlayerAdapter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -27,14 +27,14 @@ public class LuckPermsMetaCache implements MetaCache {
 	}
 
 	private void registerNodeMutateListener() {
-		luckPerms.getEventBus().subscribe(plugin, NodeMutateEvent.class, event -> {
-			cache.remove(event.getTarget().getIdentifier().getName());
+		luckPerms.getEventBus().subscribe(plugin, UserDataRecalculateEvent.class, event -> {
+			cache.remove(event.getUser().getUsername());
 		});
 	}
 
 	@Override
 	public boolean booleanMeta(@NotNull Player player, @NotNull String metaKey, boolean defaultValue) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
+		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Boolean) cachedValue;
@@ -51,7 +51,7 @@ public class LuckPermsMetaCache implements MetaCache {
 
 	@Override
 	public double doubleMeta(@NotNull Player player, @NotNull String metaKey, double defaultValue) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
+		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Double) cachedValue;
@@ -85,7 +85,7 @@ public class LuckPermsMetaCache implements MetaCache {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
+		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (T) cachedValue;
@@ -109,7 +109,7 @@ public class LuckPermsMetaCache implements MetaCache {
 
 	@Override
 	public int integerMeta(@NotNull Player player, @NotNull String metaKey, int defaultValue) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
+		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Integer) cachedValue;
@@ -135,7 +135,7 @@ public class LuckPermsMetaCache implements MetaCache {
 	@Nullable
 	@Override
 	public String stringMeta(@NotNull Player player, @NotNull String metaKey, @Nullable String defaultValue) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
+		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return cachedValue.toString();
@@ -152,11 +152,11 @@ public class LuckPermsMetaCache implements MetaCache {
 
 	@Override
 	public void invalidateCache(@NotNull Player player, @NotNull String metaKey) {
-		cache.computeIfAbsent(player.getName(), k -> new HashMap<>()).remove(metaKey);
+		cache.computeIfAbsent(player.getName().toLowerCase(Locale.ROOT), k -> new HashMap<>()).remove(metaKey);
 	}
 
 	@Override
 	public void invalidateCache(@NotNull Player player) {
-		cache.remove(player.getName());
+		cache.remove(player.getName().toLowerCase(Locale.ROOT));
 	}
 }
