@@ -1,14 +1,17 @@
 package toutouchien.niveriaapi.hook.impl.luckperms;
 
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.event.node.NodeMutateEvent;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.MetaNode;
+import net.luckperms.api.platform.PlayerAdapter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LuckPermsMetaCache implements MetaCache {
@@ -30,158 +33,130 @@ public class LuckPermsMetaCache implements MetaCache {
 	}
 
 	@Override
-	public boolean booleanMeta(Player player, String metaKey, boolean defaultValue) {
+	public boolean booleanMeta(@NotNull Player player, @NotNull String metaKey, boolean defaultValue) {
 		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Boolean) cachedValue;
 
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return defaultValue;
+		PlayerAdapter<Player> playerAdapter = luckPerms.getPlayerAdapter(Player.class);
+		CachedMetaData metaData = playerAdapter.getMetaData(player);
 
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
+		String metaValue = metaData.getMetaValue(metaKey);
 
-		boolean metaValue = metaNode != null && Boolean.parseBoolean(metaNode.getMetaValue());
-		playerMetas.put(metaKey, metaValue);
-		return metaValue;
+		boolean finalValue = metaValue == null ? defaultValue : Boolean.parseBoolean(metaValue);
+		playerMetas.put(metaKey, finalValue);
+		return finalValue;
 	}
 
 	@Override
-	public double doubleMeta(Player player, String metaKey, double defaultValue) {
+	public double doubleMeta(@NotNull Player player, @NotNull String metaKey, double defaultValue) {
 		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Double) cachedValue;
 
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return defaultValue;
+		PlayerAdapter<Player> playerAdapter = luckPerms.getPlayerAdapter(Player.class);
+		CachedMetaData metaData = playerAdapter.getMetaData(player);
 
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
+		String metaValue = metaData.getMetaValue(metaKey);
+		double finalValue = defaultValue;
 
-		double metaValue = defaultValue;
-		if (metaNode != null) {
+		if (metaValue != null) {
 			try {
-				metaValue = Double.parseDouble(metaNode.getMetaValue());
-			} catch (NumberFormatException ignored) {}
+				finalValue = Double.parseDouble(metaValue);
+			} catch (NumberFormatException ignored) {
+				// If parsing fails, we keep the default value
+			}
 		}
 
-		playerMetas.put(metaKey, metaValue);
-		return metaValue;
+		playerMetas.put(metaKey, finalValue);
+		return finalValue;
 	}
 
+	@Nullable
+	@Override
+	public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull T defaultValue) {
+		Class<T> enumClass = defaultValue.getDeclaringClass();
+		return enumMeta(player, metaKey, enumClass, defaultValue);
+	}
+
+    @Nullable
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Enum<T>> T enumMeta(Player player, String metaKey, Class<T> enumClass, T defaultValue) {
+	public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
 		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (T) cachedValue;
 
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return defaultValue;
+		PlayerAdapter<Player> playerAdapter = luckPerms.getPlayerAdapter(Player.class);
+		CachedMetaData metaData = playerAdapter.getMetaData(player);
 
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
-
-		T metaValue = defaultValue;
-		if (metaNode != null) {
+		String metaValue = metaData.getMetaValue(metaKey);
+		T finalValue = defaultValue;
+		if (metaValue != null) {
 			try {
-				metaValue = Enum.valueOf(enumClass, metaNode.getMetaValue().toUpperCase());
-			} catch (IllegalArgumentException ignored) {}
+				finalValue = Enum.valueOf(enumClass, metaValue.toUpperCase(Locale.ROOT));
+			} catch (IllegalArgumentException ignored) {
+				// If parsing fails, we keep the default value
+			}
 		}
 
-		playerMetas.put(metaKey, metaValue);
-		return metaValue;
+		playerMetas.put(metaKey, finalValue);
+		return finalValue;
 	}
 
 	@Override
-	public int integerMeta(Player player, String metaKey, int defaultValue) {
+	public int integerMeta(@NotNull Player player, @NotNull String metaKey, int defaultValue) {
 		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return (Integer) cachedValue;
 
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return defaultValue;
+		PlayerAdapter<Player> playerAdapter = luckPerms.getPlayerAdapter(Player.class);
+		CachedMetaData metaData = playerAdapter.getMetaData(player);
 
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
+		String metaValue = metaData.getMetaValue(metaKey);
+		int finalValue = defaultValue;
 
-		int metaValue = defaultValue;
-		if (metaNode != null) {
+		if (metaValue != null) {
 			try {
-				metaValue = Integer.parseInt(metaNode.getMetaValue());
-			} catch (NumberFormatException ignored) {}
+				finalValue = Integer.parseInt(metaValue);
+			} catch (NumberFormatException ignored) {
+				// If parsing fails, we keep the default value
+			}
 		}
 
-		playerMetas.put(metaKey, metaValue);
-		return metaValue;
+		playerMetas.put(metaKey, finalValue);
+		return finalValue;
 	}
 
+	@Nullable
 	@Override
-	@SuppressWarnings("unchecked")
-	public List<String> listMeta(Player player, String metaKey) {
-		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
-		Object cachedValue = playerMetas.get(metaKey);
-		if (cachedValue != null)
-			return (List<String>) cachedValue;
-
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return Collections.emptyList();
-
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
-
-		List<String> metaValues = metaNode != null ? Arrays.asList(metaNode.getMetaValue().split(",")) : new ArrayList<>();
-		playerMetas.put(metaKey, metaValues);
-		return metaValues;
-	}
-
-	@Override
-	public String stringMeta(Player player, String metaKey, String defaultValue) {
+	public String stringMeta(@NotNull Player player, @NotNull String metaKey, @Nullable String defaultValue) {
 		Map<String, Object> playerMetas = cache.computeIfAbsent(player.getName(), k -> new HashMap<>());
 		Object cachedValue = playerMetas.get(metaKey);
 		if (cachedValue != null)
 			return cachedValue.toString();
 
-		User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-		if (user == null)
-			return defaultValue;
+		PlayerAdapter<Player> playerAdapter = luckPerms.getPlayerAdapter(Player.class);
+		CachedMetaData metaData = playerAdapter.getMetaData(player);
 
-		MetaNode metaNode = user.getNodes(NodeType.META).stream()
-				.filter(node -> node.getMetaKey().equals(metaKey))
-				.findFirst()
-				.orElse(null);
+		String metaValue = metaData.getMetaValue(metaKey);
 
-		String metaValue = metaNode == null ? defaultValue : metaNode.getMetaValue();
-		playerMetas.put(metaKey, metaValue);
-		return metaValue;
+		String finalValue = metaValue == null ? defaultValue : metaValue;
+		playerMetas.put(metaKey, finalValue);
+		return finalValue;
 	}
 
 	@Override
-	public void invalidateCache(Player player, String metaKey) {
+	public void invalidateCache(@NotNull Player player, @NotNull String metaKey) {
 		cache.computeIfAbsent(player.getName(), k -> new HashMap<>()).remove(metaKey);
 	}
 
 	@Override
-	public void invalidateCache(Player player) {
+	public void invalidateCache(@NotNull Player player) {
 		cache.remove(player.getName());
 	}
 }

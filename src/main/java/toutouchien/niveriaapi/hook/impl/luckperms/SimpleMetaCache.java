@@ -1,44 +1,50 @@
 package toutouchien.niveriaapi.hook.impl.luckperms;
 
 import org.bukkit.entity.Player;
-
-import java.util.Collections;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class SimpleMetaCache implements MetaCache {
 	@Override
-	public boolean booleanMeta(Player player, String metaKey, boolean defaultValue) {
+	public boolean booleanMeta(@NotNull Player player, @NotNull String metaKey, boolean defaultValue) {
 		return defaultValue;
 	}
 
 	@Override
-	public double doubleMeta(Player player, String metaKey, double defaultValue) {
+	public double doubleMeta(@NotNull Player player, @NotNull String metaKey, double defaultValue) {
+		return defaultValue;
+	}
+
+	@Nullable
+	@Override
+	public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull T defaultValue) {
+		return defaultValue;
+	}
+
+	@Nullable
+	@Override
+	public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
 		return defaultValue;
 	}
 
 	@Override
-	public <T extends Enum<T>> T enumMeta(Player player, String metaKey, Class<T> enumClass, T defaultValue) {
+	public int integerMeta(@NotNull Player player, @NotNull String metaKey, int defaultValue) {
+		return defaultValue;
+	}
+
+	@Nullable
+	@Override
+	public String stringMeta(@NotNull Player player, @NotNull String metaKey, @Nullable String defaultValue) {
 		return defaultValue;
 	}
 
 	@Override
-	public int integerMeta(Player player, String metaKey, int defaultValue) {
-		return defaultValue;
+	public void invalidateCache(@NotNull Player player, @NotNull String metaKey) {
+		// Do nothing, as luckperms isn't loaded and we don't cache anything
 	}
 
 	@Override
-	public List<String> listMeta(Player player, String metaKey) {
-		return Collections.emptyList();
+	public void invalidateCache(@NotNull Player player) {
+		// Do nothing, as luckperms isn't loaded and we don't cache anything
 	}
-
-	@Override
-	public String stringMeta(Player player, String metaKey, String defaultValue) {
-		return defaultValue;
-	}
-
-	@Override
-	public void invalidateCache(Player player, String metaKey) {}
-
-	@Override
-	public void invalidateCache(Player player) {}
 }
