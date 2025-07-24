@@ -1,0 +1,68 @@
+name: NiveriaAPI CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout NiveriaAPI
+        uses: actions/checkout@v3
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Configure Bytecode Space repo in settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                        https://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <profiles>
+              <profile>
+                <id>bytecode-space</id>
+                <pluginRepositories>
+                  <pluginRepository>
+                    <id>bytecode-space</id>
+                    <url>https://repo.bytecode.space/repository/maven-public/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                  </pluginRepository>
+                </pluginRepositories>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>bytecode-space</activeProfile>
+            </activeProfiles>
+          </settings>
+          EOF
+
+      - name: Cache Maven local repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - name: Build NiveriaAPI
+        run: mvn -B -f NiveriaAPI/pom.xml clean install
+
+      - name: Initialize paper-nms mappings for NiveriaAPI
+        run: mvn -B ca.bkaw:paper-nms-maven-plugin:1.4.5:init
+
+      - name: Build NiveriaAPI
+        run: mvn -B clean verify
