@@ -58,9 +58,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      - name: Build NiveriaAPI
-        run: mvn -B -f NiveriaAPI/pom.xml clean install
-
       - name: Initialize paper-nms mappings for NiveriaAPI
         run: mvn -B ca.bkaw:paper-nms-maven-plugin:1.4.5:init
 
