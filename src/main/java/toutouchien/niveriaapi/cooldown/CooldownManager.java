@@ -10,10 +10,7 @@ import toutouchien.niveriaapi.utils.base.Task;
 import toutouchien.niveriaapi.utils.common.TimeUtils;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -252,20 +249,20 @@ public class CooldownManager {
     /**
      * Removes a cooldown.
      *
-     * @param uuid                   The UUID.
-     * @param key                    The cooldown identifier.
-     * @param alsoRemoveFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
-     *                               Set to false to remove from memory only.
+     * @param uuid               The UUID.
+     * @param key                The cooldown identifier.
+     * @param removeFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
+     *                           Set to false to remove from memory only.
      * @return True if a cooldown was found and removed from memory, false otherwise.
      */
-    public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key, boolean alsoRemoveFromDatabase) {
+    public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key, boolean removeFromDatabase) {
         Objects.requireNonNull(uuid, "UUID must not be null");
         Objects.requireNonNull(key, "Cooldown key must not be null");
 
         CompositeKey compositeKey = new CompositeKey(key, uuid);
         Cooldown removed = cooldowns.remove(compositeKey);
 
-        if ((removed != null && removed.persistent() && alsoRemoveFromDatabase) || (removed == null && alsoRemoveFromDatabase))
+        if ((removed != null && removed.persistent() && removeFromDatabase) || (removed == null && removeFromDatabase))
             database.deleteCooldown(uuid, key);
 
         return removed != null;
@@ -274,15 +271,15 @@ public class CooldownManager {
     /**
      * Removes a cooldown for a player.
      *
-     * @param player                 The player.
-     * @param key                    The cooldown identifier.
-     * @param alsoRemoveFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
-     *                               Set to false to remove from memory only.
+     * @param player             The player.
+     * @param key                The cooldown identifier.
+     * @param removeFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
+     *                           Set to false to remove from memory only.
      * @return True if a cooldown was found and removed from memory, false otherwise.
      */
-    public boolean removeCooldown(@NotNull Player player, @NotNull Key key, boolean alsoRemoveFromDatabase) {
+    public boolean removeCooldown(@NotNull Player player, @NotNull Key key, boolean removeFromDatabase) {
         Objects.requireNonNull(player, "Player must not be null");
-        return removeCooldown(player.getUniqueId(), key, alsoRemoveFromDatabase);
+        return removeCooldown(player.getUniqueId(), key, removeFromDatabase);
     }
 
 
@@ -398,7 +395,6 @@ public class CooldownManager {
      * Also attempts to remove associated persistent cooldowns from the database asynchronously.
      *
      * @param uuid The UUID.
-     * @return The number of cooldowns removed from memory.
      */
     public void removeAllCooldowns(@NotNull UUID uuid) {
         removeAllCooldowns(uuid, true);
@@ -409,7 +405,6 @@ public class CooldownManager {
      * Also attempts to remove associated persistent cooldowns from the database asynchronously.
      *
      * @param player The player.
-     * @return The number of cooldowns removed from memory.
      */
     public void removeAllCooldowns(@NotNull Player player) {
         Objects.requireNonNull(player, "Player must not be null");
@@ -419,31 +414,75 @@ public class CooldownManager {
     /**
      * Removes all cooldowns associated with a UUID from memory.
      *
-     * @param uuid                   The UUID.
-     * @param alsoRemoveFromDatabase Whether to attempt to remove persistent cooldowns for this UUID from the database as well.
-     *                               Set to false to remove from memory only.
-     * @return The number of cooldowns removed from memory.
+     * @param uuid               The UUID.
+     * @param removeFromDatabase Whether to attempt to remove persistent cooldowns for this UUID from the database as well.
+     *                           Set to false to remove from memory only.
      */
-    public void removeAllCooldowns(@NotNull UUID uuid, boolean alsoRemoveFromDatabase) {
+    public void removeAllCooldowns(@NotNull UUID uuid, boolean removeFromDatabase) {
         Objects.requireNonNull(uuid, "UUID must not be null");
 
         cooldowns.entrySet().removeIf(entry -> entry.getKey().uuid() == uuid);
 
-        if (alsoRemoveFromDatabase)
+        if (removeFromDatabase)
             database.deleteAllCooldowns(uuid);
     }
 
     /**
      * Removes all cooldowns associated with a player from memory.
      *
-     * @param player                 The player.
-     * @param alsoRemoveFromDatabase Whether to attempt to remove persistent cooldowns for this player from the database as well.
-     *                               Set to false to remove from memory only.
+     * @param player             The player.
+     * @param removeFromDatabase Whether to attempt to remove persistent cooldowns for this player from the database as well.
+     *                           Set to false to remove from memory only.
+     */
+    public void removeAllCooldowns(@NotNull Player player, boolean removeFromDatabase) {
+        Objects.requireNonNull(player, "Player must not be null");
+        removeAllCooldowns(player.getUniqueId(), removeFromDatabase);
+    }
+
+    /**
+     * Removes all cooldowns associated with a specific key from memory.
+     * Also attempts to remove associated persistent cooldowns from the database asynchronously.
+     *
+     * @param key The cooldown identifier.
      * @return The number of cooldowns removed from memory.
      */
-    public void removeAllCooldowns(@NotNull Player player, boolean alsoRemoveFromDatabase) {
-        Objects.requireNonNull(player, "Player must not be null");
-        removeAllCooldowns(player.getUniqueId(), alsoRemoveFromDatabase);
+    public int removeAllCooldownsByKey(@NotNull Key key) {
+        return removeAllCooldownsByKey(key, true);
+    }
+
+    /**
+     * Removes all cooldowns associated with a specific key from memory.
+     *
+     * @param key                The cooldown identifier.
+     * @param removeFromDatabase Whether to attempt to remove persistent cooldowns with this key from the database as well.
+     *                           Set to false to remove from memory only.
+     * @return The number of cooldowns removed from memory.
+     */
+    public int removeAllCooldownsByKey(@NotNull Key key, boolean removeFromDatabase) {
+        Objects.requireNonNull(key, "Cooldown key must not be null");
+
+        int count = 0;
+        List<CompositeKey> keysToRemove = new ArrayList<>();
+        cooldowns.forEach(((compositeKey, cooldown) -> {
+            if (!compositeKey.key().equals(key))
+                return;
+
+            keysToRemove.add(compositeKey);
+        }));
+
+        for (CompositeKey compositeKey : keysToRemove) {
+            Cooldown removed = cooldowns.remove(compositeKey);
+            if (removed == null)
+                continue;
+
+            count++;
+            if (!removed.persistent() || !removeFromDatabase)
+                continue;
+
+            database.deleteCooldown(removed.uuid(), removed.key());
+        }
+
+        return count;
     }
 
 
@@ -461,16 +500,16 @@ public class CooldownManager {
     /**
      * Removes all cooldowns associated with a specific namespace from memory.
      *
-     * @param namespace              The namespace.
-     * @param alsoRemoveFromDatabase Whether to attempt to remove persistent cooldowns with this namespace from the database as well.
-     *                               Set to false to remove from memory only.
+     * @param namespace          The namespace.
+     * @param removeFromDatabase Whether to attempt to remove persistent cooldowns with this namespace from the database as well.
+     *                           Set to false to remove from memory only.
      * @return The number of cooldowns removed from memory.
      */
-    public int removeAllCooldownsByNamespace(@NotNull String namespace, boolean alsoRemoveFromDatabase) {
+    public int removeAllCooldownsByNamespace(@NotNull String namespace, boolean removeFromDatabase) {
         Objects.requireNonNull(namespace, "Namespace must not be null");
 
         int count = 0;
-        List<CompositeKey> keysToRemove = new java.util.ArrayList<>();
+        List<CompositeKey> keysToRemove = new ArrayList<>();
 
         // Find keys to remove from memory
         cooldowns.forEach((compositeKey, cooldown) -> {
@@ -486,7 +525,7 @@ public class CooldownManager {
                 continue;
 
             count++;
-            if (!removed.persistent() || !alsoRemoveFromDatabase)
+            if (!removed.persistent() || !removeFromDatabase)
                 continue;
 
             database.deleteCooldown(removed.uuid(), removed.key());
@@ -494,7 +533,6 @@ public class CooldownManager {
 
         return count;
     }
-
 
     /**
      * Cleans up expired cooldowns from the in-memory map.
