@@ -24,7 +24,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"UnstableApiUsage", "ClassCanBeRecord"})
+@SuppressWarnings({"UnstableApiUsage", "ClassCanBeRecord", "unused"})
 public class ItemBuilder {
 	private final ItemStack itemStack;
 
