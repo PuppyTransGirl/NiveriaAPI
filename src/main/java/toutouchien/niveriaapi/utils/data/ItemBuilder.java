@@ -230,25 +230,25 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "2.0.3", forRemoval = true)
 	public ItemBuilder skullOwner(String owner) {
 		return this.headTexture(Bukkit.getOfflinePlayer(owner));
 	}
 
 	@NotNull
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "2.0.3", forRemoval = true)
 	public ItemBuilder skullOwner(OfflinePlayer player) {
 		return this.headTexture(player);
 	}
 
 	@NotNull
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "2.0.3", forRemoval = true)
 	public ItemBuilder skullOwner(URL url) {
 		return this.headTexture(url);
 	}
 
     @Nullable
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public String skullOwner() {
         ResolvableProfile ownerProfile = itemStack.getData(DataComponentTypes.PROFILE);
         return ownerProfile == null ? null : ownerProfile.name();
