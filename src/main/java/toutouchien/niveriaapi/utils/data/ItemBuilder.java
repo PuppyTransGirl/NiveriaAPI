@@ -1,6 +1,7 @@
 package toutouchien.niveriaapi.utils.data;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.*;
 import net.kyori.adventure.text.Component;
@@ -8,12 +9,12 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.profile.PlayerTextures;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +24,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "ClassCanBeRecord"})
 public class ItemBuilder {
-	private static final UUID uuid = UUID.fromString("14030105-4f95-4a6d-9572-7cc1d6314ab2");
 	private final ItemStack itemStack;
 
 	private ItemBuilder(ItemStack itemStack) {
@@ -55,6 +55,21 @@ public class ItemBuilder {
 
 		return new ItemBuilder(ItemStack.of(material, amount));
 	}
+
+    @NotNull
+    public ItemStack build() {
+        return itemStack;
+    }
+
+    @NotNull
+    public ItemStack buildCopy() {
+        return itemStack.clone();
+    }
+
+    @NotNull
+    public ItemBuilder copy() {
+        return new ItemBuilder(itemStack.clone());
+    }
 
 	@NotNull
 	public ItemBuilder name(Component name) {
@@ -153,7 +168,7 @@ public class ItemBuilder {
 		if (data == null)
 			return this;
 
-		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchantments = data.enchantments();
+		Map<Enchantment, @IntRange(from = 1L, to = 255L) Integer> enchantments = new HashMap<>(data.enchantments());
 		enchantments.remove(enchantment);
 
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
@@ -215,36 +230,78 @@ public class ItemBuilder {
 	}
 
 	@NotNull
+    @Deprecated(forRemoval = true)
 	public ItemBuilder skullOwner(String owner) {
-		ResolvableProfile ownerProfile = ResolvableProfile.resolvableProfile().name(owner).build();
-		itemStack.setData(DataComponentTypes.PROFILE, ownerProfile);
-		return this;
+		return this.headTexture(Bukkit.getOfflinePlayer(owner));
 	}
 
 	@NotNull
+    @Deprecated(forRemoval = true)
 	public ItemBuilder skullOwner(OfflinePlayer player) {
-		ResolvableProfile ownerProfile = ResolvableProfile.resolvableProfile(player.getPlayerProfile());
-		itemStack.setData(DataComponentTypes.PROFILE, ownerProfile);
-		return this;
+		return this.headTexture(player);
 	}
 
 	@NotNull
+    @Deprecated(forRemoval = true)
 	public ItemBuilder skullOwner(URL url) {
-		PlayerProfile profile = Bukkit.createProfile(uuid);
-		PlayerTextures textures = profile.getTextures();
-		textures.setSkin(url);
-		profile.setTextures(textures);
-
-		ResolvableProfile ownerProfile = ResolvableProfile.resolvableProfile(profile);
-		itemStack.setData(DataComponentTypes.PROFILE, ownerProfile);
-		return this;
+		return this.headTexture(url);
 	}
 
-	@Nullable
-	public String skullOwner() {
-		ResolvableProfile ownerProfile = itemStack.getData(DataComponentTypes.PROFILE);
-		return ownerProfile == null ? null : ownerProfile.name();
-	}
+    @Nullable
+    @Deprecated(forRemoval = true)
+    public String skullOwner() {
+        ResolvableProfile ownerProfile = itemStack.getData(DataComponentTypes.PROFILE);
+        return ownerProfile == null ? null : ownerProfile.name();
+    }
+
+    @NotNull
+    public ItemBuilder headTexture(OfflinePlayer player) {
+        ResolvableProfile resolvableProfile = ResolvableProfile.resolvableProfile()
+                .uuid(player.getUniqueId())
+                .build();
+
+        itemStack.setData(DataComponentTypes.PROFILE, resolvableProfile);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder headTexture(String textureURL) {
+        byte[] texturesPropertyBytes = Base64.getEncoder().encode("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}".formatted(textureURL).getBytes());
+        String texturesProperty = new String(texturesPropertyBytes);
+
+        ResolvableProfile resolvableProfile = ResolvableProfile.resolvableProfile()
+                .addProperty(new ProfileProperty("textures", texturesProperty))
+                .build();
+
+        itemStack.setData(DataComponentTypes.PROFILE, resolvableProfile);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder headTexture(URL textureURL) {
+        return this.headTexture(textureURL.toString());
+    }
+
+    @Nullable
+    public String headTextureBase64() {
+        ResolvableProfile resolvableProfile = itemStack.getData(DataComponentTypes.PROFILE);
+        if (resolvableProfile == null)
+            return null;
+
+        if (resolvableProfile.properties().isEmpty())
+            return null;
+
+        Optional<ProfileProperty> property = resolvableProfile.properties().stream()
+                .filter(prop -> prop.getName().equals("textures"))
+                .findFirst();
+
+        return property.map(ProfileProperty::getValue).orElse(null);
+    }
+
+    @Nullable
+    public ResolvableProfile headTextureProfile() {
+        return itemStack.getData(DataComponentTypes.PROFILE);
+    }
 
 	@NotNull
 	public ItemBuilder unbreakable(boolean unbreakable, boolean showInTooltip) {
@@ -453,7 +510,7 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder customModelData(int customModelData) {
+	public ItemBuilder customModelData(float customModelData) {
 		itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addFloat(customModelData).build());
 		return this;
 	}
@@ -480,8 +537,66 @@ public class ItemBuilder {
 		return itemStack.getData(DataComponentTypes.MAX_STACK_SIZE);
 	}
 
+    @NotNull
+    public ItemBuilder addBannerPattern(@NotNull Pattern pattern) {
+        BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
+
+        BannerPatternLayers.Builder builder = BannerPatternLayers.bannerPatternLayers();
+        if (data != null)
+            builder.addAll(data.patterns());
+
+        builder.add(pattern);
+        itemStack.setData(DataComponentTypes.BANNER_PATTERNS, builder.build());
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder addBannerPatterns(@NotNull Pattern... patterns) {
+        BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
+
+        BannerPatternLayers.Builder builder = BannerPatternLayers.bannerPatternLayers();
+        if (data != null)
+            builder.addAll(data.patterns());
+
+        builder.addAll(Arrays.asList(patterns));
+        itemStack.setData(DataComponentTypes.BANNER_PATTERNS, builder.build());
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder bannerPatterns(@NotNull Pattern... patterns) {
+        BannerPatternLayers bannerPatternLayers = BannerPatternLayers.bannerPatternLayers()
+                .addAll(Arrays.asList(patterns))
+                .build();
+
+        itemStack.setData(DataComponentTypes.BANNER_PATTERNS, bannerPatternLayers);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder bannerPatterns(@NotNull List<Pattern> patterns) {
+        BannerPatternLayers bannerPatternLayers = BannerPatternLayers.bannerPatternLayers()
+                .addAll(patterns)
+                .build();
+
+        itemStack.setData(DataComponentTypes.BANNER_PATTERNS, bannerPatternLayers);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder resetBannerPatterns() {
+        itemStack.unsetData(DataComponentTypes.BANNER_PATTERNS);
+        return this;
+    }
+
+    @Nullable
+    public List<Pattern> bannerPatterns() {
+        BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
+        return data == null ? null : data.patterns();
+    }
+
 	@NotNull
-	public ItemBuilder dyeColor(@Nullable Color color, boolean showInTooltip) {
+	public ItemBuilder dyeColor(@NotNull Color color, boolean showInTooltip) {
 		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color, showInTooltip));
 		return this;
 	}
@@ -492,10 +607,33 @@ public class ItemBuilder {
 		return data == null ? null : data.color();
 	}
 
+    @NotNull
+    public ItemBuilder resetDyeColor() {
+        itemStack.unsetData(DataComponentTypes.DYED_COLOR);
+        return this;
+    }
+
 	@NotNull
 	public DyeColor itemColor() {
 		return dyeColor(itemStack.getType());
 	}
+
+    @NotNull
+    public <T> ItemBuilder component(DataComponentType.Valued<T> type, T value) {
+        itemStack.setData(type, value);
+        return this;
+    }
+
+    @Nullable
+    public <T> T component(DataComponentType.Valued<T> type) {
+        return itemStack.getData(type);
+    }
+
+    @NotNull
+    public <T> ItemBuilder resetComponent(DataComponentType.Valued<T> type) {
+        itemStack.unsetData(type);
+        return this;
+    }
 
 	@NotNull
 	public <P, C> ItemBuilder persistentData(@NotNull NamespacedKey key, @NotNull PersistentDataType<P, C> type, @NotNull C value) {
@@ -544,11 +682,6 @@ public class ItemBuilder {
 	public Set<ItemFlag> itemFlags() {
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		return itemMeta.getItemFlags();
-	}
-
-	@NotNull
-	public ItemStack build() {
-		return itemStack;
 	}
 
 	private DyeColor dyeColor(Material material) {
