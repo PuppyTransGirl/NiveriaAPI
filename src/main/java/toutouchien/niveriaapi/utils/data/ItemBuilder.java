@@ -73,6 +73,16 @@ public class ItemBuilder {
     }
 
     @NotNull
+    public ItemBuilder amount(int amount) {
+        itemStack.setAmount(amount);
+        return this;
+    }
+
+    public int amount() {
+        return itemStack.getAmount();
+    }
+
+    @NotNull
     public ItemBuilder name(Component name) {
         itemStack.setData(DataComponentTypes.ITEM_NAME, name);
         return this;
@@ -404,6 +414,17 @@ public class ItemBuilder {
     @Nullable
     public List<Component> lore() {
         return itemStack.getData(DataComponentTypes.LORE).styledLines();
+    }
+
+    @NotNull
+    public ItemBuilder tooltipStyle(Key key) {
+        itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, key);
+        return this;
+    }
+
+    @Nullable
+    public Key tooltipStyle() {
+        return itemStack.getData(DataComponentTypes.TOOLTIP_STYLE);
     }
 
     @NotNull
