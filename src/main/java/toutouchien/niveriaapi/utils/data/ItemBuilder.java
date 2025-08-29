@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.*;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
@@ -91,6 +92,17 @@ public class ItemBuilder {
     @Nullable
     public Component renamableName() {
         return itemStack.getData(DataComponentTypes.CUSTOM_NAME);
+    }
+
+    @NotNull
+    public ItemBuilder itemModel(Key itemModelKey) {
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
+        return this;
+    }
+
+    @NotNull
+    public Key itemModel() {
+        return itemStack.getData(DataComponentTypes.ITEM_MODEL);
     }
 
     public ItemBuilder durability(int durability) {
