@@ -129,12 +129,13 @@ public class ItemBuilder {
     @NotNull
     public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, int level) {
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
-        ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
-                .addAll(data == null ? Collections.emptyMap() : data.enchantments())
-                .add(enchantment, level)
-                .build();
+        ItemEnchantments.Builder itemEnchantments = ItemEnchantments.itemEnchantments()
+                .add(enchantment, level);
 
-        itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
+        if (data != null)
+            itemEnchantments.addAll(data.enchantments());
+
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments.build());
         return this;
     }
 
@@ -151,12 +152,13 @@ public class ItemBuilder {
     @NotNull
     public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
-        ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
-                .addAll(data == null ? Collections.emptyMap() : data.enchantments())
-                .addAll(enchantments)
-                .build();
+        ItemEnchantments.Builder itemEnchantments = ItemEnchantments.itemEnchantments()
+                .addAll(enchantments);
 
-        itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
+        if (data != null)
+            itemEnchantments.addAll(data.enchantments());
+
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments.build());
         return this;
     }
 
