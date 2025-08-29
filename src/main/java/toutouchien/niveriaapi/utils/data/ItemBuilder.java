@@ -638,6 +638,7 @@ public class ItemBuilder {
     }
 
     @NotNull
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public ItemBuilder addItemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.addItemFlags(itemFlags);
@@ -647,6 +648,7 @@ public class ItemBuilder {
     }
 
     @NotNull
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public ItemBuilder itemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
@@ -657,6 +659,7 @@ public class ItemBuilder {
     }
 
     @NotNull
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public ItemBuilder removeItemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemFlags);
@@ -666,6 +669,7 @@ public class ItemBuilder {
     }
 
     @NotNull
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public ItemBuilder removeItemFlags() {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
@@ -675,9 +679,48 @@ public class ItemBuilder {
     }
 
     @NotNull
+    @Deprecated(since = "2.0.3", forRemoval = true)
     public Set<ItemFlag> itemFlags() {
         ItemMeta itemMeta = itemStack.getItemMeta();
         return itemMeta.getItemFlags();
+    }
+
+    @NotNull
+    public ItemBuilder hide(@NotNull DataComponentType... typesToHide) {
+        if (itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY) && itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip())
+            return this;
+
+        TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
+                .addHiddenComponents(typesToHide)
+                .build();
+
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+        return this;
+    }
+
+    @NotNull
+    public Set<DataComponentType> hiddenComponents() {
+        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
+            return Collections.emptySet();
+
+        return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hiddenComponents();
+    }
+
+    @NotNull
+    public ItemBuilder hideTooltip(boolean hideTooltip) {
+        TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
+                .hideTooltip(hideTooltip)
+                .build();
+
+        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+        return this;
+    }
+    
+    public boolean hideTooltip() {
+        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
+            return false;
+
+        return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip();
     }
 
     private DyeColor dyeColor(Material material) {
