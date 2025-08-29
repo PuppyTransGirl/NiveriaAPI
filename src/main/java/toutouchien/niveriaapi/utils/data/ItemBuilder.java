@@ -615,18 +615,24 @@ public class ItemBuilder {
     }
 
     @NotNull
-    public <T> ItemBuilder component(DataComponentType.Valued<T> type, T value) {
+    public <T> ItemBuilder component(@NotNull DataComponentType.Valued<T> type, T value) {
         itemStack.setData(type, value);
         return this;
     }
 
+    @NotNull
+    public ItemBuilder component(@NotNull DataComponentType.NonValued type) {
+        itemStack.setData(type);
+        return this;
+    }
+
     @Nullable
-    public <T> T component(DataComponentType.Valued<T> type) {
+    public <T> T component(@NotNull DataComponentType.Valued<T> type) {
         return itemStack.getData(type);
     }
 
     @NotNull
-    public <T> ItemBuilder resetComponent(DataComponentType.Valued<T> type) {
+    public ItemBuilder resetComponent(@NotNull DataComponentType type) {
         itemStack.unsetData(type);
         return this;
     }
@@ -715,7 +721,7 @@ public class ItemBuilder {
         itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
         return this;
     }
-    
+
     public boolean hideTooltip() {
         if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
             return false;
