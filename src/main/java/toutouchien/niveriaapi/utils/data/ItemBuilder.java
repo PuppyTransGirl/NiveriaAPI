@@ -218,7 +218,7 @@ public class ItemBuilder {
     @Nullable
     public Map<Enchantment, Integer> enchantmentsMap() {
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
-        return data == null ? null : data.enchantments();
+        return data == null ? Collections.emptyMap() : data.enchantments();
     }
 
     @NotNull
@@ -238,25 +238,25 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder skullOwner(String owner) {
         return this.headTexture(Bukkit.getOfflinePlayer(owner));
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder skullOwner(OfflinePlayer player) {
         return this.headTexture(player);
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder skullOwner(URL url) {
         return this.headTexture(url);
     }
 
     @Nullable
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public String skullOwner() {
         ResolvableProfile ownerProfile = itemStack.getData(DataComponentTypes.PROFILE);
         return ownerProfile == null ? null : ownerProfile.name();
@@ -362,9 +362,6 @@ public class ItemBuilder {
     @NotNull
     public ItemBuilder addLoreLine(@NotNull Component line) {
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
-        if (data == null)
-            return this;
-
         ItemLore itemLore = ItemLore.lore()
                 .lines(data.styledLines())
                 .addLine(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE))
@@ -377,11 +374,6 @@ public class ItemBuilder {
     @NotNull
     public ItemBuilder setLoreLine(@NotNull Component line, int index) {
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
-        if (data == null) {
-            itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(List.of(line)));
-            return this;
-        }
-
         List<Component> lore = new ArrayList<>(data.styledLines());
         lore.set(index, line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
@@ -391,9 +383,6 @@ public class ItemBuilder {
 
     @NotNull
     public ItemBuilder removeLoreLine(@NotNull Component line) {
-        if (!itemStack.hasData(DataComponentTypes.LORE))
-            throw new IllegalArgumentException(String.format("You can't remove a lore line from an item that doesn't contain any. Provided: %s", itemStack.getType().name()));
-
         List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).styledLines());
         lore.remove(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
@@ -403,9 +392,6 @@ public class ItemBuilder {
 
     @NotNull
     public ItemBuilder removeLoreLine(int index) {
-        if (!itemStack.hasData(DataComponentTypes.LORE))
-            throw new IllegalArgumentException(String.format("You can't remove a lore line from an item that doesn't contain any. Provided: %s", itemStack.getType().name()));
-
         List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).styledLines());
         lore.remove(index);
 
@@ -415,8 +401,7 @@ public class ItemBuilder {
 
     @Nullable
     public List<Component> lore() {
-        ItemLore data = itemStack.getData(DataComponentTypes.LORE);
-        return data == null ? null : data.styledLines();
+        return itemStack.getData(DataComponentTypes.LORE).styledLines();
     }
 
     @NotNull
@@ -507,7 +492,7 @@ public class ItemBuilder {
     @Nullable
     public Map<Attribute, AttributeModifier> attributeModifiers() {
         ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-        return data == null ? null : data.modifiers().stream()
+        return data == null ? Collections.emptyMap() : data.modifiers().stream()
                 .collect(Collectors.toMap(ItemAttributeModifiers.Entry::attribute, ItemAttributeModifiers.Entry::modifier));
     }
 
@@ -600,7 +585,7 @@ public class ItemBuilder {
     @Nullable
     public List<Pattern> bannerPatterns() {
         BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
-        return data == null ? null : data.patterns();
+        return data == null ? Collections.emptyList() : data.patterns();
     }
 
     @NotNull
@@ -656,7 +641,7 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder addItemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.addItemFlags(itemFlags);
@@ -666,7 +651,7 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder itemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
@@ -677,7 +662,7 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder removeItemFlags(@NotNull ItemFlag... itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemFlags);
@@ -687,7 +672,7 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public ItemBuilder removeItemFlags() {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
@@ -697,7 +682,7 @@ public class ItemBuilder {
     }
 
     @NotNull
-    @Deprecated(since = "2.0.3", forRemoval = true)
+    @Deprecated(since = "2.1.0", forRemoval = true)
     public Set<ItemFlag> itemFlags() {
         ItemMeta itemMeta = itemStack.getItemMeta();
         return itemMeta.getItemFlags();
