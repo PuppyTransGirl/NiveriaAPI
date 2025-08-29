@@ -100,12 +100,11 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, int level, boolean showInTooltip) {
+	public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, int level) {
 		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
 				.addAll(data == null ? Collections.emptyMap() : data.enchantments())
 				.add(enchantment, level)
-				.showInTooltip(showInTooltip)
 				.build();
 
 		itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
@@ -113,10 +112,9 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder enchantment(@NotNull Enchantment enchantment, int level, boolean showInTooltip) {
+	public ItemBuilder enchantment(@NotNull Enchantment enchantment, int level) {
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
 				.add(enchantment, level)
-				.showInTooltip(showInTooltip)
 				.build();
 
 		itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
@@ -124,12 +122,11 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments, boolean showInTooltip) {
+	public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
 		ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
 				.addAll(data == null ? Collections.emptyMap() : data.enchantments())
 				.addAll(enchantments)
-				.showInTooltip(showInTooltip)
 				.build();
 
 		itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
@@ -137,10 +134,9 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder enchantments(@NotNull Map<Enchantment, Integer> enchantments, boolean showInTooltip) {
+	public ItemBuilder enchantments(@NotNull Map<Enchantment, Integer> enchantments) {
 		ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
 				.addAll(enchantments)
-				.showInTooltip(showInTooltip)
 				.build();
 
 		itemStack.setData(DataComponentTypes.ENCHANTMENTS, itemEnchantments);
@@ -247,9 +243,9 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder unbreakable(boolean unbreakable, boolean showInTooltip) {
+	public ItemBuilder unbreakable(boolean unbreakable) {
 		if (unbreakable)
-			itemStack.setData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable().showInTooltip(showInTooltip).build());
+			itemStack.setData(DataComponentTypes.UNBREAKABLE);
 		else
 			itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
 
@@ -481,8 +477,8 @@ public class ItemBuilder {
 	}
 
 	@NotNull
-	public ItemBuilder dyeColor(@Nullable Color color, boolean showInTooltip) {
-		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color, showInTooltip));
+	public ItemBuilder dyeColor(@Nullable Color color) {
+		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color));
 		return this;
 	}
 
