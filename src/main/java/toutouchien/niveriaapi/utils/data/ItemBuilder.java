@@ -227,7 +227,7 @@ public class ItemBuilder {
         return itemStack.getData(DataComponentTypes.ENCHANTMENTS);
     }
 
-    @Nullable
+    @NotNull
     public Map<Enchantment, Integer> enchantmentsMap() {
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
         return data == null ? Collections.emptyMap() : data.enchantments();
