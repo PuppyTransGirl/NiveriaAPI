@@ -102,6 +102,9 @@ public class ItemBuilder {
         if (material.isAir())
             throw new IllegalArgumentException("Material cannot be air.");
 
+        if (amount < 1)
+            throw new IllegalArgumentException("Amount must be greater than 0.");
+
         return new ItemBuilder(ItemStack.of(material, amount));
     }
 
