@@ -138,14 +138,14 @@ public class ItemBuilder {
     /**
      * Set the amount (stack size) for this ItemStack.
      *
-     * @param amount the desired amount (1..maxStackSize)
+     * @param amount the desired amount (must be &gt; 0)
      * @return this builder
      * @throws IllegalArgumentException if amount is out of range
      */
     @NotNull
     public ItemBuilder amount(int amount) {
-        if (amount < 1 || amount > itemStack.getMaxStackSize())
-            throw new IllegalArgumentException("Amount must be between 1 and " + itemStack.getMaxStackSize() + ".");
+        if (amount < 1)
+            throw new IllegalArgumentException("Amount must be greater than 0.");
 
         itemStack.setAmount(amount);
         return this;
