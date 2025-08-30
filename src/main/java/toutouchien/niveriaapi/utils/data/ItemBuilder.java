@@ -882,7 +882,7 @@ public class ItemBuilder {
     /**
      * Remove modifiers for the provided attributes.
      *
-     * @param attributes the attributes to keep removed
+     * @param attributes the attributes to remove
      * @return this builder
      */
     @NotNull
