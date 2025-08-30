@@ -512,11 +512,16 @@ public class ItemBuilder {
         return this;
     }
 
-    @Nullable
+    @NotNull
     public Map<Attribute, AttributeModifier> attributeModifiers() {
         ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
-        return data == null ? Collections.emptyMap() : data.modifiers().stream()
-                .collect(Collectors.toMap(ItemAttributeModifiers.Entry::attribute, ItemAttributeModifiers.Entry::modifier));
+        return data == null
+                ? Collections.emptyMap()
+                : data.modifiers().stream()
+                      .collect(Collectors.toMap(
+                          ItemAttributeModifiers.Entry::attribute,
+                          ItemAttributeModifiers.Entry::modifier
+                      ));
     }
 
     @NotNull
