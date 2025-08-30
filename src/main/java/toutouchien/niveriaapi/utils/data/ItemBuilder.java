@@ -658,8 +658,8 @@ public class ItemBuilder {
     }
 
     @NotNull
-    public <P, C> ItemBuilder persistentData(@NotNull NamespacedKey key, @NotNull PersistentDataType<P, C> type, @NotNull C value) {
-        itemStack.editPersistentDataContainer(pdc -> pdc.set(key, type, value));
+    public <P, C> ItemBuilder persistentData(@NotNull Key key, @NotNull PersistentDataType<P, C> type, @NotNull C value) {
+        itemStack.editPersistentDataContainer(pdc -> pdc.set(new NamespacedKey(key.namespace(), key.value()), type, value));
         return this;
     }
 
