@@ -74,6 +74,9 @@ public class ItemBuilder {
 
     @NotNull
     public ItemBuilder amount(int amount) {
+        if (amount < 1 || amount > itemStack.getMaxStackSize())
+            throw new IllegalArgumentException("Amount must be between 1 and " + itemStack.getMaxStackSize() + ".");
+
         itemStack.setAmount(amount);
         return this;
     }
