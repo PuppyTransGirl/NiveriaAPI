@@ -1093,7 +1093,7 @@ public class ItemBuilder {
      *
      * @return list of patterns (empty if none)
      */
-    @Nullable
+    @NotNull
     public List<Pattern> bannerPatterns() {
         BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
         return data == null ? Collections.emptyList() : data.patterns();
