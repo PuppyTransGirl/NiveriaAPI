@@ -32,4 +32,12 @@ public abstract class PaginatedMenu extends Menu {
 	public int page() {
 		return page;
 	}
+
+    public boolean firstPage() {
+        return this.page == 0;
+    }
+
+    public boolean lastPage(int maxPage) {
+        return this.page == maxPage;
+    }
 }

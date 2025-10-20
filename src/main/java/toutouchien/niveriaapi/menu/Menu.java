@@ -17,7 +17,6 @@ public abstract class Menu implements InventoryHolder {
 
 	public Menu(@NotNull MenuInfos menuInfos) {
 		this.menuInfos = menuInfos;
-
 	}
 
 	public void open() {
