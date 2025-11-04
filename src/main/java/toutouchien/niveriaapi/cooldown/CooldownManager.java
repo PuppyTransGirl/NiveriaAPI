@@ -1,13 +1,12 @@
 package toutouchien.niveriaapi.cooldown;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.base.Task;
-import toutouchien.niveriaapi.utils.common.TimeUtils;
 
 import java.time.Duration;
 import java.util.*;
@@ -54,13 +53,13 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 public class CooldownManager {
-    private static final long DEFAULT_CLEANUP_TICKS = TimeUtils.ticks(3L, TimeUnit.MINUTES);
-    private static final long DATABASE_CLEANUP_TICKS = TimeUtils.ticks(15L, TimeUnit.MINUTES); // Less frequent DB cleanup
+    private static final long DEFAULT_CLEANUP_MINUTES = 3L;
+    private static final long DATABASE_CLEANUP_MINUTES = 15L; // Less frequent DB cleanup
 
     private final NiveriaAPI plugin;
     private final Map<CompositeKey, Cooldown> cooldowns = new ConcurrentHashMap<>();
-    private final BukkitTask cleanupTask;
-    private final BukkitTask databaseCleanupTask;
+    private final ScheduledTask cleanupTask;
+    private final ScheduledTask databaseCleanupTask;
     private final CooldownDatabase database; // Add database field
 
     /**
@@ -77,8 +76,8 @@ public class CooldownManager {
         this.database = database;
         loadPersistentCooldowns();
 
-        this.cleanupTask = Task.asyncRepeat(this::cleanupExpiredCooldowns, plugin, DEFAULT_CLEANUP_TICKS, DEFAULT_CLEANUP_TICKS);
-        this.databaseCleanupTask = Task.asyncRepeat(this::cleanupDatabaseCooldowns, plugin, DATABASE_CLEANUP_TICKS, DATABASE_CLEANUP_TICKS);
+        this.cleanupTask = Task.asyncRepeat(this::cleanupExpiredCooldowns, plugin, DEFAULT_CLEANUP_MINUTES, DEFAULT_CLEANUP_MINUTES, TimeUnit.MINUTES);
+        this.databaseCleanupTask = Task.asyncRepeat(this::cleanupDatabaseCooldowns, plugin, DATABASE_CLEANUP_MINUTES, DATABASE_CLEANUP_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
@@ -86,7 +85,7 @@ public class CooldownManager {
      * Should be called on startup. Runs asynchronously.
      */
     private void loadPersistentCooldowns() {
-        Task.async(() -> {
+        Task.async(task -> {
             List<Cooldown> persistentCooldowns = database.loadAllCooldowns();
             persistentCooldowns.forEach(cooldown -> {
                 if (cooldown.expired())
@@ -386,7 +385,7 @@ public class CooldownManager {
      * @return The number of active cooldowns in memory.
      */
     public int size() {
-        cleanupExpiredCooldowns();
+        cleanupExpiredCooldowns(null);
         return cooldowns.size();
     }
 
@@ -538,7 +537,7 @@ public class CooldownManager {
      * Cleans up expired cooldowns from the in-memory map.
      * This runs regularly via the cleanup task.
      */
-    public void cleanupExpiredCooldowns() {
+    public void cleanupExpiredCooldowns(@Nullable ScheduledTask ignored) {
         cooldowns.entrySet().removeIf(entry -> entry.getValue().expired());
     }
 
@@ -546,7 +545,7 @@ public class CooldownManager {
      * Cleans up expired persistent cooldowns from the database.
      * This runs regularly via the database cleanup task asynchronously.
      */
-    private void cleanupDatabaseCooldowns() {
+    private void cleanupDatabaseCooldowns(@Nullable ScheduledTask ignored) {
         database.deleteExpiredCooldowns();
     }
 
