@@ -48,5 +48,5 @@ jobs:
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v4
         with:
-          name: NiveriaAPI-${{ github.sha }}
+          name: NiveriaAPI-*
           path: build/libs/
