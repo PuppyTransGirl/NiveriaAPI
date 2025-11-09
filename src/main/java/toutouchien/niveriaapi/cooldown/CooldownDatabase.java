@@ -4,6 +4,7 @@ import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 
 import java.util.ArrayList;
@@ -40,6 +41,9 @@ public class CooldownDatabase {
 
     @NotNull
     public List<Cooldown> loadAllCooldowns() {
+        if (NiveriaAPI.isUnitTestVersion())
+            return new ArrayList<>();
+
         List<Cooldown> activeCooldowns = new ArrayList<>();
         this.database.collection(PLAYERS).find().forEach(document -> {
             UUID uuid = UUID.fromString(document.getString("_id"));

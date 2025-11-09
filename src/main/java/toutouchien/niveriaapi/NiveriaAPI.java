@@ -19,7 +19,7 @@ import toutouchien.niveriaapi.menu.MenuListener;
 
 import java.util.Arrays;
 
-public final class NiveriaAPI extends JavaPlugin {
+public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
 
     private static NiveriaAPI instance;
@@ -43,28 +43,30 @@ public final class NiveriaAPI extends JavaPlugin {
 
         preLoadUtilsClasses();
 
-        try {
-            String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
-            String mongoDBConnectionString;
-            if (mongoDBEnv == null) {
-                mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
-                this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
-            } else {
-                mongoDBConnectionString = mongoDBEnv;
-                this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+        if (!isUnitTestVersion()) {
+            try {
+                String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
+                String mongoDBConnectionString;
+                if (mongoDBEnv == null) {
+                    mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
+                    this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
+                } else {
+                    mongoDBConnectionString = mongoDBEnv;
+                    this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+                }
+
+                this.mongoManager = new MongoManager(mongoDBConnectionString);
+                this.getSLF4JLogger().info("MongoManager initialized.");
+
+                this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
+                this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
+
+                registerSharedDefaults();
+            } catch (Exception e) {
+                this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
+                this.getServer().shutdown();
+                return;
             }
-
-            this.mongoManager = new MongoManager(mongoDBConnectionString);
-            this.getSLF4JLogger().info("MongoManager initialized.");
-
-            this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
-            this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
-
-            registerSharedDefaults();
-        } catch (Exception e) {
-            this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
-            this.getServer().shutdown();
-            return;
         }
 
         this.chatInputManager = new ChatInputManager();
@@ -128,7 +130,9 @@ public final class NiveriaAPI extends JavaPlugin {
     public void onDisable() {
         this.cooldownManager.shutdown();
         this.hookManager.onDisable();
-        this.mongoManager.shutdown();
+
+        if (!isUnitTestVersion())
+            this.mongoManager.shutdown();
 
         Bukkit.getScheduler().cancelTasks(this);
     }
@@ -172,5 +176,9 @@ public final class NiveriaAPI extends JavaPlugin {
 
     public static NiveriaAPI instance() {
         return instance;
+    }
+
+    public static boolean isUnitTestVersion() {
+        return Bukkit.getServer().getVersion().contains("MockBukkit");
     }
 }
