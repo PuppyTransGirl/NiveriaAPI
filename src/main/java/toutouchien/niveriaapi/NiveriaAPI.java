@@ -78,14 +78,24 @@ public final class NiveriaAPI extends JavaPlugin {
                 "ui.ComponentUtils"
         };
 
+        this.getSLF4JLogger().info("Starting to preload utility classes");
+
+        int loadedCount = 0;
         String prefix = "toutouchien.niveriaapi.utils.";
         for (int i = 0; i < classes.length; i++) {
             try {
                 Class.forName(prefix + classes[i]);
+                loadedCount++;
             } catch (ClassNotFoundException e) {
                 this.getSLF4JLogger().error("Couldn't load {}", classes[i], e);
             }
         }
+
+        this.getSLF4JLogger().info(
+                "Finished preloading utility classes. Successfully loaded {}/{} classes.",
+                loadedCount,
+                classes.length
+        );
     }
 
     private void registerCommands() {
