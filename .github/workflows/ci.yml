@@ -5,10 +5,12 @@ on:
     paths-ignore:
       - "LICENSE"
       - "README.md"
+    branches: [ '**' ]
   pull_request:
     paths-ignore:
       - "LICENSE"
       - "README.md"
+    branches: [ '**' ]
 
 jobs:
   build:
