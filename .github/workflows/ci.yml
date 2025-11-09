@@ -49,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NiveriaAPI-${{ github.sha }}
-          path: builds/
+          path: build/libs/
