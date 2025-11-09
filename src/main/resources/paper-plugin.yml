@@ -1,7 +1,7 @@
 name: NiveriaAPI
-version: '${project.version}'
+version: '${version}'
 main: toutouchien.niveriaapi.NiveriaAPI
-api-version: '1.21.4'
+api-version: '${minecraftVersion}'
 load: STARTUP
 loader: toutouchien.niveriaapi.NiveriaAPILoader
 authors: [ Toutouchien ]
