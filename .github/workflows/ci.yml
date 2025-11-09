@@ -51,6 +51,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Derive short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Build with snapshot version
         env:
           SNAPSHOT: true
@@ -60,5 +63,5 @@ jobs:
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v4
         with:
-          name: NiveriaAPI-${{ github.sha.substr(0, 7) }}
+          name: NiveriaAPI-${{ env.SHORT_SHA }}
           path: build/libs/
