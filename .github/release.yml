@@ -1,0 +1,18 @@
+changelog:
+  categories:
+    - title: "Minecraft Update"
+      labels:
+        - "minecraft update"
+    - title: New Features
+      labels:
+        - "feature"
+    - title: Optimizations
+      labels:
+        - "optimization"
+    - title: Changes & Enhancements
+      labels:
+        - "refactor"
+        - "enhancement"
+    - title: Other
+      labels:
+        - "*"
