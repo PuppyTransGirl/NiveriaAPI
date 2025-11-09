@@ -39,6 +39,8 @@ public final class NiveriaAPI extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
+        preLoadUtilsClasses();
+
         try {
             this.mongoManager = new MongoManager(this.getConfig().getString("mongodb-connection-string"));
             this.getSLF4JLogger().info("MongoManager initialized.");
@@ -61,6 +63,29 @@ public final class NiveriaAPI extends JavaPlugin {
 
         registerCommands();
         registerListeners();
+    }
+
+    private void preLoadUtilsClasses() {
+        String[] classes = {
+                "base.Task",
+                "common.MathUtils",
+                "common.StringUtils",
+                "common.TimeUtils",
+                "data.DatabaseUtils",
+                "data.FileUtils",
+                "game.PlayerUtils",
+                "ui.ColorUtils",
+                "ui.ComponentUtils"
+        };
+
+        String prefix = "toutouchien.niveriaapi.utils.";
+        for (int i = 0; i < classes.length; i++) {
+            try {
+                Class.forName(prefix + classes[i]);
+            } catch (ClassNotFoundException e) {
+                this.getSLF4JLogger().error("Couldn't load {}", classes[i], e);
+            }
+        }
     }
 
     private void registerCommands() {
