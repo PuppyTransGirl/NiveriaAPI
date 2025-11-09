@@ -20,6 +20,8 @@ import toutouchien.niveriaapi.menu.MenuListener;
 import java.util.Arrays;
 
 public final class NiveriaAPI extends JavaPlugin {
+    private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+
     private static NiveriaAPI instance;
 
     private ChatInputManager chatInputManager;
@@ -40,7 +42,17 @@ public final class NiveriaAPI extends JavaPlugin {
         saveDefaultConfig();
 
         try {
-            this.mongoManager = new MongoManager(this.getConfig().getString("mongodb-connection-string"));
+            String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
+            String mongoDBConnectionString;
+            if (mongoDBEnv == null) {
+                mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
+                this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
+            } else {
+                mongoDBConnectionString = mongoDBEnv;
+                this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+            }
+
+            this.mongoManager = new MongoManager(mongoDBConnectionString);
             this.getSLF4JLogger().info("MongoManager initialized.");
 
             this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
