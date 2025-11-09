@@ -3,11 +3,15 @@ name: NiveriaAPI CI
 on:
   push:
     paths-ignore:
+      - ".github/**"
+      - ".gitignore"
       - "LICENSE"
       - "README.md"
     branches: [ '**' ]
   pull_request:
     paths-ignore:
+      - ".github/**"
+      - ".gitignore"
       - "LICENSE"
       - "README.md"
     branches: [ '**' ]
