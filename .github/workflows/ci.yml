@@ -7,14 +7,12 @@ on:
       - ".gitignore"
       - "LICENSE"
       - "README.md"
-    branches: [ '**' ]
   pull_request:
     paths-ignore:
       - ".github/**"
       - ".gitignore"
       - "LICENSE"
       - "README.md"
-    branches: [ '**' ]
 
 jobs:
   build:
@@ -50,6 +48,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Derive short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
       - name: Build with snapshot version
         env:
           SNAPSHOT: true
@@ -59,5 +60,5 @@ jobs:
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v4
         with:
-          name: NiveriaAPI-${GITHUB_SHA::7}
+          name: NiveriaAPI-${{ env.SHORT_SHA }}
           path: build/libs/
