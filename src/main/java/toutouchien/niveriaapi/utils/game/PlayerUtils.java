@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.utils.game;
 
+import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
@@ -19,7 +20,11 @@ public class PlayerUtils {
             throw new IllegalArgumentException("player cannot be null");
 
 		List<MetadataValue> metadata = player.getMetadata("vanished");
-		return metadata.stream().anyMatch(MetadataValue::asBoolean);
+		return metadata.stream().anyMatch(metadataValue -> {
+            Object value = metadataValue.value();
+            return (value instanceof Boolean bool && bool)
+                    || (value instanceof TriState triState && triState == TriState.TRUE);
+        });
 	}
 
 	public static Collection<? extends Player> nonVanishedPlayers() {

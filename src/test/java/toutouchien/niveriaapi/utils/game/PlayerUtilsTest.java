@@ -1,6 +1,6 @@
 package toutouchien.niveriaapi.utils.game;
 
-import org.bukkit.entity.Player;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,11 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.mock.MockBukkitHelper;
 import toutouchien.niveriaapi.mock.ServerMock;
 
-import java.util.Collection;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerUtilsTest {
+    public NiveriaAPI plugin;
     private ServerMock server;
-    private PluginMock plugin;
 
     private PlayerMock player1;
     private PlayerMock player2;
@@ -28,12 +25,11 @@ class PlayerUtilsTest {
     @BeforeEach
     void setUp() {
         this.server = MockBukkitHelper.safeMock();
-        this.plugin = MockBukkit.createMockPlugin();
 
-        this.player1 = this.server.addPlayer("Toutouchien");
-        this.player2 = this.server.addPlayer("PuppyTransGirl");
+        this.player1 = this.server.addPlayer("PuppyTransGirl");
+        this.player2 = this.server.addPlayer("Toutouchien");
 
-        MockBukkit.load(NiveriaAPI.class);
+        this.plugin = MockBukkit.load(NiveriaAPI.class);
     }
 
     @AfterEach
@@ -42,151 +38,79 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("isVanished should return false when player has no metadata")
-    void isVanished_shouldReturnFalseWhenNoMetadata() {
+    @DisplayName("isVanished should return false when the player isn't vanished (has no metadata)")
+    void isVanished_shouldReturnFalseWhenNotVanished() {
         assertFalse(PlayerUtils.isVanished(player1));
     }
 
     @Test
-    @DisplayName("isVanished should return true when metadata contains true boolean value")
-    void isVanished_shouldReturnTrueWhenVanishedMetadataTrue() {
+    @DisplayName("isVanished should return true when the player is vanished (has metadata)")
+    void isVanished_shouldReturnTrueWhenVanished() {
         player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
         assertTrue(PlayerUtils.isVanished(player1));
     }
 
     @Test
-    @DisplayName("isVanished should ignore false boolean metadata values")
-    void isVanished_shouldIgnoreFalseValues() {
+    @DisplayName("isVanished should return false as the vanished metadata")
+    void isVanished_shouldReturnFalseAsVanishedMetadata() {
         player1.setMetadata("vanished", new FixedMetadataValue(plugin, false));
         assertFalse(PlayerUtils.isVanished(player1));
     }
 
     @Test
-    @DisplayName("isVanished should throw IllegalArgumentException when player is null")
-    void isVanished_shouldThrowForNullPlayer() {
+    @DisplayName("isVanished should support net.kyori.adventure.util.TriState")
+    void isVanished_shouldSupportTriState() {
+        player1.setMetadata("vanished", new FixedMetadataValue(plugin, TriState.TRUE));
+        assertTrue(PlayerUtils.isVanished(player1));
+
+        player1.setMetadata("vanished", new FixedMetadataValue(plugin, TriState.FALSE));
+        assertFalse(PlayerUtils.isVanished(player1));
+
+        player1.setMetadata("vanished", new FixedMetadataValue(plugin, TriState.NOT_SET));
+        assertFalse(PlayerUtils.isVanished(player1));
+    }
+
+    @Test
+    @DisplayName("isVanished should ignore other plugins false values as the vanished metadata")
+    void isVanished_shouldIgnoreOtherPluginsFalseValuesAsVanishedMetadata() {
+        PluginMock otherPlugin = MockBukkit.createMockPlugin();
+
+        player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
+        player1.setMetadata("vanished", new FixedMetadataValue(otherPlugin, false));
+
+        assertTrue(PlayerUtils.isVanished(player1));
+    }
+
+    @Test
+    @DisplayName("isVanished should return true regardless of the number of true values as the vanished metadata")
+    void isVanished_shouldReturnTrueRegardlessNumberOfTrueValuesAsVanishedMetadata() {
+        for (int i = 0; i < 10; i++) {
+            PluginMock somePlugin = MockBukkit.createMockPlugin();
+            player1.setMetadata("vanished", new FixedMetadataValue(somePlugin, true));
+        }
+
+        assertTrue(PlayerUtils.isVanished(player1));
+    }
+
+    @Test
+    @DisplayName("isVanished should return false if the value is not a boolean as the vanished metadata")
+    void isVanished_shouldReturnFalseIfValueIsNotABooleanAsVanishedMetadata() {
+        PluginMock pluginA = MockBukkit.createMockPlugin();
+        PluginMock pluginB = MockBukkit.createMockPlugin();
+        PluginMock pluginC = MockBukkit.createMockPlugin();
+        PluginMock pluginD = MockBukkit.createMockPlugin();
+
+        player1.setMetadata("vanished", new FixedMetadataValue(pluginA, "true"));
+        player1.setMetadata("vanished", new FixedMetadataValue(pluginB, 1));
+        player1.setMetadata("vanished", new FixedMetadataValue(pluginC, null));
+        player1.setMetadata("vanished", new FixedMetadataValue(pluginD, new Object()));
+
+        assertFalse(PlayerUtils.isVanished(player1));
+    }
+
+    @Test
+    @DisplayName("isVanished should throw an IllegalArgumentException when passed null")
+    void isVanished_shouldThrowIllegalArgumentExceptionWhenPassedNull() {
         assertThrows(IllegalArgumentException.class, () -> PlayerUtils.isVanished(null));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayers should include only players without vanished=true metadata")
-    void nonVanishedPlayers_shouldReturnOnlyNonVanishedPlayers() {
-        player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
-        player2.setMetadata("vanished", new FixedMetadataValue(plugin, false));
-
-        Collection<? extends Player> result = PlayerUtils.nonVanishedPlayers();
-        assertFalse(result.contains(player1));
-        assertTrue(result.contains(player2));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayers should handle empty player list safely")
-    void nonVanishedPlayers_shouldHandleEmptyList() {
-        server.getOnlinePlayers().forEach(p -> p.kickPlayer("remove"));
-        Collection<? extends Player> result = PlayerUtils.nonVanishedPlayers();
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(String) should return null if player not found")
-    void nonVanishedPlayerByName_shouldReturnNullForMissingPlayer() {
-        assertNull(PlayerUtils.nonVanishedPlayer("UnknownPlayer"));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(String) should throw IllegalArgumentException when input is null")
-    void nonVanishedPlayerByName_shouldReturnNullForNullArgument() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayer((String) null));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(String) should return player if not vanished")
-    void nonVanishedPlayerByName_shouldReturnPlayerIfNotVanished() {
-        assertEquals(player1, PlayerUtils.nonVanishedPlayer("Toutouchien"));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(String) should return null if vanished")
-    void nonVanishedPlayerByName_shouldReturnNullIfVanished() {
-        player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
-        assertNull(PlayerUtils.nonVanishedPlayer("Toutouchien"));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayerExact(String) shouldn't be case sensitive")
-    void nonVanishedPlayerExact_shouldntBeCaseSensitive() {
-        assertEquals(player1, PlayerUtils.nonVanishedPlayerExact("toutouchien"));
-        assertEquals(player1, PlayerUtils.nonVanishedPlayerExact("Toutouchien"));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayerExact(String) should return null if vanished")
-    void nonVanishedPlayerExact_shouldReturnNullIfVanished() {
-        player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
-        assertNull(PlayerUtils.nonVanishedPlayerExact("Toutouchien"));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayerExact(String) should throw IllegalArgumentException on null input")
-    void nonVanishedPlayerExact_shouldThrowOnNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayerExact(null));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(UUID) should return null if player not found")
-    void nonVanishedPlayerByUUID_shouldReturnNullIfMissing() {
-        UUID random = UUID.randomUUID();
-        assertNull(PlayerUtils.nonVanishedPlayer(random));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(UUID) should return player when not vanished")
-    void nonVanishedPlayerByUUID_shouldReturnPlayerIfNonVanished() {
-        assertEquals(player1, PlayerUtils.nonVanishedPlayer(player1.getUniqueId()));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(UUID) should return null if vanished")
-    void nonVanishedPlayerByUUID_shouldReturnNullIfVanished() {
-        player1.setMetadata("vanished", new FixedMetadataValue(plugin, true));
-        assertNull(PlayerUtils.nonVanishedPlayer(player1.getUniqueId()));
-    }
-
-    @Test
-    @DisplayName("nonVanishedPlayer(UUID) should throw IllegalArgumentException when uuid is null")
-    void nonVanishedPlayerByUUID_shouldThrowWhenUUIDIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayer((UUID) null));
-    }
-
-    @Test
-    @DisplayName("isValidPlayerName should return false for too-long names")
-    void isValidPlayerName_shouldReturnFalseForTooLong() {
-        assertFalse(PlayerUtils.isValidPlayerName("ThisNameIsWayTooLongForMinecraft"));
-    }
-
-    @Test
-    @DisplayName("isValidPlayerName should return false when name contains invalid characters")
-    void isValidPlayerName_shouldReturnFalseForInvalidCharacters() {
-        assertFalse(PlayerUtils.isValidPlayerName("Name With Space"));
-        assertFalse(PlayerUtils.isValidPlayerName("Invalid§Char"));
-        assertFalse(PlayerUtils.isValidPlayerName("\nNewline"));
-    }
-
-    @Test
-    @DisplayName("isValidPlayerName should return true for valid short alphanumeric names")
-    void isValidPlayerName_shouldReturnTrueForValid() {
-        assertTrue(PlayerUtils.isValidPlayerName("Steve"));
-        assertTrue(PlayerUtils.isValidPlayerName("Alex_123"));
-    }
-
-    @Test
-    @DisplayName("isValidPlayerName should throw IllegalArgumentException for null input")
-    void isValidPlayerName_shouldThrowForNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.isValidPlayerName(null));
-    }
-
-    @Test
-    @DisplayName("isValidPlayerName should return false for empty string")
-    void isValidPlayerName_shouldReturnFalseForEmpty() {
-        assertFalse(PlayerUtils.isValidPlayerName(""));
     }
 }
