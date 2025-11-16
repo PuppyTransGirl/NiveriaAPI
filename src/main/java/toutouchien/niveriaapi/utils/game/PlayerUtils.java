@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -20,20 +21,24 @@ public class PlayerUtils {
             throw new IllegalArgumentException("player cannot be null");
 
 		List<MetadataValue> metadata = player.getMetadata("vanished");
-		return metadata.stream().anyMatch(metadataValue -> {
-            Object value = metadataValue.value();
-            return (value instanceof Boolean bool && bool)
-                    || (value instanceof TriState triState && triState == TriState.TRUE);
-        });
+        for (MetadataValue metadatum : metadata) {
+            Object value = metadatum.value();
+            if ((value instanceof Boolean bool && bool)
+                    || (value instanceof TriState triState && triState == TriState.TRUE))
+                return true;
+        }
+
+        return false;
 	}
 
 	public static Collection<? extends Player> nonVanishedPlayers() {
-		return Bukkit.getOnlinePlayers().stream()
-				.filter(player -> {
-					List<MetadataValue> metadata = player.getMetadata("vanished");
-					return metadata.stream().anyMatch(value -> !value.asBoolean());
-				})
-				.toList();
+        List<Player> list = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!isVanished(player))
+                list.add(player);
+        }
+
+        return list;
 	}
 
 	public static Player nonVanishedPlayer(@NotNull String name) {
@@ -41,15 +46,21 @@ public class PlayerUtils {
             throw new IllegalArgumentException("name cannot be null");
 
 		Player player = Bukkit.getPlayer(name);
-		return player == null ? null : isVanished(player) ? null : player;
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
 	}
 
 	public static Player nonVanishedPlayerExact(@NotNull String name) {
         if (name == null)
             throw new IllegalArgumentException("name cannot be null");
 
-		Player playerExact = Bukkit.getPlayerExact(name);
-		return playerExact == null ? null : isVanished(playerExact) ? null : playerExact;
+		Player player = Bukkit.getPlayerExact(name);
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
 	}
 
 	public static Player nonVanishedPlayer(@NotNull UUID uuid) {
@@ -57,13 +68,27 @@ public class PlayerUtils {
             throw new IllegalArgumentException("uuid cannot be null");
 
 		Player player = Bukkit.getPlayer(uuid);
-		return player == null ? null : isVanished(player) ? null : player;
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
 	}
 
-	public static boolean isValidPlayerName(@NotNull String name) {
+    public static boolean isValidPlayerName(@NotNull String name) {
         if (name == null)
             throw new IllegalArgumentException("name cannot be null");
 
-		return name.length() >= 3 && name.length() <= 16 && name.chars().filter(i -> i <= 32 || i >= 127).findAny().isEmpty(); // Minecraft code
-	}
+        if (name.length() < 3 || name.length() > 16)
+            return false;
+
+        for (int i = 0, len = name.length(); i < len; ++i) {
+            char c = name.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '_' || c == '.'))
+                continue;
+
+            return false;
+        }
+
+        return true;
+    }
 }
