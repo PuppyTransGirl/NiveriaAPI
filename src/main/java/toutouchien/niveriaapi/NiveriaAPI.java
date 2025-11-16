@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
-import toutouchien.niveriaapi.command.CommandManager;
 import toutouchien.niveriaapi.cooldown.CooldownDatabase;
 import toutouchien.niveriaapi.cooldown.CooldownManager;
 import toutouchien.niveriaapi.database.MongoManager;
@@ -25,7 +24,6 @@ public final class NiveriaAPI extends JavaPlugin {
     private static NiveriaAPI instance;
 
     private ChatInputManager chatInputManager;
-    private CommandManager commandManager;
     private CooldownManager cooldownManager;
     private DelayManager delayManager;
     private HookManager hookManager;
@@ -68,12 +66,10 @@ public final class NiveriaAPI extends JavaPlugin {
         }
 
         this.chatInputManager = new ChatInputManager();
-        this.commandManager = new CommandManager();
         this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager));
         (this.delayManager = new DelayManager(this)).initialize();
         (this.hookManager = new HookManager(this)).onEnable();
 
-        registerCommands();
         registerListeners();
     }
 
@@ -110,10 +106,6 @@ public final class NiveriaAPI extends JavaPlugin {
         );
     }
 
-    private void registerCommands() {
-        this.commandManager.registerCommand(new toutouchien.niveriaapi.command.impl.niveriaapi.NiveriaAPI());
-    }
-
     private void registerListeners() {
         PluginManager pluginManager = getServer().getPluginManager();
         Arrays.asList(
@@ -143,10 +135,6 @@ public final class NiveriaAPI extends JavaPlugin {
 
     public ChatInputManager chatInputManager() {
         return chatInputManager;
-    }
-
-    public CommandManager commandManager() {
-        return commandManager;
     }
 
     public CooldownManager cooldownManager() {

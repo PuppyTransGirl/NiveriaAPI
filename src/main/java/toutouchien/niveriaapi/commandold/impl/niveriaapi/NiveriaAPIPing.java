@@ -1,12 +1,12 @@
-package toutouchien.niveriaapi.command.impl.niveriaapi;
+package toutouchien.niveriaapi.commandold.impl.niveriaapi;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.command.CommandData;
-import toutouchien.niveriaapi.command.SubCommand;
+import toutouchien.niveriaapi.commandold.CommandData;
+import toutouchien.niveriaapi.commandold.SubCommand;
 import toutouchien.niveriaapi.utils.ui.ColorUtils;
 import toutouchien.niveriaapi.utils.ui.MessageUtils;
 

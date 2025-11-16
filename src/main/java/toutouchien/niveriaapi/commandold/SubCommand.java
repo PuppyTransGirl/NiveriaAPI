@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.command;
+package toutouchien.niveriaapi.commandold;
 
 public class SubCommand extends Command {
 	protected SubCommand(CommandData commandData) {

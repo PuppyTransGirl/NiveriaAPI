@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.command;
+package toutouchien.niveriaapi.commandold;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

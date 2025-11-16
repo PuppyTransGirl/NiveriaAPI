@@ -1,10 +1,10 @@
-package toutouchien.niveriaapi.command.impl.niveriaapi;
+package toutouchien.niveriaapi.commandold.impl.niveriaapi;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.command.Command;
-import toutouchien.niveriaapi.command.CommandData;
+import toutouchien.niveriaapi.commandold.Command;
+import toutouchien.niveriaapi.commandold.CommandData;
 import toutouchien.niveriaapi.utils.ui.MessageUtils;
 
 public class NiveriaAPI extends Command {

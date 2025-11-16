@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.command;
+package toutouchien.niveriaapi.commandold;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
