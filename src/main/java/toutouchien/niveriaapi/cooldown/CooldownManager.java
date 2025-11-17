@@ -43,9 +43,9 @@ import java.util.concurrent.TimeUnit;
  *
  * // Check if player is in cooldown
  * if (cooldownManager.inCooldown(player, fireballKey)) {
- * long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
- * MessageUtils.sendMessage(player, Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!"));
- * return;
+ *     long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
+ *     MessageUtils.sendMessage(player, Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!"));
+ *     return;
  * }
  *
  * // Execute ability code

@@ -58,4 +58,21 @@ public class StringUtils {
 			return Optional.empty();
 		}
 	}
+
+    /**
+     * Safely matches a string key to an enum constant, returning a default value if no match is found.
+     *
+     * @param key The string key to match
+     * @param enumClass The enum class to search in
+     * @param <T> The enum type
+     * @param defaultValue The default value to return if no match is found
+     * @return The matched enum constant, or the default value if no match found
+     */
+    public static <T extends Enum<T>> T match(String key, Class<T> enumClass, T defaultValue) {
+        try {
+            return Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT));
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return defaultValue;
+        }
+    }
 }

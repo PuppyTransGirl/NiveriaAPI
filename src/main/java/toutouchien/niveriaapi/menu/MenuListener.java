@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
-import toutouchien.niveriaapi.menu.event.CustomInventoryClickEvent;
+import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.menu.items.MenuItem;
 import toutouchien.niveriaapi.utils.game.NMSUtils;
 
@@ -49,7 +49,7 @@ public class MenuListener implements Listener {
 			if (clickEvent == null)
 				return;
 
-			CustomInventoryClickEvent customEvent = new CustomInventoryClickEvent(event);
+			NiveriaInventoryClickEvent customEvent = new NiveriaInventoryClickEvent(event);
 			clickEvent.onClick(customEvent);
 		}
 	}
