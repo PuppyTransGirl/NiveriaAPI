@@ -20,6 +20,8 @@ import toutouchien.niveriaapi.menu.MenuListener;
 import java.util.Arrays;
 
 public final class NiveriaAPI extends JavaPlugin {
+    private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+
     private static NiveriaAPI instance;
 
     private ChatInputManager chatInputManager;
@@ -39,8 +41,20 @@ public final class NiveriaAPI extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
+        preLoadUtilsClasses();
+
         try {
-            this.mongoManager = new MongoManager(this.getConfig().getString("mongodb-connection-string"));
+            String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
+            String mongoDBConnectionString;
+            if (mongoDBEnv == null) {
+                mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
+                this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
+            } else {
+                mongoDBConnectionString = mongoDBEnv;
+                this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+            }
+
+            this.mongoManager = new MongoManager(mongoDBConnectionString);
             this.getSLF4JLogger().info("MongoManager initialized.");
 
             this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
@@ -61,6 +75,39 @@ public final class NiveriaAPI extends JavaPlugin {
 
         registerCommands();
         registerListeners();
+    }
+
+    private void preLoadUtilsClasses() {
+        String[] classes = {
+                "base.Task",
+                "common.MathUtils",
+                "common.StringUtils",
+                "common.TimeUtils",
+                "data.DatabaseUtils",
+                "data.FileUtils",
+                "game.PlayerUtils",
+                "ui.ColorUtils",
+                "ui.ComponentUtils"
+        };
+
+        this.getSLF4JLogger().info("Starting to preload utility classes");
+
+        int loadedCount = 0;
+        String prefix = "toutouchien.niveriaapi.utils.";
+        for (int i = 0; i < classes.length; i++) {
+            try {
+                Class.forName(prefix + classes[i]);
+                loadedCount++;
+            } catch (ClassNotFoundException e) {
+                this.getSLF4JLogger().error("Couldn't load {}", classes[i], e);
+            }
+        }
+
+        this.getSLF4JLogger().info(
+                "Finished preloading utility classes. Successfully loaded {}/{} classes.",
+                loadedCount,
+                classes.length
+        );
     }
 
     private void registerCommands() {
