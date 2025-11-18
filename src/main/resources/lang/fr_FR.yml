@@ -1,0 +1,20 @@
+# ============================================================
+# ===============  OTHER (PREFIXES, COLORS, ETC.) ============
+# ============================================================
+
+special-tags:
+  # ---------------- PREFIXES ----------------
+  prefix:
+    niveria: "<gradient:#FC67FA:#F4C4F3>ɴɪᴠᴇʀɪᴀ</gradient>"
+
+  # ---------------- COLORS ----------------
+  ncolor:
+    primary: "#FC67FA"
+    secondary: "#F4C4F3"
+    valid: "#7AF291"
+    error: "#F27474"
+    default: "#B0AEC1"
+
+  # ---------------- OTHER ----------------
+  other:
+    separator: "<#B0AEC1>»</#B0AEC1>"
