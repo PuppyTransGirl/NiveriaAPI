@@ -27,19 +27,20 @@ public class NiveriaAPICommand {
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi"))
                 .then(Commands.literal("fixcommands")
                         .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.fixcommands"))
-                        .then(Commands.argument("targets", ArgumentTypes.players()))
-                        .executes(ctx -> {
-                            PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("targets", PlayerSelectorArgumentResolver.class);
-                            List<Player> targets = targetResolver.resolve(ctx.getSource());
-                            Entity executor = ctx.getSource().getExecutor();
+                        .then(Commands.argument("targets", ArgumentTypes.players())
+                                .executes(ctx -> {
+                                    PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("targets", PlayerSelectorArgumentResolver.class);
+                                    List<Player> targets = targetResolver.resolve(ctx.getSource());
+                                    Entity executor = ctx.getSource().getExecutor();
 
-                            for (Player target : targets)
-                                target.updateCommands();
+                                    for (Player target : targets)
+                                        target.updateCommands();
 
-                            MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de %s joueurs".formatted(targets.size())));
+                                    MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de %s".formatted(targets.size())));
 
-                            return Command.SINGLE_SUCCESS;
-                        })
+                                    return Command.SINGLE_SUCCESS;
+                                })
+                        )
                 )
                 .then(Commands.literal("ping")
                         .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.ping"))

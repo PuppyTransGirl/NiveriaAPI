@@ -10,6 +10,6 @@ public class CommandUtils {
 
     public static boolean defaultRequirements(CommandSourceStack css, String permission) {
         return css.getSender().hasPermission(permission)
-                && css instanceof Permissible perm && perm.hasPermission(permission);
+                && css.getExecutor() instanceof Permissible perm && perm.hasPermission(permission);
     }
 }
