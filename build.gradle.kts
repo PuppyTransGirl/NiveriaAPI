@@ -10,7 +10,6 @@ val itemsAdderVersion: String by project
 val worldguardVersion: String by project
 val landsVersion: String by project
 val bluemapVersion: String by project
-val pl3xmapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
@@ -43,7 +42,6 @@ dependencies {
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:${worldguardVersion}")
     compileOnly("com.github.angeschossen:LandsAPI:${landsVersion}")
     compileOnly("de.bluecolored:bluemap-api:${bluemapVersion}")
-    compileOnly("maven.modrinth:pl3xmap:${pl3xmapVersion}")
     compileOnly("xyz.jpenilla:squaremap-api:${squaremapVersion}")
     compileOnly("us.dynmap:dynmap-api:${dynmapVersion}")
     compileOnly("us.dynmap:DynmapCoreAPI:${dynmapVersion}")
