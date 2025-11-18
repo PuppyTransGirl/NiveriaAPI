@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.command.Command;
 import toutouchien.niveriaapi.command.CommandData;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
 
 public class NiveriaAPI extends Command {
 	public NiveriaAPI() {

@@ -8,7 +8,6 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.command.CommandData;
 import toutouchien.niveriaapi.command.SubCommand;
 import toutouchien.niveriaapi.utils.ui.ColorUtils;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
 
 import java.text.DecimalFormat;
 import java.util.Map;
