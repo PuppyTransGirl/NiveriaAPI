@@ -23,6 +23,10 @@ import java.util.Map;
 public class NiveriaAPICommand {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
+    private NiveriaAPICommand() {
+        throw new IllegalStateException("Command class");
+    }
+
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("niveriaapi")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi"))
