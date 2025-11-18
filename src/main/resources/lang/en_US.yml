@@ -18,3 +18,26 @@ special-tags:
   # ---------------- OTHER ----------------
   other:
     separator: "<#B0AEC1>»</#B0AEC1>"
+
+# ============================================================
+# ======================== FEATURES ==========================
+# ============================================================
+
+# ============================================================
+# NIVERIAAPI
+# ============================================================
+
+delay_default_message: "<prefix:niveria> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
+delay_moved_default_message: "<prefix:niveria> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
+delay_already_has_default_message: "<prefix:niveria> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
+
+# ============================================================
+# DELAY
+# ============================================================
+
+niveria_command_niveriaapi_no_arg: |-
+  <prefix:niveria> <separator> <ncolor:error>You did not specify a subcommand.</ncolor>
+  <ncolor:default>Available subcommands are: ping</ncolor>
+
+niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria> <separator> <ncolor:default>Ping the databases</ncolor>"
+niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %s ms"

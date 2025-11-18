@@ -1,10 +1,10 @@
 package toutouchien.niveriaapi.command.impl.niveriaapi;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.command.Command;
 import toutouchien.niveriaapi.command.CommandData;
+import toutouchien.niveriaapi.lang.Lang;
 
 public class NiveriaAPI extends Command {
 	public NiveriaAPI() {
@@ -16,7 +16,6 @@ public class NiveriaAPI extends Command {
 
 	@Override
 	public void execute(@NotNull CommandSender sender, String @NotNull [] args, @NotNull String label) {
-		sender.sendMessage(MessageUtils.errorMessage(Component.text("Tu n'as pas spécifié de sous-commande.")));
-		sender.sendMessage(MessageUtils.infoMessage(Component.text("Les sous-commandes possibles sont ping.")));
+        Lang.sendMessage(sender, "niveria_command_niveriaapi_no_arg");
 	}
 }

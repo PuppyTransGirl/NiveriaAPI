@@ -52,7 +52,7 @@ public class DelayManager implements Listener {
 						continue;
 				}
 
-				MessageUtils.sendNMSErrorMessage(player, Component.literal("Ta demande de téléportation a été annulée car tu as bougé."));
+				player.sendMessage(delay.movedText());
 				reset(delay, true);
 			}
 		}, plugin, 3L, 1L, TimeUnit.SECONDS);
@@ -62,7 +62,7 @@ public class DelayManager implements Listener {
 		Player player = delay.player();
 
 		if (inDelay(player)) {
-			MessageUtils.sendNMSErrorMessage(player, Component.literal("Tu as déjà une demande de téléportation."));
+			player.sendMessage(delay.alreadyHasDelayText());
 			return;
 		}
 
