@@ -18,7 +18,7 @@ import toutouchien.niveriaapi.utils.game.NMSUtils;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MenuListener implements Listener {
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		Inventory inventory = event.getClickedInventory();
 		if (event.getCurrentItem() == null || inventory == null)
