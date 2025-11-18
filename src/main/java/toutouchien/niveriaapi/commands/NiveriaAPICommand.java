@@ -14,6 +14,7 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.ColorUtils;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.MessageUtils;
+import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -36,7 +37,8 @@ public class NiveriaAPICommand {
                                     for (Player target : targets)
                                         target.updateCommands();
 
-                                    MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de %s".formatted(targets.size())));
+                                    MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de " + targets.size())
+                                            .append(Component.text(" " + StringUtils.pluralize("joueur", targets.size()))));
 
                                     return Command.SINGLE_SUCCESS;
                                 })
