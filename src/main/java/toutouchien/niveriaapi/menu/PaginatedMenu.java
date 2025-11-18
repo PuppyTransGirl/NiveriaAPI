@@ -6,7 +6,7 @@ import toutouchien.niveriaapi.menu.infos.MenuInfos;
 public abstract class PaginatedMenu extends Menu {
 	protected int page;
 
-	public PaginatedMenu(@NotNull MenuInfos menuInfos) {
+    protected PaginatedMenu(@NotNull MenuInfos menuInfos) {
 		super(menuInfos);
 
 		page = 0;

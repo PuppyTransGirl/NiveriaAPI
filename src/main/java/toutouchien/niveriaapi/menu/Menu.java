@@ -15,7 +15,7 @@ public abstract class Menu implements InventoryHolder {
 	protected Inventory inventory;
 	Set<MenuItem> itemsCache;
 
-	public Menu(@NotNull MenuInfos menuInfos) {
+	protected Menu(@NotNull MenuInfos menuInfos) {
 		this.menuInfos = menuInfos;
 	}
 
