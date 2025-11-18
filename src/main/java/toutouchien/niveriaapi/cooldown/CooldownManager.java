@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Example usage:
  * <pre>{@code
- * // Get the cooldown manager (assuming database is initialized elsewhere)
- * // CooldownManager cooldownManager = NiveriaAPI.instance().cooldownManager();
+ * CooldownManager cooldownManager = NiveriaAPI.instance().cooldownManager();
  *
  * // Create cooldown keys
  * Key fireballKey = Key.key("plugin_name", "ability_fireball");
@@ -44,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * // Check if player is in cooldown
  * if (cooldownManager.inCooldown(player, fireballKey)) {
  *     long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
- *     MessageUtils.sendMessage(player, Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!"));
+ *     player.sendMessage(Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!", NamedTextColor.RED));
  *     return;
  * }
  *
@@ -60,7 +59,7 @@ public class CooldownManager {
     private final Map<CompositeKey, Cooldown> cooldowns = new ConcurrentHashMap<>();
     private final ScheduledTask cleanupTask;
     private final ScheduledTask databaseCleanupTask;
-    private final CooldownDatabase database; // Add database field
+    private final CooldownDatabase database;
 
     /**
      * Constructs a new CooldownManager.
@@ -76,8 +75,8 @@ public class CooldownManager {
         this.database = database;
         loadPersistentCooldowns();
 
-        this.cleanupTask = Task.asyncRepeat(this::cleanupExpiredCooldowns, plugin, DEFAULT_CLEANUP_MINUTES, DEFAULT_CLEANUP_MINUTES, TimeUnit.MINUTES);
-        this.databaseCleanupTask = Task.asyncRepeat(this::cleanupDatabaseCooldowns, plugin, DATABASE_CLEANUP_MINUTES, DATABASE_CLEANUP_MINUTES, TimeUnit.MINUTES);
+        this.cleanupTask = Task.asyncRepeat(ignored -> cleanupExpiredCooldowns(), plugin, DEFAULT_CLEANUP_MINUTES, DEFAULT_CLEANUP_MINUTES, TimeUnit.MINUTES);
+        this.databaseCleanupTask = Task.asyncRepeat(ignored -> cleanupDatabaseCooldowns(), plugin, DATABASE_CLEANUP_MINUTES, DATABASE_CLEANUP_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
@@ -97,8 +96,6 @@ public class CooldownManager {
             plugin.getLogger().info("Loaded " + persistentCooldowns.size() + " active persistent cooldowns.");
         }, plugin);
     }
-
-    // --- Set Cooldown Methods (New methods with persistence flag and modified defaults) ---
 
     /**
      * Sets a cooldown for a player.
@@ -385,7 +382,7 @@ public class CooldownManager {
      * @return The number of active cooldowns in memory.
      */
     public int size() {
-        cleanupExpiredCooldowns(null);
+        cleanupExpiredCooldowns();
         return cooldowns.size();
     }
 
@@ -537,7 +534,7 @@ public class CooldownManager {
      * Cleans up expired cooldowns from the in-memory map.
      * This runs regularly via the cleanup task.
      */
-    public void cleanupExpiredCooldowns(@Nullable ScheduledTask ignored) {
+    public void cleanupExpiredCooldowns() {
         cooldowns.entrySet().removeIf(entry -> entry.getValue().expired());
     }
 
@@ -545,7 +542,7 @@ public class CooldownManager {
      * Cleans up expired persistent cooldowns from the database.
      * This runs regularly via the database cleanup task asynchronously.
      */
-    private void cleanupDatabaseCooldowns(@Nullable ScheduledTask ignored) {
+    private void cleanupDatabaseCooldowns() {
         database.deleteExpiredCooldowns();
     }
 
