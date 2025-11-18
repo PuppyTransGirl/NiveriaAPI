@@ -71,6 +71,10 @@ tasks {
             "-XX:HotswapAgent=core",
             "-Dcom.mojang.eula.agree=true"
         )
+
+        downloadPlugins {
+            modrinth("LuckPerms", "v5.5.17-bukkit")
+        }
     }
 
     build {
