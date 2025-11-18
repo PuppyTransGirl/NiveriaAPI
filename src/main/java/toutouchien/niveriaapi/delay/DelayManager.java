@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.MessageUtils;
 import toutouchien.niveriaapi.utils.NMSUtils;
@@ -36,7 +35,7 @@ public class DelayManager implements Listener {
 		PluginManager pluginManager = Bukkit.getPluginManager();
 		pluginManager.registerEvents(this, plugin);
 
-		Task.asyncRepeat(() -> {
+		Task.asyncRepeat(ignored -> {
 			if (teleportDelays.isEmpty())
 				return;
 
@@ -58,7 +57,7 @@ public class DelayManager implements Listener {
 				MessageUtils.sendNMSErrorMessage(player, Component.literal("Ta demande de téléportation a été annulée car tu as bougé."));
 				reset(delay, true);
 			}
-		}, plugin, TimeUtils.ticks(3L, TimeUnit.SECONDS), 20L);
+		}, plugin, 3L, 1L, TimeUnit.SECONDS);
 	}
 
 	public void start(Delay delay) {
@@ -72,18 +71,15 @@ public class DelayManager implements Listener {
 		teleportDelays.put(delay.player(), delay);
 		updateDisplays(delay);
 
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				if (delay.delayRemaining() == 0 || !teleportDelays.containsKey(player)) {
-					this.cancel();
-					return;
-				}
+        Task.asyncRepeat(task -> {
+            if (delay.delayRemaining() == 0 || !teleportDelays.containsKey(player)) {
+                task.cancel();
+                return;
+            }
 
-				delay.delayRemaining(delay.delayRemaining() - 1);
-				updateDisplays(delay);
-			}
-		}.runTaskTimerAsynchronously(plugin, 20L, 20L);
+            delay.delayRemaining(delay.delayRemaining() - 1);
+            updateDisplays(delay);
+        }, plugin, 1L, 1L, TimeUnit.SECONDS);
 	}
 
 	private void updateDisplays(Delay delay) {

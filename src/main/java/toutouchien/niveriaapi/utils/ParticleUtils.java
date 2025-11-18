@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class ParticleUtils {
@@ -296,7 +297,8 @@ public class ParticleUtils {
         if (durationTicks == -1)
             return task;
 
-        Task.asyncLater(task::cancel, plugin, durationTicks);
+        // Schedule cancellation after durationTicks
+        Task.asyncLater(ignored -> task.cancel(), plugin, durationTicks * 50L, TimeUnit.MILLISECONDS);
         return task;
     }
 
@@ -327,7 +329,7 @@ public class ParticleUtils {
             return;
 
         // Schedule cancellation after durationTicks
-        Task.asyncLater(task::cancel, plugin, durationTicks);
+        Task.asyncLater(ignored -> task.cancel(), plugin, durationTicks * 50L, TimeUnit.MILLISECONDS);
     }
 
 

@@ -15,15 +15,19 @@ public abstract class Menu implements InventoryHolder {
 	protected Inventory inventory;
 	Set<MenuItem> itemsCache;
 
-	public Menu(@NotNull MenuInfos menuInfos) {
-		this.menuInfos = menuInfos;
+	protected Menu(@NotNull MenuInfos menuInfos) {
+        if (menuInfos == null)
+            throw new IllegalArgumentException("menuInfos cannot be null");
 
+		this.menuInfos = menuInfos;
 	}
 
 	public void open() {
 		this.inventory = Bukkit.createInventory(this, slots(), name());
 
-		(this.itemsCache = items()).forEach(menuItem -> inventory.setItem(menuItem.slot(), menuItem.itemStack()));
+        for (MenuItem menuItem : this.itemsCache = this.items())
+            this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
+
 		this.menuInfos.player().openInventory(inventory);
 	}
 
@@ -41,6 +45,7 @@ public abstract class Menu implements InventoryHolder {
 	@NotNull
 	public abstract Set<MenuItem> items();
 
+    @NotNull
 	public MenuInfos menuInfos() {
 		return menuInfos;
 	}

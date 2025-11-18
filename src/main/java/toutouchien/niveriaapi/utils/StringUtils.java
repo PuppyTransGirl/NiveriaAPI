@@ -1,5 +1,7 @@
 package toutouchien.niveriaapi.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Locale;
 import java.util.Optional;
 
@@ -21,26 +23,7 @@ public class StringUtils {
 		if (string == null || string.isBlank())
 			return string;
 
-		return string.toUpperCase().charAt(0) + string.toLowerCase().substring(1);
-	}
-
-	/**
-	 * Converts an enum constant name to a display name by capitalizing each part.
-	 * Example: "ENUM_CONSTANT" becomes "EnumConstant"
-	 *
-	 * @param toConvert The enum constant name to convert
-	 * @return The formatted display name
-	 */
-	public static String enumToDisplayName(String toConvert) {
-		String[] parts = toConvert.split("_");
-		if(parts.length == 0)
-			return "";
-
-		StringBuilder displayName = new StringBuilder();
-		for (int i = 0; i < parts.length; i++)
-			displayName.append(capitalize(parts[i]));
-
-		return displayName.toString();
+		return string.toUpperCase().charAt(0) + string.toLowerCase(Locale.ROOT).substring(1);
 	}
 
 	/**
@@ -58,4 +41,45 @@ public class StringUtils {
 			return Optional.empty();
 		}
 	}
+
+    /**
+     * Safely matches a string key to an enum constant, returning a default value if no match is found.
+     *
+     * @param key The string key to match
+     * @param enumClass The enum class to search in
+     * @param <T> The enum type
+     * @param defaultValue The default value to return if no match is found
+     * @return The matched enum constant, or the default value if no match found
+     */
+    public static <T extends Enum<T>> T match(String key, Class<T> enumClass, T defaultValue) {
+        try {
+            return Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT));
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Returns the plural form of a word based on the count.
+     * Adds "s" to the singular form for pluralization.
+     *
+     * @param singular The singular form of the word
+     * @param count The count to determine singular or plural
+     * @return The appropriate singular or plural form
+     */
+    public static String pluralize(@NotNull String singular, int count) {
+        return pluralize(singular, singular + "s", count);
+    }
+
+    /**
+     * Returns the appropriate form of a word based on the count.
+     *
+     * @param singular The singular form of the word
+     * @param plural The plural form of the word
+     * @param count The count to determine singular or plural
+     * @return The appropriate singular or plural form
+     */
+    public static String pluralize(@NotNull String singular, @NotNull String plural, int count) {
+        return count == 1 ? singular : plural;
+    }
 }

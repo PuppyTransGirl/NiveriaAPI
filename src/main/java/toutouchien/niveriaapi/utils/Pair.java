@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.utils;
 
 import java.util.Objects;
 
-public class Pair<K, V> implements Cloneable {
+public class Pair<K, V> {
 	private K key;
 	private V value;
 
@@ -34,8 +34,8 @@ public class Pair<K, V> implements Cloneable {
 
 	@SuppressWarnings("unchecked")
 	public Pair<K, V> swap() {
-		K tempKey = key;
-		this.key = (K) value;
+		K tempKey = this.key;
+		this.key = (K) this.value;
 		this.value = (V) tempKey;
 		return this;
 	}
@@ -65,8 +65,7 @@ public class Pair<K, V> implements Cloneable {
 		return Objects.hash(key, value);
 	}
 
-	@Override
-	public Pair<K, V> clone() {
+	public Pair<K, V> copy() {
 		return new Pair<>(key, value);
 	}
 }
