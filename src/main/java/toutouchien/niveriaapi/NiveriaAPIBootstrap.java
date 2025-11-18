@@ -3,7 +3,7 @@ package toutouchien.niveriaapi;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import toutouchien.niveriaapi.command.impl.NiveriaAPICommand;
+import toutouchien.niveriaapi.commands.NiveriaAPICommand;
 
 @SuppressWarnings("UnstableApiUsage")
 public class NiveriaAPIBootstrap implements PluginBootstrap {
