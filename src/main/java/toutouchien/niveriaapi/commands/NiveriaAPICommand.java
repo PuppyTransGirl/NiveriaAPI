@@ -1,7 +1,7 @@
 package toutouchien.niveriaapi.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -22,24 +22,25 @@ import java.util.Map;
 public class NiveriaAPICommand {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    public static LiteralArgumentBuilder<CommandSourceStack> get() {
+    public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("niveriaapi")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi"))
                 .then(Commands.literal("fixcommands")
                         .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.fixcommands"))
-                        .then(Commands.argument("targets", ArgumentTypes.players())))
-                .executes(ctx -> {
-                    PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("targets", PlayerSelectorArgumentResolver.class);
-                    List<Player> targets = targetResolver.resolve(ctx.getSource());
-                    Entity executor = ctx.getSource().getExecutor();
+                        .then(Commands.argument("targets", ArgumentTypes.players()))
+                        .executes(ctx -> {
+                            PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("targets", PlayerSelectorArgumentResolver.class);
+                            List<Player> targets = targetResolver.resolve(ctx.getSource());
+                            Entity executor = ctx.getSource().getExecutor();
 
-                    for (Player target : targets)
-                        target.updateCommands();
+                            for (Player target : targets)
+                                target.updateCommands();
 
-                    MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de %s joueurs".formatted(targets.size())));
+                            MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de %s joueurs".formatted(targets.size())));
 
-                    return Command.SINGLE_SUCCESS;
-                })
+                            return Command.SINGLE_SUCCESS;
+                        })
+                )
                 .then(Commands.literal("ping")
                         .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.ping"))
                         .executes(ctx -> {
@@ -74,6 +75,6 @@ public class NiveriaAPICommand {
 
                             return Command.SINGLE_SUCCESS;
                         })
-                );
+                ).build();
     }
 }

@@ -10,7 +10,7 @@ public class NiveriaAPIBootstrap implements PluginBootstrap {
     @Override
     public void bootstrap(BootstrapContext ctx) {
         ctx.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            commands.registrar().register(NiveriaAPICommand.get().build());
+            commands.registrar().register(NiveriaAPICommand.get());
         });
     }
 }
