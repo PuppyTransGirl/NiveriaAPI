@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.game;
+package toutouchien.niveriaapi.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

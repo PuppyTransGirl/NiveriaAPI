@@ -6,8 +6,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.base.Task;
-import toutouchien.niveriaapi.utils.common.TimeUtils;
+import toutouchien.niveriaapi.utils.Task;
+import toutouchien.niveriaapi.utils.TimeUtils;
 
 import java.time.Duration;
 import java.util.*;

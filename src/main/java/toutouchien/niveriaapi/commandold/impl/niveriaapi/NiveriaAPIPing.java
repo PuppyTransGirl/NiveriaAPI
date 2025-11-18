@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.commandold.CommandData;
 import toutouchien.niveriaapi.commandold.SubCommand;
-import toutouchien.niveriaapi.utils.ui.ColorUtils;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
+import toutouchien.niveriaapi.utils.ColorUtils;
+import toutouchien.niveriaapi.utils.MessageUtils;
 
 import java.text.DecimalFormat;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.data;
+package toutouchien.niveriaapi.utils;
 
 import java.util.Arrays;
 import java.util.HashSet;

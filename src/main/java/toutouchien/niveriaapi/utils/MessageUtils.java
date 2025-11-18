@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.ui;
+package toutouchien.niveriaapi.utils;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -6,7 +6,6 @@ import net.kyori.adventure.text.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import toutouchien.niveriaapi.utils.game.NMSUtils;
 
 public class MessageUtils {
 	private MessageUtils() {

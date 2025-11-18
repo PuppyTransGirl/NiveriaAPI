@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.utils.data.ItemBuilder;
-import toutouchien.niveriaapi.utils.ui.ComponentUtils;
+import toutouchien.niveriaapi.utils.ComponentUtils;
+import toutouchien.niveriaapi.utils.ItemBuilder;
 
 import java.util.function.Consumer;
 

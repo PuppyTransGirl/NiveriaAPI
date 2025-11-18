@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.data;
+package toutouchien.niveriaapi.utils;
 
 import com.destroystokyo.paper.profile.ProfileProperty;
 import io.papermc.paper.datacomponent.DataComponentType;

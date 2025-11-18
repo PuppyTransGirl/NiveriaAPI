@@ -8,8 +8,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Entity;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.ui.ColorUtils;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
+import toutouchien.niveriaapi.utils.ColorUtils;
+import toutouchien.niveriaapi.utils.CommandUtils;
+import toutouchien.niveriaapi.utils.MessageUtils;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -19,7 +20,9 @@ public class NiveriaAPICommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
          return Commands.literal("niveriaapi")
+                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi"))
                 .then(Commands.literal("ping")
+                        .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.ping"))
                         .executes(ctx -> {
                             Entity executor = ctx.getSource().getExecutor();
                             Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();

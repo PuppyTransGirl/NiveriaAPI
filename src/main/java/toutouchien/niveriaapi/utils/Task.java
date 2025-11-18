@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.base;
+package toutouchien.niveriaapi.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

@@ -13,10 +13,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.base.Task;
-import toutouchien.niveriaapi.utils.common.TimeUtils;
-import toutouchien.niveriaapi.utils.game.NMSUtils;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
+import toutouchien.niveriaapi.utils.MessageUtils;
+import toutouchien.niveriaapi.utils.NMSUtils;
+import toutouchien.niveriaapi.utils.Task;
+import toutouchien.niveriaapi.utils.TimeUtils;
 
 import java.util.HashMap;
 import java.util.Map;

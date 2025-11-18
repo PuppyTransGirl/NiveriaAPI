@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.game;
+package toutouchien.niveriaapi.utils;
 
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import org.bukkit.*;
@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-import toutouchien.niveriaapi.utils.base.Task;
 
 import java.util.ArrayList;
 import java.util.Collection;

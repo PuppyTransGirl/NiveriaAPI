@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.delay;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import toutouchien.niveriaapi.utils.ui.MessageUtils;
+import toutouchien.niveriaapi.utils.MessageUtils;
 
 import java.util.function.Consumer;
 

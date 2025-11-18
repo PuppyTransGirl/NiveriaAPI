@@ -13,7 +13,7 @@ import org.bukkit.inventory.InventoryHolder;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
 import toutouchien.niveriaapi.menu.event.CustomInventoryClickEvent;
 import toutouchien.niveriaapi.menu.items.MenuItem;
-import toutouchien.niveriaapi.utils.game.NMSUtils;
+import toutouchien.niveriaapi.utils.NMSUtils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
