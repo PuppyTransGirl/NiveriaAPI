@@ -20,12 +20,12 @@ public class NiveriaAPIPing extends SubCommand {
 	@Override
 	public void execute(@NotNull CommandSender sender, String @NotNull [] args, @NotNull String label) {
 		Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();
-        Lang.sendMessage(sender, "niveriaapi_command_niveriaapi_ping");
+        Lang.sendMessage(sender, "niveriaapi_command_niveriaapi_subcommand_ping");
 		pings.forEach((name, ping) -> {
 			double pingMs = (double) ping / 1_000_000.0;
 			String formattedPing = DECIMAL_FORMAT.format(pingMs);
 
-			Lang.sendMessage(sender, "niveriaapi_command_niveriaapi_ping_line", name, formattedPing);
+			Lang.sendMessage(sender, "niveriaapi_command_niveriaapi_subcommand_ping_line", name, formattedPing);
 		});
 	}
 }
