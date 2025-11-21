@@ -417,11 +417,9 @@ public class Lang {
     }
 
     /**
-     * Reloads all language configurations and messages from the specified plugin. This is
-     * useful for applying changes to language files without restarting the
-     * server.
+     * Reloads the language files and configuration from disk.
      *
-     * @param plugin The main plugin instance.
+     * @param plugin The plugin instance to reload languages for.
      */
     public static void reload(@NotNull JavaPlugin plugin) {
         load(plugin);
