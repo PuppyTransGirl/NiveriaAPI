@@ -2,7 +2,6 @@ package toutouchien.niveriaapi;
 
 import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
@@ -124,9 +123,7 @@ public final class NiveriaAPI extends JavaPlugin {
         this.getSLF4JLogger().info("Reloading NiveriaAPI...");
 
         this.reloadConfig();
-
-        for (Player player : Bukkit.getOnlinePlayers())
-            player.updateCommands();
+        Lang.reload(this);
 
         this.getSLF4JLogger().info("NiveriaAPI reloaded.");
     }

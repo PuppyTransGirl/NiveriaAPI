@@ -6,23 +6,16 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.ColorUtils;
+import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
-import toutouchien.niveriaapi.utils.MessageUtils;
-import toutouchien.niveriaapi.utils.StringUtils;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
 public class NiveriaAPICommand {
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-
     private NiveriaAPICommand() {
         throw new IllegalStateException("Command class");
     }
@@ -41,8 +34,9 @@ public class NiveriaAPICommand {
                                     for (Player target : targets)
                                         target.updateCommands();
 
-                                    MessageUtils.sendSuccessMessage(executor, Component.text("Vous avez rechargé les commandes de " + targets.size())
-                                            .append(Component.text(" " + StringUtils.pluralize("joueur", targets.size()))));
+                                    int playersNumber = targets.size();
+                                    String messageKey = "niveriaapi_command_niveriaapi_subcommand_fixcommands";
+                                    Lang.sendMessage(executor, playersNumber == 1 ? messageKey : messageKey + "_multiple", playersNumber);
 
                                     return Command.SINGLE_SUCCESS;
                                 })
@@ -54,17 +48,11 @@ public class NiveriaAPICommand {
                             Entity executor = ctx.getSource().getExecutor();
                             Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();
 
-                            MessageUtils.sendInfoMessage(executor, Component.text("Ping des bases de données:"));
+                            Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_ping");
 
                             for (Map.Entry<String, Long> pingEntry : pings.entrySet()) {
                                 double pingInMilliseconds = pingEntry.getValue() / 1_000_000D;
-                                String formattedPing = DECIMAL_FORMAT.format(pingInMilliseconds);
-
-                                executor.sendMessage(
-                                        Component.text(pingEntry.getKey(), ColorUtils.primaryColor())
-                                                .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
-                                                .append(Component.text(formattedPing + " ms"))
-                                );
+                                Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_ping_line", pingEntry.getKey(), pingInMilliseconds);
                             }
 
                             return Command.SINGLE_SUCCESS;
@@ -78,7 +66,7 @@ public class NiveriaAPICommand {
                             long startMillis = System.currentTimeMillis();
                             NiveriaAPI.instance().reload();
                             long timeTaken = System.currentTimeMillis() - startMillis;
-                            MessageUtils.sendSuccessMessage(executor, Component.text("NiveriaAPI a été rechargé avec succès ! (%s ms)".formatted(timeTaken)));
+                            Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_reload", timeTaken);
 
                             return Command.SINGLE_SUCCESS;
                         })
