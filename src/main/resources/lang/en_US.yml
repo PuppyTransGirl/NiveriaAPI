@@ -1,0 +1,43 @@
+# ============================================================
+# ===============  OTHER (PREFIXES, COLORS, ETC.) ============
+# ============================================================
+
+special-tags:
+  # ---------------- PREFIXES ----------------
+  prefix:
+    niveria: "<gradient:#FC67FA:#F4C4F3>ɴɪᴠᴇʀɪᴀ</gradient>"
+
+  # ---------------- COLORS ----------------
+  ncolor:
+    primary: "#FC67FA"
+    secondary: "#F4C4F3"
+    valid: "#7AF291"
+    error: "#F27474"
+    default: "#B0AEC1"
+
+  # ---------------- OTHER ----------------
+  other:
+    separator: "<#B0AEC1>»</#B0AEC1>"
+
+# ============================================================
+# ======================== FEATURES ==========================
+# ============================================================
+
+# ============================================================
+# NIVERIAAPI
+# ============================================================
+
+niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria/> <separator> <ncolor:default>Ping the databases</ncolor>"
+niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %s ms"
+
+niveriaapi_command_niveriaapi_no_arg: |-
+  <prefix:niveria/> <separator> <ncolor:error>You did not specify a subcommand.</ncolor>
+  <ncolor:default>Available subcommands are: ping</ncolor>
+
+# ============================================================
+# DELAY
+# ============================================================
+
+niveriaapi_delay_default_text: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
+niveriaapi_delay_default_moved_text: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
+niveriaapi_delay_default_already_has_delay_text: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
