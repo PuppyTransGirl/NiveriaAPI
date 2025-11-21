@@ -27,7 +27,9 @@ public class DelayBuilder {
 
 	private DelayBuilder(Player player) {
 		this.player = player;
-		this.text = Lang.get("delay_default_text");
+		this.text = Lang.get("niveriaapi_delay_default_text");
+        this.movedText = Lang.get("niveriaapi_delay_default_moved_text");
+        this.alreadyHasDelayText = Lang.get("niveriaapi_delay_default_already_has_delay_text");
 	}
 
 	public DelayBuilder text(Component text) {

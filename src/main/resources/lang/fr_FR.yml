@@ -30,7 +30,7 @@ special-tags:
 niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria/> <separator> <ncolor:default>Ping des bases de données</ncolor>"
 niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %s ms"
 
-niveria_command_niveriaapi_no_arg: |-
+niveriaapi_command_niveriaapi_no_arg: |-
   <prefix:niveria/> <separator> <ncolor:error>Vous n'avez pas spécifié de sous-commande.</ncolor>
   <ncolor:default>Les sous commandes disponibles sont : ping</ncolor>
 
@@ -38,6 +38,6 @@ niveria_command_niveriaapi_no_arg: |-
 # DELAY
 # ============================================================
 
-delay_default_message: "<prefix:niveria/> <separator> <ncolor:default>Téléportation dans <ncolor:secondary>%s</ncolor> secondes</ncolor>"
-delay_moved_default_message: "<prefix:niveria/> <separator> <ncolor:error>Votre demande de téléportation a été annulée car vous avez bougé.</ncolor>"
-delay_already_has_default_message: "<prefix:niveria/> <separator> <ncolor:error>Vous avez déjà une demande de téléportation.</ncolor>"
+niveriaapi_delay_default_text: "<prefix:niveria/> <separator> <ncolor:default>Téléportation dans <ncolor:secondary>%s</ncolor> secondes</ncolor>"
+niveriaapi_delay_default_moved_text: "<prefix:niveria/> <separator> <ncolor:error>Votre demande de téléportation a été annulée car vous avez bougé.</ncolor>"
+niveriaapi_delay_default_already_has_delay_text: "<prefix:niveria/> <separator> <ncolor:error>Vous avez déjà une demande de téléportation.</ncolor>"

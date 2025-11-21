@@ -16,6 +16,6 @@ public class NiveriaAPI extends Command {
 
 	@Override
 	public void execute(@NotNull CommandSender sender, String @NotNull [] args, @NotNull String label) {
-        Lang.sendMessage(sender, "niveria_command_niveriaapi_no_arg");
+        Lang.sendMessage(sender, "niveriaapi_command_niveriaapi_no_arg");
 	}
 }
