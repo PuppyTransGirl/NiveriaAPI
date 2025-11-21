@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -369,9 +370,7 @@ public class Lang {
      * @param key    The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key) {
-        Component message = get(audience, key);
-        if (!message.equals(Component.empty()))
-            audience.sendMessage(message);
+        sendMessage(audience, null, key, (Object[]) null);
     }
 
     /**
@@ -383,9 +382,21 @@ public class Lang {
      * @param args   The arguments to format into the message.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
-        Component message = get(audience, key, args);
-        if (!message.equals(Component.empty()))
-            audience.sendMessage(message);
+        sendMessage(audience, null, key, args);
+    }
+
+    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key) {
+        sendMessage(audience, sound, key, (Object[]) null);
+    }
+
+    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @Nullable Object @Nullable ... args) {
+        Component message = args == null ? get(audience, key) : get(audience, key, args);
+        if (message.equals(Component.empty()))
+            return;
+
+        audience.sendMessage(message);
+        if (sound != null)
+            audience.playSound(sound, Sound.Emitter.self());
     }
 
     /**
