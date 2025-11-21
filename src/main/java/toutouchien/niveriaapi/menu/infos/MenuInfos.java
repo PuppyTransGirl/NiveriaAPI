@@ -7,33 +7,33 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public class MenuInfos {
-	private final Player player;
-	private OfflinePlayer playerForInfos;
+    private final Player player;
+    private OfflinePlayer playerForInfos;
 
-	public MenuInfos(@NotNull Player player) {
-		this.player = player;
-	}
+    public MenuInfos(@NotNull Player player) {
+        this.player = player;
+    }
 
-	public MenuInfos(@NotNull Player player, OfflinePlayer playerForInfos) {
-		this.player = player;
-		this.playerForInfos = playerForInfos;
-	}
-
-    @NotNull
-	public Player player() {
-		return player;
-	}
+    public MenuInfos(@NotNull Player player, OfflinePlayer playerForInfos) {
+        this.player = player;
+        this.playerForInfos = playerForInfos;
+    }
 
     @NotNull
-	public UUID uuid() {
-		return player.getUniqueId();
-	}
+    public Player player() {
+        return player;
+    }
 
-	public void playerForInfos(OfflinePlayer playerForInfos) {
-		this.playerForInfos = playerForInfos;
-	}
+    @NotNull
+    public UUID uuid() {
+        return player.getUniqueId();
+    }
 
-	public OfflinePlayer playerForInfos() {
-		return playerForInfos;
-	}
+    public void playerForInfos(OfflinePlayer playerForInfos) {
+        this.playerForInfos = playerForInfos;
+    }
+
+    public OfflinePlayer playerForInfos() {
+        return playerForInfos;
+    }
 }

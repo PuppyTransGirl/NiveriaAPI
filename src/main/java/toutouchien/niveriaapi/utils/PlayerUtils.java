@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlayerUtils {
-	private PlayerUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    private PlayerUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	public static boolean isVanished(@NotNull Player player) {
+    public static boolean isVanished(@NotNull Player player) {
         if (player == null)
             throw new IllegalArgumentException("player cannot be null");
 
-		List<MetadataValue> metadata = player.getMetadata("vanished");
+        List<MetadataValue> metadata = player.getMetadata("vanished");
         for (MetadataValue metadatum : metadata) {
             Object value = metadatum.value();
             if ((value instanceof Boolean bool && bool)
@@ -29,9 +29,9 @@ public class PlayerUtils {
         }
 
         return false;
-	}
+    }
 
-	public static Collection<? extends Player> nonVanishedPlayers() {
+    public static Collection<? extends Player> nonVanishedPlayers() {
         List<Player> list = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!isVanished(player))
@@ -39,40 +39,40 @@ public class PlayerUtils {
         }
 
         return list;
-	}
+    }
 
-	public static Player nonVanishedPlayer(@NotNull String name) {
+    public static Player nonVanishedPlayer(@NotNull String name) {
         if (name == null)
             throw new IllegalArgumentException("name cannot be null");
 
-		Player player = Bukkit.getPlayer(name);
+        Player player = Bukkit.getPlayer(name);
         if (player == null || isVanished(player))
             return null;
 
         return player;
-	}
+    }
 
-	public static Player nonVanishedPlayerExact(@NotNull String name) {
+    public static Player nonVanishedPlayerExact(@NotNull String name) {
         if (name == null)
             throw new IllegalArgumentException("name cannot be null");
 
-		Player player = Bukkit.getPlayerExact(name);
+        Player player = Bukkit.getPlayerExact(name);
         if (player == null || isVanished(player))
             return null;
 
         return player;
-	}
+    }
 
-	public static Player nonVanishedPlayer(@NotNull UUID uuid) {
+    public static Player nonVanishedPlayer(@NotNull UUID uuid) {
         if (uuid == null)
             throw new IllegalArgumentException("uuid cannot be null");
 
-		Player player = Bukkit.getPlayer(uuid);
+        Player player = Bukkit.getPlayer(uuid);
         if (player == null || isVanished(player))
             return null;
 
         return player;
-	}
+    }
 
     public static boolean isValidPlayerName(@NotNull String name) {
         if (name == null)

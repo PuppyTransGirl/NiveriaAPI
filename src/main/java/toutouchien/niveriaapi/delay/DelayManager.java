@@ -108,7 +108,7 @@ public class DelayManager implements Listener {
 
 		Consumer<Player> successConsumer = delay.successConsumer();
 		if (successConsumer == null)
-			return;
+            return;
 
 		successConsumer.accept(player);
 	}

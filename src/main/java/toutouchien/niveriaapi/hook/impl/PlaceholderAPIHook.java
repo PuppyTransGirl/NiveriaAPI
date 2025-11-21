@@ -7,39 +7,39 @@ import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.placeholderapi.CustomPlaceholder;
 
 public class PlaceholderAPIHook extends Hook {
-	private boolean enabled;
+    private boolean enabled;
 
-	public PlaceholderAPIHook(NiveriaAPI plugin) {
-		super(plugin);
-	}
+    public PlaceholderAPIHook(NiveriaAPI plugin) {
+        super(plugin);
+    }
 
-	@Override
-	public void onEnable() {
-		this.plugin.getSLF4JLogger().info("Hooked into PlaceholderAPI");
-		this.enabled = true;
-	}
+    @Override
+    public void onEnable() {
+        this.plugin.getSLF4JLogger().info("Hooked into PlaceholderAPI");
+        this.enabled = true;
+    }
 
-	@Override
-	public void onDisable() {
-		this.enabled = false;
-		this.plugin.getSLF4JLogger().info("Unhooked from PlaceholderAPI");
-	}
+    @Override
+    public void onDisable() {
+        this.enabled = false;
+        this.plugin.getSLF4JLogger().info("Unhooked from PlaceholderAPI");
+    }
 
-	public String replacePlaceholders(String text) {
-		if (!this.enabled)
-			return text;
+    public String replacePlaceholders(String text) {
+        if (!this.enabled)
+            return text;
 
-		return PlaceholderAPI.setPlaceholders(null, text);
-	}
+        return PlaceholderAPI.setPlaceholders(null, text);
+    }
 
-	public String replacePlaceholders(Player player, String text) {
-		if (!this.enabled)
-			return text;
+    public String replacePlaceholders(Player player, String text) {
+        if (!this.enabled)
+            return text;
 
-		return PlaceholderAPI.setPlaceholders(player, text);
-	}
+        return PlaceholderAPI.setPlaceholders(player, text);
+    }
 
-	public void registerCustomPlaceholder(CustomPlaceholder customPlaceholder) {
-		customPlaceholder.register();
-	}
+    public void registerCustomPlaceholder(CustomPlaceholder customPlaceholder) {
+        customPlaceholder.register();
+    }
 }

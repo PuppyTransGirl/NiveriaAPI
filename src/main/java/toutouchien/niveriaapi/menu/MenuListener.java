@@ -11,33 +11,32 @@ import org.bukkit.inventory.InventoryHolder;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.menu.items.MenuItem;
-import toutouchien.niveriaapi.utils.NMSUtils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MenuListener implements Listener {
-	@EventHandler(ignoreCancelled = true)
-	public void onInventoryClick(InventoryClickEvent event) {
-		Inventory inventory = event.getClickedInventory();
-		if (event.getCurrentItem() == null || inventory == null)
-			return;
+    @EventHandler(ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        Inventory inventory = event.getClickedInventory();
+        if (event.getCurrentItem() == null || inventory == null)
+            return;
 
-		Player player = (Player) event.getWhoClicked();
+        Player player = (Player) event.getWhoClicked();
 
-		InventoryHolder topHolder = player.getOpenInventory().getTopInventory().getHolder(false);
-		if (topHolder instanceof Menu)
-			event.setCancelled(true);
+        InventoryHolder topHolder = player.getOpenInventory().getTopInventory().getHolder(false);
+        if (topHolder instanceof Menu)
+            event.setCancelled(true);
 
-		InventoryHolder holder = inventory.getHolder(false);
-		if (!(holder instanceof Menu menu))
-			return;
+        InventoryHolder holder = inventory.getHolder(false);
+        if (!(holder instanceof Menu menu))
+            return;
 
-		event.setCancelled(true);
+        event.setCancelled(true);
 
-		int slot = event.getSlot();
-		for (MenuItem menuItem : menu.itemsCache) {
-			if (menuItem.slot() != slot)
-				continue;
+        int slot = event.getSlot();
+        for (MenuItem menuItem : menu.itemsCache) {
+            if (menuItem.slot() != slot)
+                continue;
 
             player.playSound(Sound.sound(
                     Key.key("minecraft:ui.button.click"),
@@ -46,12 +45,12 @@ public class MenuListener implements Listener {
                     ThreadLocalRandom.current().nextFloat()
             ));
 
-			ClickEvent clickEvent = menuItem.clickEvent();
-			if (clickEvent == null)
-				return;
+            ClickEvent clickEvent = menuItem.clickEvent();
+            if (clickEvent == null)
+                return;
 
-			NiveriaInventoryClickEvent customEvent = new NiveriaInventoryClickEvent(event);
-			clickEvent.onClick(customEvent);
-		}
-	}
+            NiveriaInventoryClickEvent customEvent = new NiveriaInventoryClickEvent(event);
+            clickEvent.onClick(customEvent);
+        }
+    }
 }

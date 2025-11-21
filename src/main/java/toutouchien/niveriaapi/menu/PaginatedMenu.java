@@ -5,41 +5,41 @@ import toutouchien.niveriaapi.menu.infos.MenuInfos;
 import toutouchien.niveriaapi.menu.items.MenuItem;
 
 public abstract class PaginatedMenu extends Menu {
-	protected int page;
+    protected int page;
 
     protected PaginatedMenu(@NotNull MenuInfos menuInfos) {
-		super(menuInfos);
+        super(menuInfos);
 
         this.page = 0;
-	}
+    }
 
-	protected void incrementPage(int i) {
+    protected void incrementPage(int i) {
         if (i < 0)
             throw new IllegalArgumentException("Increment value must be non-negative");
 
-		this.page += i;
-
-		this.inventory.clear();
-
-        for (MenuItem menuItem : this.itemsCache = this.items())
-            this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
-	}
-
-	protected void decreasePage(int i) {
-		if (this.page <= 0)
-			throw new IllegalArgumentException("Cannot decrease page below 0");
-
-		this.page = Math.max(0, this.page - i);
+        this.page += i;
 
         this.inventory.clear();
 
         for (MenuItem menuItem : this.itemsCache = this.items())
             this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
-	}
+    }
 
-	public int page() {
-		return page;
-	}
+    protected void decreasePage(int i) {
+        if (this.page <= 0)
+            throw new IllegalArgumentException("Cannot decrease page below 0");
+
+        this.page = Math.max(0, this.page - i);
+
+        this.inventory.clear();
+
+        for (MenuItem menuItem : this.itemsCache = this.items())
+            this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
+    }
+
+    public int page() {
+        return page;
+    }
 
     public boolean firstPage() {
         return this.page == 0;

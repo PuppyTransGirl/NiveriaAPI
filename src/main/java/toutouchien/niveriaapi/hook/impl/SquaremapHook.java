@@ -9,34 +9,34 @@ import xyz.jpenilla.squaremap.api.SquaremapProvider;
 import java.util.UUID;
 
 public class SquaremapHook extends Hook {
-	private boolean enabled;
-	private Squaremap squaremap;
+    private boolean enabled;
+    private Squaremap squaremap;
 
-	public SquaremapHook(NiveriaAPI plugin) {
-		super(plugin);
-	}
+    public SquaremapHook(NiveriaAPI plugin) {
+        super(plugin);
+    }
 
-	@Override
-	public void onEnable() {
-		this.squaremap = SquaremapProvider.get();
-		this.plugin.getSLF4JLogger().info("Hooked into Squaremap");
-		this.enabled = true;
-	}
+    @Override
+    public void onEnable() {
+        this.squaremap = SquaremapProvider.get();
+        this.plugin.getSLF4JLogger().info("Hooked into Squaremap");
+        this.enabled = true;
+    }
 
-	@Override
-	public void onDisable() {
-		this.enabled = false;
-		this.plugin.getSLF4JLogger().info("Unhooked from Squaremap");
-	}
+    @Override
+    public void onDisable() {
+        this.enabled = false;
+        this.plugin.getSLF4JLogger().info("Unhooked from Squaremap");
+    }
 
-	public void setHidden(UUID uuid, boolean hidden, boolean persistent) {
-		if (!this.enabled)
-			return;
+    public void setHidden(UUID uuid, boolean hidden, boolean persistent) {
+        if (!this.enabled)
+            return;
 
-		this.squaremap.playerManager().hidden(uuid, hidden, persistent);
-	}
+        this.squaremap.playerManager().hidden(uuid, hidden, persistent);
+    }
 
-	public void setHidden(Player player, boolean hidden, boolean persistent) {
-		this.setHidden(player.getUniqueId(), hidden, persistent);
-	}
+    public void setHidden(Player player, boolean hidden, boolean persistent) {
+        this.setHidden(player.getUniqueId(), hidden, persistent);
+    }
 }

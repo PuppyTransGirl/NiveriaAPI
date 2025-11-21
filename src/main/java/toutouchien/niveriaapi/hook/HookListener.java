@@ -6,19 +6,19 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class HookListener implements Listener {
-	private final HookManager hookManager;
+    private final HookManager hookManager;
 
-	public HookListener(HookManager hookManager) {
-		this.hookManager = hookManager;
-	}
+    public HookListener(HookManager hookManager) {
+        this.hookManager = hookManager;
+    }
 
-	@EventHandler
-	public void onJoin(PlayerJoinEvent event) {
-		this.hookManager.onJoin(event);
-	}
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        this.hookManager.onJoin(event);
+    }
 
-	@EventHandler
-	public void onLeave(PlayerQuitEvent event) {
-		this.hookManager.onLeave(event);
-	}
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        this.hookManager.onLeave(event);
+    }
 }
