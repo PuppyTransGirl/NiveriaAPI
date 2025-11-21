@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.game;
+package toutouchien.niveriaapi.utils;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;

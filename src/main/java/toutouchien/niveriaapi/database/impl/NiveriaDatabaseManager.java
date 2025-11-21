@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.database.AbstractDatabaseManager;
 
+@ApiStatus.Internal
 public class NiveriaDatabaseManager extends AbstractDatabaseManager {
     @ApiStatus.Internal
     public NiveriaDatabaseManager(@NotNull NiveriaAPI plugin) {

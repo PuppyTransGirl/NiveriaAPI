@@ -1,13 +1,12 @@
 package toutouchien.niveriaapi.cooldown;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.base.Task;
-import toutouchien.niveriaapi.utils.common.TimeUtils;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.time.Duration;
 import java.util.*;
@@ -25,8 +24,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Example usage:
  * <pre>{@code
- * // Get the cooldown manager (assuming database is initialized elsewhere)
- * // CooldownManager cooldownManager = NiveriaAPI.instance().cooldownManager();
+ * CooldownManager cooldownManager = NiveriaAPI.instance().cooldownManager();
  *
  * // Create cooldown keys
  * Key fireballKey = Key.key("plugin_name", "ability_fireball");
@@ -44,9 +42,9 @@ import java.util.concurrent.TimeUnit;
  *
  * // Check if player is in cooldown
  * if (cooldownManager.inCooldown(player, fireballKey)) {
- * long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
- * MessageUtils.sendMessage(player, Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!"));
- * return;
+ *     long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
+ *     player.sendMessage(Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!", NamedTextColor.RED));
+ *     return;
  * }
  *
  * // Execute ability code
@@ -54,14 +52,14 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 public class CooldownManager {
-    private static final long DEFAULT_CLEANUP_TICKS = TimeUtils.ticks(3L, TimeUnit.MINUTES);
-    private static final long DATABASE_CLEANUP_TICKS = TimeUtils.ticks(15L, TimeUnit.MINUTES); // Less frequent DB cleanup
+    private static final long DEFAULT_CLEANUP_MINUTES = 3L;
+    private static final long DATABASE_CLEANUP_MINUTES = 15L; // Less frequent DB cleanup
 
     private final NiveriaAPI plugin;
     private final Map<CompositeKey, Cooldown> cooldowns = new ConcurrentHashMap<>();
-    private final BukkitTask cleanupTask;
-    private final BukkitTask databaseCleanupTask;
-    private final CooldownDatabase database; // Add database field
+    private final ScheduledTask cleanupTask;
+    private final ScheduledTask databaseCleanupTask;
+    private final CooldownDatabase database;
 
     /**
      * Constructs a new CooldownManager.
@@ -77,8 +75,8 @@ public class CooldownManager {
         this.database = database;
         loadPersistentCooldowns();
 
-        this.cleanupTask = Task.asyncRepeat(this::cleanupExpiredCooldowns, plugin, DEFAULT_CLEANUP_TICKS, DEFAULT_CLEANUP_TICKS);
-        this.databaseCleanupTask = Task.asyncRepeat(this::cleanupDatabaseCooldowns, plugin, DATABASE_CLEANUP_TICKS, DATABASE_CLEANUP_TICKS);
+        this.cleanupTask = Task.asyncRepeat(ignored -> cleanupExpiredCooldowns(), plugin, DEFAULT_CLEANUP_MINUTES, DEFAULT_CLEANUP_MINUTES, TimeUnit.MINUTES);
+        this.databaseCleanupTask = Task.asyncRepeat(ignored -> cleanupDatabaseCooldowns(), plugin, DATABASE_CLEANUP_MINUTES, DATABASE_CLEANUP_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
@@ -86,7 +84,7 @@ public class CooldownManager {
      * Should be called on startup. Runs asynchronously.
      */
     private void loadPersistentCooldowns() {
-        Task.async(() -> {
+        Task.async(task -> {
             List<Cooldown> persistentCooldowns = database.loadAllCooldowns();
             persistentCooldowns.forEach(cooldown -> {
                 if (cooldown.expired())
@@ -98,8 +96,6 @@ public class CooldownManager {
             plugin.getLogger().info("Loaded " + persistentCooldowns.size() + " active persistent cooldowns.");
         }, plugin);
     }
-
-    // --- Set Cooldown Methods (New methods with persistence flag and modified defaults) ---
 
     /**
      * Sets a cooldown for a player.

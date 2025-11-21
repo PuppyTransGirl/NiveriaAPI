@@ -1,12 +1,12 @@
-package toutouchien.niveriaapi.utils.data;
+package toutouchien.niveriaapi.utils;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class FileUtils {
-	public static String[] invalidCharacters;
-	public static String[] invalidWords;
+    private static String[] invalidCharacters;
+    private static String[] invalidWords;
 	private static String os;
 
 	private FileUtils() {

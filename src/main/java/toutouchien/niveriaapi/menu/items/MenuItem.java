@@ -12,6 +12,12 @@ public abstract class MenuItem {
 	private final ClickEvent clickEvent;
 
 	MenuItem(int slot, @NotNull ItemStack itemStack, @Nullable ClickEvent clickEvent) {
+        if (slot < 0)
+            throw new IllegalArgumentException("slot cannot be negative");
+
+        if (itemStack == null)
+            throw new IllegalArgumentException("itemStack cannot be null");
+
 		this.slot = slot;
 		this.itemStack = itemStack;
 		this.clickEvent = clickEvent;
@@ -25,10 +31,12 @@ public abstract class MenuItem {
 		return slot;
 	}
 
+    @NotNull
 	public ItemStack itemStack() {
 		return itemStack;
 	}
 
+    @Nullable
 	public ClickEvent clickEvent() {
 		return clickEvent;
 	}

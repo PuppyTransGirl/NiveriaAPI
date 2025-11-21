@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.ui;
+package toutouchien.niveriaapi.utils;
 
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
@@ -6,7 +6,6 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.utils.game.NMSUtils;
 
 import java.util.Collection;
 

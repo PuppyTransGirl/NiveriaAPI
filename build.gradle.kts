@@ -10,7 +10,6 @@ val itemsAdderVersion: String by project
 val worldguardVersion: String by project
 val landsVersion: String by project
 val bluemapVersion: String by project
-val pl3xmapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
@@ -74,6 +73,11 @@ tasks {
             "-XX:HotswapAgent=core",
             "-Dcom.mojang.eula.agree=true"
         )
+
+        downloadPlugins {
+            modrinth("LuckPerms", "v5.5.17-bukkit")
+            github("jpenilla", "TabTPS", "v1.3.29", "tabtps-paper-1.3.29.jar")
+        }
     }
 
     build {

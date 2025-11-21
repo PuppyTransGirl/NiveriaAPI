@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.ui;
+package toutouchien.niveriaapi.utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;

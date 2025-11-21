@@ -9,7 +9,11 @@ import java.util.function.Consumer;
 
 public class Delay {
 	private final Player player;
+
 	private final Component text;
+    private final Component movedText;
+    private final Component alreadyHasDelayText;
+
 	private final Consumer<Player> successConsumer;
 	private final Consumer<Player> failConsumer;
 	private final Location originalLocation;
@@ -19,9 +23,13 @@ public class Delay {
 	private final int delay;
 	private int delayRemaining;
 
-	Delay(@NotNull Player player, Component text, Consumer<Player> successConsumer, Consumer<Player> failConsumer, int delay, boolean cancelOnMove, boolean actionbar, boolean chat, boolean title) {
+	Delay(@NotNull Player player, Component text, Component movedText, Component alreadyHasDelayText, Consumer<Player> successConsumer, Consumer<Player> failConsumer, int delay, boolean cancelOnMove, boolean actionbar, boolean chat, boolean title) {
 		this.player = player;
+
 		this.text = text;
+        this.movedText = movedText;
+        this.alreadyHasDelayText = alreadyHasDelayText;
+
 		this.successConsumer = successConsumer;
 		this.failConsumer = failConsumer;
 		this.originalLocation = player.getLocation();
@@ -46,6 +54,14 @@ public class Delay {
 	public Component text() {
 		return text;
 	}
+
+    public Component movedText() {
+        return movedText;
+    }
+
+    public Component alreadyHasDelayText() {
+        return alreadyHasDelayText;
+    }
 
 	public Consumer<Player> successConsumer() {
 		return successConsumer;

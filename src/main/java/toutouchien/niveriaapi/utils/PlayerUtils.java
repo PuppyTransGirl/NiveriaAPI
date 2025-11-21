@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.game;
+package toutouchien.niveriaapi.utils;
 
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;

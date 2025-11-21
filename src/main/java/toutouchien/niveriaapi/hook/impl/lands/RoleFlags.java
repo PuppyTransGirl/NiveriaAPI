@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.hook.impl.lands;
 
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.RoleFlag;
-import toutouchien.niveriaapi.utils.common.StringUtils;
+import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
 
