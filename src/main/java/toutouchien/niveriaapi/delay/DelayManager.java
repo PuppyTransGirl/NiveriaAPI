@@ -1,9 +1,7 @@
 package toutouchien.niveriaapi.delay;
 
-import io.papermc.paper.adventure.PaperAdventure;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.NMSUtils;
 import toutouchien.niveriaapi.utils.Task;
 
 import java.util.HashMap;
@@ -87,27 +84,22 @@ public class DelayManager implements Listener {
 			return;
 		}
 
-		ServerGamePacketListenerImpl connection = NMSUtils.getConnection(delay.player());
-
+        Player player = delay.player();
 		int delayRemaining = delay.delayRemaining();
-		Component text = PaperAdventure.asVanilla(
-				delay.text().replaceText(builder -> builder.matchLiteral("%s").replacement(String.valueOf(delayRemaining)))
-		);
+		Component text = delay.text().replaceText(builder -> builder.matchLiteral("%s").replacement(String.valueOf(delayRemaining)));
 
 		if (delay.actionbar())
-			connection.send(new ClientboundSetActionBarTextPacket(text));
+			player.sendActionBar(text);
 
 		if (delay.chat())
-			connection.send(new ClientboundSystemChatPacket(text, false));
+			player.sendMessage(text);
 
 		if (delay.title()) {
-			ClientboundSetTitlesAnimationPacket titlesAnimationPacket = new ClientboundSetTitlesAnimationPacket(0, 30, 0);
-			ClientboundSetSubtitleTextPacket subtitleTextPacket = new ClientboundSetSubtitleTextPacket(Component.empty());
-			ClientboundSetTitleTextPacket titleTextPacket = new ClientboundSetTitleTextPacket(text);
-
-			connection.send(titlesAnimationPacket);
-			connection.send(subtitleTextPacket);
-			connection.send(titleTextPacket);
+            player.showTitle(Title.title(
+                    text,
+                    Component.empty(),
+                    0, 30, 0
+            ));
 		}
 	}
 
@@ -126,7 +118,7 @@ public class DelayManager implements Listener {
 		teleportDelays.remove(player);
 
 		if (delay.title())
-			NMSUtils.sendPacket(player, new ClientboundClearTitlesPacket(true));
+			player.clearTitle();
 
 		Consumer<Player> failConsumer = delay.failConsumer();
 		if (!fail || failConsumer == null)
