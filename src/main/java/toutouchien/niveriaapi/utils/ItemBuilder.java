@@ -12,7 +12,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -470,58 +469,6 @@ public class ItemBuilder {
      */
     public boolean forcedGlowing() {
         return itemStack.hasData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
-    }
-
-    /**
-     * Deprecated skull owner helper. Use headTexture variants instead.
-     *
-     * @param owner player name
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder skullOwner(String owner) {
-        return this.headTexture(Bukkit.getOfflinePlayer(owner));
-    }
-
-    /**
-     * Deprecated skull owner helper. Use headTexture variants instead.
-     *
-     * @param player offline player instance
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder skullOwner(OfflinePlayer player) {
-        return this.headTexture(player);
-    }
-
-    /**
-     * Deprecated skull owner helper. Use headTexture variants instead.
-     *
-     * @param url texture URL
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder skullOwner(URL url) {
-        return this.headTexture(url);
-    }
-
-    /**
-     * Deprecated getter for skull owner name.
-     *
-     * @return owner name or null
-     * @deprecated since 2.1.0
-     */
-    @Nullable
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public String skullOwner() {
-        ResolvableProfile ownerProfile = itemStack.getData(DataComponentTypes.PROFILE);
-        return ownerProfile == null ? null : ownerProfile.name();
     }
 
     /**
@@ -1210,88 +1157,6 @@ public class ItemBuilder {
     public <P, C> ItemBuilder persistentData(@NotNull Key key, @NotNull PersistentDataType<P, C> type, @NotNull C value) {
         itemStack.editPersistentDataContainer(pdc -> pdc.set(new NamespacedKey(key.namespace(), key.value()), type, value));
         return this;
-    }
-
-    /**
-     * Deprecated helpers for Bukkit ItemFlags using ItemMeta. Prefer using
-     * DataComponent-based tooltip/hide APIs where possible.
-     *
-     * @param itemFlags item flags to add
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder addItemFlags(@NotNull ItemFlag... itemFlags) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.addItemFlags(itemFlags);
-
-        itemStack.setItemMeta(itemMeta);
-        return this;
-    }
-
-    /**
-     * Replace the item flags with the provided set.
-     *
-     * @param itemFlags item flags to set
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder itemFlags(@NotNull ItemFlag... itemFlags) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
-        itemMeta.addItemFlags(itemFlags);
-
-        itemStack.setItemMeta(itemMeta);
-        return this;
-    }
-
-    /**
-     * Remove specified item flags.
-     *
-     * @param itemFlags item flags to remove
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder removeItemFlags(@NotNull ItemFlag... itemFlags) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.removeItemFlags(itemFlags);
-
-        itemStack.setItemMeta(itemMeta);
-        return this;
-    }
-
-    /**
-     * Remove all item flags.
-     *
-     * @return this builder
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public ItemBuilder removeItemFlags() {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.removeItemFlags(itemMeta.getItemFlags().toArray(new ItemFlag[0]));
-
-        itemStack.setItemMeta(itemMeta);
-        return this;
-    }
-
-    /**
-     * Get the ItemFlags currently set on the item's ItemMeta.
-     *
-     * @return set of ItemFlag
-     * @deprecated since 2.1.0
-     */
-    @NotNull
-    @Deprecated(since = "2.1.0", forRemoval = true)
-    public Set<ItemFlag> itemFlags() {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        return itemMeta.getItemFlags();
     }
 
     /**
