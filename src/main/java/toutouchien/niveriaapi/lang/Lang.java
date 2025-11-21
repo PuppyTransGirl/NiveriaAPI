@@ -389,7 +389,7 @@ public class Lang {
     }
 
     /**
-     * Reloads all language configurations and messages from the disk. This is
+     * Reloads all language configurations and messages from the specified plugin. This is
      * useful for applying changes to language files without restarting the
      * server.
      *
