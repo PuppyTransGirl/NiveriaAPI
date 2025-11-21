@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.common;
+package toutouchien.niveriaapi.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.base;
+package toutouchien.niveriaapi.utils;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;

@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.base;
+package toutouchien.niveriaapi.utils;
 
 import java.util.Objects;
 

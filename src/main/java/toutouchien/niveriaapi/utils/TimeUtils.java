@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.common;
+package toutouchien.niveriaapi.utils;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;

@@ -12,8 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.base.Task;
-import toutouchien.niveriaapi.utils.game.NMSUtils;
+import toutouchien.niveriaapi.utils.NMSUtils;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.util.HashMap;
 import java.util.Map;

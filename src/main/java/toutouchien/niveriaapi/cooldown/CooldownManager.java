@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.base.Task;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.time.Duration;
 import java.util.*;

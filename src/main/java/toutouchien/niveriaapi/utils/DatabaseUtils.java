@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.data;
+package toutouchien.niveriaapi.utils;
 
 import org.bson.Document;
 import org.bukkit.Bukkit;
