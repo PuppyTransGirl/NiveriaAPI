@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemsAdderStack {
-    private CustomStack stack;
+    private final CustomStack stack;
 
     public ItemsAdderStack(@NotNull CustomStack stack) {
         this.stack = stack;
