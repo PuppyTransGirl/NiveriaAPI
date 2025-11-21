@@ -182,9 +182,9 @@ public class Lang {
      * not found. Finally, it formats the string with the provided arguments.
      *
      * @param audience The entity, used to determine the locale. Can be
-     *               {@code null} to force the default server locale.
-     * @param key    The key of the message to retrieve.
-     * @param args   Optional arguments to format into the message string.
+     *                 {@code null} to force the default server locale.
+     * @param key      The key of the message to retrieve.
+     * @param args     Optional arguments to format into the message string.
      * @return The final, formatted message string.
      */
     @NotNull
@@ -228,7 +228,7 @@ public class Lang {
      * if enabled.
      *
      * @param audience The recipient of the message, used for locale detection.
-     * @param key    The key of the message to retrieve.
+     * @param key      The key of the message to retrieve.
      * @return The localized string, or the key itself if not found.
      */
     @NotNull
@@ -241,8 +241,8 @@ public class Lang {
      * audience's locale if enabled.
      *
      * @param audience The recipient of the message, used for locale detection.
-     * @param key    The key of the message to retrieve.
-     * @param args   The arguments to format into the message string.
+     * @param key      The key of the message to retrieve.
+     * @param args     The arguments to format into the message string.
      * @return The formatted localized string, or the key itself if not found.
      */
     @NotNull
@@ -264,7 +264,7 @@ public class Lang {
      * The input string is then deserialized with these resolvers.
      *
      * @param audience The entity, used for locale detection (may be {@code null}).
-     * @param input  The message string to parse.
+     * @param input    The message string to parse.
      * @return The parsed {@link Component} with all custom tags resolved.
      */
     @NotNull
@@ -338,7 +338,7 @@ public class Lang {
      * locale if enabled. The string is parsed using MiniMessage.
      *
      * @param audience The recipient of the message, used for locale detection.
-     * @param key    The key of the message to retrieve.
+     * @param key      The key of the message to retrieve.
      * @return The localized component.
      */
     @NotNull
@@ -352,8 +352,8 @@ public class Lang {
      * audience's locale if enabled. The string is parsed using MiniMessage.
      *
      * @param audience The recipient of the message, used for locale detection.
-     * @param key    The key of the message to retrieve.
-     * @param args   The arguments to format into the message.
+     * @param key      The key of the message to retrieve.
+     * @param args     The arguments to format into the message.
      * @return The formatted, localized component.
      */
     @NotNull
@@ -363,32 +363,49 @@ public class Lang {
     }
 
     /**
-     * Gets a localized message and sends it directly to a
+     * Gets a localized message and sends it directly to an
      * {@link Audience}.
      *
      * @param audience The recipient of the message.
-     * @param key    The key of the message to send.
+     * @param key      The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key) {
         sendMessage(audience, null, key, (Object[]) null);
     }
 
     /**
-     * Gets a formatted, localized message and sends it directly to a
+     * Gets a formatted, localized message and sends it directly to an
      * {@link Audience}.
      *
      * @param audience The recipient of the message.
-     * @param key    The key of the message to send.
-     * @param args   The arguments to format into the message.
+     * @param key      The key of the message to send.
+     * @param args     The arguments to format into the message.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
         sendMessage(audience, null, key, args);
     }
 
-    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key) {
+    /**
+     * Gets a localized message, plays a sound, and sends it directly to an
+     * {@link Audience}.
+     *
+     * @param audience The recipient of the message.
+     * @param sound    The sound to play when sending the message.
+     * @param key      The key of the message to send.
+     */
+    public static void sendMessage(@NotNull Audience audience, @NotNull Sound sound, @NotNull String key) {
         sendMessage(audience, sound, key, (Object[]) null);
     }
 
+    /**
+     * Gets a formatted, localized message, plays a sound, and sends it directly
+     * to an {@link Audience}.
+     *
+     * @param audience The recipient of the message.
+     * @param sound    The sound to play when sending the message.
+     * @param key      The key of the message to send.
+     * @param args     The arguments to format into the message.
+     */
     public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @Nullable Object @Nullable ... args) {
         Component message = args == null ? get(audience, key) : get(audience, key, args);
         if (message.equals(Component.empty()))
