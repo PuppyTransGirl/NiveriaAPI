@@ -27,12 +27,13 @@ special-tags:
 # NIVERIAAPI
 # ============================================================
 
-niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria/> <separator> <ncolor:default>Ping des bases de données</ncolor>"
-niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %s ms"
+niveriaapi_command_niveriaapi_subcommand_fixcommands: "<prefix:niveria/> <separator> <ncolor:valid>Vous avez rechargé les commandes de %d joueur.</ncolor>"
+niveriaapi_command_niveriaapi_subcommand_fixcommands_multiple: "<prefix:niveria/> <separator> <ncolor:valid>Vous avez rechargé les commandes de %d joueurs.</ncolor>"
 
-niveriaapi_command_niveriaapi_no_arg: |-
-  <prefix:niveria/> <separator> <ncolor:error>Vous n'avez pas spécifié de sous-commande.</ncolor>
-  <ncolor:default>Les sous commandes disponibles sont : ping</ncolor>
+niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria/> <separator> <ncolor:default>Ping des bases de données</ncolor>"
+niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %.2f ms"
+
+niveriaapi_command_niveriaapi_subcommand_reload: "<prefix:niveria/> <separator> <ncolor:valid>NiveriaAPI a été rechargé. (%s ms)</ncolor>"
 
 # ============================================================
 # DELAY

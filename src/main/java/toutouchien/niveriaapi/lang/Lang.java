@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.io.File;
 import java.util.Locale;
@@ -265,10 +267,11 @@ public class Lang {
      *
      * @param audience The entity, used for locale detection (may be {@code null}).
      * @param input    The message string to parse.
+     * @param key      The key of the message, used for logging on parse failure.
      * @return The parsed {@link Component} with all custom tags resolved.
      */
     @NotNull
-    private static Component getComponentInternal(@Nullable Audience audience, @NotNull String input) {
+    private static Component getComponentInternal(@Nullable Audience audience, @NotNull String input, @NotNull String key) {
         Locale loc = defaultLocale;
         if (usePlayerLocale && audience instanceof Player p)
             loc = p.locale();
@@ -298,12 +301,21 @@ public class Lang {
 
         TagResolver.Single separatorResolver = Placeholder.component("separator", MM.deserialize(otherMap.getOrDefault("separator", "")));
 
-        return MM.deserialize(
-                input,
-                prefixResolver,
-                colorResolver,
-                separatorResolver
-        );
+        Component deserializedText;
+
+        try {
+            deserializedText = MM.deserialize(
+                    input,
+                    prefixResolver,
+                    colorResolver,
+                    separatorResolver
+            );
+        } catch (ParsingException e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to parse MiniMessage string: {} (language key: {})", input, key, e);
+            deserializedText = Component.text(key);
+        }
+
+        return deserializedText;
     }
 
     /**
@@ -316,7 +328,7 @@ public class Lang {
     @NotNull
     public static Component get(@NotNull String key) {
         String raw = getStringInternal(null, key);
-        return getComponentInternal(null, raw);
+        return getComponentInternal(null, raw, key);
     }
 
     /**
@@ -330,7 +342,7 @@ public class Lang {
     @NotNull
     public static Component get(@NotNull String key, @Nullable Object @NotNull ... args) {
         String raw = getStringInternal(null, key, args);
-        return getComponentInternal(null, raw);
+        return getComponentInternal(null, raw, key);
     }
 
     /**
@@ -344,7 +356,7 @@ public class Lang {
     @NotNull
     public static Component get(@NotNull Audience audience, @NotNull String key) {
         String raw = getStringInternal(audience, key);
-        return getComponentInternal(audience, raw);
+        return getComponentInternal(audience, raw, key);
     }
 
     /**
@@ -359,7 +371,7 @@ public class Lang {
     @NotNull
     public static Component get(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
         String raw = getStringInternal(audience, key, args);
-        return getComponentInternal(audience, raw);
+        return getComponentInternal(audience, raw, key);
     }
 
     /**

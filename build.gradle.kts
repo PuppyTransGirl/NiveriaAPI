@@ -69,6 +69,11 @@ tasks {
             "-XX:HotswapAgent=core",
             "-Dcom.mojang.eula.agree=true"
         )
+
+        downloadPlugins {
+            modrinth("LuckPerms", "v5.5.17-bukkit")
+            github("jpenilla", "TabTPS", "v1.3.29", "tabtps-paper-1.3.29.jar")
+        }
     }
 
     build {

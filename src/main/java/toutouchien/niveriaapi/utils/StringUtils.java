@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.common;
+package toutouchien.niveriaapi.utils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -80,6 +80,6 @@ public class StringUtils {
      * @return The appropriate singular or plural form
      */
     public static String pluralize(@NotNull String singular, @NotNull String plural, int count) {
-        return count == 1 ? singular : plural;
+        return -1 <= count && count <= 1 ? singular : plural;
     }
 }
