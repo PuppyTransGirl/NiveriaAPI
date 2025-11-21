@@ -12,10 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.utils.MessageUtils;
-import toutouchien.niveriaapi.utils.NMSUtils;
-import toutouchien.niveriaapi.utils.Task;
-import toutouchien.niveriaapi.utils.TimeUtils;
+import toutouchien.niveriaapi.utils.base.Task;
+import toutouchien.niveriaapi.utils.game.NMSUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +52,7 @@ public class DelayManager implements Listener {
 						continue;
 				}
 
-				MessageUtils.sendNMSErrorMessage(player, Component.literal("Ta demande de téléportation a été annulée car tu as bougé."));
+				player.sendMessage(delay.movedText());
 				reset(delay, true);
 			}
 		}, plugin, 3L, 1L, TimeUnit.SECONDS);
@@ -64,7 +62,7 @@ public class DelayManager implements Listener {
 		Player player = delay.player();
 
 		if (inDelay(player)) {
-			MessageUtils.sendNMSErrorMessage(player, Component.literal("Tu as déjà une demande de téléportation."));
+			player.sendMessage(delay.alreadyHasDelayText());
 			return;
 		}
 
