@@ -27,7 +27,7 @@ public class Lang {
     // Locale → ( Category → ( Key → Pattern ) )
     private static final Object2ObjectMap<Locale, Object2ObjectMap<String, Object2ObjectMap<String, String>>> LOCALE_SPECIAL_TAGS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     private static final MiniMessage MM = MiniMessage.builder().strict(true).build();
-    private static final String DEFAULT_LANG = "fr_FR";
+    private static final String DEFAULT_LANG = "en_US";
 
     private static final String[] DEFAULT_MESSAGES_FILES = {
             "en_US.yml",
