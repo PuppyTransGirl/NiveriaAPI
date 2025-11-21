@@ -15,6 +15,7 @@ import toutouchien.niveriaapi.delay.DelayManager;
 import toutouchien.niveriaapi.hook.HookListener;
 import toutouchien.niveriaapi.hook.HookManager;
 import toutouchien.niveriaapi.input.ChatInputManager;
+import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.menu.MenuListener;
 
 import java.util.Arrays;
@@ -42,6 +43,8 @@ public final class NiveriaAPI extends JavaPlugin {
         saveDefaultConfig();
 
         preLoadUtilsClasses();
+
+        Lang.load(this);
 
         try {
             String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
