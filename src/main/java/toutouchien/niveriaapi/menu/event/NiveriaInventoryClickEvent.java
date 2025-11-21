@@ -5,7 +5,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import toutouchien.niveriaapi.utils.ComponentUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
 import java.util.function.Consumer;
