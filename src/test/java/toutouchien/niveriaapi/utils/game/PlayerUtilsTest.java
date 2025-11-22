@@ -15,6 +15,7 @@ import org.mockbukkit.mockbukkit.plugin.PluginMock;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.mock.MockBukkitHelper;
 import toutouchien.niveriaapi.mock.ServerMock;
+import toutouchien.niveriaapi.utils.PlayerUtils;
 
 import java.util.Collection;
 import java.util.UUID;
