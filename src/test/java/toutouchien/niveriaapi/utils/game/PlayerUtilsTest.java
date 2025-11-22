@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("deprecation")
 class PlayerUtilsTest {
     public NiveriaAPI plugin;
     private ServerMock server;
