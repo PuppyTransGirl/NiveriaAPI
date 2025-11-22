@@ -117,9 +117,9 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("isVanished should throw an IllegalArgumentException when passed null")
-    void isVanished_shouldThrowIllegalArgumentExceptionWhenPassedNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.isVanished(null));
+    @DisplayName("isVanished should throw an NullPointerException when passed null")
+    void isVanished_shouldThrowWhenPassedNull() {
+        assertThrows(NullPointerException.class, () -> PlayerUtils.isVanished(null));
     }
 
     @Test
@@ -265,9 +265,9 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("nonVanishedPlayer(String) should throw when name is null")
+    @DisplayName("nonVanishedPlayer(String) should throw NullPointerException when name is null")
     void nonVanishedPlayerByName_shouldThrowWhenNameIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayer((String) null));
+        assertThrows(NullPointerException.class, () -> PlayerUtils.nonVanishedPlayer((String) null));
     }
 
     @Test
@@ -334,9 +334,9 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("nonVanishedPlayerExact(String) should throw when name is null")
+    @DisplayName("nonVanishedPlayerExact(String) should throw NullPointerException when name is null")
     void nonVanishedPlayerExact_shouldThrowWhenNameIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayerExact(null));
+        assertThrows(NullPointerException.class, () -> PlayerUtils.nonVanishedPlayerExact(null));
     }
 
     @Test
@@ -384,9 +384,9 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("nonVanishedPlayer(UUID) should throw when uuid is null")
+    @DisplayName("nonVanishedPlayer(UUID) should throw NullPointerException when uuid is null")
     void nonVanishedPlayerByUuid_shouldThrowWhenUuidIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.nonVanishedPlayer((UUID) null));
+        assertThrows(NullPointerException.class, () -> PlayerUtils.nonVanishedPlayer((UUID) null));
     }
 
     @Test
@@ -434,9 +434,9 @@ class PlayerUtilsTest {
     }
 
     @Test
-    @DisplayName("isValidPlayerName should throw IllegalArgumentException when null")
+    @DisplayName("isValidPlayerName should throw NullPointerException when null")
     void isValidPlayerName_shouldThrowWhenNull() {
-        assertThrows(IllegalArgumentException.class, () -> PlayerUtils.isValidPlayerName(null));
+        assertThrows(NullPointerException.class, () -> PlayerUtils.isValidPlayerName(null));
     }
 
     @ParameterizedTest
