@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -7,47 +8,32 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
-import toutouchien.niveriaapi.NiveriaAPI;
-
-import java.io.*;
 
 public class DatabaseUtils {
     private DatabaseUtils() {
         throw new IllegalStateException("Utility class");
     }
 
-    @Nullable
-    public static String toString(@NotNull ItemStack itemStack) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ObjectOutputStream dataOutput = new ObjectOutputStream(outputStream);
-            dataOutput.writeObject(itemStack);
-            dataOutput.flush();
-            dataOutput.close();
-            return new String(Base64Coder.encode(outputStream.toByteArray()));
-        } catch (IOException e) {
-            NiveriaAPI.instance().getSLF4JLogger().warn("Failed to serialize ItemStack", e);
-            return null;
-        }
+    public static byte @NotNull [] serializeItemStack(@NotNull ItemStack itemStack) {
+        Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
+        return itemStack.serializeAsBytes();
     }
 
     @Nullable
-    public static ItemStack itemStackFromDocument(@NotNull Document document, @NotNull String fieldName) {
-        String serializedItemStack = document.getString(fieldName);
-        if (serializedItemStack == null)
-            throw new IllegalArgumentException("Document does not contain an ItemStack at field: " + fieldName);
+    public static ItemStack deserializeItemStack(byte @NotNull [] serializedItemStack) {
+        Preconditions.checkNotNull(serializedItemStack, "serializedItemStack cannot be null");
+        return ItemStack.deserializeBytes(serializedItemStack);
+    }
 
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decode(serializedItemStack));
-            ObjectInputStream dataInput = new ObjectInputStream(inputStream);
-            ItemStack itemStack = (ItemStack) dataInput.readObject();
-            dataInput.close();
-            return itemStack;
-        } catch (IOException | ClassNotFoundException e) {
-            NiveriaAPI.instance().getSLF4JLogger().warn("Failed to deserialize ItemStack", e);
-            return null;
-        }
+    public static byte @NotNull [] serializeItemStackArray(@NotNull ItemStack[] itemStacks) {
+        Preconditions.checkNotNull(itemStacks, "itemStacks cannot be null");
+        return ItemStack.serializeItemsAsBytes(itemStacks);
+    }
+
+    @NotNull
+    public static ItemStack[] deserializeItemStackArray(byte @NotNull [] serializedItemStacks) {
+        Preconditions.checkNotNull(serializedItemStacks, "serializedItemStacks cannot be null");
+        return ItemStack.deserializeItemsFromBytes(serializedItemStacks);
     }
 
     @NotNull
