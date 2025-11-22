@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.utils.game;
+package toutouchien.niveriaapi.utils;
 
 import net.kyori.adventure.util.TriState;
 import org.bukkit.entity.Player;
@@ -15,7 +15,6 @@ import org.mockbukkit.mockbukkit.plugin.PluginMock;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.mock.MockBukkitHelper;
 import toutouchien.niveriaapi.mock.ServerMock;
-import toutouchien.niveriaapi.utils.PlayerUtils;
 
 import java.util.Collection;
 import java.util.UUID;
