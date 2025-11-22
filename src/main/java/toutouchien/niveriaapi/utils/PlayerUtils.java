@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,8 +18,7 @@ public class PlayerUtils {
     }
 
     public static boolean isVanished(@NotNull Player player) {
-        if (player == null)
-            throw new IllegalArgumentException("player cannot be null");
+        Preconditions.checkNotNull(player, "player cannot be null");
 
         List<MetadataValue> metadata = player.getMetadata("vanished");
         for (MetadataValue metadatum : metadata) {
@@ -42,8 +42,7 @@ public class PlayerUtils {
     }
 
     public static Player nonVanishedPlayer(@NotNull String name) {
-        if (name == null)
-            throw new IllegalArgumentException("name cannot be null");
+        Preconditions.checkNotNull(name, "name cannot be null");
 
         Player player = Bukkit.getPlayer(name);
         if (player == null || isVanished(player))
@@ -53,8 +52,7 @@ public class PlayerUtils {
     }
 
     public static Player nonVanishedPlayerExact(@NotNull String name) {
-        if (name == null)
-            throw new IllegalArgumentException("name cannot be null");
+        Preconditions.checkNotNull(name, "name cannot be null");
 
         Player player = Bukkit.getPlayerExact(name);
         if (player == null || isVanished(player))
@@ -64,8 +62,7 @@ public class PlayerUtils {
     }
 
     public static Player nonVanishedPlayer(@NotNull UUID uuid) {
-        if (uuid == null)
-            throw new IllegalArgumentException("uuid cannot be null");
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         Player player = Bukkit.getPlayer(uuid);
         if (player == null || isVanished(player))
@@ -75,8 +72,7 @@ public class PlayerUtils {
     }
 
     public static boolean isValidPlayerName(@NotNull String name) {
-        if (name == null)
-            throw new IllegalArgumentException("name cannot be null");
+        Preconditions.checkNotNull(name, "name cannot be null");
 
         if (name.length() < 3 || name.length() > 16)
             return false;
