@@ -8,52 +8,52 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 public class Delay {
-	private final Player player;
+    private final Player player;
 
-	private final Component text;
+    private final Component text;
     private final Component movedText;
     private final Component alreadyHasDelayText;
 
-	private final Consumer<Player> successConsumer;
-	private final Consumer<Player> failConsumer;
-	private final Location originalLocation;
-	private final boolean cancelOnMove;
-	private final boolean actionbar, chat, title;
+    private final Consumer<Player> successConsumer;
+    private final Consumer<Player> failConsumer;
+    private final Location originalLocation;
+    private final boolean cancelOnMove;
+    private final boolean actionbar, chat, title;
 
-	private final int delay;
-	private int delayRemaining;
+    private final int delay;
+    private int delayRemaining;
 
-	Delay(@NotNull Player player, Component text, Component movedText, Component alreadyHasDelayText, Consumer<Player> successConsumer, Consumer<Player> failConsumer, int delay, boolean cancelOnMove, boolean actionbar, boolean chat, boolean title) {
-		this.player = player;
+    Delay(@NotNull Player player, Component text, Component movedText, Component alreadyHasDelayText, Consumer<Player> successConsumer, Consumer<Player> failConsumer, int delay, boolean cancelOnMove, boolean actionbar, boolean chat, boolean title) {
+        this.player = player;
 
-		this.text = text;
+        this.text = text;
         this.movedText = movedText;
         this.alreadyHasDelayText = alreadyHasDelayText;
 
-		this.successConsumer = successConsumer;
-		this.failConsumer = failConsumer;
-		this.originalLocation = player.getLocation();
-		this.cancelOnMove = cancelOnMove;
+        this.successConsumer = successConsumer;
+        this.failConsumer = failConsumer;
+        this.originalLocation = player.getLocation();
+        this.cancelOnMove = cancelOnMove;
 
-		this.delay = delay;
-		this.delayRemaining = delay;
+        this.delay = delay;
+        this.delayRemaining = delay;
 
-		this.actionbar = actionbar;
-		this.chat = chat;
-		this.title = title;
-	}
+        this.actionbar = actionbar;
+        this.chat = chat;
+        this.title = title;
+    }
 
-	public void delayRemaining(int delayRemaining) {
-		this.delayRemaining = delayRemaining;
-	}
+    public void delayRemaining(int delayRemaining) {
+        this.delayRemaining = delayRemaining;
+    }
 
-	public Player player() {
-		return player;
-	}
+    public Player player() {
+        return player;
+    }
 
-	public Component text() {
-		return text;
-	}
+    public Component text() {
+        return text;
+    }
 
     public Component movedText() {
         return movedText;
@@ -63,39 +63,39 @@ public class Delay {
         return alreadyHasDelayText;
     }
 
-	public Consumer<Player> successConsumer() {
-		return successConsumer;
-	}
+    public Consumer<Player> successConsumer() {
+        return successConsumer;
+    }
 
-	public Consumer<Player> failConsumer() {
-		return failConsumer;
-	}
+    public Consumer<Player> failConsumer() {
+        return failConsumer;
+    }
 
-	public Location originalLocation() {
-		return originalLocation;
-	}
+    public Location originalLocation() {
+        return originalLocation;
+    }
 
-	public boolean cancelOnMove() {
-		return cancelOnMove;
-	}
+    public boolean cancelOnMove() {
+        return cancelOnMove;
+    }
 
-	public boolean actionbar() {
-		return actionbar;
-	}
+    public boolean actionbar() {
+        return actionbar;
+    }
 
-	public boolean chat() {
-		return chat;
-	}
+    public boolean chat() {
+        return chat;
+    }
 
-	public boolean title() {
-		return title;
-	}
+    public boolean title() {
+        return title;
+    }
 
-	public int delay() {
-		return delay;
-	}
+    public int delay() {
+        return delay;
+    }
 
-	public int delayRemaining() {
-		return delayRemaining;
-	}
+    public int delayRemaining() {
+        return delayRemaining;
+    }
 }

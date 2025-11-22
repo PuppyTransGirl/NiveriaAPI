@@ -1,0 +1,8 @@
+name: NiveriaAPI
+version: '${version}'
+main: toutouchien.niveriaapi.NiveriaAPI
+api-version: '${minecraftVersion}'
+load: STARTUP
+loader: toutouchien.niveriaapi.NiveriaAPILoader
+authors: [ Toutouchien ]
+website: https://niveria.fr

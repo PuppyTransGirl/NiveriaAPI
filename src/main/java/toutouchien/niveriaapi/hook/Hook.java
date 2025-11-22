@@ -5,25 +5,25 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 public abstract class Hook {
-	protected final NiveriaAPI plugin;
+    protected final NiveriaAPI plugin;
 
-	public Hook(NiveriaAPI plugin) {
-		this.plugin = plugin;
-	}
+    public Hook(NiveriaAPI plugin) {
+        this.plugin = plugin;
+    }
 
-	public void onEnable() {
+    public void onEnable() {
 
-	}
+    }
 
-	public void onDisable() {
+    public void onDisable() {
 
-	}
+    }
 
-	public void onJoin(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
 
-	}
+    }
 
-	public void onLeave(PlayerQuitEvent event) {
+    public void onLeave(PlayerQuitEvent event) {
 
-	}
+    }
 }
