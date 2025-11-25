@@ -250,8 +250,7 @@ public class ItemBuilder {
      * @return this builder
      */
     public ItemBuilder durability(int durability) {
-        Integer data = itemStack.getData(DataComponentTypes.MAX_DAMAGE);
-        itemStack.setData(DataComponentTypes.DAMAGE, (data == null ? itemStack.getType().getMaxDurability() : data) - durability);
+        itemStack.setData(DataComponentTypes.DAMAGE, maxDamage() - durability);
         return this;
     }
 
@@ -541,7 +540,7 @@ public class ItemBuilder {
      */
     @NotNull
     public ItemBuilder headTexture(URL textureURL) {
-        return this.headTexture(textureURL.toString());
+        return headTexture(textureURL.toString());
     }
 
     /**
