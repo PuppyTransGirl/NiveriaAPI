@@ -39,7 +39,7 @@ public class MenuListener implements Listener {
                 continue;
 
             player.playSound(Sound.sound(
-                    Key.key("minecraft:ui.button.click"),
+                    Key.key("minecraft", "ui.button.click"),
                     Sound.Source.UI,
                     1F,
                     ThreadLocalRandom.current().nextFloat()
