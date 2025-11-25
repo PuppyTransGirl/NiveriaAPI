@@ -134,6 +134,7 @@ class ItemBuilderTest {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Nested
     class GetterSetter {
         @ParameterizedTest
@@ -221,7 +222,7 @@ class ItemBuilderTest {
         @DisplayName("damage(int) should set and return DAMAGE component value")
         void damage_shouldSetAndReturnDamageValueWhenCalled() {
             ItemBuilder builder = ItemBuilder.of(Material.IRON_SWORD);
-            assertEquals(null, builder.damage());
+            assertNull(builder.damage());
 
             builder.damage(10);
 
@@ -577,7 +578,7 @@ class ItemBuilderTest {
                             TextDecoration.ITALIC,
                             TextDecoration.State.FALSE
                     ),
-                    builder.lore().get(0)
+                    builder.lore().getFirst()
             );
         }
 
@@ -598,7 +599,7 @@ class ItemBuilderTest {
                             TextDecoration.ITALIC,
                             TextDecoration.State.FALSE
                     ),
-                    lore.get(0)
+                    lore.getFirst()
             );
         }
 
@@ -618,7 +619,7 @@ class ItemBuilderTest {
                             TextDecoration.ITALIC,
                             TextDecoration.State.FALSE
                     ),
-                    lore.get(0)
+                    lore.getFirst()
             );
         }
 
