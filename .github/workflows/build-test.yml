@@ -14,7 +14,7 @@ on:
       - ".gitignore"
       - "LICENSE"
       - "README.md"
-    branches: [ '**' ]
+    branches: [ 'master' ]
 
 
 jobs:
