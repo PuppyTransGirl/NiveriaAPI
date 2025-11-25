@@ -58,7 +58,8 @@ public class DelayManager implements Listener {
     public void start(Delay delay) {
         Player player = delay.player();
 
-        if (inDelay(player)) {
+        Delay existing = teleportDelays.putIfAbsent(delay.player(), delay);
+        if (existing != null) {
             player.sendMessage(delay.alreadyHasDelayText());
             return;
         }

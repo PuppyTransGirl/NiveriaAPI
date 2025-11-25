@@ -4,6 +4,7 @@ import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 
@@ -16,9 +17,11 @@ public class CooldownDatabase {
     private static final String EXPIRATION_TIME = "expirationTime";
 
     private final NiveriaDatabaseManager database;
+    private final Logger logger;
 
-    public CooldownDatabase(NiveriaDatabaseManager database) {
+    public CooldownDatabase(NiveriaDatabaseManager database, Logger logger) {
         this.database = database;
+        this.logger = logger;
     }
 
     public void saveCooldown(@NotNull Cooldown cooldown) {
@@ -26,6 +29,13 @@ public class CooldownDatabase {
             Document cooldownDocument = new Document(EXPIRATION_TIME, cooldown.expirationTime());
             return this.database.setAsync(PLAYERS, cooldown.uuid().toString(), "cooldowns." + cooldown.key().asString(), cooldownDocument)
                     .thenApply(success -> null);
+        }).exceptionally(throwable -> {
+            this.logger.error(
+                    "Failed to save cooldown for player {} with key {}",
+                    cooldown.uuid(), cooldown.key(),
+                    throwable
+            );
+            return false;
         });
     }
 
