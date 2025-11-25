@@ -81,15 +81,18 @@ public class NiveriaAPI extends JavaPlugin {
 
     private void preLoadUtilsClasses() {
         String[] classes = {
-                "Task",
-                "MathUtils",
-                "StringUtils",
-                "TimeUtils",
+                "ColorUtils",
+                "CommandUtils",
+                "ComponentUtils",
                 "DatabaseUtils",
                 "FileUtils",
+                "ItemBuilder",
+                "MathUtils",
                 "PlayerUtils",
-                "ColorUtils",
-                "ComponentUtils"
+                "SerializeUtils",
+                "StringUtils",
+                "Task",
+                "TimeUtils"
         };
 
         this.getSLF4JLogger().info("Starting to preload utility classes");
