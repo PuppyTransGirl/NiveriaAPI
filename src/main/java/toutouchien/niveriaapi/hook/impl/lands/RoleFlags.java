@@ -57,15 +57,6 @@ public enum RoleFlags {
     }
 
     /**
-     * Get the original Lands API RoleFlag
-     *
-     * @return the original RoleFlag object
-     */
-    public RoleFlag flag() {
-        return flag;
-    }
-
-    /**
      * Find a RoleFlag by its name
      *
      * @param name The name of the flag (case-insensitive)
@@ -93,5 +84,14 @@ public enum RoleFlags {
         }
 
         return null;
+    }
+
+    /**
+     * Get the original Lands API RoleFlag
+     *
+     * @return the original RoleFlag object
+     */
+    public RoleFlag flag() {
+        return flag;
     }
 }

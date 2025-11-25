@@ -35,7 +35,7 @@ class StringUtilsTest {
     @Test
     @DisplayName("Test match methods")
     void testMatchMethods() {
-        enum TestEnum { VALUE_ONE, VALUE_TWO, VALUE_THREE }
+        enum TestEnum {VALUE_ONE, VALUE_TWO, VALUE_THREE}
 
         assertEquals(TestEnum.VALUE_ONE, StringUtils.match("value_one", TestEnum.class).orElse(null));
         assertEquals(TestEnum.VALUE_TWO, StringUtils.match("VALUE_TWO", TestEnum.class).orElse(null));

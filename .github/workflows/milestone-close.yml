@@ -2,7 +2,7 @@ name: Handle closing a milestone
 
 on:
   milestone:
-    types: [closed]
+    types: [ closed ]
 
 jobs:
   build-release:

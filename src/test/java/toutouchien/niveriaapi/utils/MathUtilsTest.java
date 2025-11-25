@@ -30,7 +30,7 @@ class MathUtilsTest {
         assertEquals(-1.23, MathUtils.decimalRound(-1.23456, 2));
         assertEquals(-1.235, MathUtils.decimalRound(-1.23456, 3));
     }
-    
+
     @Test
     @DisplayName("Decimal round float")
     void decimalRoundFloat() {

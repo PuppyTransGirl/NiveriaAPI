@@ -13,18 +13,6 @@ public class ItemsAdderHook extends Hook {
         super(plugin);
     }
 
-    @Override
-    public void onEnable() {
-        this.enabled = true;
-        this.plugin.getSLF4JLogger().info("Hooked into ItemsAdder");
-    }
-
-    @Override
-    public void onDisable() {
-        this.enabled = false;
-        this.plugin.getSLF4JLogger().info("Unhooked from ItemsAdder");
-    }
-
     public static ItemsAdderStack byNamespace(String namespace) {
         CustomStack stack = CustomStack.getInstance(namespace);
         if (stack == null)
@@ -39,5 +27,17 @@ public class ItemsAdderHook extends Hook {
             return null;
 
         return new ItemsAdderStack(stack);
+    }
+
+    @Override
+    public void onEnable() {
+        this.enabled = true;
+        this.plugin.getSLF4JLogger().info("Hooked into ItemsAdder");
+    }
+
+    @Override
+    public void onDisable() {
+        this.enabled = false;
+        this.plugin.getSLF4JLogger().info("Unhooked from ItemsAdder");
     }
 }

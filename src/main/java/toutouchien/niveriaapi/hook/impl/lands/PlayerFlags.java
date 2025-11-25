@@ -21,27 +21,18 @@ public enum PlayerFlags {
     }
 
     /**
-     * Get the original Lands API PlayerFlag
-     *
-     * @return the original PlayerFlag object
-     */
-    public PlayerFlag flag() {
-        return flag;
-    }
-    
-    /**
      * Find a PlayerFlag by its name
-     * 
+     *
      * @param name The name of the flag (case-insensitive)
      * @return The matching enum value or null if not found
      */
     public static Optional<PlayerFlags> byName(String name) {
         return StringUtils.match(name, PlayerFlags.class);
     }
-    
+
     /**
      * Find a PlayerFlag enum by its original Lands API PlayerFlag
-     * 
+     *
      * @param playerFlag The original PlayerFlag
      * @return The matching enum value or null if not found
      */
@@ -57,5 +48,14 @@ public enum PlayerFlags {
         }
 
         return null;
+    }
+
+    /**
+     * Get the original Lands API PlayerFlag
+     *
+     * @return the original PlayerFlag object
+     */
+    public PlayerFlag flag() {
+        return flag;
     }
 }

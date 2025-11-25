@@ -21,15 +21,15 @@ public class DelayBuilder {
     private boolean chat;
     private boolean title;
 
-    public static DelayBuilder of(Player player) {
-        return new DelayBuilder(player);
-    }
-
     private DelayBuilder(Player player) {
         this.player = player;
         this.text = Lang.get("niveriaapi_delay_default_text");
         this.movedText = Lang.get("niveriaapi_delay_default_moved_text");
         this.alreadyHasDelayText = Lang.get("niveriaapi_delay_default_already_has_delay_text");
+    }
+
+    public static DelayBuilder of(Player player) {
+        return new DelayBuilder(player);
     }
 
     public DelayBuilder text(Component text) {

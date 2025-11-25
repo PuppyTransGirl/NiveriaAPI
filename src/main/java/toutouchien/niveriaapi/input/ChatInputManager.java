@@ -27,7 +27,7 @@ public class ChatInputManager implements Listener {
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        
+
         if (!inputRequests.containsKey(playerId)) {
             return;
         }
@@ -54,7 +54,7 @@ public class ChatInputManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         cleanupRequest(event.getPlayer());
     }
-    
+
     /**
      * Registers a new input request for a player. The provided consumer will be
      * called with the player's next chat message.
@@ -65,7 +65,7 @@ public class ChatInputManager implements Listener {
     public void requestInput(Player player, Consumer<String> action) {
         inputRequests.put(player.getUniqueId(), action);
     }
-    
+
     /**
      * Cancels an existing input request for a player.
      *
@@ -75,7 +75,7 @@ public class ChatInputManager implements Listener {
     public boolean cancelRequest(Player player) {
         return inputRequests.remove(player.getUniqueId()) != null;
     }
-    
+
     /**
      * Checks if a player has an active input request.
      *
@@ -85,7 +85,7 @@ public class ChatInputManager implements Listener {
     public boolean hasActiveRequest(Player player) {
         return inputRequests.containsKey(player.getUniqueId());
     }
-    
+
     /**
      * Removes any active input request for the given player.
      *

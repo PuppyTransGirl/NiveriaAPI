@@ -33,27 +33,18 @@ public enum NaturalFlags {
     }
 
     /**
-     * Get the original Lands API NaturalFlag
-     *
-     * @return the original NaturalFlag object
-     */
-    public NaturalFlag flag() {
-        return flag;
-    }
-    
-    /**
      * Find a NaturalFlag by its name
-     * 
+     *
      * @param name The name of the flag (case-insensitive)
      * @return The matching enum value or null if not found
      */
     public static Optional<NaturalFlags> byName(String name) {
         return StringUtils.match(name, NaturalFlags.class);
     }
-    
+
     /**
      * Find a NaturalFlag enum by its original Lands API NaturalFlag
-     * 
+     *
      * @param naturalFlag The original NaturalFlag
      * @return The matching enum value or null if not found
      */
@@ -69,5 +60,14 @@ public enum NaturalFlags {
         }
 
         return null;
+    }
+
+    /**
+     * Get the original Lands API NaturalFlag
+     *
+     * @return the original NaturalFlag object
+     */
+    public NaturalFlag flag() {
+        return flag;
     }
 }

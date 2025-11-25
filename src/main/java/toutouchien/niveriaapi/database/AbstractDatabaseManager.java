@@ -42,8 +42,8 @@ public class AbstractDatabaseManager {
     public void registerDefault(@NotNull String collection, @NotNull Supplier<Document> defaultDocumentSupplier) {
         this.defaultDocuments.put(collection, defaultDocumentSupplier);
 
-         this.logger.info("Registered default document supplier for database '{}', collection '{}'.",
-                 mongoDatabase.getName(), collection);
+        this.logger.info("Registered default document supplier for database '{}', collection '{}'.",
+                mongoDatabase.getName(), collection);
     }
 
     // --- Synchronous Methods ---
@@ -70,7 +70,7 @@ public class AbstractDatabaseManager {
     @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getOrDefault(@NotNull Document document, @NotNull String key, @Nullable T defaultValue) {
-        if(key.isBlank())
+        if (key.isBlank())
             return defaultValue;
 
         String[] keyParts = key.split("\\.");
