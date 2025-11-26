@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.delay;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.Task;
 
@@ -21,7 +23,9 @@ public class DelayManager implements Listener {
     private final NiveriaAPI plugin;
     private final Map<Player, Delay> teleportDelays;
 
-    public DelayManager(NiveriaAPI plugin) {
+    public DelayManager(@NotNull NiveriaAPI plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         this.plugin = plugin;
         this.teleportDelays = new HashMap<>();
     }
@@ -55,7 +59,9 @@ public class DelayManager implements Listener {
         }, plugin, 3L, 1L, TimeUnit.SECONDS);
     }
 
-    public void start(Delay delay) {
+    public void start(@NotNull Delay delay) {
+        Preconditions.checkNotNull(delay, "delay cannot be null");
+
         Player player = delay.player();
 
         Delay existing = teleportDelays.putIfAbsent(delay.player(), delay);
@@ -78,7 +84,9 @@ public class DelayManager implements Listener {
         }, plugin, 1L, 1L, TimeUnit.SECONDS);
     }
 
-    private void updateDisplays(Delay delay) {
+    private void updateDisplays(@NotNull Delay delay) {
+        Preconditions.checkNotNull(delay, "delay cannot be null");
+
         if (delay.delayRemaining() == 0) {
             endDelay(delay);
             reset(delay, false);
@@ -104,7 +112,9 @@ public class DelayManager implements Listener {
         }
     }
 
-    private void endDelay(Delay delay) {
+    private void endDelay(@NotNull Delay delay) {
+        Preconditions.checkNotNull(delay, "delay cannot be null");
+
         Player player = delay.player();
 
         Consumer<Player> successConsumer = delay.successConsumer();
@@ -114,7 +124,9 @@ public class DelayManager implements Listener {
         successConsumer.accept(player);
     }
 
-    private void reset(Delay delay, boolean fail) {
+    private void reset(@NotNull Delay delay, boolean fail) {
+        Preconditions.checkNotNull(delay, "delay cannot be null");
+
         Player player = delay.player();
         teleportDelays.remove(player);
 
@@ -128,7 +140,8 @@ public class DelayManager implements Listener {
         failConsumer.accept(player);
     }
 
-    public boolean inDelay(Player player) {
+    public boolean inDelay(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
         return teleportDelays.containsKey(player);
     }
 

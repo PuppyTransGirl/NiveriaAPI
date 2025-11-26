@@ -1,7 +1,11 @@
 package toutouchien.niveriaapi.delay;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.lang.Lang;
 
 import java.util.function.Consumer;
@@ -21,74 +25,103 @@ public class DelayBuilder {
     private boolean chat;
     private boolean title;
 
-    private DelayBuilder(Player player) {
+    private DelayBuilder(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         this.player = player;
         this.text = Lang.get("niveriaapi_delay_default_text");
         this.movedText = Lang.get("niveriaapi_delay_default_moved_text");
         this.alreadyHasDelayText = Lang.get("niveriaapi_delay_default_already_has_delay_text");
     }
 
-    public static DelayBuilder of(Player player) {
+    @NotNull
+    public static DelayBuilder of(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         return new DelayBuilder(player);
     }
 
-    public DelayBuilder text(Component text) {
+    @NotNull
+    public DelayBuilder text(@NotNull Component text) {
+        Preconditions.checkNotNull(text, "text cannot be null");
+
         this.text = text;
         return this;
     }
 
-    public DelayBuilder movedText(Component movedText) {
+    @NotNull
+    public DelayBuilder movedText(@NotNull Component movedText) {
+        Preconditions.checkNotNull(movedText, "movedText cannot be null");
+
         this.movedText = movedText;
         return this;
     }
 
-    public DelayBuilder alreadyHasDelayText(Component alreadyHasDelayText) {
+    @NotNull
+    public DelayBuilder alreadyHasDelayText(@NotNull Component alreadyHasDelayText) {
+        Preconditions.checkNotNull(alreadyHasDelayText, "alreadyHasDelayText cannot be null");
+
         this.alreadyHasDelayText = alreadyHasDelayText;
         return this;
     }
 
-    public DelayBuilder texts(Component text, Component movedText, Component alreadyHasDelayText) {
+    @NotNull
+    public DelayBuilder texts(@NotNull Component text, @NotNull Component movedText, @NotNull Component alreadyHasDelayText) {
+        Preconditions.checkNotNull(text, "text cannot be null");
+        Preconditions.checkNotNull(movedText, "movedText cannot be null");
+        Preconditions.checkNotNull(alreadyHasDelayText, "alreadyHasDelayText cannot be null");
+
         this.text = text;
         this.movedText = movedText;
         this.alreadyHasDelayText = alreadyHasDelayText;
         return this;
     }
 
-    public DelayBuilder successConsumer(Consumer<Player> successConsumer) {
+    @NotNull
+    public DelayBuilder successConsumer(@Nullable Consumer<Player> successConsumer) {
         this.successConsumer = successConsumer;
         return this;
     }
 
-    public DelayBuilder failConsumer(Consumer<Player> failConsumer) {
+    @NotNull
+    public DelayBuilder failConsumer(@Nullable Consumer<Player> failConsumer) {
         this.failConsumer = failConsumer;
         return this;
     }
 
-    public DelayBuilder delay(int delay) {
+    @NotNull
+    public DelayBuilder delay(@Positive int delay) {
+        Preconditions.checkArgument(delay >= 1, "delay cannot be less than 1: %d", delay);
+
         this.delay = delay;
         return this;
     }
 
+    @NotNull
     public DelayBuilder cancelOnMove(boolean cancelOnMove) {
         this.cancelOnMove = cancelOnMove;
         return this;
     }
 
+    @NotNull
     public DelayBuilder actionbar(boolean actionbar) {
         this.actionbar = actionbar;
         return this;
     }
 
+    @NotNull
     public DelayBuilder chat(boolean chat) {
         this.chat = chat;
         return this;
     }
 
+    @NotNull
     public DelayBuilder title(boolean title) {
         this.title = title;
         return this;
     }
 
+    @NotNull
     public DelayBuilder visuals(boolean actionbar, boolean chat, boolean title) {
         this.actionbar = actionbar;
         this.chat = chat;
@@ -96,13 +129,8 @@ public class DelayBuilder {
         return this;
     }
 
+    @NotNull
     public Delay build() {
-        if (player == null)
-            throw new IllegalArgumentException("Player cannot be null.");
-
-        if (delay < 1)
-            throw new IllegalArgumentException("Delay must be more than 0. Delay: " + delay);
-
         return new Delay(player, text, movedText, alreadyHasDelayText, successConsumer, failConsumer, delay, cancelOnMove, actionbar, chat, title);
     }
 }

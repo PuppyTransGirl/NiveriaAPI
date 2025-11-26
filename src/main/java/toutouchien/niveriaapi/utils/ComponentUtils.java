@@ -1,8 +1,10 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 public class ComponentUtils {
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
@@ -13,20 +15,32 @@ public class ComponentUtils {
     }
 
     // MiniMessage
-    public static String serializeMM(Component component) {
+    @NotNull
+    public static String serializeMM(@NotNull Component component) {
+        Preconditions.checkNotNull(component, "component cannot be null");
+
         return miniMessage.serialize(component);
     }
 
-    public static Component deserializeMM(String input) {
+    @NotNull
+    public static Component deserializeMM(@NotNull String input) {
+        Preconditions.checkNotNull(input, "input cannot be null");
+
         return miniMessage.deserialize(input);
     }
 
     // JSON
-    public static String serializeJson(Component component) {
+    @NotNull
+    public static String serializeJson(@NotNull Component component) {
+        Preconditions.checkNotNull(component, "component cannot be null");
+
         return jsonSerializer.serialize(component);
     }
 
-    public static Component deserializeJson(String input) {
+    @NotNull
+    public static Component deserializeJson(@NotNull String input) {
+        Preconditions.checkNotNull(input, "input cannot be null");
+
         return jsonSerializer.deserialize(input);
     }
 }

@@ -6,11 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerUtils {
     private PlayerUtils() {
@@ -31,8 +29,9 @@ public class PlayerUtils {
         return false;
     }
 
+    @NotNull
     public static Collection<? extends Player> nonVanishedPlayers() {
-        List<Player> list = new ArrayList<>();
+        Set<Player> list = new HashSet<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!isVanished(player))
                 list.add(player);
@@ -41,6 +40,7 @@ public class PlayerUtils {
         return list;
     }
 
+    @Nullable
     public static Player nonVanishedPlayer(@NotNull String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
@@ -51,6 +51,7 @@ public class PlayerUtils {
         return player;
     }
 
+    @Nullable
     public static Player nonVanishedPlayerExact(@NotNull String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
@@ -61,6 +62,7 @@ public class PlayerUtils {
         return player;
     }
 
+    @Nullable
     public static Player nonVanishedPlayer(@NotNull UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 

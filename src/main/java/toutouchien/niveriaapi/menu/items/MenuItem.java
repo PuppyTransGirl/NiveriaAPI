@@ -1,7 +1,9 @@
 package toutouchien.niveriaapi.menu.items;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.NonNegative;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
@@ -11,12 +13,9 @@ public abstract class MenuItem {
     private final ItemStack itemStack;
     private final ClickEvent clickEvent;
 
-    MenuItem(int slot, @NotNull ItemStack itemStack, @Nullable ClickEvent clickEvent) {
-        if (slot < 0)
-            throw new IllegalArgumentException("slot cannot be negative");
-
-        if (itemStack == null)
-            throw new IllegalArgumentException("itemStack cannot be null");
+    MenuItem(@NonNegative int slot, @NotNull ItemStack itemStack, @Nullable ClickEvent clickEvent) {
+        Preconditions.checkArgument(slot >= 0, "slot cannot be less than 0: %d", slot);
+        Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 
         this.slot = slot;
         this.itemStack = itemStack;
@@ -27,6 +26,7 @@ public abstract class MenuItem {
         this(slot, ItemStack.of(material), clickEvent);
     }
 
+    @NonNegative
     public int slot() {
         return slot;
     }

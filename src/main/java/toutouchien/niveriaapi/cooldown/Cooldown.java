@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.cooldown;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,14 +22,16 @@ public class Cooldown {
     private final boolean persistent;
 
     /**
-     * Creates a new cooldown for a UUID with a specified duration in milliseconds.
+     * Creates a new Cooldown.
      *
-     * @param uuid           The UUID
-     * @param expirationTime The exact system time (in milliseconds) when the cooldown expires
-     * @throws NullPointerException if uuid is null
+     * @param uuid           The UUID associated with this cooldown
+     * @param key            The key associated with this cooldown
+     * @param expirationTime The expiration time in milliseconds since epoch
+     * @param persistent     Whether this cooldown is persistent
      */
     public Cooldown(@NotNull UUID uuid, @NotNull Key key, long expirationTime, boolean persistent) {
-        Objects.requireNonNull(uuid, "UUID must not be null");
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
 
         this.uuid = uuid;
         this.key = key;
@@ -37,14 +40,16 @@ public class Cooldown {
     }
 
     /**
-     * Creates a new cooldown for a player with a specified duration in milliseconds.
+     * Creates a new Cooldown.
      *
-     * @param player         The player
-     * @param expirationTime The exact system time (in milliseconds) when the cooldown expires
-     * @throws NullPointerException if player is null
+     * @param player         The player associated with this cooldown
+     * @param key            The key associated with this cooldown
+     * @param expirationTime The expiration time in milliseconds since epoch
+     * @param persistent     Whether this cooldown is persistent
      */
     public Cooldown(@NotNull Player player, @NotNull Key key, long expirationTime, boolean persistent) {
-        Objects.requireNonNull(player, "Player must not be null");
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
 
         this.uuid = player.getUniqueId();
         this.key = key;
@@ -53,15 +58,17 @@ public class Cooldown {
     }
 
     /**
-     * Creates a new cooldown for a UUID with a specified duration.
+     * Creates a new Cooldown.
      *
-     * @param uuid     The UUID
-     * @param duration The cooldown duration
-     * @throws NullPointerException if uuid or duration is null
+     * @param uuid       The UUID associated with this cooldown
+     * @param key        The key associated with this cooldown
+     * @param duration   The duration of the cooldown
+     * @param persistent Whether this cooldown is persistent
      */
     public Cooldown(@NotNull UUID uuid, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
-        Objects.requireNonNull(uuid, "UUID must not be null");
-        Objects.requireNonNull(duration, "Duration must not be null");
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(duration, "duration cannot be null");
 
         this.uuid = uuid;
         this.key = key;
@@ -70,15 +77,17 @@ public class Cooldown {
     }
 
     /**
-     * Creates a new cooldown for a player with a specified duration.
+     * Creates a new Cooldown.
      *
-     * @param player   The player
-     * @param duration The cooldown duration
-     * @throws NullPointerException if player or duration is null
+     * @param player     The player associated with this cooldown
+     * @param key        The key associated with this cooldown
+     * @param duration   The duration of the cooldown
+     * @param persistent Whether this cooldown is persistent
      */
     public Cooldown(@NotNull Player player, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
-        Objects.requireNonNull(player, "Player must not be null");
-        Objects.requireNonNull(duration, "Duration must not be null");
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(duration, "duration cannot be null");
 
         this.uuid = player.getUniqueId();
         this.key = key;

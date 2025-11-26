@@ -1,6 +1,8 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -19,8 +21,11 @@ public class StringUtils {
      * @param string The string to capitalize
      * @return The capitalized string, or the original string if null or blank
      */
-    public static String capitalize(String string) {
-        if (string == null || string.isBlank())
+    @NotNull
+    public static String capitalize(@NotNull String string) {
+        Preconditions.checkNotNull(string, "string cannot be null");
+
+        if (string.isBlank())
             return string;
 
         return string.toUpperCase().charAt(0) + string.toLowerCase(Locale.ROOT).substring(1);
@@ -34,7 +39,11 @@ public class StringUtils {
      * @param <T>       The enum type
      * @return An Optional containing the matched enum constant, or empty if no match found
      */
-    public static <T extends Enum<T>> Optional<T> match(String key, Class<T> enumClass) {
+    @NotNull
+    public static <T extends Enum<T>> Optional<T> match(@NotNull String key, @NotNull Class<T> enumClass) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
+
         try {
             return Optional.of(Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT)));
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -51,7 +60,10 @@ public class StringUtils {
      * @param defaultValue The default value to return if no match is found
      * @return The matched enum constant, or the default value if no match found
      */
-    public static <T extends Enum<T>> T match(String key, Class<T> enumClass, T defaultValue) {
+    public static <T extends Enum<T>> T match(@NotNull String key, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
+
         try {
             return Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT));
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -67,7 +79,10 @@ public class StringUtils {
      * @param count    The count to determine singular or plural
      * @return The appropriate singular or plural form
      */
+    @NotNull
     public static String pluralize(@NotNull String singular, int count) {
+        Preconditions.checkNotNull(singular, "singular cannot be null");
+
         return pluralize(singular, singular + "s", count);
     }
 
@@ -79,7 +94,11 @@ public class StringUtils {
      * @param count    The count to determine singular or plural
      * @return The appropriate singular or plural form
      */
+    @NotNull
     public static String pluralize(@NotNull String singular, @NotNull String plural, int count) {
+        Preconditions.checkNotNull(singular, "singular cannot be null");
+        Preconditions.checkNotNull(plural, "plural cannot be null");
+
         return -1 <= count && count <= 1 ? singular : plural;
     }
 }

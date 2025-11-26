@@ -536,13 +536,13 @@ class ItemBuilderTest {
         }
 
         @Test
-        @DisplayName("loreLine should return null when index is out of bounds or lore not present")
-        void loreLine_shouldReturnNullWhenIndexOutOfBoundsOrLoreMissing() {
+        @DisplayName("loreLine should throw IndexOutOfBoundsException when index is out of bounds or lore not present")
+        void loreLine_shouldReturnThrowWhenIndexOutOfBoundsOrLoreMissing() {
             ItemBuilder builder = ItemBuilder.of(Material.STONE);
             assertNull(builder.loreLine(0));
 
             builder.lore(Component.text("Only line"));
-            assertNull(builder.loreLine(5));
+            assertThrows(IndexOutOfBoundsException.class, () -> builder.loreLine(5));
         }
 
         @Test

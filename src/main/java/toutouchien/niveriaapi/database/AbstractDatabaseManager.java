@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.database;
 
+import com.google.common.base.Preconditions;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -29,6 +30,9 @@ public class AbstractDatabaseManager {
     private final Map<String, MongoCollection<Document>> collectionCache;
 
     public AbstractDatabaseManager(@NotNull Plugin plugin, @NotNull MongoDatabase mongoDatabase) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+        Preconditions.checkNotNull(mongoDatabase, "mongoDatabase cannot be null");
+
         this.plugin = plugin;
         this.logger = plugin.getSLF4JLogger();
         this.scheduler = plugin.getServer().getScheduler();
@@ -40,6 +44,9 @@ public class AbstractDatabaseManager {
     }
 
     public void registerDefault(@NotNull String collection, @NotNull Supplier<Document> defaultDocumentSupplier) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(defaultDocumentSupplier, "defaultDocumentSupplier cannot be null");
+
         this.defaultDocuments.put(collection, defaultDocumentSupplier);
 
         this.logger.info("Registered default document supplier for database '{}', collection '{}'.",
@@ -50,16 +57,27 @@ public class AbstractDatabaseManager {
 
     @Nullable
     public <T> T get(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return this.getOrDefault(collection, id, key, null);
     }
 
     @Nullable
     public <T> T get(@NotNull Document document, @NotNull String key) {
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return this.getOrDefault(document, key, null);
     }
 
     @Nullable
     public <T> T getOrDefault(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T defaultValue) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         Document document = this.document(collection, id);
         if (document == null)
             return defaultValue;
@@ -67,9 +85,12 @@ public class AbstractDatabaseManager {
         return this.getOrDefault(document, key, defaultValue);
     }
 
-    @Nullable
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> T getOrDefault(@NotNull Document document, @NotNull String key, @Nullable T defaultValue) {
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         if (key.isBlank())
             return defaultValue;
 
@@ -102,6 +123,10 @@ public class AbstractDatabaseManager {
     }
 
     public <T> void set(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T value) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         Document document = this.document(collection, id);
         if (document == null) {
             this.logger.warn("Attempted to set value for non-existent document: database='{}', collection='{}', id='{}'",
@@ -113,6 +138,11 @@ public class AbstractDatabaseManager {
     }
 
     public <T> void set(@NotNull String collection, @NotNull String id, @NotNull Document document, @NotNull String key, @Nullable T value) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         if (!setValueInDocument(document, key, value, collection, id))
             return;
 
@@ -120,6 +150,10 @@ public class AbstractDatabaseManager {
     }
 
     public void remove(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         Document document = this.document(collection, id);
         if (document == null) {
             this.logger.warn("Attempted to remove value for non-existent document: database='{}', collection='{}', id='{}'",
@@ -140,12 +174,19 @@ public class AbstractDatabaseManager {
     }
 
     public void remove(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         MongoCollection<Document> mongoCollection = this.collection(collection);
         Bson filter = Filters.eq("_id", id);
         mongoCollection.deleteOne(filter);
     }
 
     public void document(@NotNull String collection, @NotNull String id, @NotNull Document document) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(document, "document cannot be null");
+
         try {
             MongoCollection<Document> mongoCollection = this.collection(collection);
             Bson filter = Filters.eq("_id", id);
@@ -173,6 +214,9 @@ public class AbstractDatabaseManager {
 
     @Nullable
     public Document document(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         MongoCollection<Document> mongoCollection = this.collection(collection);
         Bson filter = Filters.eq("_id", id);
         return mongoCollection.find(filter).first();
@@ -180,6 +224,9 @@ public class AbstractDatabaseManager {
 
     @NotNull
     public Document documentOrDefault(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         Document document = this.document(collection, id);
         if (document == null)
             document = createDefaultDocument(collection, id, null);
@@ -189,6 +236,9 @@ public class AbstractDatabaseManager {
 
     @NotNull
     public Document createDefaultDocument(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> consumer) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         MongoCollection<Document> mongoCollection = this.collection(collection);
         Supplier<Document> supplier = this.defaultDocuments.get(collection);
         if (supplier == null) {
@@ -208,21 +258,38 @@ public class AbstractDatabaseManager {
     }
 
     public boolean documentExists(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         MongoCollection<Document> mongoCollection = this.collection(collection);
         return mongoCollection.find(Filters.eq("_id", id)).first() != null;
     }
 
     // --- Asynchronous Methods ---
 
+    @NotNull
     public <T> CompletableFuture<T> getAsync(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return this.getOrDefaultAsync(collection, id, key, null);
     }
 
+    @NotNull
     public <T> CompletableFuture<T> getAsync(@NotNull Document document, @NotNull String key) {
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return CompletableFuture.completedFuture(this.getOrDefault(document, key, null));
     }
 
+    @NotNull
     public <T> CompletableFuture<T> getOrDefaultAsync(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T defaultValue) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return documentAsync(collection, id).thenApply(document -> {
             if (document == null)
                 return defaultValue;
@@ -231,7 +298,12 @@ public class AbstractDatabaseManager {
         });
     }
 
+    @NotNull
     public <T> CompletableFuture<Boolean> setAsync(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T value) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return documentAsync(collection, id).thenCompose(document -> {
             if (document == null) {
                 this.logger.warn("Attempted to set value for non-existent document (async): database='{}', collection='{}', id='{}'",
@@ -246,7 +318,12 @@ public class AbstractDatabaseManager {
         });
     }
 
+    @NotNull
     public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id, @NotNull String key) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return documentAsync(collection, id).thenCompose(document -> {
             if (document == null) {
                 this.logger.warn("Attempted to remove value for non-existent document (async): database='{}', collection='{}', id='{}'",
@@ -267,7 +344,11 @@ public class AbstractDatabaseManager {
         });
     }
 
+    @NotNull
     public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -285,7 +366,12 @@ public class AbstractDatabaseManager {
         return future;
     }
 
+    @NotNull
     public CompletableFuture<Boolean> documentAsync(@NotNull String collection, @NotNull String id, @NotNull Document document) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(document, "document cannot be null");
+
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -323,7 +409,11 @@ public class AbstractDatabaseManager {
         return future;
     }
 
+    @NotNull
     public CompletableFuture<Document> documentAsync(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         CompletableFuture<Document> future = new CompletableFuture<>();
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -348,6 +438,9 @@ public class AbstractDatabaseManager {
 
     @NotNull
     public CompletableFuture<Document> documentOrDefaultAsync(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         return documentAsync(collection, id).thenCompose(document ->
                 document != null ? CompletableFuture.completedFuture(document)
                         : createDefaultDocumentAsync(collection, id, null));
@@ -355,6 +448,9 @@ public class AbstractDatabaseManager {
 
     @NotNull
     public CompletableFuture<Document> createDefaultDocumentAsync(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> modifier) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         CompletableFuture<Document> future = new CompletableFuture<>();
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -371,7 +467,11 @@ public class AbstractDatabaseManager {
         return future;
     }
 
+    @NotNull
     public CompletableFuture<Boolean> documentExistsAsync(@NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         scheduler.runTaskAsynchronously(plugin, () -> {
             try {
@@ -393,7 +493,10 @@ public class AbstractDatabaseManager {
         return future;
     }
 
+    @Nullable
     public MongoCollection<Document> collection(@NotNull String collection) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+
         return this.collectionCache.computeIfAbsent(collection, name -> {
             this.logger.info("Caching MongoCollection for: {} in database {}", name, mongoDatabase.getName());
             return this.mongoDatabase.getCollection(name);
@@ -403,6 +506,11 @@ public class AbstractDatabaseManager {
     // --- Helper Methods ---
 
     private <T> boolean setValueInDocument(@NotNull Document document, @NotNull String key, @Nullable T value, @NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         if (key.isBlank()) {
             this.logger.warn("Attempted to set value with blank key: database='{}', collection='{}', id='{}'",
                     mongoDatabase.getName(), collection, id);
@@ -435,7 +543,11 @@ public class AbstractDatabaseManager {
         }
     }
 
+    @NotNull
     private Document generateDefaultDocumentStructure(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> modifier) throws DefaultDocumentGenerationException {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         Supplier<Document> supplier = this.defaultDocuments.get(collection);
         if (supplier == null) {
             this.logger.error("No default document supplier registered for database '{}', collection '{}'. Cannot create default document for id '{}'.",
@@ -461,6 +573,11 @@ public class AbstractDatabaseManager {
     }
 
     private void insertDocumentAndCompleteFuture(@NotNull CompletableFuture<Document> future, @NotNull Document documentToInsert, @NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(future, "future cannot be null");
+        Preconditions.checkNotNull(documentToInsert, "documentToInsert cannot be null");
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+
         try {
             MongoCollection<Document> mongoCollection = this.collection(collection);
             mongoCollection.insertOne(documentToInsert);
@@ -485,6 +602,11 @@ public class AbstractDatabaseManager {
     }
 
     private void handleDuplicateKeyCompletion(@NotNull CompletableFuture<Document> future, @NotNull String collection, @NotNull String id, @NotNull MongoException duplicateKeyException) {
+        Preconditions.checkNotNull(future, "future cannot be null");
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(duplicateKeyException, "duplicateKeyException cannot be null");
+
         logger.warn("Document insertion failed due to duplicate key (likely race condition), attempting to fetch existing for C: {}, ID: {}", collection, id);
 
         documentAsync(collection, id)
@@ -505,6 +627,11 @@ public class AbstractDatabaseManager {
     }
 
     private boolean removeValueInDocument(@NotNull Document document, @NotNull String key, @NotNull String collection, @NotNull String id) {
+        Preconditions.checkNotNull(collection, "collection cannot be null");
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         if (key.isBlank()) {
             this.logger.warn("Attempted to remove value with blank key: database='{}', collection='{}', id='{}'",
                     mongoDatabase.getName(), collection, id);

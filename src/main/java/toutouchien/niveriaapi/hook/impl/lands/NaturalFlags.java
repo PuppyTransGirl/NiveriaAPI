@@ -1,7 +1,10 @@
 package toutouchien.niveriaapi.hook.impl.lands;
 
+import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.NaturalFlag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
@@ -28,17 +31,22 @@ public enum NaturalFlags {
 
     private final NaturalFlag flag;
 
-    NaturalFlags(NaturalFlag flag) {
+    NaturalFlags(@NotNull NaturalFlag flag) {
+        Preconditions.checkNotNull(flag, "flag cannot be null");
+
         this.flag = flag;
     }
 
     /**
-     * Find a NaturalFlag by its name
+     * Find a NaturalFlag enum by its name
      *
-     * @param name The name of the flag (case-insensitive)
-     * @return The matching enum value or null if not found
+     * @param name The name of the enum value
+     * @return An Optional containing the matching enum value or empty if not found
      */
-    public static Optional<NaturalFlags> byName(String name) {
+    @NotNull
+    public static Optional<NaturalFlags> byName(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
         return StringUtils.match(name, NaturalFlags.class);
     }
 
@@ -48,9 +56,9 @@ public enum NaturalFlags {
      * @param naturalFlag The original NaturalFlag
      * @return The matching enum value or null if not found
      */
-    public static NaturalFlags fromNaturalFlag(NaturalFlag naturalFlag) {
-        if (naturalFlag == null)
-            return null;
+    @Nullable
+    public static NaturalFlags fromNaturalFlag(@NotNull NaturalFlag naturalFlag) {
+        Preconditions.checkNotNull(naturalFlag, "naturalFlag cannot be null");
 
         for (NaturalFlags flag : values()) {
             if (!flag.flag.equals(naturalFlag))
@@ -67,6 +75,7 @@ public enum NaturalFlags {
      *
      * @return the original NaturalFlag object
      */
+    @NotNull
     public NaturalFlag flag() {
         return flag;
     }

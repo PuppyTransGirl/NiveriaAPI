@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.event;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,8 +25,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     }
 
     public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
-        if (modifier == null)
-            throw new IllegalArgumentException("modifier cannot be null");
+        Preconditions.checkNotNull(modifier, "modifier cannot be null");
 
         ItemStack item = this.getCurrentItem();
         if (item == null)

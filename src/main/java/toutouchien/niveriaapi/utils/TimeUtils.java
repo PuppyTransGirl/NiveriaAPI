@@ -1,5 +1,8 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +14,15 @@ public class TimeUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static long ticks(Duration duration) {
+    public static long ticks(@NotNull Duration duration) {
+        Preconditions.checkNotNull(duration, "duration cannot be null");
+
         return duration.toMillis() / 50L;
     }
 
-    public static long ticks(long time, TimeUnit unit) {
+    public static long ticks(long time, @NotNull TimeUnit unit) {
+        Preconditions.checkNotNull(unit, "unit cannot be null");
+
         return unit.toMillis(time) / 50L;
     }
 
@@ -26,6 +33,7 @@ public class TimeUtils {
      * @param millis The time in milliseconds
      * @return A formatted string representation of the duration
      */
+    @NotNull
     public static String parseMillis(long millis) {
         if (millis < 1000)
             return "0 seconde";
@@ -57,7 +65,10 @@ public class TimeUtils {
         return result.toString().trim();
     }
 
-    private static void appendUnit(StringBuilder result, long value, String unit) {
+    private static void appendUnit(@NotNull StringBuilder result, long value, @NotNull String unit) {
+        Preconditions.checkNotNull(result, "result cannot be null");
+        Preconditions.checkNotNull(unit, "unit cannot be null");
+
         if (value <= 0)
             return;
 

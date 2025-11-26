@@ -1,5 +1,7 @@
 package toutouchien.niveriaapi.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class Pair<K, V> {
@@ -33,6 +35,7 @@ public class Pair<K, V> {
     }
 
     @SuppressWarnings("unchecked")
+    @NotNull
     public Pair<K, V> swap() {
         K tempKey = this.key;
         this.key = (K) this.value;
@@ -54,8 +57,12 @@ public class Pair<K, V> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
         Pair<?, ?> pair = (Pair<?, ?>) o;
         return Objects.equals(key, pair.key) && Objects.equals(value, pair.value);
     }
@@ -65,6 +72,7 @@ public class Pair<K, V> {
         return Objects.hash(key, value);
     }
 
+    @NotNull
     public Pair<K, V> copy() {
         return new Pair<>(key, value);
     }

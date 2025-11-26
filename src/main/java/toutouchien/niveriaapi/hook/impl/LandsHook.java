@@ -1,10 +1,12 @@
 package toutouchien.niveriaapi.hook.impl;
 
+import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.LandsIntegration;
 import me.angeschossen.lands.api.land.Area;
 import me.angeschossen.lands.api.player.LandPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.lands.NaturalFlags;
@@ -33,7 +35,11 @@ public class LandsHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from Lands");
     }
 
-    public boolean hasRoleFlag(Player player, Location location, RoleFlags roleFlag) {
+    public boolean hasRoleFlag(@NotNull Player player, @NotNull Location location, @NotNull RoleFlags roleFlag) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(location, "location cannot be null");
+        Preconditions.checkNotNull(roleFlag, "roleFlag cannot be null");
+
         Area area = this.lands.getArea(location);
         if (area == null)
             return true;
@@ -41,7 +47,10 @@ public class LandsHook extends Hook {
         return area.hasRoleFlag(player.getUniqueId(), roleFlag.flag());
     }
 
-    public boolean hasNaturalFlag(Location location, NaturalFlags naturalFlag) {
+    public boolean hasNaturalFlag(@NotNull Location location, @NotNull NaturalFlags naturalFlag) {
+        Preconditions.checkNotNull(location, "location cannot be null");
+        Preconditions.checkNotNull(naturalFlag, "naturalFlag cannot be null");
+
         Area area = this.lands.getArea(location);
         if (area == null)
             return true;
@@ -49,7 +58,10 @@ public class LandsHook extends Hook {
         return area.hasNaturalFlag(naturalFlag.flag());
     }
 
-    public boolean hasPlayerFlag(Player player, PlayerFlags playerFlag) {
+    public boolean hasPlayerFlag(@NotNull Player player, @NotNull PlayerFlags playerFlag) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(playerFlag, "playerFlag cannot be null");
+
         LandPlayer landPlayer = this.lands.getLandPlayer(player.getUniqueId());
         if (landPlayer == null)
             return true;

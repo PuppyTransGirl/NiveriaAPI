@@ -1,5 +1,8 @@
 package toutouchien.niveriaapi.menu;
 
+import com.google.common.base.Preconditions;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.infos.MenuInfos;
 import toutouchien.niveriaapi.menu.items.MenuItem;
@@ -13,9 +16,8 @@ public abstract class PaginatedMenu extends Menu {
         this.page = 0;
     }
 
-    protected void incrementPage(int i) {
-        if (i < 0)
-            throw new IllegalArgumentException("Increment value must be non-negative");
+    protected void incrementPage(@Positive int i) {
+        Preconditions.checkArgument(i >= 1, "i cannot be less than 1: %d", i);
 
         this.page += i;
 
@@ -25,9 +27,8 @@ public abstract class PaginatedMenu extends Menu {
             this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
     }
 
-    protected void decreasePage(int i) {
-        if (this.page <= 0)
-            throw new IllegalArgumentException("Cannot decrease page below 0");
+    protected void decreasePage(@Positive int i) {
+        Preconditions.checkArgument(i >= 1, "i cannot be less than 1: %d", i);
 
         this.page = Math.max(0, this.page - i);
 
@@ -37,6 +38,7 @@ public abstract class PaginatedMenu extends Menu {
             this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
     }
 
+    @NonNegative
     public int page() {
         return page;
     }
@@ -45,9 +47,8 @@ public abstract class PaginatedMenu extends Menu {
         return this.page == 0;
     }
 
-    public boolean lastPage(int maxPage) {
-        if (maxPage < 0)
-            throw new IllegalArgumentException("maxPage must be non-negative");
+    public boolean lastPage(@Positive int maxPage) {
+        Preconditions.checkArgument(maxPage >= 1, "i cannot be less than 1: %d", maxPage);
 
         return this.page == maxPage;
     }

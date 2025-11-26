@@ -1,9 +1,11 @@
 package toutouchien.niveriaapi.menu;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.infos.MenuInfos;
 import toutouchien.niveriaapi.menu.items.MenuItem;
@@ -16,8 +18,7 @@ public abstract class Menu implements InventoryHolder {
     Set<MenuItem> itemsCache;
 
     protected Menu(@NotNull MenuInfos menuInfos) {
-        if (menuInfos == null)
-            throw new IllegalArgumentException("menuInfos cannot be null");
+        Preconditions.checkNotNull(menuInfos, "menuInfos cannot be null");
 
         this.menuInfos = menuInfos;
     }
@@ -40,6 +41,7 @@ public abstract class Menu implements InventoryHolder {
     @NotNull
     public abstract Component name();
 
+    @Positive
     public abstract int slots();
 
     @NotNull

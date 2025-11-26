@@ -120,9 +120,12 @@ public class NiveriaAPI extends JavaPlugin {
         Arrays.asList(
                 this.chatInputManager,
                 new HookListener(this.hookManager),
-                new MenuListener(),
-                new PlayerListener(this.niveriaDatabaseManager)
+                new MenuListener()
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
+
+        if (!isUnitTestVersion()) {
+            pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
+        }
     }
 
     public void reload() {

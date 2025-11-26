@@ -1,15 +1,16 @@
 package toutouchien.niveriaapi.hook.impl;
 
+import com.google.common.base.Preconditions;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
-import toutouchien.niveriaapi.hook.impl.placeholderapi.CustomPlaceholder;
 
 public class PlaceholderAPIHook extends Hook {
     private boolean enabled;
 
-    public PlaceholderAPIHook(NiveriaAPI plugin) {
+    public PlaceholderAPIHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -25,7 +26,9 @@ public class PlaceholderAPIHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from PlaceholderAPI");
     }
 
-    public String replacePlaceholders(String text) {
+    public String replacePlaceholders(@NotNull String text) {
+        Preconditions.checkNotNull(text, "text cannot be null");
+
         if (!this.enabled)
             return text;
 
@@ -33,13 +36,12 @@ public class PlaceholderAPIHook extends Hook {
     }
 
     public String replacePlaceholders(Player player, String text) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(text, "text cannot be null");
+
         if (!this.enabled)
             return text;
 
         return PlaceholderAPI.setPlaceholders(player, text);
-    }
-
-    public void registerCustomPlaceholder(CustomPlaceholder customPlaceholder) {
-        customPlaceholder.register();
     }
 }

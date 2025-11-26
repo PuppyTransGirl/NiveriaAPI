@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.cooldown;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import org.bson.Document;
@@ -19,12 +20,17 @@ public class CooldownDatabase {
     private final NiveriaDatabaseManager database;
     private final Logger logger;
 
-    public CooldownDatabase(NiveriaDatabaseManager database, Logger logger) {
+    public CooldownDatabase(@NotNull NiveriaDatabaseManager database, @NotNull Logger logger) {
+        Preconditions.checkNotNull(database, "database cannot be null");
+        Preconditions.checkNotNull(logger, "logger cannot be null");
+
         this.database = database;
         this.logger = logger;
     }
 
     public void saveCooldown(@NotNull Cooldown cooldown) {
+        Preconditions.checkNotNull(cooldown, "cooldown cannot be null");
+
         this.database.documentOrDefaultAsync(PLAYERS, cooldown.uuid().toString()).thenComposeAsync(document -> {
             Document cooldownDocument = new Document(EXPIRATION_TIME, cooldown.expirationTime());
             return this.database.setAsync(PLAYERS, cooldown.uuid().toString(), "cooldowns." + cooldown.key().asString(), cooldownDocument)
@@ -35,11 +41,15 @@ public class CooldownDatabase {
                     cooldown.uuid(), cooldown.key(),
                     throwable
             );
+
             return false;
         });
     }
 
     public void deleteCooldown(@NotNull UUID uuid, @NotNull Key key) {
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         this.database.documentAsync(PLAYERS, uuid.toString()).thenComposeAsync(document -> {
             if (document == null)
                 return null;
@@ -76,6 +86,7 @@ public class CooldownDatabase {
                 activeCooldowns.add(new Cooldown(uuid, adventureKey, expirationTime, true));
             }
         });
+
         return activeCooldowns;
     }
 
@@ -107,12 +118,21 @@ public class CooldownDatabase {
     }
 
     public void deleteAllCooldowns(@NotNull UUID uuid) {
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
+
         this.database.documentAsync(PLAYERS, uuid.toString()).thenComposeAsync(document -> {
             if (document == null)
                 return null;
 
             return this.database.removeAsync(PLAYERS, uuid.toString(), "cooldowns")
                     .thenApply(success -> null);
+        }).exceptionally(throwable -> {
+            this.logger.error(
+                    "Failed to remove all cooldown for player {}",
+                    uuid,
+                    throwable
+            );
+            return false;
         });
     }
 }

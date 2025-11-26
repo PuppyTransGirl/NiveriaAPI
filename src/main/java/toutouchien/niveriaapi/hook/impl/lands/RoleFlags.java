@@ -1,7 +1,10 @@
 package toutouchien.niveriaapi.hook.impl.lands;
 
+import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.RoleFlag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
@@ -52,17 +55,22 @@ public enum RoleFlags {
 
     private final RoleFlag flag;
 
-    RoleFlags(RoleFlag flag) {
+    RoleFlags(@NotNull RoleFlag flag) {
+        Preconditions.checkNotNull(flag, "flag cannot be null");
+
         this.flag = flag;
     }
 
     /**
-     * Find a RoleFlag by its name
+     * Find a RoleFlag enum by its name
      *
-     * @param name The name of the flag (case-insensitive)
-     * @return The matching enum value or null if not found
+     * @param name The name of the enum value
+     * @return An Optional containing the matching enum value or empty if not found
      */
-    public static Optional<RoleFlags> byName(String name) {
+    @NotNull
+    public static Optional<RoleFlags> byName(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
         return StringUtils.match(name, RoleFlags.class);
     }
 
@@ -72,9 +80,9 @@ public enum RoleFlags {
      * @param roleFlag The original RoleFlag
      * @return The matching enum value or null if not found
      */
-    public static RoleFlags fromRoleFlag(RoleFlag roleFlag) {
-        if (roleFlag == null)
-            return null;
+    @Nullable
+    public static RoleFlags fromRoleFlag(@NotNull RoleFlag roleFlag) {
+        Preconditions.checkNotNull(roleFlag, "roleFlag cannot be null");
 
         for (RoleFlags flag : values()) {
             if (!flag.flag.equals(roleFlag))
@@ -91,6 +99,7 @@ public enum RoleFlags {
      *
      * @return the original RoleFlag object
      */
+    @NotNull
     public RoleFlag flag() {
         return flag;
     }

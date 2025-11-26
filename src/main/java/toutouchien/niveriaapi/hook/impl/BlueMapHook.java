@@ -1,7 +1,9 @@
 package toutouchien.niveriaapi.hook.impl;
 
+import com.google.common.base.Preconditions;
 import de.bluecolored.bluemap.api.BlueMapAPI;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 
@@ -12,7 +14,7 @@ public class BlueMapHook extends Hook {
     private boolean enabled;
     private BlueMapAPI blueMap;
 
-    public BlueMapHook(NiveriaAPI plugin) {
+    public BlueMapHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -35,14 +37,17 @@ public class BlueMapHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from BlueMap");
     }
 
-    public void setHidden(UUID uuid, boolean hidden) {
+    public void setHidden(@NotNull UUID uuid, boolean hidden) {
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
         if (!this.enabled)
             return;
 
         this.blueMap.getWebApp().setPlayerVisibility(uuid, !hidden);
     }
 
-    public void setHidden(Player player, boolean hidden) {
+    public void setHidden(@NotNull Player player, boolean hidden) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         this.setHidden(player.getUniqueId(), hidden);
     }
 }

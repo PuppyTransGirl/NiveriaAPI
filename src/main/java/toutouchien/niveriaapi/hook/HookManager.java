@@ -1,8 +1,11 @@
 package toutouchien.niveriaapi.hook;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.util.Arrays;
@@ -13,13 +16,17 @@ public class HookManager {
     private final Map<String, Hook> hooks;
     private final NiveriaAPI plugin;
 
-    public HookManager(NiveriaAPI plugin) {
+    public HookManager(@NotNull NiveriaAPI plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         this.plugin = plugin;
         this.hooks = new HashMap<>();
         Arrays.stream(HookType.values()).forEach(this::registerHook);
     }
 
-    public void registerHook(HookType type) {
+    public void registerHook(@NotNull HookType type) {
+        Preconditions.checkNotNull(type, "type cannot be null");
+
         try {
             Plugin hookPlugin = this.plugin.getServer().getPluginManager().getPlugin(type.pluginName());
             if (hookPlugin == null) {
@@ -36,7 +43,10 @@ public class HookManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Hook> T hook(HookType hookType) {
+    @Nullable
+    public <T extends Hook> T hook(@NotNull HookType hookType) {
+        Preconditions.checkNotNull(hookType, "hookType cannot be null");
+
         Hook hook = this.hooks.get(hookType.name());
         if (hook == null)
             return null;

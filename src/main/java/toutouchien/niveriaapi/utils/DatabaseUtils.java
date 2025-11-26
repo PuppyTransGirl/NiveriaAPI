@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,6 +14,8 @@ public class DatabaseUtils {
 
     @NotNull
     public static Document locationToDocument(@NotNull Location location) {
+        Preconditions.checkNotNull(location, "location cannot be null");
+
         return new Document("world", location.getWorld().getName())
                 .append("x", location.getX())
                 .append("y", location.getY())
@@ -23,6 +26,9 @@ public class DatabaseUtils {
 
     @NotNull
     public static Location locationFromDocument(@NotNull Document document, @NotNull String fieldName) {
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(fieldName, "fieldName cannot be null");
+
         Document locationDoc = (Document) document.get(fieldName);
         if (locationDoc == null)
             throw new IllegalArgumentException("Document does not contain a location at field: " + fieldName);
@@ -39,6 +45,8 @@ public class DatabaseUtils {
 
     @NotNull
     public static Document vectorToDocument(@NotNull Vector vector) {
+        Preconditions.checkNotNull(vector, "vector cannot be null");
+
         return new Document("x", vector.getX())
                 .append("y", vector.getY())
                 .append("z", vector.getZ());
@@ -46,6 +54,9 @@ public class DatabaseUtils {
 
     @NotNull
     public static Vector vectorFromDocument(@NotNull Document document, @NotNull String fieldName) {
+        Preconditions.checkNotNull(document, "document cannot be null");
+        Preconditions.checkNotNull(fieldName, "fieldName cannot be null");
+
         Document vectorDoc = (Document) document.get(fieldName);
         if (vectorDoc == null)
             throw new IllegalArgumentException("Document does not contain a vector at field: " + fieldName);
