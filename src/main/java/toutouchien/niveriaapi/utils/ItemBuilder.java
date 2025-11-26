@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * <pre>
  * ItemStack item = ItemBuilder.of(Material.DIAMOND_SWORD)
  *     .name(Component.text("Epic Blade"))
- *     .addEnchantment(Enchantment.DAMAGE_ALL, 5)
+ *     .addEnchantment(Enchantment.SHARPNESS, 5)
  *     .unbreakable(true)
  *     .build();
  * </pre>
