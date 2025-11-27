@@ -61,7 +61,7 @@ jobs:
         run: ./gradlew jar --no-daemon --stacktrace
 
       - name: Upload Plugin JAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: NiveriaAPI-${{ env.SHORT_SHA }}
           path: build/libs/
