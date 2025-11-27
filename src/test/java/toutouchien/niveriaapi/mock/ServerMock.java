@@ -5,7 +5,7 @@ import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.command.CommandMapMock;
 
 public class ServerMock extends org.mockbukkit.mockbukkit.ServerMock {
-    public CommandMapMock commandMap;
+    public final CommandMapMock commandMap;
 
     public ServerMock() {
         super();
