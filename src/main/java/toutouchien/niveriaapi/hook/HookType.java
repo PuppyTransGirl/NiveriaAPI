@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.hook.impl.*;
 
+@SuppressWarnings("java:S115")
 public enum HookType {
     BlueMapHook(BlueMapHook.class, "BlueMap"),
     DynmapHook(DynmapHook.class, "dynmap"),

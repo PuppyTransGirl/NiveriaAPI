@@ -39,6 +39,7 @@ public class BlueMapHook extends Hook {
 
     public void setHidden(@NotNull UUID uuid, boolean hidden) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
+
         if (!this.enabled)
             return;
 

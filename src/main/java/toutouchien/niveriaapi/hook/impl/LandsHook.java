@@ -40,6 +40,9 @@ public class LandsHook extends Hook {
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(roleFlag, "roleFlag cannot be null");
 
+        if (!this.enabled)
+            return false;
+
         Area area = this.lands.getArea(location);
         if (area == null)
             return true;
@@ -51,6 +54,9 @@ public class LandsHook extends Hook {
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(naturalFlag, "naturalFlag cannot be null");
 
+        if (!this.enabled)
+            return false;
+
         Area area = this.lands.getArea(location);
         if (area == null)
             return true;
@@ -61,6 +67,9 @@ public class LandsHook extends Hook {
     public boolean hasPlayerFlag(@NotNull Player player, @NotNull PlayerFlags playerFlag) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(playerFlag, "playerFlag cannot be null");
+
+        if (!this.enabled)
+            return false;
 
         LandPlayer landPlayer = this.lands.getLandPlayer(player.getUniqueId());
         if (landPlayer == null)

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class PlayerUtils {
     private PlayerUtils() {
         throw new IllegalStateException("Utility class");

@@ -31,13 +31,12 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ItemBuilderTest {
-    private NiveriaAPI plugin;
     private ServerMock server;
 
     @BeforeEach
     void setUp() {
         this.server = MockBukkitHelper.safeMock();
-        this.plugin = MockBukkit.load(NiveriaAPI.class);
+        MockBukkit.load(NiveriaAPI.class);
     }
 
     @AfterEach
