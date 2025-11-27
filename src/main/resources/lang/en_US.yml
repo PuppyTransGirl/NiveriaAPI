@@ -42,3 +42,22 @@ niveriaapi_command_niveriaapi_subcommand_reload: "<prefix:niveria/> <separator> 
 niveriaapi_delay_default_text: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
 niveriaapi_delay_default_moved_text: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
 niveriaapi_delay_default_already_has_delay_text: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
+
+# ============================================================
+# TIMEUTILS
+# ============================================================
+
+niveriaapi_timeutils_year: "year"
+niveriaapi_timeutils_years: "years"
+niveriaapi_timeutils_month: "month"
+niveriaapi_timeutils_months: "months"
+niveriaapi_timeutils_week: "week"
+niveriaapi_timeutils_weeks: "weeks"
+niveriaapi_timeutils_day: "day"
+niveriaapi_timeutils_days: "days"
+niveriaapi_timeutils_hour: "hour"
+niveriaapi_timeutils_hours: "hours"
+niveriaapi_timeutils_minute: "minute"
+niveriaapi_timeutils_minutes: "minutes"
+niveriaapi_timeutils_second: "second"
+niveriaapi_timeutils_seconds: "seconds"

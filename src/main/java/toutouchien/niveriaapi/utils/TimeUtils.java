@@ -2,6 +2,7 @@ package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.lang.Lang;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -54,13 +55,13 @@ public class TimeUtils {
         months %= 12;
 
         StringBuilder result = new StringBuilder();
-        appendUnit(result, years, "an");
-        appendUnit(result, months, "mois");
-        appendUnit(result, weeks, "semaine");
-        appendUnit(result, days, "jour");
-        appendUnit(result, hours, "heure");
-        appendUnit(result, minutes, "minute");
-        appendUnit(result, seconds, "seconde");
+        appendUnit(result, years, "niveriaapi_timeutils_year");
+        appendUnit(result, months, "niveriaapi_timeutils_month");
+        appendUnit(result, weeks, "niveriaapi_timeutils_week");
+        appendUnit(result, days, "niveriaapi_timeutils_day");
+        appendUnit(result, hours, "niveriaapi_timeutils_hour");
+        appendUnit(result, minutes, "niveriaapi_timeutils_minute");
+        appendUnit(result, seconds, "niveriaapi_timeutils_second");
 
         return result.toString().trim();
     }
@@ -72,11 +73,12 @@ public class TimeUtils {
         if (value <= 0)
             return;
 
-        result.append(value).append(" ").append(unit);
+        result.append(value).append(" ");
 
-        if (value > 1 && !unit.equals("mois"))
-            result.append("s");
+        String finalUnit = unit;
+        if (value > 1)
+            finalUnit += "s";
 
-        result.append(" ");
+        result.append(Lang.getString(finalUnit)).append(" ");
     }
 }
