@@ -29,9 +29,9 @@ public class DelayBuilder {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
-        this.text = Lang.get("niveriaapi_delay_default_text");
-        this.movedText = Lang.get("niveriaapi_delay_default_moved_text");
-        this.alreadyHasDelayText = Lang.get("niveriaapi_delay_default_already_has_delay_text");
+        this.text = Lang.get("delay.start");
+        this.movedText = Lang.get("delay.moved");
+        this.alreadyHasDelayText = Lang.get("delay.already");
     }
 
     @NotNull

@@ -55,13 +55,13 @@ public class TimeUtils {
         months %= 12;
 
         StringBuilder result = new StringBuilder();
-        appendUnit(result, years, "niveriaapi_timeutils_year");
-        appendUnit(result, months, "niveriaapi_timeutils_month");
-        appendUnit(result, weeks, "niveriaapi_timeutils_week");
-        appendUnit(result, days, "niveriaapi_timeutils_day");
-        appendUnit(result, hours, "niveriaapi_timeutils_hour");
-        appendUnit(result, minutes, "niveriaapi_timeutils_minute");
-        appendUnit(result, seconds, "niveriaapi_timeutils_second");
+        appendUnit(result, years, "timeutils.year");
+        appendUnit(result, months, "timeutils.month");
+        appendUnit(result, weeks, "timeutils.week");
+        appendUnit(result, days, "timeutils.day");
+        appendUnit(result, hours, "timeutils.hour");
+        appendUnit(result, minutes, "timeutils.minute");
+        appendUnit(result, seconds, "timeutils.second");
 
         return result.toString().trim();
     }

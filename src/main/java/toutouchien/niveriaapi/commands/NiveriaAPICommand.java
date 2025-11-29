@@ -44,8 +44,9 @@ public class NiveriaAPICommand {
                                 target.updateCommands();
 
                             int playersNumber = targets.size();
-                            String messageKey = "niveriaapi_command_niveriaapi_subcommand_fixcommands";
-                            Lang.sendMessage(executor, StringUtils.pluralize(messageKey, messageKey + "_multiple", playersNumber), playersNumber);
+                            String messageKey = "niveriaapi.fixcommands.";
+                            String finalMessageKey = StringUtils.pluralize(messageKey + "single", messageKey + "multiple", playersNumber);
+                            Lang.sendMessage(executor, finalMessageKey, playersNumber);
 
                             return Command.SINGLE_SUCCESS;
                         })
@@ -59,12 +60,12 @@ public class NiveriaAPICommand {
                     Entity executor = ctx.getSource().getExecutor();
                     Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();
 
-                    Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_ping");
+                    Lang.sendMessage(executor, "niveriaapi.ping.header");
 
                     for (Map.Entry<String, Long> pingEntry : pings.entrySet()) {
                         String databaseName = pingEntry.getKey();
                         double pingInMilliseconds = pingEntry.getValue() / 1_000_000D;
-                        Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_ping_line", databaseName, pingInMilliseconds);
+                        Lang.sendMessage(executor, "niveriaapi.ping.line", databaseName, pingInMilliseconds);
                     }
 
                     return Command.SINGLE_SUCCESS;
@@ -80,7 +81,7 @@ public class NiveriaAPICommand {
                     long startMillis = System.currentTimeMillis();
                     NiveriaAPI.instance().reload();
                     long timeTaken = System.currentTimeMillis() - startMillis;
-                    Lang.sendMessage(executor, "niveriaapi_command_niveriaapi_subcommand_reload", timeTaken);
+                    Lang.sendMessage(executor, "niveriaapi.reload.done", timeTaken);
 
                     return Command.SINGLE_SUCCESS;
                 });
