@@ -166,6 +166,9 @@ class ItemBuilderTest {
         @DisplayName("name(Component) should set and return custom item name through ITEM_NAME component")
         void name_shouldSetAndReturnCustomItemNameWhenCalled() {
             ItemBuilder builder = ItemBuilder.of(Material.DIAMOND_SWORD);
+
+            assertNull(builder.name());
+
             Component name = Component.text("Epic sword");
             builder.name(name);
 
@@ -178,7 +181,7 @@ class ItemBuilderTest {
         void renamableName_shouldSetAndReturnCustomNameWhenCalled() {
             ItemBuilder builder = ItemBuilder.of(Material.DIAMOND_SWORD);
 
-            assertEquals(Component.empty(), builder.renamableName());
+            assertNull(builder.renamableName());
 
             Component name = Component.text("Rename Me");
             builder.renamableName(name);

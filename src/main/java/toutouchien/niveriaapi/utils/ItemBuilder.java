@@ -190,7 +190,7 @@ public class ItemBuilder {
      *
      * @return the name component, or null if not set
      */
-    @NotNull
+    @Nullable
     public Component name() {
         return itemStack.getData(DataComponentTypes.ITEM_NAME);
     }
