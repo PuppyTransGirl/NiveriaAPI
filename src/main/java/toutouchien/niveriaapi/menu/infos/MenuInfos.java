@@ -1,39 +1,46 @@
 package toutouchien.niveriaapi.menu.infos;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class MenuInfos {
-	private final Player player;
-	private OfflinePlayer playerForInfos;
+    private final Player player;
+    private OfflinePlayer playerForInfos;
 
-	public MenuInfos(@NotNull Player player) {
-		this.player = player;
-	}
+    public MenuInfos(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
 
-	public MenuInfos(@NotNull Player player, OfflinePlayer playerForInfos) {
-		this.player = player;
-		this.playerForInfos = playerForInfos;
-	}
+        this.player = player;
+    }
+
+    public MenuInfos(@NotNull Player player, @Nullable OfflinePlayer playerForInfos) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
+        this.player = player;
+        this.playerForInfos = playerForInfos;
+    }
+
+    public void playerForInfos(@Nullable OfflinePlayer playerForInfos) {
+        this.playerForInfos = playerForInfos;
+    }
 
     @NotNull
-	public Player player() {
-		return player;
-	}
+    public Player player() {
+        return player;
+    }
 
     @NotNull
-	public UUID uuid() {
-		return player.getUniqueId();
-	}
+    public UUID uuid() {
+        return player.getUniqueId();
+    }
 
-	public void playerForInfos(OfflinePlayer playerForInfos) {
-		this.playerForInfos = playerForInfos;
-	}
-
-	public OfflinePlayer playerForInfos() {
-		return playerForInfos;
-	}
+    @Nullable
+    public OfflinePlayer playerForInfos() {
+        return playerForInfos;
+    }
 }

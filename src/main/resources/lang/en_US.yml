@@ -23,22 +23,37 @@ special-tags:
 # ======================== FEATURES ==========================
 # ============================================================
 
-# ============================================================
-# NIVERIAAPI
-# ============================================================
+niveriaapi:
+  fixcommands:
+    single: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d player.</ncolor>"
+    multiple: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d players.</ncolor>"
 
-niveriaapi_command_niveriaapi_subcommand_fixcommands: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d player.</ncolor>"
-niveriaapi_command_niveriaapi_subcommand_fixcommands_multiple: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d players.</ncolor>"
+  ping:
+    header: "<prefix:niveria/> <separator> <ncolor:default>Database ping</ncolor>"
+    line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %.2f ms"
 
-niveriaapi_command_niveriaapi_subcommand_ping: "<prefix:niveria/> <separator> <ncolor:default>Database ping</ncolor>"
-niveriaapi_command_niveriaapi_subcommand_ping_line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %.2f ms"
+  reload:
+    done: "<prefix:niveria/> <separator> <ncolor:valid>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
 
-niveriaapi_command_niveriaapi_subcommand_reload: "<prefix:niveria/> <separator> <ncolor:valid>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
 
-# ============================================================
-# DELAY
-# ============================================================
+delay:
+  start: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
+  moved: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
+  already: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
 
-niveriaapi_delay_default_text: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
-niveriaapi_delay_default_moved_text: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
-niveriaapi_delay_default_already_has_delay_text: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
+
+timeutils:
+  year: "year"
+  years: "years"
+  month: "month"
+  months: "months"
+  week: "week"
+  weeks: "weeks"
+  day: "day"
+  days: "days"
+  hour: "hour"
+  hours: "hours"
+  minute: "minute"
+  minutes: "minutes"
+  second: "second"
+  seconds: "seconds"

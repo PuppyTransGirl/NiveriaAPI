@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.lang;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -45,6 +46,8 @@ public class Lang {
     }
 
     public static void load(@NotNull JavaPlugin plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         saveDefaultMessages(plugin);
         loadConfig(plugin);
         loadMessages(plugin);
@@ -190,7 +193,7 @@ public class Lang {
      * @return The final, formatted message string.
      */
     @NotNull
-    private static String getStringInternal(@Nullable Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    private static String getStringInternal(@Nullable Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
         Locale locale = defaultLocale;
         if (usePlayerLocale && audience instanceof Player player)
             locale = player.locale();
@@ -209,6 +212,8 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return getStringInternal(null, key);
     }
 
@@ -222,6 +227,9 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         return getStringInternal(null, key, args);
     }
 
@@ -235,6 +243,9 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return getStringInternal(audience, key);
     }
 
@@ -249,6 +260,10 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         return getStringInternal(audience, key, args);
     }
 
@@ -327,6 +342,8 @@ public class Lang {
      */
     @NotNull
     public static Component get(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         String raw = getStringInternal(null, key);
         return getComponentInternal(null, raw, key);
     }
@@ -340,7 +357,10 @@ public class Lang {
      * @return The formatted, localized component.
      */
     @NotNull
-    public static Component get(@NotNull String key, @Nullable Object @NotNull ... args) {
+    public static Component get(@NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         String raw = getStringInternal(null, key, args);
         return getComponentInternal(null, raw, key);
     }
@@ -355,6 +375,9 @@ public class Lang {
      */
     @NotNull
     public static Component get(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         String raw = getStringInternal(audience, key);
         return getComponentInternal(audience, raw, key);
     }
@@ -369,7 +392,11 @@ public class Lang {
      * @return The formatted, localized component.
      */
     @NotNull
-    public static Component get(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    public static Component get(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         String raw = getStringInternal(audience, key, args);
         return getComponentInternal(audience, raw, key);
     }
@@ -382,6 +409,9 @@ public class Lang {
      * @param key      The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         sendMessage(audience, null, key, (Object[]) null);
     }
 
@@ -393,7 +423,11 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
-    public static void sendMessage(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    public static void sendMessage(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         sendMessage(audience, null, key, args);
     }
 
@@ -406,6 +440,10 @@ public class Lang {
      * @param key      The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull Sound sound, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(sound, "sound cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         sendMessage(audience, sound, key, (Object[]) null);
     }
 
@@ -418,7 +456,10 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
-    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @Nullable Object @Nullable ... args) {
+    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @NotNull Object @Nullable ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         Component message = args == null ? get(audience, key) : get(audience, key, args);
         if (message.equals(Component.empty()))
             return;
@@ -434,6 +475,8 @@ public class Lang {
      * @param plugin The plugin instance to reload languages for.
      */
     public static void reload(@NotNull JavaPlugin plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         load(plugin);
     }
 }

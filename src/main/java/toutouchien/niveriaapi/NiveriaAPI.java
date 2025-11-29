@@ -19,7 +19,7 @@ import toutouchien.niveriaapi.menu.MenuListener;
 
 import java.util.Arrays;
 
-public final class NiveriaAPI extends JavaPlugin {
+public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
 
     private static NiveriaAPI instance;
@@ -44,32 +44,35 @@ public final class NiveriaAPI extends JavaPlugin {
 
         Lang.load(this);
 
-        try {
-            String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
-            String mongoDBConnectionString;
-            if (mongoDBEnv == null) {
-                mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
-                this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
-            } else {
-                mongoDBConnectionString = mongoDBEnv;
-                this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+        if (!isUnitTestVersion()) {
+            try {
+                String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
+                String mongoDBConnectionString;
+                if (mongoDBEnv == null) {
+                    mongoDBConnectionString = this.getConfig().getString("mongodb-connection-string");
+                    this.getSLF4JLogger().info("Loading MongoDB Connection String from the config.");
+                } else {
+                    mongoDBConnectionString = mongoDBEnv;
+                    this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
+                }
+
+                this.mongoManager = new MongoManager(mongoDBConnectionString);
+                this.getSLF4JLogger().info("MongoManager initialized.");
+
+                this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
+                this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
+
+                registerSharedDefaults();
+            } catch (Exception e) {
+                this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
+                this.getServer().shutdown();
+                return;
             }
-
-            this.mongoManager = new MongoManager(mongoDBConnectionString);
-            this.getSLF4JLogger().info("MongoManager initialized.");
-
-            this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
-            this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
-
-            registerSharedDefaults();
-        } catch (Exception e) {
-            this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
-            this.getServer().shutdown();
-            return;
         }
 
         this.chatInputManager = new ChatInputManager();
-        this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager));
+        if (!isUnitTestVersion())
+            this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger()));
         (this.delayManager = new DelayManager(this)).initialize();
         (this.hookManager = new HookManager(this)).onEnable();
 
@@ -78,15 +81,18 @@ public final class NiveriaAPI extends JavaPlugin {
 
     private void preLoadUtilsClasses() {
         String[] classes = {
-                "Task",
-                "MathUtils",
-                "StringUtils",
-                "TimeUtils",
+                "ColorUtils",
+                "CommandUtils",
+                "ComponentUtils",
                 "DatabaseUtils",
                 "FileUtils",
+                "ItemBuilder",
+                "MathUtils",
                 "PlayerUtils",
-                "ColorUtils",
-                "ComponentUtils"
+                "SerializeUtils",
+                "StringUtils",
+                "Task",
+                "TimeUtils"
         };
 
         this.getSLF4JLogger().info("Starting to preload utility classes");
@@ -114,9 +120,12 @@ public final class NiveriaAPI extends JavaPlugin {
         Arrays.asList(
                 this.chatInputManager,
                 new HookListener(this.hookManager),
-                new MenuListener(),
-                new PlayerListener(this.niveriaDatabaseManager)
+                new MenuListener()
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
+
+        if (!isUnitTestVersion()) {
+            pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
+        }
     }
 
     public void reload() {
@@ -130,9 +139,12 @@ public final class NiveriaAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        this.cooldownManager.shutdown();
+        if (!isUnitTestVersion())
+            this.cooldownManager.shutdown();
         this.hookManager.onDisable();
-        this.mongoManager.shutdown();
+
+        if (!isUnitTestVersion())
+            this.mongoManager.shutdown();
 
         Bukkit.getScheduler().cancelTasks(this);
     }
@@ -172,5 +184,9 @@ public final class NiveriaAPI extends JavaPlugin {
 
     public static NiveriaAPI instance() {
         return instance;
+    }
+
+    public static boolean isUnitTestVersion() {
+        return Bukkit.getServer().getVersion().contains("MockBukkit");
     }
 }

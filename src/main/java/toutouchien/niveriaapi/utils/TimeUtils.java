@@ -1,5 +1,9 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.lang.Lang;
+
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -7,65 +11,74 @@ import java.util.concurrent.TimeUnit;
  * Utility class for time conversions and formatting.
  */
 public class TimeUtils {
-	private TimeUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    private TimeUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	public static long ticks(Duration duration) {
-		return duration.toMillis() / 50L;
-	}
+    public static long ticks(@NotNull Duration duration) {
+        Preconditions.checkNotNull(duration, "duration cannot be null");
 
-	public static long ticks(long time, TimeUnit unit) {
-		return unit.toMillis(time) / 50L;
-	}
+        return duration.toMillis() / 50L;
+    }
 
-	/**
-	 * Parses milliseconds into a human-readable string in French.
-	 * Example: "1 an 2 mois 3 semaines 4 jours 5 heures 6 minutes 7 secondes"
-	 *
-	 * @param millis The time in milliseconds
-	 * @return A formatted string representation of the duration
-	 */
-	public static String parseMillis(long millis) {
-		if (millis < 1000)
-			return "0 seconde";
+    public static long ticks(long time, @NotNull TimeUnit unit) {
+        Preconditions.checkNotNull(unit, "unit cannot be null");
 
-		long seconds = millis / 1000;
-		long minutes = seconds / 60;
-		long hours = minutes / 60;
-		long days = hours / 24;
-		long weeks = days / 7;
-		long months = weeks / 4;
-		long years = months / 12;
+        return unit.toMillis(time) / 50L;
+    }
 
-		seconds %= 60;
-		minutes %= 60;
-		hours %= 24;
-		days %= 7;
-		weeks %= 4;
-		months %= 12;
+    /**
+     * Parses milliseconds into a human-readable string in French.
+     * Example: "1 an 2 mois 3 semaines 4 jours 5 heures 6 minutes 7 secondes"
+     *
+     * @param millis The time in milliseconds
+     * @return A formatted string representation of the duration
+     */
+    @NotNull
+    public static String parseMillis(long millis) {
+        if (millis < 1000)
+            return "0 seconde";
 
-		StringBuilder result = new StringBuilder();
-		appendUnit(result, years, "an");
-		appendUnit(result, months, "mois");
-		appendUnit(result, weeks, "semaine");
-		appendUnit(result, days, "jour");
-		appendUnit(result, hours, "heure");
-		appendUnit(result, minutes, "minute");
-		appendUnit(result, seconds, "seconde");
+        long seconds = millis / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        long weeks = days / 7;
+        long months = weeks / 4;
+        long years = months / 12;
 
-		return result.toString().trim();
-	}
+        seconds %= 60;
+        minutes %= 60;
+        hours %= 24;
+        days %= 7;
+        weeks %= 4;
+        months %= 12;
 
-	private static void appendUnit(StringBuilder result, long value, String unit) {
-		if (value <= 0)
-			return;
+        StringBuilder result = new StringBuilder();
+        appendUnit(result, years, "timeutils.year");
+        appendUnit(result, months, "timeutils.month");
+        appendUnit(result, weeks, "timeutils.week");
+        appendUnit(result, days, "timeutils.day");
+        appendUnit(result, hours, "timeutils.hour");
+        appendUnit(result, minutes, "timeutils.minute");
+        appendUnit(result, seconds, "timeutils.second");
 
-		result.append(value).append(" ").append(unit);
+        return result.toString().trim();
+    }
 
-		if (value > 1 && !unit.equals("mois"))
-			result.append("s");
+    private static void appendUnit(@NotNull StringBuilder result, long value, @NotNull String unit) {
+        Preconditions.checkNotNull(result, "result cannot be null");
+        Preconditions.checkNotNull(unit, "unit cannot be null");
 
-		result.append(" ");
-	}
+        if (value <= 0)
+            return;
+
+        result.append(value).append(" ");
+
+        String finalUnit = unit;
+        if (value > 1)
+            finalUnit += "s";
+
+        result.append(Lang.getString(finalUnit)).append(" ");
+    }
 }

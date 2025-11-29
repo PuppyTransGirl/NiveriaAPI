@@ -1,15 +1,18 @@
 package toutouchien.niveriaapi.database;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 
 public class PlayerListener implements Listener {
     private final NiveriaDatabaseManager niveriaDatabase;
 
-    public PlayerListener(NiveriaDatabaseManager niveriaDatabase) {
+    public PlayerListener(@NotNull NiveriaDatabaseManager niveriaDatabase) {
+        Preconditions.checkNotNull(niveriaDatabase, "niveriaDatabase cannot be null");
         this.niveriaDatabase = niveriaDatabase;
     }
 
