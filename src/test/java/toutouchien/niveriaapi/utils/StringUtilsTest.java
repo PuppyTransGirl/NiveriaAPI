@@ -50,5 +50,7 @@ class StringUtilsTest {
         assertEquals("cats", StringUtils.pluralize("cat", 2));
         assertEquals("buses", StringUtils.pluralize("bus", "buses", 60));
         assertEquals("sheep", StringUtils.pluralize("sheep", 1));
+        assertEquals("cow", StringUtils.pluralize("cow", 0));
+        assertEquals("puppies", StringUtils.pluralize("puppy", "puppies", -1403));
     }
 }
