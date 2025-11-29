@@ -13,6 +13,7 @@ val bluemapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
+val junitVersion: String by project
 val mockbukkitVersion: String by project
 
 group = "toutouchien.niveriaapi"
@@ -52,6 +53,9 @@ dependencies {
     // Test Dependencies
     testImplementation(paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT"))
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:${mockbukkitVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+    testImplementation("org.mongodb:mongodb-driver-sync:${mongoDBVersion}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 paperweight {
@@ -78,6 +82,10 @@ tasks {
 
     build {
         dependsOn("jar")
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     processResources {

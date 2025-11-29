@@ -1,59 +1,46 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 public class ComponentUtils {
-	private static final MiniMessage miniMessage = MiniMessage.miniMessage();
-	private static final JSONComponentSerializer jsonSerializer = JSONComponentSerializer.json();
-	private static final LegacyComponentSerializer legacyAmpersandTextSerializer = LegacyComponentSerializer.legacyAmpersand();
-	private static final LegacyComponentSerializer legacySectionTextSerializer = LegacyComponentSerializer.legacySection();
-	private static final PlainTextComponentSerializer plainTextSerializer = PlainTextComponentSerializer.plainText();
+    private static final MiniMessage miniMessage = MiniMessage.miniMessage();
+    private static final JSONComponentSerializer jsonSerializer = JSONComponentSerializer.json();
 
-	private ComponentUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    private ComponentUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	// MiniMessage
-	public static String serializeMiniMessage(Component component) {
-		return miniMessage.serialize(component);
-	}
+    // MiniMessage
+    @NotNull
+    public static String serializeMM(@NotNull Component component) {
+        Preconditions.checkNotNull(component, "component cannot be null");
 
-	public static Component deserializeMiniMessage(String input) {
-		return miniMessage.deserialize(input);
-	}
+        return miniMessage.serialize(component);
+    }
 
-	// JSON
-	public static String serializeJson(Component component) {
-		return jsonSerializer.serialize(component);
-	}
+    @NotNull
+    public static Component deserializeMM(@NotNull String input) {
+        Preconditions.checkNotNull(input, "input cannot be null");
 
-	public static Component deserializeJson(String input) {
-		return jsonSerializer.deserialize(input);
-	}
+        return miniMessage.deserialize(input);
+    }
 
-	// Legacy Text
-	public static String serializeLegacyAmpersandText(Component component) {
-		return legacyAmpersandTextSerializer.serialize(component);
-	}
+    // JSON
+    @NotNull
+    public static String serializeJson(@NotNull Component component) {
+        Preconditions.checkNotNull(component, "component cannot be null");
 
-	public static Component deserializeLegacyAmpersandText(String input) {
-		return legacyAmpersandTextSerializer.deserialize(input);
-	}
+        return jsonSerializer.serialize(component);
+    }
 
-	public static String serializeLegacySectionText(Component component) {
-		return legacySectionTextSerializer.serialize(component);
-	}
+    @NotNull
+    public static Component deserializeJson(@NotNull String input) {
+        Preconditions.checkNotNull(input, "input cannot be null");
 
-	public static Component deserializeLegacySectionText(String input) {
-		return legacySectionTextSerializer.deserialize(input);
-	}
-
-	// Plain Text
-	public static String serializePlainText(Component component) {
-		return plainTextSerializer.serialize(component);
-	}
+        return jsonSerializer.deserialize(input);
+    }
 }

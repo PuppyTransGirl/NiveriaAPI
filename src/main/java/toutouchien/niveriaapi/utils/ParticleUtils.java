@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.DoubleFunction;
 
 public class ParticleUtils {
     private ParticleUtils() {
@@ -288,11 +288,11 @@ public class ParticleUtils {
     // Create a particle that follows an entity
     public static BukkitTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
         BukkitTask task = Task.syncRepeat(() -> {
-			if (!entity.isValid())
-				return;
+            if (!entity.isValid())
+                return;
 
             spawnParticle(entity.getLocation().add(0, 1, 0), particle, count, offsetX, offsetY, offsetZ, speed, null, false);
-		}, plugin, 0, interval);
+        }, plugin, 0, interval);
 
         if (durationTicks == -1)
             return task;
@@ -303,7 +303,7 @@ public class ParticleUtils {
     }
 
     // Create a parametric curve of particles
-    public static void drawParametricCurve(Location center, Particle particle, Function<Double, Vector> parametricFunction, double tStart, double tEnd, double tStep, double offsetX, double offsetY, double offsetZ, double speed) {
+    public static void drawParametricCurve(Location center, Particle particle, DoubleFunction<Vector> parametricFunction, double tStart, double tEnd, double tStep, double offsetX, double offsetY, double offsetZ, double speed) {
         for (double t = tStart; t <= tEnd; t += tStep) {
             Vector position = parametricFunction.apply(t);
             Location particleLocation = center.clone().add(position);
@@ -334,18 +334,18 @@ public class ParticleUtils {
 
 
     // Create a gradient of particles
-    public static void drawGradient(Location start, Location end, int steps, Function<Double, Color> colorFunction, double offsetX, double offsetY, double offsetZ, double speed) {
+    public static void drawGradient(Location start, Location end, int steps, DoubleFunction<Color> colorFunction, double offsetX, double offsetY, double offsetZ, double speed) {
         if (!start.getWorld().equals(end.getWorld()))
             throw new IllegalArgumentException("Locations must be in the same world");
-        
+
         Vector direction = end.clone().subtract(start).toVector();
         double distance = direction.length();
         direction.normalize();
-        
+
         for (int i = 0; i <= steps; i++) {
             double fraction = (double) i / steps;
             Location particleLocation = start.clone().add(direction.clone().multiply(distance * fraction));
-            
+
             Color color = colorFunction.apply(fraction);
             Particle.DustOptions dustOptions = new Particle.DustOptions(color, 1.0f);
 

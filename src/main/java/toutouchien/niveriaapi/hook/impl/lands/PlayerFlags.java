@@ -1,7 +1,10 @@
 package toutouchien.niveriaapi.hook.impl.lands;
 
+import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.PlayerFlag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
@@ -16,38 +19,34 @@ public enum PlayerFlags {
 
     private final PlayerFlag flag;
 
-    PlayerFlags(PlayerFlag flag) {
+    PlayerFlags(@NotNull PlayerFlag flag) {
+        Preconditions.checkNotNull(flag, "flag cannot be null");
+
         this.flag = flag;
     }
 
     /**
-     * Get the original Lands API PlayerFlag
+     * Find a PlayerFlag enum by its name
      *
-     * @return the original PlayerFlag object
+     * @param name The name of the enum value
+     * @return An Optional containing the matching enum value or empty if not found
      */
-    public PlayerFlag flag() {
-        return flag;
-    }
-    
-    /**
-     * Find a PlayerFlag by its name
-     * 
-     * @param name The name of the flag (case-insensitive)
-     * @return The matching enum value or null if not found
-     */
-    public static Optional<PlayerFlags> byName(String name) {
+    @NotNull
+    public static Optional<PlayerFlags> byName(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
         return StringUtils.match(name, PlayerFlags.class);
     }
-    
+
     /**
      * Find a PlayerFlag enum by its original Lands API PlayerFlag
-     * 
+     *
      * @param playerFlag The original PlayerFlag
      * @return The matching enum value or null if not found
      */
-    public static PlayerFlags fromPlayerFlag(PlayerFlag playerFlag) {
-        if (playerFlag == null)
-            return null;
+    @Nullable
+    public static PlayerFlags fromPlayerFlag(@NotNull PlayerFlag playerFlag) {
+        Preconditions.checkNotNull(playerFlag, "playerFlag cannot be null");
 
         for (PlayerFlags flag : values()) {
             if (!flag.flag.equals(playerFlag))
@@ -57,5 +56,15 @@ public enum PlayerFlags {
         }
 
         return null;
+    }
+
+    /**
+     * Get the original Lands API PlayerFlag
+     *
+     * @return the original PlayerFlag object
+     */
+    @NotNull
+    public PlayerFlag flag() {
+        return flag;
     }
 }
