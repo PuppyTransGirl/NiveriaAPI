@@ -70,7 +70,6 @@ public class DelayManager implements Listener {
             return;
         }
 
-        teleportDelays.put(delay.player(), delay);
         updateDisplays(delay);
 
         Task.asyncRepeat(task -> {

@@ -38,7 +38,7 @@ public class Task {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
-        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", delay);
+        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", interval);
 
         return Bukkit.getScheduler().runTaskTimer(plugin, runnable, delay, interval);
     }
@@ -66,7 +66,7 @@ public class Task {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
-        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", delay);
+        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", interval);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
         return Bukkit.getAsyncScheduler().runAtFixedRate(plugin, consumer, delay, interval, timeUnit);

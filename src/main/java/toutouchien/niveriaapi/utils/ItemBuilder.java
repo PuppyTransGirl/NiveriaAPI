@@ -228,7 +228,7 @@ public class ItemBuilder {
      *
      * @return the custom name component, or null if not present
      */
-    @NotNull
+    @Nullable
     public Component renamableName() {
         return itemStack.getData(DataComponentTypes.CUSTOM_NAME);
     }
@@ -717,7 +717,6 @@ public class ItemBuilder {
      * @return the component at index or null if not present
      */
     @Nullable
-    @Contract(value = "_ -> this", mutates = "this")
     public Component loreLine(@NonNegative int index) {
         Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
 
@@ -1289,7 +1288,6 @@ public class ItemBuilder {
      * @return the component's value or null if not present
      */
     @Nullable
-    @Contract(value = "_ -> this", mutates = "this")
     public <T> T component(@NotNull DataComponentType.Valued<@NotNull T> type) {
         Preconditions.checkNotNull(type, "type cannot be null");
 

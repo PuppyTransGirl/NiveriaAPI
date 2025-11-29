@@ -48,7 +48,7 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public boolean lastPage(@Positive int maxPage) {
-        Preconditions.checkArgument(maxPage >= 1, "i cannot be less than 1: %d", maxPage);
+        Preconditions.checkArgument(maxPage >= 1, "maxPage cannot be less than 1: %d", maxPage);
 
         return this.page == maxPage;
     }

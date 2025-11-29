@@ -96,7 +96,7 @@ class ItemBuilderTest {
 
         @ParameterizedTest
         @ValueSource(ints = {0, -1, -10})
-        @DisplayName("of(Material,int) should IllegalArgumentException when amount less than one")
+        @DisplayName("of(Material,int) should throw IllegalArgumentException when amount less than one")
         void ofMaterialAndAmount_shouldThrowWhenAmountLessThanOne(int amount) {
             assertThrows(IllegalArgumentException.class, () -> ItemBuilder.of(Material.STONE, amount));
         }
@@ -111,7 +111,7 @@ class ItemBuilderTest {
         }
 
         @Test
-        @DisplayName("buildCopy should return a cloned ItemStack independant of original")
+        @DisplayName("buildCopy should return a cloned ItemStack independent of original")
         void buildCopy_shouldReturnCloneOfWrappedItemStack() {
             ItemBuilder builder = ItemBuilder.of(Material.IRON_INGOT, 4);
             ItemStack original = builder.build();
@@ -177,6 +177,9 @@ class ItemBuilderTest {
         @DisplayName("renamableName(Component) should set and return custom name through CUSTOM_NAME component")
         void renamableName_shouldSetAndReturnCustomNameWhenCalled() {
             ItemBuilder builder = ItemBuilder.of(Material.DIAMOND_SWORD);
+
+            assertEquals(Component.empty(), builder.renamableName());
+
             Component name = Component.text("Rename Me");
             builder.renamableName(name);
 
