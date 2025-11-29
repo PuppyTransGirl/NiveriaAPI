@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.input;
 
+import com.google.common.base.Preconditions;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +29,7 @@ public class ChatInputManager implements Listener {
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        
+
         if (!inputRequests.containsKey(playerId)) {
             return;
         }
@@ -54,7 +56,7 @@ public class ChatInputManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         cleanupRequest(event.getPlayer());
     }
-    
+
     /**
      * Registers a new input request for a player. The provided consumer will be
      * called with the player's next chat message.
@@ -62,36 +64,45 @@ public class ChatInputManager implements Listener {
      * @param player The player to request input from
      * @param action The consumer to process the player's input
      */
-    public void requestInput(Player player, Consumer<String> action) {
+    public void requestInput(@NotNull Player player, @NotNull Consumer<String> action) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(action, "action cannot be null");
+
         inputRequests.put(player.getUniqueId(), action);
     }
-    
+
     /**
      * Cancels an existing input request for a player.
      *
      * @param player The player whose input request should be canceled
      * @return true if a request was canceled, false otherwise
      */
-    public boolean cancelRequest(Player player) {
+    public boolean cancelRequest(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         return inputRequests.remove(player.getUniqueId()) != null;
     }
-    
+
     /**
      * Checks if a player has an active input request.
      *
      * @param player The player to check
      * @return true if the player has an active input request, false otherwise
      */
-    public boolean hasActiveRequest(Player player) {
+    public boolean hasActiveRequest(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         return inputRequests.containsKey(player.getUniqueId());
     }
-    
+
     /**
      * Removes any active input request for the given player.
      *
      * @param player The player whose input request should be removed
      */
-    private void cleanupRequest(Player player) {
+    private void cleanupRequest(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         inputRequests.remove(player.getUniqueId());
     }
 }

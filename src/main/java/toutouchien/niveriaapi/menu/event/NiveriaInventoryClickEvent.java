@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.event;
 
+import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -10,29 +11,28 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
 import java.util.function.Consumer;
 
 public class NiveriaInventoryClickEvent extends InventoryClickEvent {
-	public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event) {
-		super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
-	}
+    public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event) {
+        super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
+    }
 
-	@NotNull
-	public Player player() {
-		return (Player) getWhoClicked();
-	}
+    @NotNull
+    public Player player() {
+        return (Player) getWhoClicked();
+    }
 
-	public void changeItem(@Nullable ItemStack newItem) {
-		this.setCurrentItem(newItem);
-	}
+    public void changeItem(@Nullable ItemStack newItem) {
+        this.setCurrentItem(newItem);
+    }
 
-	public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
-        if (modifier == null)
-            throw new IllegalArgumentException("modifier cannot be null");
+    public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
+        Preconditions.checkNotNull(modifier, "modifier cannot be null");
 
-		ItemStack item = this.getCurrentItem();
-		if (item == null)
-			return;
+        ItemStack item = this.getCurrentItem();
+        if (item == null)
+            return;
 
-		ItemBuilder builder = ItemBuilder.of(item);
-		modifier.accept(builder);
-		this.setCurrentItem(builder.build());
-	}
+        ItemBuilder builder = ItemBuilder.of(item);
+        modifier.accept(builder);
+        this.setCurrentItem(builder.build());
+    }
 }

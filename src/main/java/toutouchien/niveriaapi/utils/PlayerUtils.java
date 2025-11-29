@@ -1,49 +1,93 @@
 package toutouchien.niveriaapi.utils;
 
+import com.google.common.base.Preconditions;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class PlayerUtils {
-	private PlayerUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    private PlayerUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	public static boolean isVanished(@NotNull Player player) {
-		List<MetadataValue> metadata = player.getMetadata("vanished");
-		return metadata.stream().anyMatch(MetadataValue::asBoolean);
-	}
+    public static boolean isVanished(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
 
-	public static Collection<? extends Player> nonVanishedPlayers() {
-		return Bukkit.getOnlinePlayers().stream()
-				.filter(player -> {
-					List<MetadataValue> metadata = player.getMetadata("vanished");
-					return metadata.stream().anyMatch(value -> !value.asBoolean());
-				})
-				.toList();
-	}
+        List<MetadataValue> metadata = player.getMetadata("vanished");
+        for (MetadataValue metadatum : metadata) {
+            Object value = metadatum.value();
+            if ((value instanceof Boolean bool && bool)
+                    || (value instanceof TriState triState && triState == TriState.TRUE))
+                return true;
+        }
 
-	public static Player nonVanishedPlayer(@NotNull String name) {
-		Player player = Bukkit.getPlayer(name);
-		return player == null ? null : isVanished(player) ? null : player;
-	}
+        return false;
+    }
 
-	public static Player nonVanishedPlayerExact(@NotNull String name) {
-		Player playerExact = Bukkit.getPlayerExact(name);
-		return playerExact == null ? null : isVanished(playerExact) ? null : playerExact;
-	}
+    @NotNull
+    public static Collection<? extends Player> nonVanishedPlayers() {
+        Set<Player> list = new HashSet<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!isVanished(player))
+                list.add(player);
+        }
 
-	public static Player nonVanishedPlayer(@NotNull UUID uuid) {
-		Player player = Bukkit.getPlayer(uuid);
-		return player == null ? null : isVanished(player) ? null : player;
-	}
+        return list;
+    }
 
-	public static boolean isValidPlayerName(@NotNull String playerName) {
-		return playerName.length() <= 16 && playerName.chars().filter(i -> i <= 32 || i >= 127).findAny().isEmpty(); // Minecraft code
-	}
+    @Nullable
+    public static Player nonVanishedPlayer(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
+        Player player = Bukkit.getPlayer(name);
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
+    }
+
+    @Nullable
+    public static Player nonVanishedPlayerExact(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
+        Player player = Bukkit.getPlayerExact(name);
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
+    }
+
+    @Nullable
+    public static Player nonVanishedPlayer(@NotNull UUID uuid) {
+        Preconditions.checkNotNull(uuid, "uuid cannot be null");
+
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null || isVanished(player))
+            return null;
+
+        return player;
+    }
+
+    public static boolean isValidPlayerName(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name cannot be null");
+
+        if (name.length() < 3 || name.length() > 16)
+            return false;
+
+        for (int i = 0, len = name.length(); i < len; ++i) {
+            char c = name.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '_' || c == '.'))
+                continue;
+
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -1,9 +1,11 @@
 package toutouchien.niveriaapi.database;
 
+import com.google.common.base.Preconditions;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,17 +16,23 @@ public class MongoManager {
     private final MongoClient mongoClient;
     private final List<MongoDatabase> databaseCache;
 
-    public MongoManager(String connectionString) {
+    public MongoManager(@NotNull String connectionString) {
+        Preconditions.checkNotNull(connectionString, "connectionString cannot be null");
+
         this.mongoClient = MongoClients.create(connectionString);
         this.databaseCache = new ArrayList<>();
     }
 
-    public MongoDatabase database(String databaseName) {
+    @NotNull
+    public MongoDatabase database(@NotNull String databaseName) {
+        Preconditions.checkNotNull(databaseName, "databaseName cannot be null");
+
         MongoDatabase mongoDatabase = this.mongoClient.getDatabase(databaseName);
         this.databaseCache.add(mongoDatabase);
         return mongoDatabase;
     }
 
+    @NotNull
     public Map<String, Long> ping() {
         Map<String, Long> pings = new HashMap<>();
         for (MongoDatabase mongoDatabase : this.databaseCache) {

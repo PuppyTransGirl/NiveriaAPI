@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.lang;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -45,6 +46,8 @@ public class Lang {
     }
 
     public static void load(@NotNull JavaPlugin plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         saveDefaultMessages(plugin);
         loadConfig(plugin);
         loadMessages(plugin);
@@ -84,14 +87,15 @@ public class Lang {
     }
 
     /**
-     * Loads a single language file for a specific locale from the disk.
+     * Loads a single locale file and stores its messages in the cache.
      * <p>
-     * It reads a `.yml` file from `plugins/PluginName/lang/`, parses its
-     * key-value pairs, and stores them in the message cache. If the file does
-     * not exist, this method does nothing.
+     * This method reads the specified locale's YAML file from the `lang`
+     * directory, flattens any nested sections into dot-separated keys, and
+     * stores the resulting key-value pairs in the `MESSAGES` map. It also
+     * loads any special tag patterns defined in the file.
      *
      * @param plugin The main plugin instance.
-     * @param locale The locale for which to load the language file.
+     * @param locale The locale to load messages for.
      */
     private static void loadLocaleFile(@NotNull JavaPlugin plugin, @NotNull Locale locale) {
         String fileName = "lang/%s.yml".formatted(locale.toLanguageTag().replace('-', '_'));
@@ -101,19 +105,60 @@ public class Lang {
 
         Object2ObjectMap<String, String> messages = new Object2ObjectOpenHashMap<>();
         FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langFile);
-        for (String key : langConfig.getKeys(false)) {
-            if (!langConfig.isString(key))
-                continue;
 
-            String value = langConfig.getString(key);
-            if (value != null)
-                messages.put(key, value);
+        // Flatten nested sections into dot-separated keys (e.g. niveriaapi.fixcommands.single)
+        for (String key : langConfig.getKeys(false)) {
+            if (langConfig.isString(key)) {
+                String value = langConfig.getString(key);
+                if (value != null)
+                    messages.put(key, value);
+
+                continue;
+            }
+
+            ConfigurationSection section = langConfig.getConfigurationSection(key);
+            if (section != null)
+                flattenSection(section, key, messages);
         }
 
         if (!messages.isEmpty())
             MESSAGES.put(locale, messages);
 
         loadSpecialTags(locale, langConfig);
+    }
+
+    /**
+     * Recursively flattens a configuration section into dot-separated keys.
+     * <p>
+     * This helper method traverses the provided configuration section,
+     * converting nested keys into a flat structure with dot notation. For
+     * example, a section like:
+     * <pre>
+     * parent:
+     *   child:
+     *     key: value
+     * </pre>
+     * would result in a key-value pair of `parent.child.key` → `value`.
+     *
+     * @param section  The configuration section to flatten.
+     * @param prefix   The current key prefix for nested sections.
+     * @param messages The map to store the flattened key-value pairs.
+     */
+    private static void flattenSection(@NotNull ConfigurationSection section, @NotNull String prefix, @NotNull Object2ObjectMap<String, String> messages) {
+        for (String k : section.getKeys(false)) {
+            String fullKey = prefix.isEmpty() ? k : prefix + "." + k;
+            if (section.isString(k)) {
+                String v = section.getString(k);
+                if (v != null)
+                    messages.put(fullKey, v);
+
+                continue;
+            }
+
+            ConfigurationSection child = section.getConfigurationSection(k);
+            if (child != null)
+                flattenSection(child, fullKey, messages);
+        }
     }
 
     /**
@@ -164,7 +209,7 @@ public class Lang {
     private static void saveDefaultMessages(@NotNull JavaPlugin plugin) {
         File langFolder = new File(plugin.getDataFolder(), "lang");
         if (!langFolder.exists() && !langFolder.mkdirs()) {
-            plugin.getSLF4JLogger().warn("Failed to create lang folder in plugin data directory.");
+            NiveriaAPI.instance().getSLF4JLogger().warn("Could not create lang folder for plugin {}", plugin.getName());
             return;
         }
 
@@ -190,7 +235,7 @@ public class Lang {
      * @return The final, formatted message string.
      */
     @NotNull
-    private static String getStringInternal(@Nullable Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    private static String getStringInternal(@Nullable Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
         Locale locale = defaultLocale;
         if (usePlayerLocale && audience instanceof Player player)
             locale = player.locale();
@@ -209,6 +254,8 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return getStringInternal(null, key);
     }
 
@@ -222,6 +269,9 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         return getStringInternal(null, key, args);
     }
 
@@ -235,6 +285,9 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         return getStringInternal(audience, key);
     }
 
@@ -249,6 +302,10 @@ public class Lang {
      */
     @NotNull
     public static String getString(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         return getStringInternal(audience, key, args);
     }
 
@@ -286,6 +343,7 @@ public class Lang {
                 (args, ctx) -> {
                     String id = args.popOr("prefix expected").value();
                     String pat = prefixMap.getOrDefault(id, "");
+
                     return Tag.inserting(MM.deserialize(pat));
                 });
 
@@ -293,9 +351,8 @@ public class Lang {
                 (args, ctx) -> {
                     String id = args.popOr("color expected").value();
                     String hex = colorMap.get(id);
-                    TextColor c = hex != null
-                            ? TextColor.fromHexString(hex)
-                            : NamedTextColor.BLACK;
+                    TextColor c = hex != null ? TextColor.fromHexString(hex) : NamedTextColor.BLACK;
+
                     return Tag.styling(b -> b.color(c));
                 });
 
@@ -327,6 +384,8 @@ public class Lang {
      */
     @NotNull
     public static Component get(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         String raw = getStringInternal(null, key);
         return getComponentInternal(null, raw, key);
     }
@@ -340,7 +399,10 @@ public class Lang {
      * @return The formatted, localized component.
      */
     @NotNull
-    public static Component get(@NotNull String key, @Nullable Object @NotNull ... args) {
+    public static Component get(@NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         String raw = getStringInternal(null, key, args);
         return getComponentInternal(null, raw, key);
     }
@@ -355,6 +417,9 @@ public class Lang {
      */
     @NotNull
     public static Component get(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         String raw = getStringInternal(audience, key);
         return getComponentInternal(audience, raw, key);
     }
@@ -369,7 +434,11 @@ public class Lang {
      * @return The formatted, localized component.
      */
     @NotNull
-    public static Component get(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    public static Component get(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         String raw = getStringInternal(audience, key, args);
         return getComponentInternal(audience, raw, key);
     }
@@ -382,6 +451,9 @@ public class Lang {
      * @param key      The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         sendMessage(audience, null, key, (Object[]) null);
     }
 
@@ -393,7 +465,11 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
-    public static void sendMessage(@NotNull Audience audience, @NotNull String key, @Nullable Object @NotNull ... args) {
+    public static void sendMessage(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
         sendMessage(audience, null, key, args);
     }
 
@@ -406,6 +482,10 @@ public class Lang {
      * @param key      The key of the message to send.
      */
     public static void sendMessage(@NotNull Audience audience, @NotNull Sound sound, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(sound, "sound cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         sendMessage(audience, sound, key, (Object[]) null);
     }
 
@@ -418,7 +498,10 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
-    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @Nullable Object @Nullable ... args) {
+    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @NotNull Object @Nullable ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
         Component message = args == null ? get(audience, key) : get(audience, key, args);
         if (message.equals(Component.empty()))
             return;
@@ -434,6 +517,8 @@ public class Lang {
      * @param plugin The plugin instance to reload languages for.
      */
     public static void reload(@NotNull JavaPlugin plugin) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+
         load(plugin);
     }
 }

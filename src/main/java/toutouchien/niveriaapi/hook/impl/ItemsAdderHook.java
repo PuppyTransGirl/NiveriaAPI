@@ -1,7 +1,10 @@
 package toutouchien.niveriaapi.hook.impl;
 
+import com.google.common.base.Preconditions;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.itemsadder.ItemsAdderStack;
@@ -9,7 +12,7 @@ import toutouchien.niveriaapi.hook.impl.itemsadder.ItemsAdderStack;
 public class ItemsAdderHook extends Hook {
     private boolean enabled;
 
-    public ItemsAdderHook(NiveriaAPI plugin) {
+    public ItemsAdderHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -25,7 +28,10 @@ public class ItemsAdderHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from ItemsAdder");
     }
 
-    public static ItemsAdderStack byNamespace(String namespace) {
+    @Nullable
+    public static ItemsAdderStack byNamespace(@NotNull String namespace) {
+        Preconditions.checkNotNull(namespace, "namespace cannot be null");
+
         CustomStack stack = CustomStack.getInstance(namespace);
         if (stack == null)
             return null;
@@ -33,7 +39,10 @@ public class ItemsAdderHook extends Hook {
         return new ItemsAdderStack(stack);
     }
 
-    public static ItemsAdderStack byItemStack(ItemStack itemStack) {
+    @Nullable
+    public static ItemsAdderStack byItemStack(@NotNull ItemStack itemStack) {
+        Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
+
         CustomStack stack = CustomStack.byItemStack(itemStack);
         if (stack == null)
             return null;
