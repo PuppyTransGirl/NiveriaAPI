@@ -11,11 +11,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * Utility class for scheduling synchronous and asynchronous tasks in a Bukkit/Spigot/Paper server.
+ */
 public class Task {
     private Task() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Schedules a synchronous task to run immediately.
+     *
+     * @param runnable The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @return The scheduled BukkitTask.
+     */
     @NotNull
     public static BukkitTask sync(@NotNull Runnable runnable, @NotNull Plugin plugin) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
@@ -24,6 +34,14 @@ public class Task {
         return Bukkit.getScheduler().runTask(plugin, runnable);
     }
 
+    /**
+     * Schedules a synchronous task to run after a specified delay.
+     *
+     * @param runnable The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @param delay    The delay in ticks before the task is executed.
+     * @return The scheduled BukkitTask.
+     */
     @NotNull
     public static BukkitTask syncLater(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
@@ -33,6 +51,15 @@ public class Task {
         return Bukkit.getScheduler().runTaskLater(plugin, runnable, delay);
     }
 
+    /**
+     * Schedules a synchronous repeating task.
+     *
+     * @param runnable The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @param delay    The delay in ticks before the first execution.
+     * @param interval The interval in ticks between subsequent executions.
+     * @return The scheduled BukkitTask.
+     */
     @NotNull
     public static BukkitTask syncRepeat(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
@@ -43,6 +70,13 @@ public class Task {
         return Bukkit.getScheduler().runTaskTimer(plugin, runnable, delay, interval);
     }
 
+    /**
+     * Schedules an asynchronous task to run immediately.
+     *
+     * @param consumer The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @return The scheduled ScheduledTask.
+     */
     @NotNull
     public static ScheduledTask async(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
@@ -51,6 +85,15 @@ public class Task {
         return Bukkit.getAsyncScheduler().runNow(plugin, consumer);
     }
 
+    /**
+     * Schedules an asynchronous task to run after a specified delay.
+     *
+     * @param consumer The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @param delay    The delay before the task is executed.
+     * @param timeUnit The time unit of the delay.
+     * @return The scheduled ScheduledTask.
+     */
     @NotNull
     public static ScheduledTask asyncLater(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
@@ -61,6 +104,16 @@ public class Task {
         return Bukkit.getAsyncScheduler().runDelayed(plugin, consumer, delay, timeUnit);
     }
 
+    /**
+     * Schedules an asynchronous repeating task.
+     *
+     * @param consumer The task to run.
+     * @param plugin   The plugin scheduling the task.
+     * @param delay    The delay before the first execution.
+     * @param interval The interval between subsequent executions.
+     * @param timeUnit The time unit of the delay and interval.
+     * @return The scheduled ScheduledTask.
+     */
     @NotNull
     public static ScheduledTask asyncRepeat(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");

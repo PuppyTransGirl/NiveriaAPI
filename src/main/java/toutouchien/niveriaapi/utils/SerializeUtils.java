@@ -13,17 +13,32 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import java.io.*;
 import java.util.UUID;
 
+/**
+ * Utility class for serializing and deserializing various Bukkit objects.
+ */
 public class SerializeUtils {
     private SerializeUtils() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Serializes an ItemStack to a byte array.
+     *
+     * @param itemStack The ItemStack to serialize.
+     * @return The serialized byte array.
+     */
     public static byte @NotNull [] serializeItemStack(@NotNull ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 
         return itemStack.serializeAsBytes();
     }
 
+    /**
+     * Deserializes an ItemStack from a byte array.
+     *
+     * @param serializedItemStack The byte array to deserialize.
+     * @return The deserialized ItemStack, or null if deserialization fails.
+     */
     @Nullable
     public static ItemStack deserializeItemStack(byte @NotNull [] serializedItemStack) {
         Preconditions.checkNotNull(serializedItemStack, "serializedItemStack cannot be null");
@@ -31,12 +46,24 @@ public class SerializeUtils {
         return ItemStack.deserializeBytes(serializedItemStack);
     }
 
+    /**
+     * Serializes an array of ItemStacks to a byte array.
+     *
+     * @param itemStacks The array of ItemStacks to serialize.
+     * @return The serialized byte array.
+     */
     public static byte @NotNull [] serializeItemStacks(@NotNull ItemStack[] itemStacks) {
         Preconditions.checkNotNull(itemStacks, "itemStacks cannot be null");
 
         return ItemStack.serializeItemsAsBytes(itemStacks);
     }
 
+    /**
+     * Deserializes an array of ItemStacks from a byte array.
+     *
+     * @param serializedItemStacks The byte array to deserialize.
+     * @return The deserialized array of ItemStacks.
+     */
     @NotNull
     public static ItemStack[] deserializeItemStacks(byte @NotNull [] serializedItemStacks) {
         Preconditions.checkNotNull(serializedItemStacks, "serializedItemStacks cannot be null");
@@ -44,6 +71,12 @@ public class SerializeUtils {
         return ItemStack.deserializeItemsFromBytes(serializedItemStacks);
     }
 
+    /**
+     * Serializes a Location to a byte array.
+     *
+     * @param location The Location to serialize.
+     * @return The serialized byte array.
+     */
     public static byte @NotNull [] serializeLocation(@NotNull Location location) {
         Preconditions.checkNotNull(location, "location cannot be null");
 
@@ -75,6 +108,12 @@ public class SerializeUtils {
         }
     }
 
+    /**
+     * Deserializes a Location from a byte array.
+     *
+     * @param serializedLocation The byte array to deserialize.
+     * @return The deserialized Location.
+     */
     @NotNull
     public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
         Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
@@ -105,6 +144,12 @@ public class SerializeUtils {
         }
     }
 
+    /**
+     * Serializes a Vector to a byte array.
+     *
+     * @param vector The Vector to serialize.
+     * @return The serialized byte array.
+     */
     public static byte @NotNull [] serializeVector(@NotNull Vector vector) {
         Preconditions.checkNotNull(vector, "vector cannot be null");
 
@@ -123,6 +168,12 @@ public class SerializeUtils {
         }
     }
 
+    /**
+     * Deserializes a Vector from a byte array.
+     *
+     * @param serializedVector The byte array to deserialize.
+     * @return The deserialized Vector.
+     */
     @NotNull
     public static Vector deserializeVector(byte @NotNull [] serializedVector) {
         Preconditions.checkNotNull(serializedVector, "serializedVector cannot be null");
