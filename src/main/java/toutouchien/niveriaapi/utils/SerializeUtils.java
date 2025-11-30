@@ -1,9 +1,17 @@
 package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import toutouchien.niveriaapi.NiveriaAPI;
+
+import java.io.*;
+import java.util.UUID;
 
 public class SerializeUtils {
     private SerializeUtils() {
@@ -34,5 +42,103 @@ public class SerializeUtils {
         Preconditions.checkNotNull(serializedItemStacks, "serializedItemStacks cannot be null");
 
         return ItemStack.deserializeItemsFromBytes(serializedItemStacks);
+    }
+
+    public static byte @NotNull [] serializeLocation(@NotNull Location location) {
+        Preconditions.checkNotNull(location, "location cannot be null");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(baos);
+
+        try {
+            World world = location.getWorld();
+            if (world == null) {
+                out.writeBoolean(false);
+            } else {
+                UUID worldUUID = world.getUID();
+
+                out.writeBoolean(true);
+                out.writeLong(worldUUID.getMostSignificantBits());
+                out.writeLong(worldUUID.getLeastSignificantBits());
+            }
+
+            out.writeDouble(location.getX());
+            out.writeDouble(location.getY());
+            out.writeDouble(location.getZ());
+            out.writeFloat(location.getYaw());
+            out.writeFloat(location.getPitch());
+
+            return baos.toByteArray();
+        } catch (IOException e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to serialize Location", e);
+            return new byte[0];
+        }
+    }
+
+    @NotNull
+    public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
+        Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation);
+        DataInputStream in = new DataInputStream(bais);
+
+        try {
+            World world = null;
+            boolean hasWorld = in.readBoolean();
+            if (hasWorld) {
+                long mostSigBits = in.readLong();
+                long leastSigBits = in.readLong();
+                UUID worldUUID = new UUID(mostSigBits, leastSigBits);
+                world = Bukkit.getWorld(worldUUID);
+            }
+
+            double x = in.readDouble();
+            double y = in.readDouble();
+            double z = in.readDouble();
+            float yaw = in.readFloat();
+            float pitch = in.readFloat();
+
+            return new Location(world, x, y, z, yaw, pitch);
+        } catch (IOException e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to deserialize Location", e);
+            return new Location(null, 0, 0, 0);
+        }
+    }
+
+    public static byte @NotNull [] serializeVector(@NotNull Vector vector) {
+        Preconditions.checkNotNull(vector, "vector cannot be null");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(baos);
+
+        try {
+            out.writeDouble(vector.getX());
+            out.writeDouble(vector.getY());
+            out.writeDouble(vector.getZ());
+
+            return baos.toByteArray();
+        } catch (IOException e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to serialize Vector", e);
+            return new byte[0];
+        }
+    }
+
+    @NotNull
+    public static Vector deserializeVector(byte @NotNull [] serializedVector) {
+        Preconditions.checkNotNull(serializedVector, "serializedVector cannot be null");
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(serializedVector);
+        DataInputStream in = new DataInputStream(bais);
+
+        try {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            double z = in.readDouble();
+
+            return new Vector(x, y, z);
+        } catch (IOException e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to deserialize Vector", e);
+            return new Vector(0, 0, 0);
+        }
     }
 }
