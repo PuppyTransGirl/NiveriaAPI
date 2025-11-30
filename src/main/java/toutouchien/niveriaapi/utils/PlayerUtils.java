@@ -10,12 +10,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * Utility class for player-related operations.
+ */
 @SuppressWarnings("deprecation")
 public class PlayerUtils {
     private PlayerUtils() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Checks if a player is vanished based on their metadata.
+     *
+     * @param player The player to check.
+     * @return True if the player is vanished, false otherwise.
+     */
     public static boolean isVanished(@NotNull Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
@@ -30,6 +39,11 @@ public class PlayerUtils {
         return false;
     }
 
+    /**
+     * Retrieves a collection of all non-vanished players currently online.
+     *
+     * @return A collection of non-vanished players.
+     */
     @NotNull
     public static Collection<? extends Player> nonVanishedPlayers() {
         Set<Player> list = new HashSet<>();
@@ -41,6 +55,12 @@ public class PlayerUtils {
         return list;
     }
 
+    /**
+     * Retrieves a non-vanished player by their name.
+     *
+     * @param name The name of the player.
+     * @return The non-vanished player, or null if not found or vanished.
+     */
     @Nullable
     public static Player nonVanishedPlayer(@NotNull String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
@@ -52,6 +72,12 @@ public class PlayerUtils {
         return player;
     }
 
+    /**
+     * Retrieves a non-vanished player by their exact name.
+     *
+     * @param name The exact name of the player.
+     * @return The non-vanished player, or null if not found or vanished.
+     */
     @Nullable
     public static Player nonVanishedPlayerExact(@NotNull String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
@@ -63,6 +89,12 @@ public class PlayerUtils {
         return player;
     }
 
+    /**
+     * Retrieves a non-vanished player by their UUID.
+     *
+     * @param uuid The UUID of the player.
+     * @return The non-vanished player, or null if not found or vanished.
+     */
     @Nullable
     public static Player nonVanishedPlayer(@NotNull UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
@@ -74,6 +106,14 @@ public class PlayerUtils {
         return player;
     }
 
+    /**
+     * Validates if a given string is a valid player name.
+     * A valid player name is between 3 and 16 characters long and
+     * contains only letters (a-z, A-Z), digits (0-9), underscores (_), or periods (.).
+     *
+     * @param name The player name to validate.
+     * @return True if the name is valid, false otherwise.
+     */
     public static boolean isValidPlayerName(@NotNull String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 

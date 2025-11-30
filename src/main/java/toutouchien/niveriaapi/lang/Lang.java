@@ -26,6 +26,33 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import java.io.File;
 import java.util.Locale;
 
+
+/**
+ * Central language and localization utility for NiveriaAPI.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *     <li>Load and cache per-locale message files from {@code /lang/*.yml}.</li>
+ *     <li>Resolve messages by key to raw strings or {@link Component}s.</li>
+ *     <li>Optionally use per-player locales (via {@link Player#locale()}) or a
+ *         server-wide default locale configured in {@code config.yml}.</li>
+ *     <li>Support MiniMessage-based formatting with custom per-locale tags
+ *         (e.g. prefixes, named colors, separators).</li>
+ *     <li>Provide convenience methods to send localized messages (optionally
+ *         with sounds) directly to an {@link Audience}.</li>
+ * </ul>
+ * <p>
+ * Usage:
+ * <ol>
+ *     <li>Call {@link #load(JavaPlugin)} once during plugin startup.</li>
+ *     <li>Use {@link #get(String)} / {@link #get(Audience, String)} for
+ *         components or {@link #getString(String)} for raw strings.</li>
+ *     <li>Use {@link #sendMessage(Audience, String, Object...)} to send
+ *         localized messages directly.</li>
+ * </ol>
+ * <p>
+ * This is a static utility class and cannot be instantiated.
+ */
 public class Lang {
     private static final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> MESSAGES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     // Locale → ( Category → ( Key → Pattern ) )
@@ -45,6 +72,11 @@ public class Lang {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Initializes the language system by loading configuration and message files.
+     *
+     * @param plugin The main plugin instance.
+     */
     public static void load(@NotNull JavaPlugin plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 

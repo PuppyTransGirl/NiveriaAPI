@@ -98,10 +98,10 @@ jobs:
         env:
           SNAPSHOT: true
           GITHUB_SHA: ${{ github.sha }}
-        run: ./gradlew jar --no-daemon --stacktrace
+        run: ./gradlew jar javadocJar sourcesJar --no-daemon --stacktrace
 
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v5
         with:
           name: NiveriaAPI-${{ env.SHORT_SHA }}
-          path: build/libs/
+          path: build/libs/*

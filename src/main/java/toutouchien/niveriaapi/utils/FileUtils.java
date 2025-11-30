@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Utility class for file-related operations, including validation of file names.
+ */
 public class FileUtils {
     private static String[] invalidCharacters;
     private static String[] invalidWords;
@@ -15,6 +18,11 @@ public class FileUtils {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Returns an array of invalid characters for file names based on the operating system.
+     *
+     * @return An array of invalid characters.
+     */
     @NotNull
     public static String[] invalidCharacters() {
         if (invalidCharacters != null)
@@ -33,6 +41,11 @@ public class FileUtils {
         return invalidCharacters = temp.toArray(new String[0]);
     }
 
+    /**
+     * Returns an array of invalid words for file names based on the operating system.
+     *
+     * @return An array of invalid words.
+     */
     @NotNull
     public static String[] invalidWords() {
         if (invalidWords != null)

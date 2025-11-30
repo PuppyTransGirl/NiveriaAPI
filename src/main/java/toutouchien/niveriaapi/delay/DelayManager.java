@@ -19,10 +19,18 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * Manages delays for players, such as teleportation delays.
+ */
 public class DelayManager implements Listener {
     private final NiveriaAPI plugin;
     private final Map<Player, Delay> teleportDelays;
 
+    /**
+     * Constructs a DelayManager with the specified plugin instance.
+     *
+     * @param plugin The NiveriaAPI plugin instance.
+     */
     public DelayManager(@NotNull NiveriaAPI plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
@@ -30,6 +38,9 @@ public class DelayManager implements Listener {
         this.teleportDelays = new HashMap<>();
     }
 
+    /**
+     * Initializes the DelayManager by registering event listeners and starting the movement check task.
+     */
     public void initialize() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(this, plugin);
@@ -59,6 +70,11 @@ public class DelayManager implements Listener {
         }, plugin, 3L, 1L, TimeUnit.SECONDS);
     }
 
+    /**
+     * Starts a delay for the specified player.
+     *
+     * @param delay The Delay object containing delay information.
+     */
     public void start(@NotNull Delay delay) {
         Preconditions.checkNotNull(delay, "delay cannot be null");
 
@@ -139,6 +155,12 @@ public class DelayManager implements Listener {
         failConsumer.accept(player);
     }
 
+    /**
+     * Checks if the specified player is currently in a delay.
+     *
+     * @param player The player to check.
+     * @return True if the player is in a delay, false otherwise.
+     */
     public boolean inDelay(@NotNull Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
         return teleportDelays.containsKey(player);

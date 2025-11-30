@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 
+/**
+ * Hook for integrating with PlaceholderAPI to replace placeholders in strings.
+ */
 public class PlaceholderAPIHook extends Hook {
     private boolean enabled;
 
@@ -26,6 +29,12 @@ public class PlaceholderAPIHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from PlaceholderAPI");
     }
 
+    /**
+     * Replaces placeholders in the given text without a specific player context.
+     *
+     * @param text The text containing placeholders.
+     * @return The text with placeholders replaced.
+     */
     public String replacePlaceholders(@NotNull String text) {
         Preconditions.checkNotNull(text, "text cannot be null");
 
@@ -35,6 +44,13 @@ public class PlaceholderAPIHook extends Hook {
         return PlaceholderAPI.setPlaceholders(null, text);
     }
 
+    /**
+     * Replaces placeholders in the given text for a specific player.
+     *
+     * @param player The player context for placeholder replacement.
+     * @param text   The text containing placeholders.
+     * @return The text with placeholders replaced.
+     */
     public String replacePlaceholders(Player player, String text) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(text, "text cannot be null");

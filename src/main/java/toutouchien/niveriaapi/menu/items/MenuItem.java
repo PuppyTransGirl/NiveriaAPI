@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.event.ClickEvent;
 
+/**
+ * Abstract class representing an item in a menu.
+ */
 public abstract class MenuItem {
     private final int slot;
     private final ItemStack itemStack;
@@ -26,16 +29,31 @@ public abstract class MenuItem {
         this(slot, ItemStack.of(material), clickEvent);
     }
 
+    /**
+     * Returns the slot index of the menu item.
+     *
+     * @return The slot index.
+     */
     @NonNegative
     public int slot() {
         return slot;
     }
 
+    /**
+     * Returns the ItemStack representing the menu item.
+     *
+     * @return The ItemStack.
+     */
     @NotNull
     public ItemStack itemStack() {
         return itemStack;
     }
 
+    /**
+     * Returns the ClickEvent associated with the menu item, if any.
+     *
+     * @return The ClickEvent, or null if none is associated.
+     */
     @Nullable
     public ClickEvent clickEvent() {
         return clickEvent;
