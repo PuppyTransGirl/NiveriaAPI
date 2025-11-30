@@ -76,7 +76,7 @@ public class SerializeUtils {
     }
 
     @NotNull
-    public static Location serializeVector(byte @NotNull [] serializedLocation) {
+    public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
         Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
 
         ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation);

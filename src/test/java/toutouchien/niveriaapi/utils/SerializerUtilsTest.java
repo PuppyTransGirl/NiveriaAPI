@@ -75,7 +75,7 @@ class SerializerUtilsTest {
         Location location = new Location(null, 100.5D, 64D, -200.5D, 90F, 45F);
 
         byte[] serializedLocation = SerializeUtils.serializeLocation(location);
-        Location deserializedLocation = SerializeUtils.serializeVector(serializedLocation);
+        Location deserializedLocation = SerializeUtils.deserializeLocation(serializedLocation);
 
         assertEquals(location, deserializedLocation);
 
@@ -83,7 +83,7 @@ class SerializerUtilsTest {
         Location locationWithWorld = new Location(world, 150D, 70D, 250D, 180F, 30F);
 
         byte[] serializedLocationWithWorld = SerializeUtils.serializeLocation(locationWithWorld);
-        Location deserializedLocationWithWorld = SerializeUtils.serializeVector(serializedLocationWithWorld);
+        Location deserializedLocationWithWorld = SerializeUtils.deserializeLocation(serializedLocationWithWorld);
 
         assertEquals(locationWithWorld, deserializedLocationWithWorld);
     }
