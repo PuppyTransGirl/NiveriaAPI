@@ -15,11 +15,37 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.DoubleFunction;
 
+/**
+ * Utility methods for spawning and drawing particle effects.
+ * <p>
+ * This class provides:
+ * <ul>
+ *     <li>Low-level helpers to send particle packets to players.</li>
+ *     <li>Shape helpers (lines, circles, spheres, polygons, etc.).</li>
+ *     <li>Animated effects such as following entities or frame-based animations.</li>
+ * </ul>
+ * All methods are static; the class cannot be instantiated.
+ */
 public class ParticleUtils {
     private ParticleUtils() {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Spawns particles visible only to a specific player using a raw NMS packet.
+     *
+     * @param player   target player
+     * @param location particle origin
+     * @param particle particle type
+     * @param count    number of particles
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed (or extra parameter depending on particle)
+     * @param data     particle data (e.g. {@link Particle.DustOptions}), may be null
+     * @param force    whether to ignore client particle settings
+     * @param <T>      type of particle data
+     */
     public static <T> void spawnParticleForPlayer(Player player, Location location, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, T data, boolean force) {
         NMSUtils.sendPacket(player, new ClientboundLevelParticlesPacket(
                 CraftParticle.createParticleParam(particle, data),
@@ -36,7 +62,21 @@ public class ParticleUtils {
         ));
     }
 
-    // Display a particle visible only to specific players
+    /**
+     * Spawns particles visible only to the given collection of players.
+     *
+     * @param players  target players
+     * @param location particle origin
+     * @param particle particle type
+     * @param count    number of particles
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed (or extra parameter depending on particle)
+     * @param data     particle data (e.g. {@link Particle.DustOptions}), may be null
+     * @param force    whether to ignore client particle settings
+     * @param <T>      type of particle data
+     */
     public static <T> void spawnParticleForPlayers(Collection<Player> players, Location location, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, T data, boolean force) {
         ClientboundLevelParticlesPacket particlesPacket = new ClientboundLevelParticlesPacket(
                 CraftParticle.createParticleParam(particle, data),
@@ -55,23 +95,65 @@ public class ParticleUtils {
         players.forEach(player -> NMSUtils.sendPacket(player, particlesPacket));
     }
 
-    // Display a single particle at a location
+    /**
+     * Spawns particles at a location for all players in the world's player list.
+     *
+     * @param location particle origin
+     * @param particle particle type
+     * @param count    number of particles
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed (or extra parameter depending on particle)
+     * @param data     particle data (e.g. {@link Particle.DustOptions}), may be null
+     * @param force    whether to ignore client particle settings
+     * @param <T>      type of particle data
+     */
     public static <T> void spawnParticle(Location location, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, T data, boolean force) {
         spawnParticleForPlayers(location.getWorld().getPlayers(), location, particle, count, offsetX, offsetY, offsetZ, speed, data, force);
     }
 
-    // Display a colored particle
+    /**
+     * Spawns colored dust particles at the given location.
+     *
+     * @param location particle origin
+     * @param color    dust color
+     * @param count    number of particles
+     */
     public static void spawnColoredParticle(Location location, Color color, int count) {
         Particle.DustOptions dustOptions = new Particle.DustOptions(color, 1.0f);
         spawnParticle(location, Particle.DUST, count, 0, 0, 0, 0, dustOptions, false);
     }
 
-    // Display a material particle
+    /**
+     * Spawns material/block particles at the given location.
+     *
+     * @param location particle origin
+     * @param material block material to use for the particle
+     * @param count    number of particles
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed
+     */
     public static void spawnMaterialParticle(Location location, Material material, int count, double offsetX, double offsetY, double offsetZ, double speed) {
         spawnParticle(location, Particle.BLOCK, count, offsetX, offsetY, offsetZ, speed, material.createBlockData(), false);
     }
 
-    // Create a line of particles between two locations
+    /**
+     * Draws a straight line of particles between two locations.
+     *
+     * @param start    start location
+     * @param end      end location (must be in the same world as start)
+     * @param particle particle type
+     * @param spacing  distance between particle samples along the line
+     * @param count    number of particles per sample
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed
+     * @throws IllegalArgumentException if locations are in different worlds
+     */
     public static void drawLine(Location start, Location end, Particle particle, double spacing, int count, double offsetX, double offsetY, double offsetZ, double speed) {
         if (!start.getWorld().equals(end.getWorld()))
             throw new IllegalArgumentException("Locations must be in the same world");
@@ -86,7 +168,18 @@ public class ParticleUtils {
         }
     }
 
-    // Create a circle of particles
+    /**
+     * Draws a horizontal circle of particles around the given center.
+     *
+     * @param center  circle center
+     * @param particle particle type
+     * @param radius  circle radius
+     * @param points  number of points on the circle
+     * @param offsetX x-offset for spread
+     * @param offsetY y-offset for spread
+     * @param offsetZ z-offset for spread
+     * @param speed   particle speed
+     */
     public static void drawCircle(Location center, Particle particle, double radius, int points, double offsetX, double offsetY, double offsetZ, double speed) {
         for (int i = 0; i < points; i++) {
             double angle = 2 * Math.PI * i / points;
@@ -97,7 +190,19 @@ public class ParticleUtils {
         }
     }
 
-    // Create a vertical circle of particles
+    /**
+     * Draws a circle of particles in a plane defined by a center and normal vector.
+     *
+     * @param center  circle center
+     * @param particle particle type
+     * @param radius  circle radius
+     * @param points  number of points on the circle
+     * @param normal  normal vector of the circle plane
+     * @param offsetX x-offset for spread
+     * @param offsetY y-offset for spread
+     * @param offsetZ z-offset for spread
+     * @param speed   particle speed
+     */
     public static void drawVerticalCircle(Location center, Particle particle, double radius, int points, Vector normal, double offsetX, double offsetY, double offsetZ, double speed) {
         Vector normalizedNormal = normal.clone().normalize();
 
@@ -117,7 +222,19 @@ public class ParticleUtils {
         }
     }
 
-    // Create a sphere of particles
+    /**
+     * Draws a sphere of particles centered at the given location.
+     *
+     * @param center        sphere center
+     * @param particle      particle type
+     * @param radius        sphere radius
+     * @param rings         number of horizontal rings
+     * @param pointsPerRing number of points per ring
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     */
     public static void drawSphere(Location center, Particle particle, double radius, int rings, int pointsPerRing, double offsetX, double offsetY, double offsetZ, double speed) {
         for (int i = 0; i < rings; i++) {
             double phi = Math.PI * i / (rings - 1);
@@ -135,7 +252,21 @@ public class ParticleUtils {
         }
     }
 
-    // Create a helix of particles
+    /**
+     * Draws a helical particle pattern along the given direction vector.
+     *
+     * @param start         start location of the helix
+     * @param direction     direction vector (axis) of the helix
+     * @param particle      particle type
+     * @param radius        helix radius
+     * @param height        helix height along the direction
+     * @param turns         number of turns
+     * @param pointsPerTurn number of points per turn
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     */
     public static void drawHelix(Location start, Vector direction, Particle particle, double radius, double height, int turns, int pointsPerTurn, double offsetX, double offsetY, double offsetZ, double speed) {
         Vector normalizedDirection = direction.clone().normalize();
 
@@ -160,7 +291,21 @@ public class ParticleUtils {
         }
     }
 
-    // Create a spiral of particles
+    /**
+     * Draws a spiral particle pattern that changes radius from start to end over height.
+     *
+     * @param center        center/base location of the spiral
+     * @param particle      particle type
+     * @param startRadius   starting radius
+     * @param endRadius     ending radius
+     * @param height        total vertical height
+     * @param turns         number of spiral turns
+     * @param pointsPerTurn number of points per turn
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     */
     public static void drawSpiral(Location center, Particle particle, double startRadius, double endRadius, double height, int turns, int pointsPerTurn, double offsetX, double offsetY, double offsetZ, double speed) {
         int totalPoints = turns * pointsPerTurn;
 
@@ -178,7 +323,22 @@ public class ParticleUtils {
         }
     }
 
-    // Create a vortex of particles
+    /**
+     * Draws a vortex-like particle effect along a direction vector, with radius changing over length.
+     *
+     * @param center        base location of the vortex
+     * @param direction     direction vector (axis) of the vortex
+     * @param particle      particle type
+     * @param startRadius   starting radius
+     * @param endRadius     ending radius
+     * @param length        vortex length along the direction
+     * @param turns         number of twists/turns
+     * @param pointsPerTurn number of points per turn
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     */
     public static void drawVortex(Location center, Vector direction, Particle particle, double startRadius, double endRadius, double length, int turns, int pointsPerTurn, double offsetX, double offsetY, double offsetZ, double speed) {
         Vector normalizedDirection = direction.clone().normalize();
 
@@ -204,7 +364,21 @@ public class ParticleUtils {
         }
     }
 
-    // Create a wave of particles
+    /**
+     * Draws a wave-like particle effect along the X-axis with sinusoidal Y.
+     *
+     * @param center       center/base location
+     * @param particle     particle type
+     * @param length       total length along X
+     * @param width        total width along Z
+     * @param amplitude    wave amplitude along Y
+     * @param waves        number of full waves
+     * @param pointsPerWave number of samples per wave
+     * @param offsetX      x-offset for spread
+     * @param offsetY      y-offset for spread
+     * @param offsetZ      z-offset for spread
+     * @param speed        particle speed
+     */
     public static void drawWave(Location center, Particle particle, double length, double width, double amplitude, int waves, int pointsPerWave, double offsetX, double offsetY, double offsetZ, double speed) {
         for (int i = 0; i < waves * pointsPerWave; i++) {
             double x = center.x() + length * i / (waves * pointsPerWave);
@@ -220,7 +394,18 @@ public class ParticleUtils {
         }
     }
 
-    // Create a polygon of particles
+    /**
+     * Draws a regular polygon of particles around a center.
+     *
+     * @param center  polygon center
+     * @param particle particle type
+     * @param radius  distance from center to each vertex
+     * @param sides   number of sides (vertices)
+     * @param offsetX x-offset for spread
+     * @param offsetY y-offset for spread
+     * @param offsetZ z-offset for spread
+     * @param speed   particle speed
+     */
     public static void drawPolygon(Location center, Particle particle, double radius, int sides, double offsetX, double offsetY, double offsetZ, double speed) {
         List<Location> corners = new ArrayList<>();
         for (int i = 0; i < sides; i++) {
@@ -234,7 +419,19 @@ public class ParticleUtils {
             drawLine(corners.get(i), corners.get((i + 1) % sides), particle, 0.2, 1, offsetX, offsetY, offsetZ, speed);
     }
 
-    // Create a star of particles
+    /**
+     * Draws a star-shaped polygon of particles around a center.
+     *
+     * @param center      star center
+     * @param particle    particle type
+     * @param outerRadius radius of outer points
+     * @param innerRadius radius of inner points
+     * @param points      number of star points
+     * @param offsetX     x-offset for spread
+     * @param offsetY     y-offset for spread
+     * @param offsetZ     z-offset for spread
+     * @param speed       particle speed
+     */
     public static void drawStar(Location center, Particle particle, double outerRadius, double innerRadius, int points, double offsetX, double offsetY, double offsetZ, double speed) {
         List<Location> corners = new ArrayList<>();
         for (int i = 0; i < 2 * points; i++) {
@@ -249,7 +446,19 @@ public class ParticleUtils {
             drawLine(corners.get(i), corners.get((i + 1) % (2 * points)), particle, 0.2, 1, offsetX, offsetY, offsetZ, speed);
     }
 
-    // Create a cube of particles
+    /**
+     * Draws a wireframe cube of particles between two opposite corners.
+     *
+     * @param corner1 first corner
+     * @param corner2 opposite corner (must be in the same world)
+     * @param particle particle type
+     * @param spacing  spacing between particles along edges
+     * @param offsetX  x-offset for spread
+     * @param offsetY  y-offset for spread
+     * @param offsetZ  z-offset for spread
+     * @param speed    particle speed
+     * @throws IllegalArgumentException if locations are in different worlds
+     */
     public static void drawCube(Location corner1, Location corner2, Particle particle, double spacing, double offsetX, double offsetY, double offsetZ, double speed) {
         World world = corner1.getWorld();
         if (!world.equals(corner2.getWorld()))
@@ -285,7 +494,21 @@ public class ParticleUtils {
         }
     }
 
-    // Create a particle that follows an entity
+    /**
+     * Starts a repeating task spawning particles that follow an entity.
+     *
+     * @param entity        entity to follow
+     * @param plugin        owning plugin
+     * @param particle      particle type
+     * @param count         number of particles per spawn
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     * @param durationTicks total duration in ticks, or -1 to run indefinitely
+     * @param interval      interval in ticks between spawns
+     * @return the scheduled {@link BukkitTask}
+     */
     public static BukkitTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
         BukkitTask task = Task.syncRepeat(() -> {
             if (!entity.isValid())
@@ -302,7 +525,20 @@ public class ParticleUtils {
         return task;
     }
 
-    // Create a parametric curve of particles
+    /**
+     * Draws a parametric curve of particles relative to a center location.
+     *
+     * @param center            center/base location
+     * @param particle          particle type
+     * @param parametricFunction function mapping t to a relative position vector
+     * @param tStart            starting t value (inclusive)
+     * @param tEnd              ending t value (inclusive)
+     * @param tStep             step size for t
+     * @param offsetX           x-offset for spread
+     * @param offsetY           y-offset for spread
+     * @param offsetZ           z-offset for spread
+     * @param speed             particle speed
+     */
     public static void drawParametricCurve(Location center, Particle particle, DoubleFunction<Vector> parametricFunction, double tStart, double tEnd, double tStep, double offsetX, double offsetY, double offsetZ, double speed) {
         for (double t = tStart; t <= tEnd; t += tStep) {
             Vector position = parametricFunction.apply(t);
@@ -311,7 +547,21 @@ public class ParticleUtils {
         }
     }
 
-    // Create a particle animation over time
+    /**
+     * Plays a frame-based particle animation using a list of locations as frames.
+     *
+     * @param plugin        owning plugin
+     * @param frames        ordered list of locations to play as frames
+     * @param particle      particle type
+     * @param count         number of particles per frame
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     * @param ticksPerFrame ticks between frames
+     * @param durationTicks total animation duration in ticks, or -1 to run indefinitely
+     * @param loop          whether to loop frames when the end is reached
+     */
     public static void animateParticles(Plugin plugin, List<Location> frames, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long ticksPerFrame, long durationTicks, boolean loop) {
         final int[] currentFrame = {0};
 
@@ -332,8 +582,19 @@ public class ParticleUtils {
         Task.asyncLater(ignored -> task.cancel(), plugin, durationTicks * 50L, TimeUnit.MILLISECONDS);
     }
 
-
-    // Create a gradient of particles
+    /**
+     * Draws a gradient line of colored dust particles between two locations.
+     *
+     * @param start         start location
+     * @param end           end location (must be in the same world)
+     * @param steps         number of steps/samples along the line
+     * @param colorFunction function mapping fraction (0..1) to a {@link Color}
+     * @param offsetX       x-offset for spread
+     * @param offsetY       y-offset for spread
+     * @param offsetZ       z-offset for spread
+     * @param speed         particle speed
+     * @throws IllegalArgumentException if locations are in different worlds
+     */
     public static void drawGradient(Location start, Location end, int steps, DoubleFunction<Color> colorFunction, double offsetX, double offsetY, double offsetZ, double speed) {
         if (!start.getWorld().equals(end.getWorld()))
             throw new IllegalArgumentException("Locations must be in the same world");

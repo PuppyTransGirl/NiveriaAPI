@@ -8,9 +8,17 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 
+/**
+ * Listener for player pre-login events to manage player data in the database.
+ */
 public class PlayerListener implements Listener {
     private final NiveriaDatabaseManager niveriaDatabase;
 
+    /**
+     * Constructs a PlayerListener with the specified NiveriaDatabaseManager.
+     *
+     * @param niveriaDatabase The NiveriaDatabaseManager instance.
+     */
     public PlayerListener(@NotNull NiveriaDatabaseManager niveriaDatabase) {
         Preconditions.checkNotNull(niveriaDatabase, "niveriaDatabase cannot be null");
         this.niveriaDatabase = niveriaDatabase;
