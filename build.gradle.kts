@@ -88,6 +88,17 @@ tasks {
         useJUnitPlatform()
     }
 
+    javadoc {
+        isFailOnError = false
+        options.encoding = "UTF-8"
+    }
+
+    register<Jar>("javadocJar") {
+        dependsOn(javadoc)
+        archiveClassifier.set("javadoc")
+        from(javadoc.get().destinationDir)
+    }
+
     processResources {
         filteringCharset = "UTF-8"
 
@@ -101,4 +112,8 @@ tasks {
             expand(props)
         }
     }
+}
+
+artifacts {
+    archives(tasks.named("javadocJar"))
 }
