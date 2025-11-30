@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import toutouchien.niveriaapi.annotations.Shivery;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.Objects;
 /**
  * Utility class for interacting with Minecraft's NMS (Net Minecraft Server) classes.
  */
+@Shivery
 public class NMSUtils {
     private NMSUtils() {
         throw new IllegalStateException("Utility class");

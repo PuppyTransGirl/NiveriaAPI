@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import toutouchien.niveriaapi.annotations.Shivery;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.function.DoubleFunction;
  * </ul>
  * All methods are static; the class cannot be instantiated.
  */
+@Shivery
 public class ParticleUtils {
     private ParticleUtils() {
         throw new IllegalStateException("Utility class");
