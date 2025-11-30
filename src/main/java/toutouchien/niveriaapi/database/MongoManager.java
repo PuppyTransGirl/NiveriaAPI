@@ -12,10 +12,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Manager class for handling MongoDB connections and operations.
+ */
 public class MongoManager {
     private final MongoClient mongoClient;
     private final List<MongoDatabase> databaseCache;
 
+    /**
+     * Constructs a MongoManager with the specified connection string.
+     *
+     * @param connectionString The MongoDB connection string.
+     */
     public MongoManager(@NotNull String connectionString) {
         Preconditions.checkNotNull(connectionString, "connectionString cannot be null");
 
@@ -23,6 +31,12 @@ public class MongoManager {
         this.databaseCache = new ArrayList<>();
     }
 
+    /**
+     * Retrieves a MongoDatabase instance for the specified database name.
+     *
+     * @param databaseName The name of the database.
+     * @return The MongoDatabase instance.
+     */
     @NotNull
     public MongoDatabase database(@NotNull String databaseName) {
         Preconditions.checkNotNull(databaseName, "databaseName cannot be null");
@@ -32,6 +46,11 @@ public class MongoManager {
         return mongoDatabase;
     }
 
+    /**
+     * Pings all cached databases and returns their response times.
+     *
+     * @return A map of database names to their ping times in nanoseconds.
+     */
     @NotNull
     public Map<String, Long> ping() {
         Map<String, Long> pings = new HashMap<>();
@@ -46,6 +65,9 @@ public class MongoManager {
         return pings;
     }
 
+    /**
+     * Shuts down the MongoDB client and releases resources.
+     */
     public void shutdown() {
         this.mongoClient.close();
     }

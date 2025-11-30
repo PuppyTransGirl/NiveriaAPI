@@ -13,21 +13,22 @@ import toutouchien.niveriaapi.hook.impl.itemsadder.ItemsAdderStack;
  * Hook for integrating with the ItemsAdder plugin to manage custom items.
  */
 public class ItemsAdderHook extends Hook {
-    private boolean enabled;
-
+    /**
+     * Constructs an ItemsAdderHook with the specified plugin instance.
+     *
+     * @param plugin The NiveriaAPI plugin instance.
+     */
     public ItemsAdderHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
 
     @Override
     public void onEnable() {
-        this.enabled = true;
         this.plugin.getSLF4JLogger().info("Hooked into ItemsAdder");
     }
 
     @Override
     public void onDisable() {
-        this.enabled = false;
         this.plugin.getSLF4JLogger().info("Unhooked from ItemsAdder");
     }
 

@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.hook.impl.*;
 
+/**
+ * Enum representing different types of hooks into external plugins or systems.
+ */
 @SuppressWarnings("java:S115")
 public enum HookType {
     BlueMapHook(BlueMapHook.class, "BlueMap"),

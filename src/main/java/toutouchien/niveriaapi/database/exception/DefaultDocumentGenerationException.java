@@ -8,6 +8,7 @@ public class DefaultDocumentGenerationException extends RuntimeException {
      * Constructs a new DefaultDocumentGenerationException with the specified detail message.
      *
      * @param message the detail message
+     * @param cause   the cause of the exception
      */
     public DefaultDocumentGenerationException(String message, Throwable cause) {
         super(message, cause);
