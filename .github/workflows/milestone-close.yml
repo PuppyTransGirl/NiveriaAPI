@@ -66,6 +66,7 @@ jobs:
           name: Release milestone ${{ github.event.milestone.title }}
           generate_release_notes: true
           fail_on_unmatched_files: true
+          target_commitish: ${{ github.sha }}
           make_latest: true
           body: |
             # Update ${{ github.event.milestone.title }}
