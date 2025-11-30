@@ -99,6 +99,11 @@ tasks {
         from(javadoc.get().destinationDir)
     }
 
+    register<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
+    }
+
     processResources {
         filteringCharset = "UTF-8"
 
@@ -115,5 +120,6 @@ tasks {
 }
 
 artifacts {
-    archives(tasks.named("javadocJar"))
+    add("archives", tasks.named("sourcesJar"))
+    add("archives", tasks.named("javadocJar"))
 }
