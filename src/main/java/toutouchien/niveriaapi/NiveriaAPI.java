@@ -84,7 +84,6 @@ public class NiveriaAPI extends JavaPlugin {
                 "ColorUtils",
                 "CommandUtils",
                 "ComponentUtils",
-                "DatabaseUtils",
                 "FileUtils",
                 "ItemBuilder",
                 "MathUtils",
