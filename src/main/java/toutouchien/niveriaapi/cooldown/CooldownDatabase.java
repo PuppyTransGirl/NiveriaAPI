@@ -84,6 +84,7 @@ public class CooldownDatabase {
      *
      * @return A list of all active Cooldowns.
      */
+    @SuppressWarnings("PatternValidation")
     @NotNull
     public List<Cooldown> loadAllCooldowns() {
         if (NiveriaAPI.isUnitTestVersion())
@@ -118,6 +119,7 @@ public class CooldownDatabase {
     /**
      * Deletes all expired cooldowns from the database.
      */
+    @SuppressWarnings("PatternValidation")
     public void deleteExpiredCooldowns() {
         this.database.collection(PLAYERS).find().forEach(document -> {
             UUID uuid = UUID.fromString(document.getString("_id"));
