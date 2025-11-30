@@ -76,7 +76,7 @@ public class SerializeUtils {
     }
 
     @NotNull
-    public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
+    public static Location serializeVector(byte @NotNull [] serializedLocation) {
         Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
 
         ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation);
@@ -105,7 +105,7 @@ public class SerializeUtils {
         }
     }
 
-    public static byte @NotNull [] deserializeLocation(@NotNull Vector vector) {
+    public static byte @NotNull [] serializeVector(@NotNull Vector vector) {
         Preconditions.checkNotNull(vector, "vector cannot be null");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
