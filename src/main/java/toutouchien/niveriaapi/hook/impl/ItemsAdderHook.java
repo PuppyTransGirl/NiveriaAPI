@@ -9,6 +9,9 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.itemsadder.ItemsAdderStack;
 
+/**
+ * Hook for integrating with the ItemsAdder plugin to manage custom items.
+ */
 public class ItemsAdderHook extends Hook {
     private boolean enabled;
 
@@ -28,6 +31,12 @@ public class ItemsAdderHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from ItemsAdder");
     }
 
+    /**
+     * Retrieves an ItemsAdderStack by its namespace.
+     *
+     * @param namespace The namespace of the custom item.
+     * @return The ItemsAdderStack, or null if not found.
+     */
     @Nullable
     public static ItemsAdderStack byNamespace(@NotNull String namespace) {
         Preconditions.checkNotNull(namespace, "namespace cannot be null");
@@ -39,6 +48,12 @@ public class ItemsAdderHook extends Hook {
         return new ItemsAdderStack(stack);
     }
 
+    /**
+     * Retrieves an ItemsAdderStack by an ItemStack.
+     *
+     * @param itemStack The ItemStack to check.
+     * @return The ItemsAdderStack, or null if not found.
+     */
     @Nullable
     public static ItemsAdderStack byItemStack(@NotNull ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");

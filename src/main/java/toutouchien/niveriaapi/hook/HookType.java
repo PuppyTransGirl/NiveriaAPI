@@ -26,11 +26,21 @@ public enum HookType {
         this.pluginName = pluginName;
     }
 
+    /**
+     * Gets the class of the hook associated with this hook type.
+     *
+     * @return The hook class.
+     */
     @NotNull
     public Class<? extends Hook> hookClass() {
         return hookClazz;
     }
 
+    /**
+     * Gets the name of the plugin associated with this hook.
+     *
+     * @return The plugin name.
+     */
     @NotNull
     public String pluginName() {
         return pluginName;
