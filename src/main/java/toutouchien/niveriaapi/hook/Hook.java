@@ -15,10 +15,16 @@ public abstract class Hook {
         this.plugin = plugin;
     }
 
+    /**
+     * Called when the hook is enabled.
+     */
     public void onEnable() {
 
     }
 
+    /**
+     * Called when the hook is disabled.
+     */
     public void onDisable() {
 
     }
