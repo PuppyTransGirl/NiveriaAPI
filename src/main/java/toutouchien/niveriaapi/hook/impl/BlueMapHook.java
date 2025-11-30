@@ -10,13 +10,22 @@ import toutouchien.niveriaapi.hook.Hook;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Hook into BlueMap to manage player visibility on the map.
+ */
 public class BlueMapHook extends Hook {
     private boolean enabled;
     private BlueMapAPI blueMap;
 
+    /**
+     * Constructs a new BlueMapHook.
+     *
+     * @param plugin The NiveriaAPI plugin instance.
+     */
     public BlueMapHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
+
 
     @Override
     public void onEnable() {
@@ -37,6 +46,12 @@ public class BlueMapHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from BlueMap");
     }
 
+    /**
+     * Sets the visibility of a player on BlueMap.
+     *
+     * @param uuid   The UUID of the player.
+     * @param hidden {@code true} to hide the player, {@code false} to show.
+     */
     public void setHidden(@NotNull UUID uuid, boolean hidden) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
@@ -46,6 +61,12 @@ public class BlueMapHook extends Hook {
         this.blueMap.getWebApp().setPlayerVisibility(uuid, !hidden);
     }
 
+    /**
+     * Sets the visibility of a player on BlueMap.
+     *
+     * @param player The player.
+     * @param hidden {@code true} to hide the player, {@code false} to show.
+     */
     public void setHidden(@NotNull Player player, boolean hidden) {
         Preconditions.checkNotNull(player, "player cannot be null");
 

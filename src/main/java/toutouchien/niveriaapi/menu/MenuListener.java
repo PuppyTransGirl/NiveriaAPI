@@ -14,6 +14,9 @@ import toutouchien.niveriaapi.menu.items.MenuItem;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Listener for menu-related inventory click events.
+ */
 public class MenuListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {

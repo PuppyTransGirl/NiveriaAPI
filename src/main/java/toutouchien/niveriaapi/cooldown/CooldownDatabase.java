@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Manages the storage and retrieval of player cooldowns in the database.
+ */
 public class CooldownDatabase {
     private static final String PLAYERS = "players";
     private static final String EXPIRATION_TIME = "expirationTime";
@@ -20,6 +23,12 @@ public class CooldownDatabase {
     private final NiveriaDatabaseManager database;
     private final Logger logger;
 
+    /**
+     * Constructs a new CooldownDatabase.
+     *
+     * @param database The NiveriaDatabaseManager instance for database operations.
+     * @param logger   The Logger instance for logging.
+     */
     public CooldownDatabase(@NotNull NiveriaDatabaseManager database, @NotNull Logger logger) {
         Preconditions.checkNotNull(database, "database cannot be null");
         Preconditions.checkNotNull(logger, "logger cannot be null");
@@ -28,6 +37,11 @@ public class CooldownDatabase {
         this.logger = logger;
     }
 
+    /**
+     * Saves a cooldown to the database.
+     *
+     * @param cooldown The Cooldown to save.
+     */
     public void saveCooldown(@NotNull Cooldown cooldown) {
         Preconditions.checkNotNull(cooldown, "cooldown cannot be null");
 
@@ -46,6 +60,12 @@ public class CooldownDatabase {
         });
     }
 
+    /**
+     * Deletes a cooldown from the database.
+     *
+     * @param uuid The UUID of the player.
+     * @param key  The Key of the cooldown to delete.
+     */
     public void deleteCooldown(@NotNull UUID uuid, @NotNull Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -59,6 +79,12 @@ public class CooldownDatabase {
         });
     }
 
+    /**
+     * Loads all active cooldowns from the database.
+     *
+     * @return A list of all active Cooldowns.
+     */
+    @SuppressWarnings("PatternValidation")
     @NotNull
     public List<Cooldown> loadAllCooldowns() {
         if (NiveriaAPI.isUnitTestVersion())
@@ -90,6 +116,10 @@ public class CooldownDatabase {
         return activeCooldowns;
     }
 
+    /**
+     * Deletes all expired cooldowns from the database.
+     */
+    @SuppressWarnings("PatternValidation")
     public void deleteExpiredCooldowns() {
         this.database.collection(PLAYERS).find().forEach(document -> {
             UUID uuid = UUID.fromString(document.getString("_id"));
@@ -117,6 +147,11 @@ public class CooldownDatabase {
         });
     }
 
+    /**
+     * Deletes all cooldowns for a player from the database.
+     *
+     * @param uuid The UUID of the player.
+     */
     public void deleteAllCooldowns(@NotNull UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
