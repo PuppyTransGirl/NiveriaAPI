@@ -80,10 +80,7 @@ public class SerializeUtils {
     public static byte @NotNull [] serializeLocation(@NotNull Location location) {
         Preconditions.checkNotNull(location, "location cannot be null");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(baos);
-
-        try {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream out = new DataOutputStream(baos)) {
             World world = location.getWorld();
             if (world == null) {
                 out.writeBoolean(false);
@@ -118,10 +115,7 @@ public class SerializeUtils {
     public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
         Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation);
-        DataInputStream in = new DataInputStream(bais);
-
-        try {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation); DataInputStream in = new DataInputStream(bais)) {
             World world = null;
             boolean hasWorld = in.readBoolean();
             if (hasWorld) {
@@ -153,10 +147,7 @@ public class SerializeUtils {
     public static byte @NotNull [] serializeVector(@NotNull Vector vector) {
         Preconditions.checkNotNull(vector, "vector cannot be null");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(baos);
-
-        try {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream out = new DataOutputStream(baos)) {
             out.writeDouble(vector.getX());
             out.writeDouble(vector.getY());
             out.writeDouble(vector.getZ());
@@ -178,10 +169,7 @@ public class SerializeUtils {
     public static Vector deserializeVector(byte @NotNull [] serializedVector) {
         Preconditions.checkNotNull(serializedVector, "serializedVector cannot be null");
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(serializedVector);
-        DataInputStream in = new DataInputStream(bais);
-
-        try {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedVector); DataInputStream in = new DataInputStream(bais)) {
             double x = in.readDouble();
             double y = in.readDouble();
             double z = in.readDouble();
