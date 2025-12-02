@@ -1,8 +1,14 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -19,27 +25,31 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Button extends Component {
-    private final ItemStack item;
+    private final Function<MenuContext, ItemStack> item;
 
     private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDrop;
 
     private final Sound sound;
 
-    private final List<ItemStack> animationFrames;
+    private final Function<MenuContext, ObjectList<ItemStack>> animationFrames;
     private final int animationInterval;
+    private final boolean stopAnimationOnHide;
     private BukkitTask animationTask;
     private int currentFrame;
 
     private final Function<MenuContext, ItemStack> dynamicItem;
+    private final int updateInterval;
+    private final boolean stopUpdatesOnHide;
+    private BukkitTask updateTask;
 
     private Button(
-            ItemStack item,
+            Function<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
             Consumer<NiveriaInventoryClickEvent> onDrop,
             Sound sound,
-            List<ItemStack> animationFrames, int animationInterval,
-            Function<MenuContext, ItemStack> dynamicItem
+            Function<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
+            Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide
     ) {
         this.item = item;
 
@@ -52,54 +62,85 @@ public class Button extends Component {
 
         this.animationFrames = animationFrames;
         this.animationInterval = animationInterval;
+        this.stopAnimationOnHide = stopAnimationOnHide;
 
         this.dynamicItem = dynamicItem;
+        this.updateInterval = updateInterval;
+        this.stopUpdatesOnHide = stopUpdatesOnHide;
     }
 
     @Override
-    protected void onAdd(@NotNull MenuContext context) {
-        if (this.animationFrames == null || this.animationFrames.isEmpty() || this.animationInterval <= 0)
-            return;
+    public void onAdd(@NotNull MenuContext context) {
+        if (this.animationFrames != null && this.animationInterval > 0)
+            this.startAnimation(context);
 
-        this.startAnimation(context);
+        if (this.dynamicItem != null && this.updateInterval > 0)
+            this.startUpdates(context);
     }
 
     @Override
-    protected void onRemove(@NotNull MenuContext context) {
+    public void onRemove(@NotNull MenuContext context) {
         this.stopAnimation();
     }
 
     @Override
-    protected void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
             return;
 
         if (this.sound != null)
             context.player().playSound(this.sound, Sound.Emitter.self());
 
-        if (this.onClick != null)
-            this.onClick.accept(event);
-
         switch (event.getClick()) {
             case LEFT, SHIFT_LEFT -> {
-                if (this.onLeftClick != null)
+                if (this.onLeftClick != null) {
                     this.onLeftClick.accept(event);
+                    return;
+                }
             }
 
             case RIGHT, SHIFT_RIGHT -> {
-                if (this.onRightClick != null)
+                if (this.onRightClick != null) {
                     this.onRightClick.accept(event);
+                    return;
+                }
             }
 
             case DROP, CONTROL_DROP -> {
-                if (this.onDrop != null)
+                if (this.onDrop != null) {
                     this.onDrop.accept(event);
+                    return;
+                }
             }
 
             default -> {
                 // Do nothing for other click types
             }
         }
+
+        if (this.onClick != null && event.getClick() != ClickType.DROP)
+            this.onClick.accept(event);
+    }
+
+    @Override
+    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(1);
+        if (!this.visible())
+            return items;
+
+        ItemStack currentItem = this.currentItem(context);
+        if (currentItem != null)
+            items.put(this.slot(), currentItem);
+
+        return items;
+    }
+
+    @Override
+    public IntSet slots() {
+        if (!this.visible())
+            return IntSets.emptySet();
+
+        return IntSets.singleton(this.slot());
     }
 
     private void startAnimation(@NotNull MenuContext context) {
@@ -107,13 +148,15 @@ public class Button extends Component {
             @Override
             public void run() {
                 Menu menu = context.menu();
-                if (!interactable()) {
+                if (!enabled() || (stopAnimationOnHide && !visible())) {
                     stopAnimation();
                     return;
                 }
 
-                currentFrame = (currentFrame + 1) % animationFrames.size();
-                ItemStack frameItem = animationFrames.get(currentFrame);
+                List<ItemStack> frames = animationFrames.apply(context);
+
+                currentFrame = (currentFrame + 1) % frames.size();
+                ItemStack frameItem = frames.get(currentFrame);
                 menu.getInventory().setItem(slot(), frameItem);
             }
         }.runTaskTimer(NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
@@ -129,9 +172,49 @@ public class Button extends Component {
         this.animationTask = null;
     }
 
+    private void startUpdates(@NotNull MenuContext context) {
+        this.updateTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                Menu menu = context.menu();
+                if (!enabled() || (stopUpdatesOnHide && !visible())) {
+                    stopUpdates();
+                    return;
+                }
+
+                ItemStack updatedItem = dynamicItem.apply(context);
+                menu.getInventory().setItem(slot(), updatedItem);
+            }
+        }.runTaskTimer(NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
+    }
+
+    private void stopUpdates() {
+        if (this.updateTask == null || this.updateTask.isCancelled())
+            return;
+
+        this.updateTask.cancel();
+        this.updateTask = null;
+    }
+
+    private ItemStack currentItem(@NotNull MenuContext context) {
+        if (this.dynamicItem != null)
+            return this.dynamicItem.apply(context);
+
+        if (this.animationFrames != null)
+            return this.animationFrames.apply(context).get(this.currentFrame);
+
+        return this.item.apply(context);
+    }
+
+    public static Builder create() {
+        return new Builder();
+    }
+
     public static class Builder {
-        private ItemStack item = ItemStack.of(Material.STONE);
+        private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
+
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDrop;
+
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
                 Sound.Source.UI,
@@ -139,13 +222,21 @@ public class Button extends Component {
                 ThreadLocalRandom.current().nextFloat()
         );
 
-        private List<ItemStack> animationFrames;
+        private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
         private int animationInterval = 20;
+        private boolean stopAnimationOnHide = true;
 
         private Function<MenuContext, ItemStack> dynamicItem;
+        private int updateInterval = 20;
+        private boolean stopUpdatesOnHide = false;
 
         public Builder item(ItemStack item) {
-            this.item = item;
+            this.item = context -> item;
+            return this;
+        }
+
+        public Builder item(Function<MenuContext, ItemStack> item) {
+            this.dynamicItem = item;
             return this;
         }
 
@@ -174,7 +265,7 @@ public class Button extends Component {
             return this;
         }
 
-        public Builder animationFrames(List<ItemStack> animationFrames) {
+        public Builder animationFrames(Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
             this.animationFrames = animationFrames;
             return this;
         }
@@ -184,8 +275,23 @@ public class Button extends Component {
             return this;
         }
 
+        public Builder stopAnimationOnHide(boolean stopAnimationOnHide) {
+            this.stopAnimationOnHide = stopAnimationOnHide;
+            return this;
+        }
+
         public Builder dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
             this.dynamicItem = dynamicItem;
+            return this;
+        }
+
+        public Builder updateInterval(int updateInterval) {
+            this.updateInterval = updateInterval;
+            return this;
+        }
+
+        public Builder stopUpdatesOnHide(boolean stopUpdatesOnHide) {
+            this.stopUpdatesOnHide = stopUpdatesOnHide;
             return this;
         }
 
@@ -199,7 +305,10 @@ public class Button extends Component {
                     this.sound,
                     this.animationFrames,
                     this.animationInterval,
-                    this.dynamicItem
+                    this.stopAnimationOnHide,
+                    this.dynamicItem,
+                    this.updateInterval,
+                    this.stopUpdatesOnHide
             );
         }
     }
