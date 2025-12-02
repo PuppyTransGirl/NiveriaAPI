@@ -15,7 +15,6 @@ import toutouchien.niveriaapi.hook.HookListener;
 import toutouchien.niveriaapi.hook.HookManager;
 import toutouchien.niveriaapi.input.ChatInputManager;
 import toutouchien.niveriaapi.lang.Lang;
-import toutouchien.niveriaapi.menu.MenuListener;
 
 import java.util.Arrays;
 
@@ -118,8 +117,7 @@ public class NiveriaAPI extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
         Arrays.asList(
                 this.chatInputManager,
-                new HookListener(this.hookManager),
-                new MenuListener()
+                new HookListener(this.hookManager)
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
 
         if (!isUnitTestVersion()) {
