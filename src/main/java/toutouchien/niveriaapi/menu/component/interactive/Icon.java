@@ -16,23 +16,21 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
-public class Toggle extends Component {
-    private final Function<MenuContext, ItemStack> onItem, offItem;
+public class Icon extends Component {
+    private final Function<MenuContext, ItemStack> item;
     private final Sound sound;
+
     private final int width, height;
 
-    private boolean currentState;
-
-    public Toggle(
-            Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
-            boolean currentState,
+    private Icon(
+            Function<MenuContext, ItemStack> item,
             Sound sound,
             int width, int height
     ) {
-        this.onItem = onItem;
-        this.offItem = offItem;
-        this.currentState = currentState;
+        this.item = item;
+
         this.sound = sound;
+
         this.width = width;
         this.height = height;
     }
@@ -42,20 +40,18 @@ public class Toggle extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null) {
-            Sound finalSound;
-            if (this.sound.pitch() == 0F)
-                finalSound = Sound.sound(this.sound)
-                        .pitch(ThreadLocalRandom.current().nextFloat())
-                        .build();
-            else
-                finalSound = this.sound;
+        if (this.sound == null)
+            return;
 
-            context.player().playSound(finalSound, Sound.Emitter.self());
-        }
+        Sound finalSound;
+        if (this.sound.pitch() == 0F)
+            finalSound = Sound.sound(this.sound)
+                    .pitch(ThreadLocalRandom.current().nextFloat())
+                    .build();
+        else
+            finalSound = this.sound;
 
-        this.currentState = !this.currentState;
-        this.render(context);
+        context.player().playSound(finalSound, Sound.Emitter.self());
     }
 
     @Override
@@ -64,7 +60,7 @@ public class Toggle extends Component {
         if (!this.visible())
             return items;
 
-        ItemStack baseItem = this.currentItem(context);
+        ItemStack baseItem = this.item.apply(context);
         int baseSlot = this.slot();
         int rowLength = 9;
 
@@ -97,19 +93,12 @@ public class Toggle extends Component {
         return slots;
     }
 
-    private ItemStack currentItem(@NotNull MenuContext context) {
-        return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
-    }
-
     public static Builder create() {
         return new Builder();
     }
 
     public static class Builder {
-        private Function<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
-        private Function<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);
-
-        private boolean currentState;
+        private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
@@ -121,28 +110,13 @@ public class Toggle extends Component {
         private int width = 1;
         private int height = 1;
 
-        public Builder onItem(ItemStack onItem) {
-            this.onItem = context -> onItem;
+        public Builder item(ItemStack item) {
+            this.item = context -> item;
             return this;
         }
 
-        public Builder offItem(ItemStack offItem) {
-            this.offItem = context -> offItem;
-            return this;
-        }
-
-        public Builder onItem(Function<MenuContext, ItemStack> onItem) {
-            this.onItem = onItem;
-            return this;
-        }
-
-        public Builder offItem(Function<MenuContext, ItemStack> offItem) {
-            this.offItem = offItem;
-            return this;
-        }
-
-        public Builder currentState(boolean state) {
-            this.currentState = state;
+        public Builder item(Function<MenuContext, ItemStack> item) {
+            this.item = item;
             return this;
         }
 
@@ -167,11 +141,9 @@ public class Toggle extends Component {
             return this;
         }
 
-        public Toggle build() {
-            return new Toggle(
-                    this.onItem,
-                    this.offItem,
-                    this.currentState,
+        public Icon build() {
+            return new Icon(
+                    this.item,
                     this.sound,
                     this.width,
                     this.height

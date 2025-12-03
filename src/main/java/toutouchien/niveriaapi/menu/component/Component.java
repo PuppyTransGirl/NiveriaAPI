@@ -8,17 +8,11 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 public abstract class Component {
-    private Component parent;
-
     private boolean visible = true;
     private boolean enabled = true;
 
     private int x = 0;
     private int y = 0;
-    private int width = 1;
-    private int height = 1;
-
-    private int updateInterval = -1;
 
     public void render(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = this.items(context);
@@ -30,9 +24,13 @@ public abstract class Component {
         }
     }
 
-    public abstract void onAdd(@NotNull MenuContext context);
+    public void onAdd(@NotNull MenuContext context) {
 
-    public abstract void onRemove(@NotNull MenuContext context);
+    }
+
+    public void onRemove(@NotNull MenuContext context) {
+
+    }
 
     public abstract void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context);
 

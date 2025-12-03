@@ -252,7 +252,7 @@ public class Button extends Component {
         }
 
         public Builder item(Function<MenuContext, ItemStack> item) {
-            this.dynamicItem = item;
+            this.item = item;
             return this;
         }
 
