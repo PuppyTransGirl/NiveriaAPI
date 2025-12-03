@@ -52,8 +52,17 @@ public class Toggle extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null)
-            context.player().playSound(this.sound, Sound.Emitter.self());
+        if (this.sound != null) {
+            Sound finalSound;
+            if (this.sound.pitch() == 0F)
+                finalSound = Sound.sound(this.sound)
+                        .pitch(ThreadLocalRandom.current().nextFloat())
+                        .build();
+            else
+                finalSound = this.sound;
+
+            context.player().playSound(finalSound, Sound.Emitter.self());
+        }
 
         this.currentState = !this.currentState;
         this.render(context);
@@ -116,7 +125,7 @@ public class Toggle extends Component {
                 Key.key("minecraft", "ui.button.click"),
                 Sound.Source.UI,
                 1F,
-                ThreadLocalRandom.current().nextFloat()
+                0F // Will be randomized later
         );
 
         private int width = 1;

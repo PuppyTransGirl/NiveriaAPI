@@ -93,8 +93,17 @@ public class Button extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null)
-            context.player().playSound(this.sound, Sound.Emitter.self());
+        if (this.sound != null) {
+            Sound finalSound;
+            if (this.sound.pitch() == 0F)
+                finalSound = Sound.sound(this.sound)
+                        .pitch(ThreadLocalRandom.current().nextFloat())
+                        .build();
+            else
+                finalSound = this.sound;
+
+            context.player().playSound(finalSound, Sound.Emitter.self());
+        }
 
         Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
             case LEFT, SHIFT_LEFT -> this.onLeftClick;
@@ -223,7 +232,7 @@ public class Button extends Component {
                 Key.key("minecraft", "ui.button.click"),
                 Sound.Source.UI,
                 1F,
-                ThreadLocalRandom.current().nextFloat()
+                0F // Will be randomized later
         );
 
         private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
