@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.component.interactive.Icon;
 import toutouchien.niveriaapi.menu.component.interactive.Toggle;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
 import toutouchien.niveriaapi.utils.ColorUtils;
@@ -35,6 +36,7 @@ public class TestMenu extends Menu {
                 .add(8, dynamicButton())
                 .add(13, coordinatesDynamicButton())
                 .add(15, toggle())
+                .add(17, icon())
                 .build();
 
     }
@@ -107,6 +109,14 @@ public class TestMenu extends Menu {
         return Toggle.create()
                 .onItem(ItemStack.of(Material.LIME_DYE))
                 .offItem(ItemStack.of(Material.RED_DYE))
+                .build();
+    }
+
+    private static Icon icon() {
+        return Icon.create()
+                .item(ItemBuilder.of(Material.BEDROCK)
+                        .name(Component.text("Just a useless item"))
+                        .build())
                 .build();
     }
 }
