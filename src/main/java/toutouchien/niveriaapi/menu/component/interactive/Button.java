@@ -14,7 +14,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -97,31 +96,16 @@ public class Button extends Component {
         if (this.sound != null)
             context.player().playSound(this.sound, Sound.Emitter.self());
 
-        switch (event.getClick()) {
-            case LEFT, SHIFT_LEFT -> {
-                if (this.onLeftClick != null) {
-                    this.onLeftClick.accept(event);
-                    return;
-                }
-            }
+        Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
+            case LEFT, SHIFT_LEFT -> this.onLeftClick;
+            case RIGHT, SHIFT_RIGHT -> this.onRightClick;
+            case DROP, CONTROL_DROP -> this.onDrop;
+            default -> null;
+        };
 
-            case RIGHT, SHIFT_RIGHT -> {
-                if (this.onRightClick != null) {
-                    this.onRightClick.accept(event);
-                    return;
-                }
-            }
-
-            case DROP, CONTROL_DROP -> {
-                if (this.onDrop != null) {
-                    this.onDrop.accept(event);
-                    return;
-                }
-            }
-
-            default -> {
-                // Do nothing for other click types
-            }
+        if (handler != null) {
+            handler.accept(event);
+            return;
         }
 
         if (this.onClick != null && event.getClick() != ClickType.DROP)
@@ -131,6 +115,9 @@ public class Button extends Component {
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
+        if (!this.visible())
+            return items;
+
         ItemStack baseItem = this.currentItem(context);
         int baseSlot = this.slot();
         int rowLength = 9;
@@ -148,6 +135,9 @@ public class Button extends Component {
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
+        if (!this.visible())
+            return slots;
+
         int baseSlot = this.slot();
         int rowLength = 9;
 
@@ -165,7 +155,6 @@ public class Button extends Component {
         this.animationTask = new BukkitRunnable() {
             @Override
             public void run() {
-                Menu menu = context.menu();
                 if (!enabled() || (stopAnimationOnHide && !visible())) {
                     stopAnimation();
                     return;
@@ -193,7 +182,6 @@ public class Button extends Component {
         this.updateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                Menu menu = context.menu();
                 if (!enabled() || (stopUpdatesOnHide && !visible())) {
                     stopUpdates();
                     return;
