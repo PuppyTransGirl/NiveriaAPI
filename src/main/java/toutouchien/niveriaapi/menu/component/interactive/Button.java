@@ -2,8 +2,8 @@ package toutouchien.niveriaapi.menu.component.interactive;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -42,6 +42,8 @@ public class Button extends Component {
     private final boolean stopUpdatesOnHide;
     private BukkitTask updateTask;
 
+    private final int width, height;
+
     private Button(
             Function<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
@@ -49,7 +51,8 @@ public class Button extends Component {
             Consumer<NiveriaInventoryClickEvent> onDrop,
             Sound sound,
             Function<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
-            Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide
+            Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide,
+            int width, int height
     ) {
         this.item = item;
 
@@ -67,6 +70,9 @@ public class Button extends Component {
         this.dynamicItem = dynamicItem;
         this.updateInterval = updateInterval;
         this.stopUpdatesOnHide = stopUpdatesOnHide;
+
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -124,23 +130,35 @@ public class Button extends Component {
 
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
-        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(1);
-        if (!this.visible())
-            return items;
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
+        ItemStack baseItem = this.currentItem(context);
+        int baseSlot = this.slot();
+        int rowLength = 9;
 
-        ItemStack currentItem = this.currentItem(context);
-        if (currentItem != null)
-            items.put(this.slot(), currentItem);
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                int slot = baseSlot + col + (row * rowLength);
+                items.put(slot, baseItem);
+            }
+        }
 
         return items;
     }
 
     @Override
     public IntSet slots() {
-        if (!this.visible())
-            return IntSets.emptySet();
+        IntSet slots = new IntOpenHashSet(this.width * this.height);
+        int baseSlot = this.slot();
+        int rowLength = 9;
 
-        return IntSets.singleton(this.slot());
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                int slot = baseSlot + col + (row * rowLength);
+                slots.add(slot);
+            }
+        }
+
+        return slots;
     }
 
     private void startAnimation(@NotNull MenuContext context) {
@@ -156,8 +174,7 @@ public class Button extends Component {
                 List<ItemStack> frames = animationFrames.apply(context);
 
                 currentFrame = (currentFrame + 1) % frames.size();
-                ItemStack frameItem = frames.get(currentFrame);
-                menu.getInventory().setItem(slot(), frameItem);
+                render(context);
             }
         }.runTaskTimer(NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
     }
@@ -182,8 +199,7 @@ public class Button extends Component {
                     return;
                 }
 
-                ItemStack updatedItem = dynamicItem.apply(context);
-                menu.getInventory().setItem(slot(), updatedItem);
+                render(context);
             }
         }.runTaskTimer(NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
     }
@@ -229,6 +245,9 @@ public class Button extends Component {
         private Function<MenuContext, ItemStack> dynamicItem;
         private int updateInterval = 20;
         private boolean stopUpdatesOnHide = false;
+
+        private int width = 1;
+        private int height = 1;
 
         public Builder item(ItemStack item) {
             this.item = context -> item;
@@ -295,6 +314,22 @@ public class Button extends Component {
             return this;
         }
 
+        public Builder width(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public Builder height(int height) {
+            this.height = height;
+            return this;
+        }
+
+        public Builder size(int width, int height) {
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
         public Button build() {
             return new Button(
                     this.item,
@@ -308,7 +343,9 @@ public class Button extends Component {
                     this.stopAnimationOnHide,
                     this.dynamicItem,
                     this.updateInterval,
-                    this.stopUpdatesOnHide
+                    this.stopUpdatesOnHide,
+                    this.width,
+                    this.height
             );
         }
     }

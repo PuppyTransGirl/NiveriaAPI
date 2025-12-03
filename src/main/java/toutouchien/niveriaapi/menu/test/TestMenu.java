@@ -30,7 +30,7 @@ public class TestMenu extends Menu {
     protected toutouchien.niveriaapi.menu.component.Component root() {
         return Grid.create()
                 .add(0, simpleButton())
-                .add(4, animatedButton())
+                .add(2, animatedButton())
                 .add(8, dynamicButton())
                 .add(13, coordinatesDynamicButton())
                 .build();
@@ -52,6 +52,7 @@ public class TestMenu extends Menu {
 
     private static Button animatedButton() {
         return Button.create()
+                .size(2, 2)
                 .animationFrames(context ->
                         ObjectList.of(ItemStack.of(Material.RED_WOOL),
                                 ItemStack.of(Material.ORANGE_WOOL),
