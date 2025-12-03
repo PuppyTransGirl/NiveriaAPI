@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.component.interactive.Toggle;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
 import toutouchien.niveriaapi.utils.ColorUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
@@ -33,6 +34,7 @@ public class TestMenu extends Menu {
                 .add(2, animatedButton())
                 .add(8, dynamicButton())
                 .add(13, coordinatesDynamicButton())
+                .add(15, toggle())
                 .build();
 
     }
@@ -98,6 +100,13 @@ public class TestMenu extends Menu {
                 .onClick(click -> {
                     click.player().sendRichMessage("<green>This button shows your current coordinates!");
                 })
+                .build();
+    }
+
+    private static Toggle toggle() {
+        return Toggle.create()
+                .onItem(ItemStack.of(Material.LIME_DYE))
+                .offItem(ItemStack.of(Material.RED_DYE))
                 .build();
     }
 }
