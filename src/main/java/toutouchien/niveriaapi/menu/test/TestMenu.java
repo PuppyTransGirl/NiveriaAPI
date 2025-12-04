@@ -2,12 +2,14 @@ package toutouchien.niveriaapi.menu.test;
 
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.text.Component;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.display.Icon;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.component.interactive.Selector;
 import toutouchien.niveriaapi.menu.component.interactive.Toggle;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
 import toutouchien.niveriaapi.utils.ColorUtils;
@@ -37,6 +39,7 @@ public class TestMenu extends Menu {
                 .add(13, coordinatesDynamicButton())
                 .add(15, toggle())
                 .add(17, icon())
+                .add(18, selector())
                 .build();
 
     }
@@ -117,6 +120,16 @@ public class TestMenu extends Menu {
                 .item(ItemBuilder.of(Material.BEDROCK)
                         .name(Component.text("Just a useless item"))
                         .build())
+                .build();
+    }
+
+    private static Selector<GameMode> selector() {
+        return Selector.<GameMode>create()
+                .addOption(ItemBuilder.of(Material.WOODEN_SWORD).name(Component.text("Survival")).build(), GameMode.SURVIVAL)
+                .addOption(ItemBuilder.of(Material.COMPASS).name(Component.text("Adventure")).build(), GameMode.ADVENTURE)
+                .addOption(ItemBuilder.of(Material.DIAMOND_BLOCK).name(Component.text("Creative")).build(), GameMode.CREATIVE)
+                .defaultOption(context -> context.player().getGameMode())
+                .onSelectionChange(event -> event.context().player().setGameMode(event.newValue()))
                 .build();
     }
 }

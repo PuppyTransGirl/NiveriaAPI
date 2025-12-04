@@ -106,7 +106,7 @@ public class Button extends Component {
         }
 
         Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
-            case LEFT, SHIFT_LEFT -> this.onLeftClick;
+            case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> this.onLeftClick;
             case RIGHT, SHIFT_RIGHT -> this.onRightClick;
             case DROP, CONTROL_DROP -> this.onDrop;
             default -> null;
