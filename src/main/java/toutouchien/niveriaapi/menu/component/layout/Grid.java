@@ -142,13 +142,13 @@ public class Grid extends Component {
             return add(y * 9 + x, component);
         }
 
-        public Builder border(ItemStack borderItem) {
-            border = borderItem;
+        public Builder border(ItemStack border) {
+            this.border = border;
             return this;
         }
 
-        public Builder fill(ItemStack fillItem) {
-            this.fill = fillItem;
+        public Builder fill(ItemStack fill) {
+            this.fill = fill;
             return this;
         }
 
