@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.display;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -8,7 +9,10 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -54,6 +58,7 @@ public class Icon extends Component {
         context.player().playSound(finalSound, Sound.Emitter.self());
     }
 
+    @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
@@ -74,6 +79,7 @@ public class Icon extends Component {
         return items;
     }
 
+    @NotNull
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
@@ -93,6 +99,8 @@ public class Icon extends Component {
         return slots;
     }
 
+    @NotNull
+    @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
@@ -110,37 +118,61 @@ public class Icon extends Component {
         private int width = 1;
         private int height = 1;
 
-        public Builder item(ItemStack item) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder item(@NotNull ItemStack item) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             this.item = context -> item;
             return this;
         }
 
-        public Builder item(Function<MenuContext, ItemStack> item) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             this.item = item;
             return this;
         }
 
-        public Builder sound(Sound sound) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
             return this;
         }
 
-        public Builder width(int width) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+
             this.width = width;
             return this;
         }
 
-        public Builder height(int height) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.height = height;
             return this;
         }
 
-        public Builder size(int width, int height) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder size(@Positive int width, @Positive int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.width = width;
             this.height = height;
             return this;
         }
 
+        @NotNull
         public Icon build() {
             return new Icon(
                     this.item,

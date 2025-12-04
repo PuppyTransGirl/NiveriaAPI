@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.layout;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -7,6 +8,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
@@ -62,6 +66,7 @@ public class Grid extends Component {
     }
 
     // slotComponents -> border -> fill
+    @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
@@ -89,6 +94,7 @@ public class Grid extends Component {
     }
 
     // slotComponents -> border -> fill
+    @NotNull
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet();
@@ -120,6 +126,8 @@ public class Grid extends Component {
                 || y == this.y() + this.height - 1;
     }
 
+    @NotNull
+    @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
@@ -132,32 +140,75 @@ public class Grid extends Component {
         private ItemStack border;
         private ItemStack fill;
 
-        public Builder add(int slot, Component component) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder add(@NonNegative int slot, @NotNull Component component) {
+            Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %d", slot);
+            Preconditions.checkNotNull(component, "component cannot be null");
+
             slotComponents.add(component);
             component.position(toX(slot), toY(slot));
             return this;
         }
 
-        public Builder add(int x, int y, Component component) {
+        @NotNull
+        @Contract(value = "_, _, _ -> this", mutates = "this")
+        public Builder add(@NonNegative int x, @NonNegative int y, @NotNull Component component) {
+            Preconditions.checkArgument(x >= 0, "x cannot be negative: %d", x);
+            Preconditions.checkArgument(y >= 0, "y cannot be negative: %d", y);
+            Preconditions.checkNotNull(component, "component cannot be null");
+
             return add(y * 9 + x, component);
         }
 
-        public Builder border(ItemStack border) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder border(@NotNull ItemStack border) {
+            Preconditions.checkNotNull(border, "border cannot be null");
+
             this.border = border;
             return this;
         }
 
-        public Builder fill(ItemStack fill) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder fill(@NotNull ItemStack fill) {
+            Preconditions.checkNotNull(fill, "fill cannot be null");
+
             this.fill = fill;
             return this;
         }
 
-        public Builder size(int width, int height) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+
+            this.width = width;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
+            this.height = height;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder size(@Positive int width, @Positive int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.width = width;
             this.height = height;
             return this;
         }
 
+        @NotNull
         public Grid build() {
             return new Grid(
                     this.width, this.height,

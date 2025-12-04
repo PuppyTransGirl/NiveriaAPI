@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -12,7 +13,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
@@ -121,6 +125,7 @@ public class Button extends Component {
             this.onClick.accept(event);
     }
 
+    @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
@@ -141,6 +146,7 @@ public class Button extends Component {
         return items;
     }
 
+    @NotNull
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
@@ -219,6 +225,8 @@ public class Button extends Component {
         return this.item.apply(context);
     }
 
+    @NotNull
+    @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
@@ -246,87 +254,147 @@ public class Button extends Component {
         private int width = 1;
         private int height = 1;
 
-        public Builder item(ItemStack item) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder item(@NotNull ItemStack item) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             this.item = context -> item;
             return this;
         }
 
-        public Builder item(Function<MenuContext, ItemStack> item) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             this.item = item;
             return this;
         }
 
-        public Builder onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+            Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
             this.onClick = onClick;
             return this;
         }
 
-        public Builder onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+            Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
+
             this.onLeftClick = onLeftClick;
             return this;
         }
 
-        public Builder onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+            Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
+
             this.onRightClick = onRightClick;
             return this;
         }
 
-        public Builder onDrop(Consumer<NiveriaInventoryClickEvent> onDrop) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
+            Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
+
             this.onDrop = onDrop;
             return this;
         }
 
-        public Builder sound(Sound sound) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
             return this;
         }
 
-        public Builder animationFrames(Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+            Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
+
             this.animationFrames = animationFrames;
             return this;
         }
 
-        public Builder animationInterval(int animationInterval) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder animationInterval(@Positive int animationInterval) {
+            Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %d", animationInterval);
+
             this.animationInterval = animationInterval;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder stopAnimationOnHide(boolean stopAnimationOnHide) {
             this.stopAnimationOnHide = stopAnimationOnHide;
             return this;
         }
 
-        public Builder dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+            Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
+
             this.dynamicItem = dynamicItem;
             return this;
         }
 
-        public Builder updateInterval(int updateInterval) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder updateInterval(@Positive int updateInterval) {
+            Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %d", updateInterval);
+
             this.updateInterval = updateInterval;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder stopUpdatesOnHide(boolean stopUpdatesOnHide) {
             this.stopUpdatesOnHide = stopUpdatesOnHide;
             return this;
         }
 
-        public Builder width(int width) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+
             this.width = width;
             return this;
         }
 
-        public Builder height(int height) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.height = height;
             return this;
         }
 
-        public Builder size(int width, int height) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder size(@Positive int width, int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.width = width;
             this.height = height;
             return this;
         }
 
+        @NotNull
         public Button build() {
             return new Button(
                     this.item,

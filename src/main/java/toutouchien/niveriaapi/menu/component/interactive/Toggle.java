@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -8,7 +9,9 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -58,6 +61,7 @@ public class Toggle extends Component {
         this.render(context);
     }
 
+    @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
@@ -78,6 +82,7 @@ public class Toggle extends Component {
         return items;
     }
 
+    @NotNull
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
@@ -101,6 +106,8 @@ public class Toggle extends Component {
         return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
     }
 
+    @NotNull
+    @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
@@ -121,52 +128,79 @@ public class Toggle extends Component {
         private int width = 1;
         private int height = 1;
 
-        public Builder onItem(ItemStack onItem) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onItem(@NotNull ItemStack onItem) {
+            Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
             this.onItem = context -> onItem;
             return this;
         }
 
-        public Builder offItem(ItemStack offItem) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder offItem(@NotNull ItemStack offItem) {
+            Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
             this.offItem = context -> offItem;
             return this;
         }
 
-        public Builder onItem(Function<MenuContext, ItemStack> onItem) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onItem(@NotNull Function<MenuContext, ItemStack> onItem) {
+            Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
             this.onItem = onItem;
             return this;
         }
 
-        public Builder offItem(Function<MenuContext, ItemStack> offItem) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder offItem(@NotNull Function<MenuContext, ItemStack> offItem) {
+            Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
             this.offItem = offItem;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder currentState(boolean state) {
             this.currentState = state;
             return this;
         }
 
-        public Builder sound(Sound sound) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder width(int width) {
             this.width = width;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder height(int height) {
             this.height = height;
             return this;
         }
 
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(int width, int height) {
             this.width = width;
             this.height = height;
             return this;
         }
 
+        @NotNull
         public Toggle build() {
             return new Toggle(
                     this.onItem,

@@ -1,11 +1,13 @@
 package toutouchien.niveriaapi.menu;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -21,7 +23,9 @@ public abstract class Menu implements InventoryHolder {
 
     private final Component root;
 
-    protected Menu(Player player) {
+    protected Menu(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
         this.player = player;
         this.context = new MenuContext(this);
 
@@ -53,7 +57,9 @@ public abstract class Menu implements InventoryHolder {
         this.context.close();
     }
 
-    public void handleClick(NiveriaInventoryClickEvent event) {
+    public void handleClick(@NotNull NiveriaInventoryClickEvent event) {
+        Preconditions.checkNotNull(event, "event cannot be null");
+
         if (this.root == null)
             return;
 
@@ -61,18 +67,22 @@ public abstract class Menu implements InventoryHolder {
         this.root.render(this.context);
     }
 
+    @NotNull
     protected abstract net.kyori.adventure.text.Component title();
 
+    @Positive
     protected abstract int rows();
 
+    @NotNull
     protected abstract Component root();
 
+    @NotNull
     public Player player() {
         return player;
     }
 
-    @Override
     @NotNull
+    @Override
     public Inventory getInventory() {
         return inventory;
     }

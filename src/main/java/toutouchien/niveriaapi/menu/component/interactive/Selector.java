@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
+import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -9,11 +10,16 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -102,6 +108,7 @@ public class Selector<T> extends Component {
         this.onSelectionChange.accept(selectionChangeEvent);
     }
 
+    @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
@@ -122,6 +129,7 @@ public class Selector<T> extends Component {
         return items;
     }
 
+    @NotNull
     @Override
     public IntSet slots() {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
@@ -143,7 +151,7 @@ public class Selector<T> extends Component {
 
     private void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
-            if (this.options.get(i).value().equals(value))
+            if (Objects.equals(this.options.get(i).value, value))
                 this.currentIndex = i;
         }
     }
@@ -156,14 +164,17 @@ public class Selector<T> extends Component {
         return this.currentOption().item.apply(context);
     }
 
-    public record SelectionChangeEvent<T>(MenuContext context, T oldValue, T newValue, int oldIndex, int newIndex) {
+    public record SelectionChangeEvent<T>(@NotNull MenuContext context, @Nullable T oldValue, @Nullable T newValue,
+                                          @NonNegative int oldIndex, @NonNegative int newIndex) {
 
     }
 
-    public record Option<T>(Function<MenuContext, ItemStack> item, T value) {
+    public record Option<T>(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
 
     }
 
+    @NotNull
+    @Contract(value = "-> new", pure = true)
     public static <T> Builder<T> create() {
         return new Builder<>();
     }
@@ -185,52 +196,87 @@ public class Selector<T> extends Component {
         private int width = 1;
         private int height = 1;
 
-        public Builder<T> addOption(ItemStack item, T value) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder<T> addOption(@NotNull ItemStack item, @Nullable T value) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             options.add(new Option<>(context -> item, value));
             return this;
         }
 
-        public Builder<T> addOption(Function<MenuContext, ItemStack> item, T value) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+            Preconditions.checkNotNull(item, "item cannot be null");
+
             options.add(new Option<>(item, value));
             return this;
         }
 
-        public Builder<T> defaultIndex(int index) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> defaultIndex(@NonNegative int index) {
+            Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
+
             this.defaultIndex = index;
             return this;
         }
 
-        public Builder<T> onSelectionChange(Consumer<SelectionChangeEvent<T>> consumer) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> consumer) {
+            Preconditions.checkNotNull(consumer, "consumer cannot be null");
+
             this.onSelectionChange = consumer;
             return this;
         }
 
-        public Builder<T> defaultOption(Function<MenuContext, T> defaultOption) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
+            Preconditions.checkNotNull(defaultOption, "defaultOption cannot be null");
+
             this.defaultOption = defaultOption;
             return this;
         }
 
-        public Builder<T> sound(Sound sound) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> sound(@Nullable Sound sound) {
             this.sound = sound;
             return this;
         }
 
-        public Builder<T> width(int width) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+
             this.width = width;
             return this;
         }
 
-        public Builder<T> height(int height) {
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder<T> height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
             this.height = height;
             return this;
         }
 
-        public Builder<T> size(int width, int height) {
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder<T> size(@Positive int width, @Positive int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
             this.width = width;
             this.height = height;
             return this;
         }
 
+        @NotNull
         public Selector<T> build() {
             return new Selector<>(
                     this.options,
