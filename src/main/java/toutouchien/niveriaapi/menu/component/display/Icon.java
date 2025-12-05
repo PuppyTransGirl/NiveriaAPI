@@ -17,7 +17,6 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 public class Icon extends Component {
@@ -47,15 +46,7 @@ public class Icon extends Component {
         if (this.sound == null)
             return;
 
-        Sound finalSound;
-        if (this.sound.pitch() == 0F)
-            finalSound = Sound.sound(this.sound)
-                    .pitch(ThreadLocalRandom.current().nextFloat())
-                    .build();
-        else
-            finalSound = this.sound;
-
-        context.player().playSound(finalSound, Sound.Emitter.self());
+        context.player().playSound(this.sound, Sound.Emitter.self());
     }
 
     @NotNull
@@ -112,7 +103,7 @@ public class Icon extends Component {
                 Key.key("minecraft", "ui.button.click"),
                 Sound.Source.UI,
                 1F,
-                0F // Will be randomized later
+                1F
         );
 
         private int width = 1;

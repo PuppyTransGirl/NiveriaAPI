@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -23,7 +22,6 @@ import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -97,17 +95,8 @@ public class Button extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null) {
-            Sound finalSound;
-            if (this.sound.pitch() == 0F)
-                finalSound = Sound.sound(this.sound)
-                        .pitch(ThreadLocalRandom.current().nextFloat())
-                        .build();
-            else
-                finalSound = this.sound;
-
-            context.player().playSound(finalSound, Sound.Emitter.self());
-        }
+        if (this.sound != null)
+            context.player().playSound(this.sound, Sound.Emitter.self());
 
         Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
             case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> this.onLeftClick;
@@ -121,7 +110,7 @@ public class Button extends Component {
             return;
         }
 
-        if (this.onClick != null && event.getClick() != ClickType.DROP)
+        if (this.onClick != null && event.getClick().isMouseClick())
             this.onClick.accept(event);
     }
 
@@ -240,7 +229,7 @@ public class Button extends Component {
                 Key.key("minecraft", "ui.button.click"),
                 Sound.Source.UI,
                 1F,
-                0F // Will be randomized later
+                1F
         );
 
         private Function<MenuContext, ObjectList<ItemStack>> animationFrames;

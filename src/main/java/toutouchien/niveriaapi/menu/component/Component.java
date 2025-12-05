@@ -52,6 +52,14 @@ public abstract class Component {
         this.y = y;
     }
 
+    public void visible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void enabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @NonNegative
     public int x() {
         return x;
