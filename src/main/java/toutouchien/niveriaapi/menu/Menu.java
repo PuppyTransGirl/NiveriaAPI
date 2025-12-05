@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -30,11 +29,8 @@ public abstract class Menu implements InventoryHolder {
         this.context = new MenuContext(this);
 
         net.kyori.adventure.text.Component title = this.title();
-        int rows = this.rows();
-
-        this.inventory = Bukkit.createInventory(this, rows * 9, title);
-
         this.root = this.root();
+        this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
     }
 
     public void open() {
@@ -69,9 +65,6 @@ public abstract class Menu implements InventoryHolder {
 
     @NotNull
     protected abstract net.kyori.adventure.text.Component title();
-
-    @Positive
-    protected abstract int rows();
 
     @NotNull
     protected abstract Component root();

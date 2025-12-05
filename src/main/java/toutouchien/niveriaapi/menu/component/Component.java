@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -69,6 +70,12 @@ public abstract class Component {
     public int y() {
         return y;
     }
+
+    @Positive
+    public abstract int width();
+
+    @Positive
+    public abstract int height();
 
     @NonNegative
     public int slot() {

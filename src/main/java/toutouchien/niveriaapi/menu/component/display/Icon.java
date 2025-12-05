@@ -90,6 +90,18 @@ public class Icon extends Component {
         return slots;
     }
 
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {

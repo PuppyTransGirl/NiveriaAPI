@@ -9,6 +9,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +91,18 @@ public class Toggle extends Component {
         }
 
         return slots;
+    }
+
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
     }
 
     private ItemStack currentItem(@NotNull MenuContext context) {

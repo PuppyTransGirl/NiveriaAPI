@@ -119,6 +119,18 @@ public class Grid extends Component {
         return slots;
     }
 
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
     private boolean border(int x, int y) {
         return x == this.x()
                 || x == this.x() + this.width - 1
@@ -210,6 +222,25 @@ public class Grid extends Component {
 
         @NotNull
         public Grid build() {
+            // Check if all components fit inside the grid
+            for (Component component : this.slotComponents) {
+                int compX = component.x();
+                int compY = component.y();
+                int compWidth = component.width();
+                int compHeight = component.height();
+
+                Preconditions.checkArgument(
+                        compX >= 0 && compY >= 0 &&
+                                compX + compWidth <= this.width &&
+                                compY + compHeight <= this.height,
+                        "Component %s does not fit inside the grid of size %dx%d at position (%d, %d) with size %dx%d",
+                        component.getClass().getSimpleName(),
+                        this.width, this.height,
+                        compX, compY,
+                        compWidth, compHeight
+                );
+            }
+
             return new Grid(
                     this.width, this.height,
                     this.slotComponents,

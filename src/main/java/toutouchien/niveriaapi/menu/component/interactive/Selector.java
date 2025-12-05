@@ -139,6 +139,18 @@ public class Selector<T> extends Component {
         return slots;
     }
 
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
     private void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
             if (Objects.equals(this.options.get(i).value, value))

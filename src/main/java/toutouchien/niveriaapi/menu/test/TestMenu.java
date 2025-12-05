@@ -6,7 +6,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.display.Icon;
@@ -26,12 +25,6 @@ public class TestMenu extends Menu {
     @Override
     protected Component title() {
         return Component.text("Test Menu Hehe :3", ColorUtils.primaryColor());
-    }
-
-    @Positive
-    @Override
-    protected int rows() {
-        return 3;
     }
 
     @NotNull

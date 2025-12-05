@@ -155,6 +155,18 @@ public class Button extends Component {
         return slots;
     }
 
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
     private void startAnimation(@NotNull MenuContext context) {
         this.animationTask = new BukkitRunnable() {
             @Override
