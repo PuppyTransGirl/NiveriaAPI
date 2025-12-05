@@ -27,7 +27,7 @@ public class MenuListener implements Listener {
 
         event.setCancelled(true);
 
-        NiveriaInventoryClickEvent clickEvent = new NiveriaInventoryClickEvent(event);
+        NiveriaInventoryClickEvent clickEvent = new NiveriaInventoryClickEvent(event, menu.context());
         menu.handleClick(clickEvent);
     }
 }

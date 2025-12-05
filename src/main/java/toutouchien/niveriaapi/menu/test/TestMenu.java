@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.display.Icon;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.component.interactive.DoubleDropButton;
 import toutouchien.niveriaapi.menu.component.interactive.Selector;
 import toutouchien.niveriaapi.menu.component.interactive.Toggle;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
@@ -31,6 +32,7 @@ public class TestMenu extends Menu {
     @Override
     protected toutouchien.niveriaapi.menu.component.Component root() {
         return Grid.create()
+                .size(9, 3)
                 .add(0, simpleButton())
                 .add(2, animatedButton())
                 .add(8, dynamicButton())
@@ -38,6 +40,7 @@ public class TestMenu extends Menu {
                 .add(15, toggle())
                 .add(17, icon())
                 .add(18, selector())
+                .add(20, doubleDropButton())
                 .build();
 
     }
@@ -128,6 +131,17 @@ public class TestMenu extends Menu {
                 .addOption(ItemBuilder.of(Material.DIAMOND_BLOCK).name(Component.text("Creative")).build(), GameMode.CREATIVE)
                 .defaultOption(context -> context.player().getGameMode())
                 .onSelectionChange(event -> event.context().player().setGameMode(event.newValue()))
+                .build();
+    }
+
+    private static DoubleDropButton doubleDropButton() {
+        return DoubleDropButton.create()
+                .item(ItemBuilder.of(Material.CHEST).name(Component.text("Just a chest")).build())
+                .dropItem(ItemBuilder.of(Material.ALLAY_SPAWN_EGG).name(Component.text("Are you sure ?")).build())
+                .onDoubleDrop(event -> {
+                    Player player = event.player();
+                    player.sendRichMessage("<gold>You have double-dropped the chest button!");
+                })
                 .build();
     }
 }

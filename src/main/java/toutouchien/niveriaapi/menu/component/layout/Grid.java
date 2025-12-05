@@ -233,7 +233,7 @@ public class Grid extends Component {
                         compX >= 0 && compY >= 0 &&
                                 compX + compWidth <= this.width &&
                                 compY + compHeight <= this.height,
-                        "Component %s does not fit inside the grid of size %dx%d at position (%d, %d) with size %dx%d",
+                        "Component %s does not fit inside the grid of size %sx%s at position (%s, %s) with size %sx%s",
                         component.getClass().getSimpleName(),
                         this.width, this.height,
                         compX, compY,

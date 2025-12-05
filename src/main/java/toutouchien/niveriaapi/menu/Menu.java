@@ -75,6 +75,11 @@ public abstract class Menu implements InventoryHolder {
     }
 
     @NotNull
+    public MenuContext context() {
+        return context;
+    }
+
+    @NotNull
     @Override
     public Inventory getInventory() {
         return inventory;

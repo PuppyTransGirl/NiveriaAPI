@@ -6,34 +6,31 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
 import java.util.function.Consumer;
 
 /**
- * A wrapper around InventoryClickEvent providing additional utility methods.
+ * A custom InventoryClickEvent that includes additional context for menu interactions.
  */
 public class NiveriaInventoryClickEvent extends InventoryClickEvent {
+    private final MenuContext context;
+
     /**
-     * Constructs a NiveriaInventoryClickEvent from an existing InventoryClickEvent.
+     * Constructs a new NiveriaInventoryClickEvent.
      *
-     * @param event The original InventoryClickEvent.
+     * @param event   The original InventoryClickEvent.
+     * @param context The MenuContext associated with this event.
      */
     @SuppressWarnings("UnstableApiUsage")
-    public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event) {
+    public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event, @NotNull MenuContext context) {
         super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
-    }
 
-    /**
-     * Returns the player who clicked in the inventory.
-     *
-     * @return The player who clicked.
-     */
-    @NotNull
-    public Player player() {
-        return (Player) getWhoClicked();
-    }
+        Preconditions.checkNotNull(context, "context cannot be null");
 
+        this.context = context;
+    }
 
     /**
      * Sets the current item in the clicked slot to the specified new item.
@@ -59,5 +56,25 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
         ItemBuilder builder = ItemBuilder.of(item);
         modifier.accept(builder);
         this.setCurrentItem(builder.build());
+    }
+
+    /**
+     * Returns the player who clicked in the inventory.
+     *
+     * @return The player who clicked.
+     */
+    @NotNull
+    public Player player() {
+        return (Player) getWhoClicked();
+    }
+
+    /**
+     * Returns the MenuContext associated with this click event.
+     *
+     * @return The MenuContext.
+     */
+    @NotNull
+    public MenuContext context() {
+        return context;
     }
 }
