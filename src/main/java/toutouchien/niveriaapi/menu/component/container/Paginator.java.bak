@@ -1,0 +1,250 @@
+package toutouchien.niveriaapi.menu.component.container;
+
+import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.menu.MenuContext;
+import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+
+public class Paginator extends Component {
+    private final int width, height;
+
+    private final ObjectList<Component> components;
+
+    private final Button backItem, nextItem;
+    private final Button offBackItem, offNextItem;
+
+    private int page;
+
+    public Paginator(
+            int width, int height,
+            ObjectList<Component> components,
+            Button backItem, Button nextItem,
+            Button offBackItem, Button offNextItem
+    ) {
+        this.width = width;
+        this.height = height;
+        this.components = components;
+        this.backItem = backItem;
+        this.nextItem = nextItem;
+        this.offBackItem = offBackItem;
+        this.offNextItem = offNextItem;
+    }
+
+    @Override
+    public void onAdd(@NotNull MenuContext context) {
+        if (!this.visible())
+            return;
+
+        int maxItemPerPage = this.width * this.height;
+        int startIndex = this.page * maxItemPerPage;
+        int endIndex = startIndex + maxItemPerPage;
+        int currentIndex = 0;
+
+        for (Component component : this.components) {
+            int componentX = currentIndex % this.width;
+            int componentY = currentIndex / this.width;
+
+            if (currentIndex >= startIndex && currentIndex < endIndex) {
+                component.position(this.x() + componentX, this.y() + componentY);
+                component.onAdd(context);
+            }
+
+            currentIndex++;
+        }
+    }
+
+    @Override
+    public void onRemove(@NotNull MenuContext context) {
+        if (!this.visible())
+            return;
+
+        this.components.forEach(component -> component.onRemove(context));
+    }
+
+    @Override
+    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+        if (!this.interactable())
+            return;
+
+        for (Component component : this.components) {
+            if (component.slots(context).contains(event.getSlot())) {
+                component.onClick(event, context);
+                break;
+            }
+        }
+    }
+
+    @NotNull
+    @Override
+    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
+
+        int maxItemPerPage = this.width * this.height;
+        int startIndex = this.page * maxItemPerPage;
+        int endIndex = startIndex + maxItemPerPage;
+        int currentIndex = 0;
+
+        for (Component component : this.components) {
+            Int2ObjectMap<ItemStack> componentItems = component.items(context);
+
+            for (int slot : componentItems.keySet()) {
+                if (currentIndex >= startIndex && currentIndex < endIndex)
+                    items.put(slot, componentItems.get(slot));
+
+                currentIndex++;
+            }
+        }
+
+        return items;
+    }
+
+    @NotNull
+    @Override
+    public IntSet slots(@NotNull MenuContext context) {
+        IntSet slots = new IntOpenHashSet();
+
+        int maxItemPerPage = this.width * this.height;
+        int startIndex = this.page * maxItemPerPage;
+        int endIndex = startIndex + maxItemPerPage;
+        int currentIndex = 0;
+
+        for (Component component : this.components) {
+            if (currentIndex >= startIndex && currentIndex < endIndex) {
+                int componentX = currentIndex % this.width;
+                int componentY = currentIndex / this.width;
+
+                for (int slot : component.slots(context)) {
+                    int relativeSlotX = slot % component.width();
+                    int relativeSlotY = slot / component.width();
+
+                    int absoluteSlotX = this.x() + componentX + relativeSlotX;
+                    int absoluteSlotY = this.y() + componentY + relativeSlotY;
+
+                    int menuWidth = 9;
+                    int absoluteSlot = absoluteSlotY * menuWidth + absoluteSlotX;
+
+                    slots.add(absoluteSlot);
+                }
+            }
+            currentIndex++;
+        }
+
+        return slots;
+    }
+
+    @NotNull
+    public Button backItem() {
+        return this.backItem;
+    }
+
+    @NotNull
+    public Button nextItem() {
+        return this.nextItem;
+    }
+
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
+    @NotNull
+    @Contract(value = "-> new", pure = true)
+    public static Builder create() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private int width, height;
+
+        private final ObjectList<Component> components = new ObjectArrayList<>();
+
+        private ItemStack backItem = ItemStack.of(Material.ARROW);
+        private ItemStack nextItem = ItemStack.of(Material.ARROW);
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder add(@NotNull Component component) {
+            Preconditions.checkNotNull(component, "component cannot be null");
+
+            components.add(component);
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder backItem(@NotNull ItemStack backItem) {
+            Preconditions.checkNotNull(backItem, "backItem cannot be null");
+
+            this.backItem = backItem;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder nextItem(@NotNull ItemStack nextItem) {
+            Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
+
+            this.nextItem = nextItem;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+
+            this.width = width;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
+            this.height = height;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder size(@Positive int width, @Positive int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+        @NotNull
+        public Paginator build() {
+
+
+            return new Paginator(
+                    this.width, this.height,
+                    this.components,
+                    this.backItem, this.nextItem
+            );
+        }
+    }
+}
