@@ -137,7 +137,7 @@ public class Button extends Component {
 
     @NotNull
     @Override
-    public IntSet slots() {
+    public IntSet slots(@NotNull MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;

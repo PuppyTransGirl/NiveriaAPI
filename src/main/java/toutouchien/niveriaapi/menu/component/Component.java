@@ -21,7 +21,7 @@ public abstract class Component {
         Preconditions.checkNotNull(context, "context cannot be null");
 
         Int2ObjectMap<ItemStack> items = this.items(context);
-        IntSet slots = this.slots();
+        IntSet slots = this.slots(context);
 
         for (int slot : slots) {
             ItemStack item = items.get(slot);
@@ -43,7 +43,7 @@ public abstract class Component {
     public abstract Int2ObjectMap<ItemStack> items(@NotNull MenuContext context);
 
     @NotNull
-    public abstract IntSet slots();
+    public abstract IntSet slots(@NotNull MenuContext context);
 
     public void position(@NonNegative int x, @NonNegative int y) {
         Preconditions.checkArgument(x >= 0, "x cannot be negative: %d", x);

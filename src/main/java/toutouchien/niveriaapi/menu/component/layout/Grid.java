@@ -58,7 +58,7 @@ public class Grid extends Component {
             return;
 
         for (Component component : this.slotComponents) {
-            if (component.slots().contains(event.getSlot())) {
+            if (component.slots(context).contains(event.getSlot())) {
                 component.onClick(event, context);
                 break;
             }
@@ -96,11 +96,11 @@ public class Grid extends Component {
     // slotComponents -> border -> fill
     @NotNull
     @Override
-    public IntSet slots() {
+    public IntSet slots(@NotNull MenuContext context) {
         IntSet slots = new IntOpenHashSet();
 
         for (Component slotComponent : this.slotComponents)
-            slots.addAll(slotComponent.slots());
+            slots.addAll(slotComponent.slots(context));
 
         if (this.border == null && this.fill == null)
             return slots;

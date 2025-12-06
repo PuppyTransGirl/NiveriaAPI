@@ -42,7 +42,6 @@ public class TestMenu extends Menu {
                 .add(18, selector())
                 .add(20, doubleDropButton())
                 .build();
-
     }
 
     private static Button simpleButton() {
