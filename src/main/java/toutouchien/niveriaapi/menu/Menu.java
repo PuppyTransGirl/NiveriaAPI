@@ -1,85 +1,87 @@
 package toutouchien.niveriaapi.menu;
 
 import com.google.common.base.Preconditions;
-import net.kyori.adventure.text.Component;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.menu.infos.MenuInfos;
-import toutouchien.niveriaapi.menu.items.MenuItem;
+import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
-import java.util.Set;
+import java.util.UUID;
 
-/**
- * Abstract class representing a menu in the inventory system.
- */
 public abstract class Menu implements InventoryHolder {
-    protected final MenuInfos menuInfos;
-    protected Inventory inventory;
-    Set<MenuItem> itemsCache;
+    private static final Object2ObjectMap<UUID, Menu> openMenus = new Object2ObjectOpenHashMap<>();
 
-    /**
-     * Constructs a Menu with the specified menu information.
-     *
-     * @param menuInfos The {@link MenuInfos} containing information about the menu.
-     */
-    protected Menu(@NotNull MenuInfos menuInfos) {
-        Preconditions.checkNotNull(menuInfos, "menuInfos cannot be null");
+    private final Inventory inventory;
+    private final MenuContext context;
+    private final Player player;
 
-        this.menuInfos = menuInfos;
+    private final Component root;
+
+    protected Menu(@NotNull Player player) {
+        Preconditions.checkNotNull(player, "player cannot be null");
+
+        this.player = player;
+        this.context = new MenuContext(this);
+
+        net.kyori.adventure.text.Component title = this.title();
+        this.root = this.root();
+        this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
     }
 
-    /**
-     * Opens the menu for the player.
-     */
     public void open() {
-        this.inventory = Bukkit.createInventory(this, slots(), name());
+        if (this.root != null) {
+            this.root.onAdd(this.context);
+            this.root.render(this.context);
+        }
 
-        for (MenuItem menuItem : this.itemsCache = this.items())
-            this.inventory.setItem(menuItem.slot(), menuItem.itemStack());
+        this.player.openInventory(this.inventory);
+    }
 
-        this.menuInfos.player().openInventory(inventory);
+    public void close(boolean event) {
+        if (this.root != null)
+            this.root.onRemove(this.context);
+
+        if (!event)
+            this.player.closeInventory();
+
+        openMenus.remove(this.player.getUniqueId());
+        this.context.close();
+    }
+
+    public void handleClick(@NotNull NiveriaInventoryClickEvent event) {
+        Preconditions.checkNotNull(event, "event cannot be null");
+
+        if (this.root == null)
+            return;
+
+        this.root.onClick(event, this.context);
+        this.root.render(this.context);
+    }
+
+    @NotNull
+    protected abstract net.kyori.adventure.text.Component title();
+
+    @NotNull
+    protected abstract Component root();
+
+    @NotNull
+    public Player player() {
+        return player;
+    }
+
+    @NotNull
+    public MenuContext context() {
+        return context;
     }
 
     @NotNull
     @Override
     public Inventory getInventory() {
         return inventory;
-    }
-
-    /**
-     * Returns the name of the menu.
-     *
-     * @return The name as a {@link Component}.
-     */
-    @NotNull
-    public abstract Component name();
-
-    /**
-     * Returns the number of slots in the menu.
-     *
-     * @return The number of slots, must be a positive integer.
-     */
-    @Positive
-    public abstract int slots();
-
-    /**
-     * Returns the set of menu items to be displayed in the menu.
-     *
-     * @return A set of {@link MenuItem} objects representing the items in the menu.
-     */
-    @NotNull
-    public abstract Set<MenuItem> items();
-
-    /**
-     * Returns the menu information associated with this menu.
-     *
-     * @return The {@link MenuInfos} object.
-     */
-    @NotNull
-    public MenuInfos menuInfos() {
-        return menuInfos;
     }
 }
