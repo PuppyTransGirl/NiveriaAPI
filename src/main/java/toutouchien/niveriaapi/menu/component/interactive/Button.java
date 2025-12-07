@@ -28,7 +28,7 @@ import java.util.function.Function;
 public class Button extends Component {
     private final Function<MenuContext, ItemStack> item;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDrop;
+    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
     private final Sound sound;
 
@@ -49,6 +49,7 @@ public class Button extends Component {
             Function<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
+            Consumer<NiveriaInventoryClickEvent> onShiftLeftClick, Consumer<NiveriaInventoryClickEvent> onShiftRightClick,
             Consumer<NiveriaInventoryClickEvent> onDrop,
             Sound sound,
             Function<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
@@ -60,6 +61,8 @@ public class Button extends Component {
         this.onClick = onClick;
         this.onLeftClick = onLeftClick;
         this.onRightClick = onRightClick;
+        this.onShiftLeftClick = onShiftLeftClick;
+        this.onShiftRightClick = onShiftRightClick;
         this.onDrop = onDrop;
 
         this.sound = sound;
@@ -99,8 +102,10 @@ public class Button extends Component {
             context.player().playSound(this.sound, Sound.Emitter.self());
 
         Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
-            case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> this.onLeftClick;
-            case RIGHT, SHIFT_RIGHT -> this.onRightClick;
+            case LEFT, DOUBLE_CLICK -> this.onLeftClick;
+            case RIGHT -> this.onRightClick;
+            case SHIFT_LEFT -> this.onShiftLeftClick;
+            case SHIFT_RIGHT -> this.onShiftRightClick;
             case DROP, CONTROL_DROP -> this.onDrop;
             default -> null;
         };
@@ -235,7 +240,7 @@ public class Button extends Component {
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
-        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDrop;
+        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
@@ -297,6 +302,24 @@ public class Button extends Component {
             Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
             this.onRightClick = onRightClick;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+            Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+            this.onShiftLeftClick = onShiftLeftClick;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+            Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+            this.onShiftRightClick = onShiftRightClick;
             return this;
         }
 
@@ -402,6 +425,8 @@ public class Button extends Component {
                     this.onClick,
                     this.onLeftClick,
                     this.onRightClick,
+                    this.onShiftLeftClick,
+                    this.onShiftRightClick,
                     this.onDrop,
                     this.sound,
                     this.animationFrames,

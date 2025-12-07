@@ -28,7 +28,7 @@ public class DoubleDropButton extends Component {
     private final Function<MenuContext, ItemStack> item;
     private final Function<MenuContext, ItemStack> dropItem;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDoubleDrop;
+    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
     private final Sound sound;
 
@@ -41,6 +41,7 @@ public class DoubleDropButton extends Component {
             Function<MenuContext, ItemStack> dropItem,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
+            Consumer<NiveriaInventoryClickEvent> onShiftLeftClick, Consumer<NiveriaInventoryClickEvent> onShiftRightClick,
             Consumer<NiveriaInventoryClickEvent> onDoubleDrop,
             Sound sound,
             int width, int height
@@ -51,6 +52,8 @@ public class DoubleDropButton extends Component {
         this.onClick = onClick;
         this.onLeftClick = onLeftClick;
         this.onRightClick = onRightClick;
+        this.onShiftLeftClick = onShiftLeftClick;
+        this.onShiftRightClick = onShiftRightClick;
         this.onDoubleDrop = onDoubleDrop;
 
         this.sound = sound;
@@ -93,9 +96,11 @@ public class DoubleDropButton extends Component {
             return;
         }
 
-        Consumer<NiveriaInventoryClickEvent> handler = switch (click) {
-            case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> this.onLeftClick;
-            case RIGHT, SHIFT_RIGHT -> this.onRightClick;
+        Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
+            case LEFT, DOUBLE_CLICK -> this.onLeftClick;
+            case RIGHT -> this.onRightClick;
+            case SHIFT_LEFT -> this.onShiftLeftClick;
+            case SHIFT_RIGHT -> this.onShiftRightClick;
             default -> null;
         };
 
@@ -175,7 +180,7 @@ public class DoubleDropButton extends Component {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 
-        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onDoubleDrop;
+        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
@@ -252,6 +257,24 @@ public class DoubleDropButton extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
+        public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+            Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+            this.onShiftLeftClick = onShiftLeftClick;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+            Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+            this.onShiftRightClick = onShiftRightClick;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
         public Builder onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
             Preconditions.checkNotNull(onDoubleDrop, "onDoubleDrop cannot be null");
 
@@ -303,6 +326,8 @@ public class DoubleDropButton extends Component {
                     this.onClick,
                     this.onLeftClick,
                     this.onRightClick,
+                    this.onShiftLeftClick,
+                    this.onShiftRightClick,
                     this.onDoubleDrop,
                     this.sound,
                     this.width,
