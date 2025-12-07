@@ -16,24 +16,24 @@ import java.util.UUID;
 public abstract class Menu implements InventoryHolder {
     private static final Object2ObjectMap<UUID, Menu> openMenus = new Object2ObjectOpenHashMap<>();
 
-    private final Inventory inventory;
+    private Inventory inventory;
     private final MenuContext context;
     private final Player player;
 
-    private final Component root;
+    private Component root;
 
     protected Menu(@NotNull Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
         this.context = new MenuContext(this);
-
-        net.kyori.adventure.text.Component title = this.title();
-        this.root = this.root();
-        this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
     }
 
     public void open() {
+        net.kyori.adventure.text.Component title = this.title();
+        this.root = this.root();
+        this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
+
         if (this.root != null) {
             this.root.onAdd(this.context);
             this.root.render(this.context);
