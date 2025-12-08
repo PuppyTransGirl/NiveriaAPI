@@ -9,12 +9,14 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.component.display.Icon;
+import toutouchien.niveriaapi.menu.component.display.ProgressBar;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
 import toutouchien.niveriaapi.menu.component.interactive.DoubleDropButton;
 import toutouchien.niveriaapi.menu.component.interactive.Selector;
 import toutouchien.niveriaapi.menu.component.interactive.Toggle;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
 import toutouchien.niveriaapi.utils.ColorUtils;
+import toutouchien.niveriaapi.utils.Direction;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
 public class TestMenu extends Menu {
@@ -32,15 +34,17 @@ public class TestMenu extends Menu {
     @Override
     protected toutouchien.niveriaapi.menu.component.Component root() {
         return Grid.create()
-                .size(9, 3)
+                .size(9, 6)
                 .add(0, simpleButton())
                 .add(2, animatedButton())
                 .add(8, dynamicButton())
                 .add(13, coordinatesDynamicButton())
                 .add(15, toggle())
-                .add(17, icon())
+                .add(16, icon())
                 .add(18, selector())
                 .add(20, doubleDropButton())
+                .add(21, rightProgressBar())
+                .add(17, downProgressBar())
                 .build();
     }
 
@@ -141,6 +145,28 @@ public class TestMenu extends Menu {
                     Player player = event.player();
                     player.sendRichMessage("<gold>You have double-dropped the chest button!");
                 })
+                .build();
+    }
+
+    private static ProgressBar rightProgressBar() {
+        return ProgressBar.create()
+                .doneItem(ItemStack.of(Material.LIME_CONCRETE))
+                .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
+                .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
+                .direction(Direction.Default.RIGHT)
+                .percentage(context -> 0.75)
+                .size(4, 2)
+                .build();
+    }
+
+    private static ProgressBar downProgressBar() {
+        return ProgressBar.create()
+                .doneItem(ItemStack.of(Material.LIME_CONCRETE))
+                .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
+                .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
+                .direction(Direction.Default.DOWN)
+                .percentage(context -> 0.40)
+                .size(1, 5)
                 .build();
     }
 }

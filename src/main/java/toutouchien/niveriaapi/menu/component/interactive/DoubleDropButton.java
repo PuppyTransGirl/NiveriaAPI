@@ -309,7 +309,7 @@ public class DoubleDropButton extends Component {
 
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder size(@Positive int width, int height) {
+        public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
 

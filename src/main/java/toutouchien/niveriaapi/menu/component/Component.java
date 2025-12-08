@@ -37,7 +37,9 @@ public abstract class Component {
 
     }
 
-    public abstract void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context);
+    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+
+    }
 
     @NotNull
     public abstract Int2ObjectMap<ItemStack> items(@NotNull MenuContext context);
