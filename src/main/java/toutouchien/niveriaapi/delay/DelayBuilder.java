@@ -166,7 +166,7 @@ public class DelayBuilder {
      */
     @NotNull
     public DelayBuilder delay(@Positive int delay) {
-        Preconditions.checkArgument(delay >= 1, "delay cannot be less than 1: %d", delay);
+        Preconditions.checkArgument(delay >= 1, "delay cannot be less than 1: %s", delay);
 
         this.delay = delay;
         return this;

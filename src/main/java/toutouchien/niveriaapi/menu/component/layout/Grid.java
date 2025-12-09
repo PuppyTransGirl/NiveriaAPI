@@ -155,7 +155,7 @@ public class Grid extends Component {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder add(@NonNegative int slot, @NotNull Component component) {
-            Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %d", slot);
+            Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
             slotComponents.add(component);
@@ -166,8 +166,8 @@ public class Grid extends Component {
         @NotNull
         @Contract(value = "_, _, _ -> this", mutates = "this")
         public Builder add(@NonNegative int x, @NonNegative int y, @NotNull Component component) {
-            Preconditions.checkArgument(x >= 0, "x cannot be negative: %d", x);
-            Preconditions.checkArgument(y >= 0, "y cannot be negative: %d", y);
+            Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
+            Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
 
             return add(y * 9 + x, component);
@@ -194,7 +194,7 @@ public class Grid extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
 
             this.width = width;
             return this;
@@ -203,7 +203,7 @@ public class Grid extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.height = height;
             return this;
@@ -212,8 +212,8 @@ public class Grid extends Component {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.width = width;
             this.height = height;

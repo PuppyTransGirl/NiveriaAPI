@@ -48,8 +48,8 @@ public abstract class Component {
     public abstract IntSet slots(@NotNull MenuContext context);
 
     public void position(@NonNegative int x, @NonNegative int y) {
-        Preconditions.checkArgument(x >= 0, "x cannot be negative: %d", x);
-        Preconditions.checkArgument(y >= 0, "y cannot be negative: %d", y);
+        Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
+        Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
 
         this.x = x;
         this.y = y;

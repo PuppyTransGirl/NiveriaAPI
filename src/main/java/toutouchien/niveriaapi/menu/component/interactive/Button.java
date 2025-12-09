@@ -351,7 +351,7 @@ public class Button extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder animationInterval(@Positive int animationInterval) {
-            Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %d", animationInterval);
+            Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %s", animationInterval);
 
             this.animationInterval = animationInterval;
             return this;
@@ -376,7 +376,7 @@ public class Button extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder updateInterval(@Positive int updateInterval) {
-            Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %d", updateInterval);
+            Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %s", updateInterval);
 
             this.updateInterval = updateInterval;
             return this;
@@ -392,7 +392,7 @@ public class Button extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
 
             this.width = width;
             return this;
@@ -401,7 +401,7 @@ public class Button extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.height = height;
             return this;
@@ -410,8 +410,8 @@ public class Button extends Component {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.width = width;
             this.height = height;

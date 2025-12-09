@@ -225,7 +225,7 @@ public class ProgressBar extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder percentage(@NonNegative double percentage) {
-            Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %d", percentage);
+            Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %s", percentage);
 
             this.percentage = context -> percentage;
             return this;
@@ -243,7 +243,7 @@ public class ProgressBar extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
 
             this.width = width;
             return this;
@@ -252,7 +252,7 @@ public class ProgressBar extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.height = height;
             return this;
@@ -261,8 +261,8 @@ public class ProgressBar extends Component {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.width = width;
             this.height = height;

@@ -219,7 +219,7 @@ public class Selector<T> extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> defaultIndex(@NonNegative int index) {
-            Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
+            Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
             this.defaultIndex = index;
             return this;
@@ -253,7 +253,7 @@ public class Selector<T> extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
 
             this.width = width;
             return this;
@@ -262,7 +262,7 @@ public class Selector<T> extends Component {
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
             this.height = height;
             return this;
         }
@@ -270,8 +270,8 @@ public class Selector<T> extends Component {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder<T> size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %d", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %d", height);
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
             this.width = width;
             this.height = height;
