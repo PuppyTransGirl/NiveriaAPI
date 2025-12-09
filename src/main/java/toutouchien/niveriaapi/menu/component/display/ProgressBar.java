@@ -18,13 +18,14 @@ import toutouchien.niveriaapi.utils.Direction;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.ToDoubleFunction;
 
 public class ProgressBar extends Component {
     private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
     private final Direction.Default direction;
 
-    private final Function<MenuContext, Double> percentage;
+    private final ToDoubleFunction<MenuContext> percentage;
 
     private final int width;
     private final int height;
@@ -32,7 +33,7 @@ public class ProgressBar extends Component {
     private ProgressBar(
             Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
             Direction.Default direction,
-            Function<MenuContext, Double> percentage,
+            ToDoubleFunction<MenuContext> percentage,
             int width, int height
     ) {
         this.doneItem = doneItem;
@@ -52,7 +53,7 @@ public class ProgressBar extends Component {
             return items;
 
         int total = this.width * this.height;
-        double pct = Math.clamp(this.percentage.apply(context), 0, 1);
+        double pct = Math.clamp(this.percentage.applyAsDouble(context), 0, 1);
         int done = (int) Math.floor(pct * total);
         boolean full = pct >= 1d || done >= total;
 
@@ -154,7 +155,7 @@ public class ProgressBar extends Component {
 
         private Direction.Default direction = Direction.Default.RIGHT;
 
-        private Function<MenuContext, Double> percentage = context -> 0D;
+        private ToDoubleFunction<MenuContext> percentage = context -> 0D;
 
         private int width = 1;
         private int height = 1;
@@ -233,7 +234,7 @@ public class ProgressBar extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder percentage(@NotNull Function<MenuContext, Double> percentage) {
+        public Builder percentage(@NotNull ToDoubleFunction<MenuContext> percentage) {
             Preconditions.checkNotNull(percentage, "percentage cannot be null");
 
             this.percentage = percentage;
