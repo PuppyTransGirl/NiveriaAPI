@@ -49,8 +49,8 @@ public class ConfirmationMenu extends Menu {
     protected toutouchien.niveriaapi.menu.component.Component root() {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
-                .add(11, yesButton())
-                .add(15, noButton());
+                .add(11, noButton())
+                .add(15, yesButton());
 
         if (this.explanationItem != null)
             builder.add(13, explanationIcon());
