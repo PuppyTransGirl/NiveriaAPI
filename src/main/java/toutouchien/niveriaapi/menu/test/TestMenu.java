@@ -154,7 +154,7 @@ public class TestMenu extends Menu {
                 .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
                 .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
                 .direction(Direction.Default.RIGHT)
-                .percentage(context -> 0.75)
+                .percentage(0.75)
                 .size(4, 2)
                 .build();
     }
@@ -165,7 +165,7 @@ public class TestMenu extends Menu {
                 .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
                 .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
                 .direction(Direction.Default.DOWN)
-                .percentage(context -> 0.40)
+                .percentage(1)
                 .size(1, 5)
                 .build();
     }

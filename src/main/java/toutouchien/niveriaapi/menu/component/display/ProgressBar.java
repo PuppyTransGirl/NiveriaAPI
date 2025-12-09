@@ -2,10 +2,12 @@ package toutouchien.niveriaapi.menu.component.display;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +15,9 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.utils.Direction;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 public class ProgressBar extends Component {
     private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
@@ -25,7 +29,7 @@ public class ProgressBar extends Component {
     private final int width;
     private final int height;
 
-    public ProgressBar(
+    private ProgressBar(
             Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
             Direction.Default direction,
             Function<MenuContext, Double> percentage,
@@ -43,7 +47,66 @@ public class ProgressBar extends Component {
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
-        return null;
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(this.width * this.height);
+        if (!this.visible())
+            return items;
+
+        int total = this.width * this.height;
+        double pct = Math.clamp(this.percentage.apply(context), 0, 1);
+        int done = (int) Math.floor(pct * total);
+        boolean full = pct >= 1d || done >= total;
+
+        IntFunction<ItemStack> pick = idx -> {
+            if (idx < done)
+                return this.doneItem.apply(context);
+
+            if (!full && idx == done)
+                return this.currentItem.apply(context);
+
+            return this.notDoneItem.apply(context);
+        };
+
+        this.forEachSlot((idx, slot) -> items.put(slot.intValue(), pick.apply(idx)));
+        return items;
+    }
+
+    private void forEachSlot(BiConsumer<Integer, Integer> consumer) {
+        Traversal t = this.traversal();
+        int baseSlot = this.slot();
+        int rowLength = 9;
+        int idx = 0;
+
+        Range outer = t.rowMajor() ? t.rows() : t.cols();
+        Range inner = t.rowMajor() ? t.cols() : t.rows();
+        boolean outerIsRow = t.rowMajor();
+
+        for (int o = outer.start; o != outer.endExclusive; o += outer.step) {
+            for (int i = inner.start; i != inner.endExclusive; i += inner.step) {
+                int row = outerIsRow ? o : i;
+                int col = outerIsRow ? i : o;
+                consumer.accept(idx++, baseSlot + col + (row * rowLength));
+            }
+        }
+    }
+
+    private Traversal traversal() {
+        Range rowsRange = new Range(0, this.height, 1);
+        Range colsRange = new Range(0, this.width, 1);
+
+        return switch (this.direction) {
+            case RIGHT -> new Traversal(rowsRange, colsRange, true);
+            case LEFT -> new Traversal(rowsRange, new Range(this.width - 1, -1, -1), true);
+            case DOWN -> new Traversal(rowsRange, colsRange, false);
+            case UP -> new Traversal(new Range(this.height - 1, -1, -1), colsRange, false);
+        };
+    }
+
+    private record Range(@NonNegative int start, int endExclusive, int step) {
+
+    }
+
+    private record Traversal(@NotNull Range rows, @NotNull Range cols, boolean rowMajor) {
+
     }
 
     @NotNull
@@ -91,7 +154,7 @@ public class ProgressBar extends Component {
 
         private Direction.Default direction = Direction.Default.RIGHT;
 
-        private Function<MenuContext, Double> percentage;
+        private Function<MenuContext, Double> percentage = context -> 0D;
 
         private int width = 1;
         private int height = 1;
@@ -156,6 +219,15 @@ public class ProgressBar extends Component {
             Preconditions.checkNotNull(direction, "direction cannot be null");
 
             this.direction = direction;
+            return this;
+        }
+
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder percentage(@NonNegative double percentage) {
+            Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %d", percentage);
+
+            this.percentage = context -> percentage;
             return this;
         }
 
