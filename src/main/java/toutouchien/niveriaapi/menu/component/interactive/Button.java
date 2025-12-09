@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -23,22 +24,21 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Button extends Component {
-    private final Function<MenuContext, ItemStack> item;
+    private final Object2ObjectFunction<MenuContext, ItemStack> item;
 
     private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
     private final Sound sound;
 
-    private final Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+    private final Object2ObjectFunction<MenuContext, ObjectList<ItemStack>> animationFrames;
     private final int animationInterval;
     private final boolean stopAnimationOnHide;
     private BukkitTask animationTask;
     private int currentFrame;
 
-    private final Function<MenuContext, ItemStack> dynamicItem;
+    private final Object2ObjectFunction<MenuContext, ItemStack> dynamicItem;
     private final int updateInterval;
     private final boolean stopUpdatesOnHide;
     private BukkitTask updateTask;
@@ -46,14 +46,14 @@ public class Button extends Component {
     private final int width, height;
 
     private Button(
-            Function<MenuContext, ItemStack> item,
+            Object2ObjectFunction<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
             Consumer<NiveriaInventoryClickEvent> onShiftLeftClick, Consumer<NiveriaInventoryClickEvent> onShiftRightClick,
             Consumer<NiveriaInventoryClickEvent> onDrop,
             Sound sound,
-            Function<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
-            Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide,
+            Object2ObjectFunction<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
+            Object2ObjectFunction<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide,
             int width, int height
     ) {
         this.item = item;
@@ -238,7 +238,7 @@ public class Button extends Component {
     }
 
     public static class Builder {
-        private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
+        private Object2ObjectFunction<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
@@ -249,11 +249,11 @@ public class Button extends Component {
                 1F
         );
 
-        private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+        private Object2ObjectFunction<MenuContext, ObjectList<ItemStack>> animationFrames;
         private int animationInterval = 20;
         private boolean stopAnimationOnHide = true;
 
-        private Function<MenuContext, ItemStack> dynamicItem;
+        private Object2ObjectFunction<MenuContext, ItemStack> dynamicItem;
         private int updateInterval = 20;
         private boolean stopUpdatesOnHide = false;
 
@@ -271,7 +271,7 @@ public class Button extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+        public Builder item(@NotNull Object2ObjectFunction<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
@@ -341,7 +341,7 @@ public class Button extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+        public Builder animationFrames(@NotNull Object2ObjectFunction<MenuContext, ObjectList<ItemStack>> animationFrames) {
             Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
 
             this.animationFrames = animationFrames;
@@ -366,7 +366,7 @@ public class Button extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+        public Builder dynamicItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> dynamicItem) {
             Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
 
             this.dynamicItem = dynamicItem;

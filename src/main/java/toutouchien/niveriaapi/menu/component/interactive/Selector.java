@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
@@ -21,11 +22,10 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Selector<T> extends Component {
     private final ObjectList<Option<T>> options;
-    private final Function<MenuContext, T> defaultOption;
+    private final Object2ObjectFunction<MenuContext, T> defaultOption;
     private final Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
     private final Sound sound;
@@ -36,7 +36,7 @@ public class Selector<T> extends Component {
 
     private Selector(
             ObjectList<Option<T>> options,
-            Function<MenuContext, T> defaultOption,
+            Object2ObjectFunction<MenuContext, T> defaultOption,
             Consumer<SelectionChangeEvent<T>> onSelectionChange,
             int defaultIndex,
             Sound sound,
@@ -171,7 +171,7 @@ public class Selector<T> extends Component {
 
     }
 
-    public record Option<T>(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+    public record Option<T>(@NotNull Object2ObjectFunction<MenuContext, ItemStack> item, @Nullable T value) {
 
     }
 
@@ -183,7 +183,7 @@ public class Selector<T> extends Component {
 
     public static class Builder<T> {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
-        private Function<MenuContext, T> defaultOption;
+        private Object2ObjectFunction<MenuContext, T> defaultOption;
         private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
         private int defaultIndex = 0;
@@ -209,7 +209,7 @@ public class Selector<T> extends Component {
 
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+        public Builder<T> addOption(@NotNull Object2ObjectFunction<MenuContext, ItemStack> item, @Nullable T value) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             options.add(new Option<>(item, value));
@@ -236,7 +236,7 @@ public class Selector<T> extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
+        public Builder<T> defaultOption(@NotNull Object2ObjectFunction<MenuContext, T> defaultOption) {
             Preconditions.checkNotNull(defaultOption, "defaultOption cannot be null");
 
             this.defaultOption = defaultOption;

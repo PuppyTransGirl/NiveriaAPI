@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
@@ -17,16 +18,14 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
-import java.util.function.Function;
-
 public class Icon extends Component {
-    private final Function<MenuContext, ItemStack> item;
+    private final Object2ObjectFunction<MenuContext, ItemStack> item;
     private final Sound sound;
 
     private final int width, height;
 
     private Icon(
-            Function<MenuContext, ItemStack> item,
+            Object2ObjectFunction<MenuContext, ItemStack> item,
             Sound sound,
             int width, int height
     ) {
@@ -109,7 +108,7 @@ public class Icon extends Component {
     }
 
     public static class Builder {
-        private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
+        private Object2ObjectFunction<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
@@ -132,7 +131,7 @@ public class Icon extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+        public Builder item(@NotNull Object2ObjectFunction<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
