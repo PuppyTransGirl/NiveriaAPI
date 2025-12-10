@@ -38,7 +38,7 @@ public class PaginatedTestMenu extends Menu {
                 .offNextItem(ItemStack.of(Material.RED_DYE))
                 .offFirstPageItem(ItemStack.of(Material.ORANGE_DYE))
                 .offLastPageItem(ItemStack.of(Material.ORANGE_DYE))
-                .size(5, 2);
+                .size(7, 3);
 
         World world = this.player().getWorld();
         ObjectList<toutouchien.niveriaapi.menu.component.Component> materials = Arrays.stream(Material.values())
@@ -55,12 +55,12 @@ public class PaginatedTestMenu extends Menu {
         Paginator paginator = builder.build();
 
         return Grid.create()
-                .size(9, 5)
-                .add(36, paginator.firstPageButton())
-                .add(37, paginator.backButton())
-                .add(43, paginator.nextButton())
-                .add(44, paginator.lastPageButton())
-                .add(11, paginator)
+                .size(9, 6)
+                .add(45, paginator.firstPageButton())
+                .add(46, paginator.backButton())
+                .add(52, paginator.nextButton())
+                .add(53, paginator.lastPageButton())
+                .add(10, paginator)
                 .build();
     }
 }
