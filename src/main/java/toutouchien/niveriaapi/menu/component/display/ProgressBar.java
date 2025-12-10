@@ -3,7 +3,6 @@ package toutouchien.niveriaapi.menu.component.display;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2DoubleFunction;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
@@ -15,9 +14,10 @@ import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.utils.Direction;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class ProgressBar extends Component {
-    private final Object2ObjectFunction<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
+    private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
     private final Direction.Default direction;
 
@@ -27,7 +27,7 @@ public class ProgressBar extends Component {
     private final int height;
 
     private ProgressBar(
-            Object2ObjectFunction<MenuContext, ItemStack> doneItem, Object2ObjectFunction<MenuContext, ItemStack> currentItem, Object2ObjectFunction<MenuContext, ItemStack> notDoneItem,
+            Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
             Direction.Default direction,
             Object2DoubleFunction<MenuContext> percentage,
             int width, int height
@@ -147,9 +147,9 @@ public class ProgressBar extends Component {
     }
 
     public static class Builder {
-        private Object2ObjectFunction<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
-        private Object2ObjectFunction<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);
-        private Object2ObjectFunction<MenuContext, ItemStack> notDoneItem = context -> ItemStack.of(Material.RED_CONCRETE);
+        private Function<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
+        private Function<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);
+        private Function<MenuContext, ItemStack> notDoneItem = context -> ItemStack.of(Material.RED_CONCRETE);
 
         private Direction.Default direction = Direction.Default.RIGHT;
 
@@ -169,7 +169,7 @@ public class ProgressBar extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder doneItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> doneItem) {
+        public Builder doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
             Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
 
             this.doneItem = doneItem;
@@ -187,7 +187,7 @@ public class ProgressBar extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder currentItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> currentItem) {
+        public Builder currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
             Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
 
             this.currentItem = currentItem;
@@ -205,7 +205,7 @@ public class ProgressBar extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder notDoneItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> notDoneItem) {
+        public Builder notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
             Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
 
             this.notDoneItem = notDoneItem;

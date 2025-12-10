@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
@@ -18,15 +17,17 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+import java.util.function.Function;
+
 public class Toggle extends Component {
-    private final Object2ObjectFunction<MenuContext, ItemStack> onItem, offItem;
+    private final Function<MenuContext, ItemStack> onItem, offItem;
     private final Sound sound;
     private final int width, height;
 
     private boolean currentState;
 
     public Toggle(
-            Object2ObjectFunction<MenuContext, ItemStack> onItem, Object2ObjectFunction<MenuContext, ItemStack> offItem,
+            Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
             boolean currentState,
             Sound sound,
             int width, int height
@@ -115,8 +116,8 @@ public class Toggle extends Component {
     }
 
     public static class Builder {
-        private Object2ObjectFunction<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
-        private Object2ObjectFunction<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);
+        private Function<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
+        private Function<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);
 
         private boolean currentState;
 
@@ -150,7 +151,7 @@ public class Toggle extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> onItem) {
+        public Builder onItem(@NotNull Function<MenuContext, ItemStack> onItem) {
             Preconditions.checkNotNull(onItem, "onItem cannot be null");
 
             this.onItem = onItem;
@@ -159,7 +160,7 @@ public class Toggle extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> offItem) {
+        public Builder offItem(@NotNull Function<MenuContext, ItemStack> offItem) {
             Preconditions.checkNotNull(offItem, "offItem cannot be null");
 
             this.offItem = offItem;

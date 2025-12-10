@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
@@ -23,10 +22,11 @@ import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class DoubleDropButton extends Component {
-    private final Object2ObjectFunction<MenuContext, ItemStack> item;
-    private final Object2ObjectFunction<MenuContext, ItemStack> dropItem;
+    private final Function<MenuContext, ItemStack> item;
+    private final Function<MenuContext, ItemStack> dropItem;
 
     private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
@@ -37,8 +37,8 @@ public class DoubleDropButton extends Component {
     private BukkitTask dropTask;
 
     private DoubleDropButton(
-            Object2ObjectFunction<MenuContext, ItemStack> item,
-            Object2ObjectFunction<MenuContext, ItemStack> dropItem,
+            Function<MenuContext, ItemStack> item,
+            Function<MenuContext, ItemStack> dropItem,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
             Consumer<NiveriaInventoryClickEvent> onShiftLeftClick, Consumer<NiveriaInventoryClickEvent> onShiftRightClick,
@@ -177,8 +177,8 @@ public class DoubleDropButton extends Component {
     }
 
     public static class Builder {
-        private Object2ObjectFunction<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
-        private Object2ObjectFunction<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
+        private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
+        private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
@@ -212,7 +212,7 @@ public class DoubleDropButton extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Object2ObjectFunction<MenuContext, ItemStack> item) {
+        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
@@ -221,7 +221,7 @@ public class DoubleDropButton extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder dropItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> dropItem) {
+        public Builder dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
             Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
 
             this.dropItem = dropItem;
