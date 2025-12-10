@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.Menu;
+import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.display.Icon;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
@@ -46,7 +47,7 @@ public class ConfirmationMenu extends Menu {
 
     @NotNull
     @Override
-    protected toutouchien.niveriaapi.menu.component.Component root() {
+    protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
                 .add(11, noButton())

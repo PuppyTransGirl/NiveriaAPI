@@ -31,7 +31,7 @@ public abstract class Menu implements InventoryHolder {
 
     public void open() {
         net.kyori.adventure.text.Component title = this.title();
-        this.root = this.root();
+        this.root = this.root(this.context);
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
 
         if (this.root != null) {
@@ -67,7 +67,7 @@ public abstract class Menu implements InventoryHolder {
     protected abstract net.kyori.adventure.text.Component title();
 
     @NotNull
-    protected abstract Component root();
+    protected abstract Component root(@NotNull MenuContext context);
 
     @NotNull
     public Player player() {

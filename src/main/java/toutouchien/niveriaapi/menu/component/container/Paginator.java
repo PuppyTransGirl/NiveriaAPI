@@ -2,9 +2,9 @@ package toutouchien.niveriaapi.menu.component.container;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.bukkit.Material;
@@ -13,14 +13,18 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.interactive.Button;
+
+import java.util.function.Function;
 
 public class Paginator extends Component {
     private final ObjectList<Component> components;
 
-    private final Object2ObjectFunction<MenuContext, ItemStack> backItem, nextItem, offBackItem, offNextItem;
-    private final Object2ObjectFunction<MenuContext, ItemStack> firstPageItem, lastPageItem, offFirstPageItem, offLastPageItem;
+    private final Function<MenuContext, ItemStack> backItem, nextItem, offBackItem, offNextItem;
+    private final Function<MenuContext, ItemStack> firstPageItem, lastPageItem, offFirstPageItem, offLastPageItem;
 
     private final int width, height;
 
@@ -28,10 +32,10 @@ public class Paginator extends Component {
 
     public Paginator(
             ObjectList<Component> components,
-            Object2ObjectFunction<MenuContext, ItemStack> backItem, Object2ObjectFunction<MenuContext, ItemStack> nextItem,
-            Object2ObjectFunction<MenuContext, ItemStack> offBackItem, Object2ObjectFunction<MenuContext, ItemStack> offNextItem,
-            Object2ObjectFunction<MenuContext, ItemStack> firstPageItem, Object2ObjectFunction<MenuContext, ItemStack> lastPageItem,
-            Object2ObjectFunction<MenuContext, ItemStack> offFirstPageItem, Object2ObjectFunction<MenuContext, ItemStack> offLastPageItem,
+            Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
+            Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,
+            Function<MenuContext, ItemStack> firstPageItem, Function<MenuContext, ItemStack> lastPageItem,
+            Function<MenuContext, ItemStack> offFirstPageItem, Function<MenuContext, ItemStack> offLastPageItem,
             int width, int height,
             int page
     ) {
@@ -52,19 +56,143 @@ public class Paginator extends Component {
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
-        return null;
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
+
+        int maxItemsPerPage = this.width * this.height;
+        int totalItems = this.components.size();
+        int startIndex = this.page * maxItemsPerPage;
+        int endIndex = Math.min(startIndex + maxItemsPerPage, totalItems);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            int relativeIndex = i - startIndex;
+            int localX = (relativeIndex % this.width);
+            int localY = 1 + (relativeIndex / this.width);
+
+            int compX = this.x() + localX;
+            int compY = this.y() + localY;
+
+            int baseSlot = (compY - 1) * 9 + compX;
+
+            Component component = this.components.get(i);
+            Int2ObjectMap<ItemStack> compItems = component.items(context);
+            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
+                int innerSlot = entry.getIntKey();
+                ItemStack item = entry.getValue();
+                items.put(baseSlot + innerSlot, item);
+            }
+        }
+
+        return items;
     }
 
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
         IntSet slots = new IntOpenHashSet();
-        for (Component component : this.components) {
-            IntSet compSlots = component.slots(context);
-            slots.addAll(compSlots);
+
+        // Instead of only adding the slots of the current page, we add all the possible slots on the current page
+        // If we don't do this, the menu system will not remove old items when switching pages
+        for (int yOffset = 0; yOffset < this.height; yOffset++) {
+            for (int xOffset = 0; xOffset < this.width; xOffset++) {
+                int compX = this.x() + xOffset;
+                int compY = this.y() + 1 + yOffset; // Account for the 1 + offset in localY
+                slots.add((compY - 1) * 9 + compX);
+            }
         }
 
         return slots;
+    }
+
+    @Nullable
+    public Button backButton() {
+        if (this.page <= 0 && this.offBackItem == null)
+            return null;
+
+        return Button.create()
+                .item(context -> {
+                    return this.page > 0
+                            ? this.backItem.apply(context)
+                            : this.offBackItem.apply(context);
+                })
+                .onClick(event -> {
+                    if (this.page <= 0)
+                        return;
+
+                    this.page--;
+                    this.render(event.context());
+                })
+                .build();
+    }
+
+    @Nullable
+    public Button nextButton() {
+        int maxPage = this.maxPage();
+        if (this.page >= maxPage && this.offNextItem == null)
+            return null;
+
+        return Button.create()
+                .item(context -> {
+                    return this.page < maxPage
+                            ? this.nextItem.apply(context)
+                            : this.offNextItem.apply(context);
+                })
+                .onClick(event -> {
+                    if (this.page >= maxPage)
+                        return;
+
+                    this.page++;
+                    this.render(event.context());
+                })
+                .build();
+    }
+
+    @Nullable
+    public Button firstPageButton() {
+        if (this.page <= 0 && this.offFirstPageItem == null)
+            return null;
+
+        return Button.create()
+                .item(context -> {
+                    return this.page > 0
+                            ? this.firstPageItem.apply(context)
+                            : this.offFirstPageItem.apply(context);
+                })
+                .onClick(event -> {
+                    if (this.page <= 0)
+                        return;
+
+                    this.page = 0;
+                    this.render(event.context());
+                })
+                .build();
+    }
+
+    @Nullable
+    public Button lastPageButton() {
+        int maxPage = this.maxPage();
+        if (this.page >= maxPage && this.offLastPageItem == null)
+            return null;
+
+        return Button.create()
+                .item(context -> {
+                    return this.page < maxPage
+                            ? this.lastPageItem.apply(context)
+                            : this.offLastPageItem.apply(context);
+                })
+                .onClick(event -> {
+                    if (this.page >= maxPage)
+                        return;
+
+                    this.page = maxPage;
+                    this.render(event.context());
+                })
+                .build();
+    }
+
+    public int maxPage() {
+        int maxItemsPerPage = this.width * this.height;
+        int totalItems = this.components.size();
+        return (int) Math.ceil((double) totalItems / maxItemsPerPage) - 1;
     }
 
     @Positive
@@ -88,12 +216,12 @@ public class Paginator extends Component {
     public static class Builder {
         private final ObjectList<Component> components = new ObjectArrayList<>();
 
-        private Object2ObjectFunction<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
-        private Object2ObjectFunction<MenuContext, ItemStack> nextItem = context -> new ItemStack(Material.ARROW);
-        private Object2ObjectFunction<MenuContext, ItemStack> offBackItem, offNextItem;
+        private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
+        private Function<MenuContext, ItemStack> nextItem = context -> new ItemStack(Material.ARROW);
+        private Function<MenuContext, ItemStack> offBackItem, offNextItem;
 
-        private Object2ObjectFunction<MenuContext, ItemStack> firstPageItem, lastPageItem;
-        private Object2ObjectFunction<MenuContext, ItemStack> offFirstPageItem, offLastPageItem;
+        private Function<MenuContext, ItemStack> firstPageItem, lastPageItem;
+        private Function<MenuContext, ItemStack> offFirstPageItem, offLastPageItem;
 
         private int page;
 
@@ -191,7 +319,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder backItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> backItem) {
+        public Builder backItem(@NotNull Function<MenuContext, ItemStack> backItem) {
             Preconditions.checkNotNull(backItem, "backItem cannot be null");
 
             this.backItem = backItem;
@@ -200,7 +328,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder nextItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> nextItem) {
+        public Builder nextItem(@NotNull Function<MenuContext, ItemStack> nextItem) {
             Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
 
             this.nextItem = nextItem;
@@ -209,7 +337,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offBackItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> offBackItem) {
+        public Builder offBackItem(@NotNull Function<MenuContext, ItemStack> offBackItem) {
             Preconditions.checkNotNull(offBackItem, "offBackItem cannot be null");
 
             this.offBackItem = offBackItem;
@@ -218,7 +346,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offNextItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> offNextItem) {
+        public Builder offNextItem(@NotNull Function<MenuContext, ItemStack> offNextItem) {
             Preconditions.checkNotNull(offNextItem, "offNextItem cannot be null");
 
             this.offNextItem = offNextItem;
@@ -227,7 +355,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder firstPageItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> firstPageItem) {
+        public Builder firstPageItem(@NotNull Function<MenuContext, ItemStack> firstPageItem) {
             Preconditions.checkNotNull(firstPageItem, "firstPageItem cannot be null");
 
             this.firstPageItem = firstPageItem;
@@ -236,7 +364,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder lastPageItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> lastPageItem) {
+        public Builder lastPageItem(@NotNull Function<MenuContext, ItemStack> lastPageItem) {
             Preconditions.checkNotNull(lastPageItem, "lastPageItem cannot be null");
 
             this.lastPageItem = lastPageItem;
@@ -245,7 +373,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offFirstPageItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> offFirstPageItem) {
+        public Builder offFirstPageItem(@NotNull Function<MenuContext, ItemStack> offFirstPageItem) {
             Preconditions.checkNotNull(offFirstPageItem, "offFirstPageItem cannot be null");
 
             this.offFirstPageItem = offFirstPageItem;
@@ -254,7 +382,7 @@ public class Paginator extends Component {
 
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offLastPageItem(@NotNull Object2ObjectFunction<MenuContext, ItemStack> offLastPageItem) {
+        public Builder offLastPageItem(@NotNull Function<MenuContext, ItemStack> offLastPageItem) {
             Preconditions.checkNotNull(offLastPageItem, "offLastPageItem cannot be null");
 
             this.offLastPageItem = offLastPageItem;

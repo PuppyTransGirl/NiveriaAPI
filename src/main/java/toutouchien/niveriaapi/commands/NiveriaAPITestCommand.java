@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import toutouchien.niveriaapi.menu.component.premade.ConfirmationMenu;
+import toutouchien.niveriaapi.menu.test.PaginatedTestMenu;
 import toutouchien.niveriaapi.menu.test.TestMenu;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
@@ -23,7 +24,8 @@ public class NiveriaAPITestCommand {
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test"))
                 .requires(css -> css.getExecutor() instanceof Player)
                 .then(basicCommand())
-                .then(confirmationCommand());
+                .then(confirmationCommand())
+                .then(paginatorCommand());
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> basicCommand() {
@@ -50,6 +52,17 @@ public class NiveriaAPITestCommand {
                             event -> event.player().sendRichMessage("You clicked <green>Yes"),
                             event -> event.player().sendRichMessage("You clicked <red>No")
                     );
+                    menu.open();
+
+                    return Command.SINGLE_SUCCESS;
+                });
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> paginatorCommand() {
+        return Commands.literal("paginator")
+                .executes(ctx -> {
+                    Player player = (Player) ctx.getSource().getExecutor();
+                    PaginatedTestMenu menu = new PaginatedTestMenu(player);
                     menu.open();
 
                     return Command.SINGLE_SUCCESS;
