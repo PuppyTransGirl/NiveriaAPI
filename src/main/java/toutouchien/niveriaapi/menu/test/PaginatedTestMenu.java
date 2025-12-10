@@ -45,7 +45,7 @@ public class PaginatedTestMenu extends Menu {
                 .filter(material -> !material.isLegacy())
                 .filter(Material::isItem) // Remove things like Piston Head
                 .filter(material -> world.isEnabled(material.asItemType())) // Remove disabled experimental features
-                .filter(material -> !material.isAir()) // Remove air
+                .filter(material -> !material.isAir())
                 .map(ItemStack::of)
                 .map(itemStack -> Button.create().item(itemStack).build())
                 .collect(ObjectArrayList.toList());
