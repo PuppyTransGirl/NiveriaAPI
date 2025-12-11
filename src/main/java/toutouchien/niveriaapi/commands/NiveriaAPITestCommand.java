@@ -30,6 +30,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> basicCommand() {
         return Commands.literal("basic")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.basic"))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     TestMenu menu = new TestMenu(player);
@@ -41,6 +42,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> confirmationCommand() {
         return Commands.literal("confirmation")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.confirmation"))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     ConfirmationMenu menu = new ConfirmationMenu(
@@ -60,6 +62,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> paginatorCommand() {
         return Commands.literal("paginator")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.paginator"))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     PaginatedTestMenu menu = new PaginatedTestMenu(player);
