@@ -10,7 +10,6 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
@@ -20,6 +19,7 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -174,20 +174,17 @@ public class Button extends Component {
     }
 
     private void startAnimation(@NotNull MenuContext context) {
-        this.animationTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!enabled() || (stopAnimationOnHide && !visible())) {
-                    stopAnimation();
-                    return;
-                }
-
-                List<ItemStack> frames = animationFrames.apply(context);
-
-                currentFrame = (currentFrame + 1) % frames.size();
-                render(context);
+        this.animationTask = Task.syncRepeat(() -> {
+            if (!enabled() || (this.stopAnimationOnHide && !visible())) {
+                stopAnimation();
+                return;
             }
-        }.runTaskTimer(NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
+
+            List<ItemStack> frames = this.animationFrames.apply(context);
+
+            this.currentFrame = (this.currentFrame + 1) % frames.size();
+            render(context);
+        }, NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
     }
 
     private void stopAnimation() {
@@ -201,17 +198,14 @@ public class Button extends Component {
     }
 
     private void startUpdates(@NotNull MenuContext context) {
-        this.updateTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!enabled() || (stopUpdatesOnHide && !visible())) {
-                    stopUpdates();
-                    return;
-                }
-
-                render(context);
+        this.updateTask = Task.syncRepeat(() -> {
+            if (!enabled() || (this.stopUpdatesOnHide && !visible())) {
+                stopUpdates();
+                return;
             }
-        }.runTaskTimer(NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
+
+            render(context);
+        }, NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
     }
 
     private void stopUpdates() {

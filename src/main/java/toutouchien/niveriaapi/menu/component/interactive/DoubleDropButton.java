@@ -10,7 +10,6 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
@@ -20,6 +19,7 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -85,13 +85,10 @@ public class DoubleDropButton extends Component {
                 if (this.onDoubleDrop != null)
                     this.onDoubleDrop.accept(event);
             } else {
-                this.dropTask = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        dropTask = null;
-                        render(context);
-                    }
-                }.runTaskLater(NiveriaAPI.instance(), 60L);
+                this.dropTask = Task.syncLater(() -> {
+                    this.dropTask = null;
+                    render(context);
+                }, NiveriaAPI.instance(), 60L);
             }
 
             return;
