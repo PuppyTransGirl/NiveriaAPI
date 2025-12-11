@@ -160,6 +160,24 @@ public class Grid extends Component {
 
             slotComponents.add(component);
             component.position(toX(slot), toY(slot));
+
+            // Check that the component fits inside the grid
+            int compX = component.x();
+            int compY = component.y();
+            int compWidth = component.width();
+            int compHeight = component.height();
+
+            Preconditions.checkArgument(
+                    compX >= 0 && compY >= 0 &&
+                            compX + compWidth <= this.width &&
+                            compY + compHeight <= this.height,
+                    "Component %s does not fit inside the grid of size %sx%s at position (%s, %s) with size %sx%s",
+                    component.getClass().getSimpleName(),
+                    this.width, this.height,
+                    compX, compY,
+                    compWidth, compHeight
+            );
+
             return this;
         }
 
@@ -222,25 +240,6 @@ public class Grid extends Component {
 
         @NotNull
         public Grid build() {
-            // Check if all components fit inside the grid
-            for (Component component : this.slotComponents) {
-                int compX = component.x();
-                int compY = component.y();
-                int compWidth = component.width();
-                int compHeight = component.height();
-
-                Preconditions.checkArgument(
-                        compX >= 0 && compY >= 0 &&
-                                compX + compWidth <= this.width &&
-                                compY + compHeight <= this.height,
-                        "Component %s does not fit inside the grid of size %sx%s at position (%s, %s) with size %sx%s",
-                        component.getClass().getSimpleName(),
-                        this.width, this.height,
-                        compX, compY,
-                        compWidth, compHeight
-                );
-            }
-
             return new Grid(
                     this.width, this.height,
                     this.slotComponents,
