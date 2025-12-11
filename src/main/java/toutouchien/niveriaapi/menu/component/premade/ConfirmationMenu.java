@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.menu.component.premade;
 
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,6 +29,13 @@ public class ConfirmationMenu extends Menu {
             @NotNull Consumer<NiveriaInventoryClickEvent> yesConsumer, @NotNull Consumer<NiveriaInventoryClickEvent> noConsumer
     ) {
         super(player);
+
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(title, "title cannot be null");
+        Preconditions.checkNotNull(yesTitle, "yesTitle cannot be null");
+        Preconditions.checkNotNull(noTitle, "noTitle cannot be null");
+        Preconditions.checkNotNull(yesConsumer, "yesConsumer cannot be null");
+        Preconditions.checkNotNull(noConsumer, "noConsumer cannot be null");
 
         this.title = title;
         this.yesTitle = yesTitle;
