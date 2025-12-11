@@ -35,8 +35,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void close(boolean event) {
-        if (this.root != null)
-            this.root.onRemove(this.context);
+        this.root.onRemove(this.context);
 
         if (!event)
             this.player.closeInventory();
@@ -46,9 +45,6 @@ public abstract class Menu implements InventoryHolder {
 
     public void handleClick(@NotNull NiveriaInventoryClickEvent event) {
         Preconditions.checkNotNull(event, "event cannot be null");
-
-        if (this.root == null)
-            return;
 
         this.root.onClick(event, this.context);
         this.root.render(this.context);
