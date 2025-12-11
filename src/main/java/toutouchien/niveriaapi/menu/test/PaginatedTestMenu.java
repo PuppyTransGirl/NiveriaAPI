@@ -32,13 +32,13 @@ public class PaginatedTestMenu extends Menu {
     @Override
     protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
         Paginator.Builder builder = Paginator.create()
+                .size(7, 3)
                 .firstPageItem(ItemStack.of(Material.SPECTRAL_ARROW))
                 .lastPageItem(ItemStack.of(Material.SPECTRAL_ARROW))
                 .offBackItem(ItemStack.of(Material.RED_DYE))
                 .offNextItem(ItemStack.of(Material.RED_DYE))
                 .offFirstPageItem(ItemStack.of(Material.ORANGE_DYE))
-                .offLastPageItem(ItemStack.of(Material.ORANGE_DYE))
-                .size(7, 3);
+                .offLastPageItem(ItemStack.of(Material.ORANGE_DYE));
 
         World world = this.player().getWorld();
         ObjectList<toutouchien.niveriaapi.menu.component.Component> materials = Arrays.stream(Material.values())
