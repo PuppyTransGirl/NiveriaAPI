@@ -64,7 +64,8 @@ public class DoubleDropButton extends Component {
 
     @Override
     public void onRemove(@NotNull MenuContext context) {
-        this.dropTask.cancel();
+        if (this.dropTask != null)
+            this.dropTask.cancel();
     }
 
     @Override

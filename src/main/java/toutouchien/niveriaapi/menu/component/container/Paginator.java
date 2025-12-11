@@ -30,7 +30,7 @@ public class Paginator extends Component {
 
     private int page;
 
-    public Paginator(
+    private Paginator(
             ObjectList<Component> components,
             Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
             Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,

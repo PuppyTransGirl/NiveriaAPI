@@ -91,6 +91,7 @@ public class Button extends Component {
     @Override
     public void onRemove(@NotNull MenuContext context) {
         this.stopAnimation();
+        this.stopUpdates();
     }
 
     @Override

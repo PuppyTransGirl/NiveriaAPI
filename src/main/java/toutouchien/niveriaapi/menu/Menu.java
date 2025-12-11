@@ -1,8 +1,6 @@
 package toutouchien.niveriaapi.menu;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -11,11 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
-import java.util.UUID;
-
 public abstract class Menu implements InventoryHolder {
-    private static final Object2ObjectMap<UUID, Menu> openMenus = new Object2ObjectOpenHashMap<>();
-
     private Inventory inventory;
     private final MenuContext context;
     private final Player player;
@@ -34,10 +28,8 @@ public abstract class Menu implements InventoryHolder {
         this.root = this.root(this.context);
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
 
-        if (this.root != null) {
-            this.root.onAdd(this.context);
-            this.root.render(this.context);
-        }
+        this.root.onAdd(this.context);
+        this.root.render(this.context);
 
         this.player.openInventory(this.inventory);
     }
@@ -49,7 +41,6 @@ public abstract class Menu implements InventoryHolder {
         if (!event)
             this.player.closeInventory();
 
-        openMenus.remove(this.player.getUniqueId());
         this.context.close();
     }
 

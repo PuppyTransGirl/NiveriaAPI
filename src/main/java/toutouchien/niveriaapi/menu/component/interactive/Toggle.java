@@ -26,7 +26,7 @@ public class Toggle extends Component {
 
     private boolean currentState;
 
-    public Toggle(
+    private Toggle(
             Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
             boolean currentState,
             Sound sound,

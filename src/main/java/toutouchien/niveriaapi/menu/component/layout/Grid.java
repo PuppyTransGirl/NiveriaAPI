@@ -24,7 +24,7 @@ public class Grid extends Component {
     private final ItemStack border;
     private final ItemStack fill;
 
-    public Grid(
+    private Grid(
             int width, int height,
             ObjectList<Component> slotComponents,
             ItemStack border, ItemStack fill
