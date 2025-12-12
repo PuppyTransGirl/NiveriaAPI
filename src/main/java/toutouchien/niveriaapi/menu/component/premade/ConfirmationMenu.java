@@ -43,25 +43,24 @@ public class ConfirmationMenu extends Menu {
      */
     public ConfirmationMenu(
             @NotNull Player player,
-            @NotNull ItemStack yesItem, @NotNull ItemStack noItem,
             @NotNull Component title,
+            @NotNull ItemStack yesItem, @NotNull ItemStack noItem,
             @Nullable ItemStack explanationItem,
             @NotNull Consumer<NiveriaInventoryClickEvent> yesConsumer, @NotNull Consumer<NiveriaInventoryClickEvent> noConsumer
     ) {
         super(player);
 
         Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(title, "title cannot be null");
         Preconditions.checkNotNull(yesItem, "yesMaterial cannot be null");
         Preconditions.checkNotNull(noItem, "noMaterial cannot be null");
-        Preconditions.checkNotNull(title, "title cannot be null");
         Preconditions.checkNotNull(yesConsumer, "yesConsumer cannot be null");
         Preconditions.checkNotNull(noConsumer, "noConsumer cannot be null");
 
-        this.yesItem = yesItem;
-        this.noItem = noItem;
-
         this.title = title;
 
+        this.yesItem = yesItem;
+        this.noItem = noItem;
         this.explanationItem = explanationItem;
 
         this.yesConsumer = yesConsumer;
