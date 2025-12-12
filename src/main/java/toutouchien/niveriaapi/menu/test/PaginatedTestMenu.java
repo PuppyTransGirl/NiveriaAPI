@@ -51,7 +51,7 @@ public class PaginatedTestMenu extends Menu {
      * Creates and returns the root component for this paginated test menu.
      * <p>
      * The menu structure consists of:
-     * - A 7×3 paginator area starting at position (10) containing filtered Material buttons
+     * - A 7x3 paginator area starting at position (10) containing filtered Material buttons
      * - Navigation controls at the bottom row:
      * - First page button at slot 45
      * - Back button at slot 46

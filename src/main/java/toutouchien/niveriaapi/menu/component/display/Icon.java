@@ -78,7 +78,7 @@ public class Icon extends Component {
     /**
      * Returns the items to be displayed by this icon.
      * <p>
-     * The icon fills all slots within its width×height area with the
+     * The icon fills all slots within its widthxheight area with the
      * same ItemStack. Returns an empty map if not visible.
      *
      * @param context the menu context
@@ -108,7 +108,7 @@ public class Icon extends Component {
     /**
      * Returns the set of slots occupied by this icon.
      * <p>
-     * Includes all slots within the icon's width×height area.
+     * Includes all slots within the icon's widthxheight area.
      * Returns an empty set if not visible.
      *
      * @param context the menu context

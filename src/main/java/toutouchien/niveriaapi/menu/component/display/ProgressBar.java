@@ -173,7 +173,7 @@ public class ProgressBar extends Component {
     /**
      * Returns the set of slots occupied by this progress bar.
      * <p>
-     * Includes all slots within the progress bar's width×height area.
+     * Includes all slots within the progress bar's widthxheight area.
      * Returns an empty set if not visible.
      *
      * @param context the menu context

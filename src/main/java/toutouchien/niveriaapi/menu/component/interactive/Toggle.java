@@ -82,7 +82,7 @@ public class Toggle extends Component {
     /**
      * Returns the items to be displayed by this toggle.
      * <p>
-     * The toggle fills all slots within its width×height area with the
+     * The toggle fills all slots within its widthxheight area with the
      * current state item (on or off). Returns an empty map if not visible.
      *
      * @param context the menu context
@@ -112,7 +112,7 @@ public class Toggle extends Component {
     /**
      * Returns the set of slots occupied by this toggle.
      * <p>
-     * Includes all slots within the toggle's width×height area.
+     * Includes all slots within the toggle's widthxheight area.
      * Returns an empty set if not visible.
      *
      * @param context the menu context

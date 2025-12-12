@@ -54,15 +54,15 @@ public class TestMenu extends Menu {
      * <p>
      * The menu layout includes various component demonstrations:
      * - Simple button with click and drop handlers (slot 0)
-     * - Animated button with color-changing frames (slot 2, 2×2 size)
+     * - Animated button with color-changing frames (slot 2, 2x2 size)
      * - Dynamic button showing current seconds (slot 8)
      * - Coordinates display button (slot 13)
      * - Toggle switch (slot 15)
      * - Static icon (slot 16)
      * - GameMode selector (slot 18)
      * - Double-drop button (slot 20)
-     * - Horizontal progress bar (slot 21, 4×2 size)
-     * - Vertical progress bar (slot 17, 1×5 size)
+     * - Horizontal progress bar (slot 21, 4x2 size)
+     * - Vertical progress bar (slot 17, 1x5 size)
      *
      * @param context the menu context
      * @return the root grid component containing all test components
@@ -106,7 +106,7 @@ public class TestMenu extends Menu {
     /**
      * Creates an animated button that cycles through different colored wool blocks.
      *
-     * @return a 2×2 animated button with rainbow color progression
+     * @return a 2x2 animated button with rainbow color progression
      */
     private static Button animatedButton() {
         return Button.create()
@@ -228,7 +228,7 @@ public class TestMenu extends Menu {
     /**
      * Creates a horizontal progress bar showing 75% completion.
      *
-     * @return a 4×2 progress bar extending to the right
+     * @return a 4x2 progress bar extending to the right
      */
     private static ProgressBar rightProgressBar() {
         return ProgressBar.create()
@@ -244,7 +244,7 @@ public class TestMenu extends Menu {
     /**
      * Creates a vertical progress bar showing 100% completion.
      *
-     * @return a 1×5 progress bar extending downward
+     * @return a 1x5 progress bar extending downward
      */
     private static ProgressBar downProgressBar() {
         return ProgressBar.create()

@@ -156,7 +156,7 @@ public class DoubleDropButton extends Component {
     /**
      * Returns the items to be displayed by this button.
      * <p>
-     * The button fills all slots within its width×height area with the
+     * The button fills all slots within its widthxheight area with the
      * current item (normal or drop state). Returns an empty map if not visible.
      *
      * @param context the menu context
@@ -186,7 +186,7 @@ public class DoubleDropButton extends Component {
     /**
      * Returns the set of slots occupied by this button.
      * <p>
-     * Includes all slots within the button's width×height area.
+     * Includes all slots within the button's widthxheight area.
      * Returns an empty set if not visible.
      *
      * @param context the menu context

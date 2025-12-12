@@ -140,7 +140,7 @@ public class Selector<T> extends Component {
     /**
      * Returns the items to be displayed by this selector.
      * <p>
-     * The selector fills all slots within its width×height area with the
+     * The selector fills all slots within its widthxheight area with the
      * current selection's item. Returns an empty map if not visible.
      *
      * @param context the menu context
@@ -170,7 +170,7 @@ public class Selector<T> extends Component {
     /**
      * Returns the set of slots occupied by this selector.
      * <p>
-     * Includes all slots within the selector's width×height area.
+     * Includes all slots within the selector's widthxheight area.
      * Returns an empty set if not visible.
      *
      * @param context the menu context
