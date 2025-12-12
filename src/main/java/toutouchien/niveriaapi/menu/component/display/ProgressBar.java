@@ -48,7 +48,6 @@ public class ProgressBar extends Component {
         if (!this.visible())
             return items;
 
-
         double pct = Math.clamp(this.percentage.applyAsDouble(context), 0, 1);
 
         int total = this.width * this.height;
