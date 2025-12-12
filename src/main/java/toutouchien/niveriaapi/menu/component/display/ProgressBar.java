@@ -16,6 +16,19 @@ import toutouchien.niveriaapi.utils.Direction;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+/**
+ * A progress bar component that visually represents a percentage value.
+ * <p>
+ * The progress bar fills in a specified direction (left, right, up, or down)
+ * and displays three types of items:
+ * <ul>
+ *   <li>Done item - for completed sections</li>
+ *   <li>Current item - for the currently filling section</li>
+ *   <li>Not done item - for incomplete sections</li>
+ * </ul>
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing progress bars.
+ */
 public class ProgressBar extends Component {
     private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
@@ -140,12 +153,20 @@ public class ProgressBar extends Component {
         return this.height;
     }
 
+    /**
+     * Creates a new builder for constructing a ProgressBar.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing ProgressBar instances with a fluent API.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
         private Function<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);

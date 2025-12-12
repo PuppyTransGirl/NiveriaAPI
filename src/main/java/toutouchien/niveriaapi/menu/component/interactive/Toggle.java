@@ -19,6 +19,14 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Function;
 
+/**
+ * A toggle component that switches between two states when clicked.
+ * <p>
+ * Each state displays a different item. Useful for on/off switches or
+ * binary choices.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing toggles.
+ */
 public class Toggle extends Component {
     private final Function<MenuContext, ItemStack> onItem, offItem;
     private final Sound sound;
@@ -109,12 +117,20 @@ public class Toggle extends Component {
         return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
     }
 
+    /**
+     * Creates a new builder for constructing a Toggle.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing Toggle instances with a fluent API.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);

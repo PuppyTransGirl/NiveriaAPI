@@ -25,6 +25,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An interactive button component that responds to various click types.
+ * <p>
+ * Buttons can display static items, animated items, or dynamically updating items.
+ * They support different click handlers for left, right, shift, and drop actions,
+ * and can play sounds when clicked.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing buttons.
+ */
 public class Button extends Component {
     private final Function<MenuContext, ItemStack> item;
 
@@ -226,12 +235,20 @@ public class Button extends Component {
         return this.item.apply(context);
     }
 
+    /**
+     * Creates a new builder for constructing a Button.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing Button instances with a fluent API.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 

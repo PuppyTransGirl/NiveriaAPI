@@ -16,6 +16,18 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+/**
+ * A layout component that arranges child components in a grid.
+ * <p>
+ * The grid can optionally display a border and fill empty slots with a
+ * background item. Components are positioned within the grid and can overlap
+ * if their positions and sizes allow it.
+ * <p>
+ * The grid delegates lifecycle events (onAdd, onRemove) and click events to
+ * its child components.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing grids.
+ */
 public class Grid extends Component {
     private final int width, height;
 
@@ -138,12 +150,20 @@ public class Grid extends Component {
                 || y == this.y() + this.height - 1;
     }
 
+    /**
+     * Creates a new builder for constructing a Grid.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing Grid instances with a fluent API.
+     */
     public static class Builder {
         private int width, height;
 

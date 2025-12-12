@@ -19,6 +19,14 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Function;
 
+/**
+ * A display component that shows a static or dynamic item.
+ * <p>
+ * Icons can optionally play a sound when clicked, but they don't perform
+ * any other action. Use buttons for interactive components.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing icons.
+ */
 public class Icon extends Component {
     private final Function<MenuContext, ItemStack> item;
     private final Sound sound;
@@ -102,12 +110,20 @@ public class Icon extends Component {
         return this.height;
     }
 
+    /**
+     * Creates a new builder for constructing an Icon.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing Icon instances with a fluent API.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 

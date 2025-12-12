@@ -20,6 +20,18 @@ import toutouchien.niveriaapi.menu.component.interactive.Button;
 
 import java.util.function.Function;
 
+/**
+ * A container component that displays a paginated grid of components.
+ * <p>
+ * The paginator divides a list of components across multiple pages, with
+ * navigation buttons to move between pages. It provides methods to create
+ * navigation buttons for back, next, first page, and last page.
+ * <p>
+ * The first row of the paginator is reserved for the components themselves,
+ * and navigation buttons should be placed outside this area.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing paginators.
+ */
 public class Paginator extends Component {
     private final ObjectList<Component> components;
 
@@ -103,6 +115,12 @@ public class Paginator extends Component {
         return slots;
     }
 
+    /**
+     * Creates a button for navigating to the previous page.
+     *
+     * @return a button that goes to the previous page, or null if on first page
+     *         and no offBackItem is configured
+     */
     @Nullable
     public Button backButton() {
         if (this.page <= 0 && this.offBackItem == null)
@@ -124,6 +142,12 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a button for navigating to the next page.
+     *
+     * @return a button that goes to the next page, or null if on last page
+     *         and no offNextItem is configured
+     */
     @Nullable
     public Button nextButton() {
         int maxPage = this.maxPage();
@@ -146,6 +170,12 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a button for navigating to the first page.
+     *
+     * @return a button that goes to the first page, or null if on first page
+     *         and no offFirstPageItem is configured
+     */
     @Nullable
     public Button firstPageButton() {
         if (this.page <= 0 && this.offFirstPageItem == null)
@@ -167,6 +197,12 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a button for navigating to the last page.
+     *
+     * @return a button that goes to the last page, or null if on last page
+     *         and no offLastPageItem is configured
+     */
     @Nullable
     public Button lastPageButton() {
         int maxPage = this.maxPage();
@@ -189,6 +225,11 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Returns the maximum page index (0-based).
+     *
+     * @return the maximum page index
+     */
     public int maxPage() {
         int maxItemsPerPage = this.width * this.height;
         int totalItems = this.components.size();
@@ -207,12 +248,20 @@ public class Paginator extends Component {
         return this.height;
     }
 
+    /**
+     * Creates a new builder for constructing a Paginator.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing Paginator instances with a fluent API.
+     */
     public static class Builder {
         private final ObjectList<Component> components = new ObjectArrayList<>();
 

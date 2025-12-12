@@ -23,6 +23,17 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A selector component that cycles through multiple options.
+ * <p>
+ * Left click advances to the next option, right click goes to the previous option.
+ * Each option has an associated item and optional value. A callback can be registered
+ * to handle selection changes.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing selectors.
+ *
+ * @param <T> the type of values associated with options
+ */
 public class Selector<T> extends Component {
     private final ObjectList<Option<T>> options;
     private final Function<MenuContext, T> defaultOption;
@@ -166,21 +177,49 @@ public class Selector<T> extends Component {
         return this.currentOption().item.apply(context);
     }
 
+    /**
+     * Event fired when a selector's selection changes.
+     *
+     * @param <T>      the type of values associated with options
+     * @param context  the menu context
+     * @param oldValue the previously selected value
+     * @param newValue the newly selected value
+     * @param oldIndex the previous index
+     * @param newIndex the new index
+     */
     public record SelectionChangeEvent<T>(@NotNull MenuContext context, @Nullable T oldValue, @Nullable T newValue,
                                           @NonNegative int oldIndex, @NonNegative int newIndex) {
 
     }
 
+    /**
+     * An option in the selector.
+     *
+     * @param <T>   the type of value associated with the option
+     * @param item  the function to provide the item for this option
+     * @param value the value associated with this option (can be null)
+     */
     public record Option<T>(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
 
     }
 
+    /**
+     * Creates a new builder for constructing a Selector.
+     *
+     * @param <T> the type of values associated with options
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static <T> Builder<T> create() {
         return new Builder<>();
     }
 
+    /**
+     * Builder for constructing Selector instances with a fluent API.
+     *
+     * @param <T> the type of values associated with options
+     */
     public static class Builder<T> {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
         private Function<MenuContext, T> defaultOption;

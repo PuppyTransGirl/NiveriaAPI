@@ -24,6 +24,18 @@ import toutouchien.niveriaapi.utils.Task;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A button that requires double-drop (pressing drop twice) to trigger an action.
+ * <p>
+ * This is useful for confirmation actions, where accidental single drops should
+ * not trigger the action. The button displays a different item when in "drop pending"
+ * state, giving visual feedback that one drop has been detected.
+ * <p>
+ * After the first drop, the button waits for 3 seconds (60 ticks) for the second drop.
+ * If the second drop occurs, the onDoubleDrop handler is called.
+ * <p>
+ * Use {@link #create()} to obtain a builder for constructing double drop buttons.
+ */
 public class DoubleDropButton extends Component {
     private final Function<MenuContext, ItemStack> item;
     private final Function<MenuContext, ItemStack> dropItem;
@@ -168,12 +180,20 @@ public class DoubleDropButton extends Component {
         return this.dropTask == null ? this.item.apply(context) : this.dropItem.apply(context);
     }
 
+    /**
+     * Creates a new builder for constructing a DoubleDropButton.
+     *
+     * @return a new builder instance
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder for constructing DoubleDropButton instances with a fluent API.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
