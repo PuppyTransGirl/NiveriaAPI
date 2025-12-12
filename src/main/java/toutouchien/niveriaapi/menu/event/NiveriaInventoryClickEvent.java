@@ -12,16 +12,21 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
 import java.util.function.Consumer;
 
 /**
- * A custom InventoryClickEvent that includes additional context for menu interactions.
+ * A specialized inventory click event for Niveria menu interactions.
+ * <p>
+ * This class extends InventoryClickEvent to provide additional functionality
+ * specific to menu components, including context access and convenient
+ * item modification methods.
  */
 public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     private final MenuContext context;
 
     /**
-     * Constructs a new NiveriaInventoryClickEvent.
+     * Creates a new NiveriaInventoryClickEvent from an existing InventoryClickEvent.
      *
-     * @param event   The original InventoryClickEvent.
-     * @param context The MenuContext associated with this event.
+     * @param event   the original InventoryClickEvent to wrap
+     * @param context the menu context associated with this event
+     * @throws NullPointerException if context is null
      */
     @SuppressWarnings("UnstableApiUsage")
     public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event, @NotNull MenuContext context) {
@@ -33,18 +38,23 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     }
 
     /**
-     * Sets the current item in the clicked slot to the specified new item.
+     * Changes the item in the clicked slot to the specified ItemStack.
      *
-     * @param newItem The new ItemStack to set in the clicked slot, or null to clear it.
+     * @param newItem the new ItemStack to set, or null to clear the slot
      */
     public void changeItem(@Nullable ItemStack newItem) {
         this.setCurrentItem(newItem);
     }
 
     /**
-     * Modifies the current item in the clicked slot using the provided modifier.
+     * Modifies the item in the clicked slot using the provided ItemBuilder modifier.
+     * <p>
+     * If the current item is null, this method does nothing. Otherwise, it creates
+     * an ItemBuilder from the current item, applies the modifier, and sets the
+     * resulting item back to the slot.
      *
-     * @param modifier A Consumer that modifies an ItemBuilder for the current item.
+     * @param modifier a function that modifies the ItemBuilder
+     * @throws NullPointerException if modifier is null
      */
     public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
         Preconditions.checkNotNull(modifier, "modifier cannot be null");
@@ -61,7 +71,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     /**
      * Returns the player who clicked in the inventory.
      *
-     * @return The player who clicked.
+     * @return the player who performed the click action
      */
     @NotNull
     public Player player() {
@@ -69,9 +79,9 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     }
 
     /**
-     * Returns the MenuContext associated with this click event.
+     * Returns the menu context associated with this event.
      *
-     * @return The MenuContext.
+     * @return the menu context
      */
     @NotNull
     public MenuContext context() {

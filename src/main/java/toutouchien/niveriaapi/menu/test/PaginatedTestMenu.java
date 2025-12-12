@@ -17,17 +17,50 @@ import toutouchien.niveriaapi.utils.ColorUtils;
 
 import java.util.Arrays;
 
+/**
+ * A test menu demonstrating paginated content functionality.
+ * <p>
+ * This menu displays a paginated grid of all available Material items,
+ * filtered to exclude legacy items, non-items (like piston heads),
+ * disabled experimental features, and air blocks. The pagination controls
+ * are positioned at the bottom of the menu for easy navigation.
+ */
 public class PaginatedTestMenu extends Menu {
+
+    /**
+     * Constructs a new PaginatedTestMenu for the specified player.
+     *
+     * @param player the player who will view this menu
+     */
     public PaginatedTestMenu(Player player) {
         super(player);
     }
 
+    /**
+     * Returns the title component for this test menu.
+     *
+     * @return a colorized title component
+     */
     @NotNull
     @Override
     protected Component title() {
         return Component.text("Paginated Test Menu Hehe :3", ColorUtils.primaryColor());
     }
 
+    /**
+     * Creates and returns the root component for this paginated test menu.
+     * <p>
+     * The menu structure consists of:
+     * - A 7×3 paginator area starting at position (10) containing filtered Material buttons
+     * - Navigation controls at the bottom row:
+     * - First page button at slot 45
+     * - Back button at slot 46
+     * - Next button at slot 52
+     * - Last page button at slot 53
+     *
+     * @param context the menu context
+     * @return the root grid component containing the paginator and navigation controls
+     */
     @NotNull
     @Override
     protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {

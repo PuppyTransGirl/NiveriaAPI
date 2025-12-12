@@ -16,6 +16,17 @@ import toutouchien.niveriaapi.utils.Direction;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+/**
+ * A display component that visualizes progress as a bar with different item states.
+ * <p>
+ * The ProgressBar component displays progress using three types of items:
+ * - Done items: represent completed progress
+ * - Current item: represents the current progress position (when not fully complete)
+ * - Not done items: represent remaining progress
+ * <p>
+ * The progress can be displayed in four directions: UP, DOWN, LEFT, or RIGHT.
+ * The percentage value determines how much of the bar is filled.
+ */
 public class ProgressBar extends Component {
     private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
@@ -26,6 +37,17 @@ public class ProgressBar extends Component {
     private final int width;
     private final int height;
 
+    /**
+     * Constructs a new ProgressBar with the specified parameters.
+     *
+     * @param doneItem    function that provides the ItemStack for completed sections
+     * @param currentItem function that provides the ItemStack for the current progress position
+     * @param notDoneItem function that provides the ItemStack for incomplete sections
+     * @param direction   the direction in which the progress bar fills
+     * @param percentage  function that returns the progress percentage (0.0 to 1.0)
+     * @param width       the width of the progress bar in slots
+     * @param height      the height of the progress bar in rows
+     */
     private ProgressBar(
             Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
             Direction.Default direction,
@@ -41,6 +63,17 @@ public class ProgressBar extends Component {
         this.height = height;
     }
 
+    /**
+     * Returns the items to be displayed by this progress bar.
+     * <p>
+     * The progress bar fills slots based on the current percentage value:
+     * - Slots before the progress position show "done" items
+     * - The slot at the current progress position shows the "current" item (unless 100% complete)
+     * - Remaining slots show "not done" items
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -68,6 +101,17 @@ public class ProgressBar extends Component {
         return items;
     }
 
+    /**
+     * Iterates through each slot in the progress bar according to the specified direction.
+     * <p>
+     * The traversal order depends on the direction:
+     * - RIGHT: left-to-right, top-to-bottom
+     * - LEFT: right-to-left, top-to-bottom
+     * - DOWN: top-to-bottom, left-to-right
+     * - UP: bottom-to-top, left-to-right
+     *
+     * @param consumer consumer that accepts (index, slot) pairs
+     */
     private void forEachSlot(BiConsumer<Integer, Integer> consumer) {
         Traversal t = this.traversal();
         int baseSlot = this.slot();
@@ -87,6 +131,11 @@ public class ProgressBar extends Component {
         }
     }
 
+    /**
+     * Creates a traversal configuration based on the progress bar's direction.
+     *
+     * @return a Traversal object defining how to iterate through the progress bar slots
+     */
     private Traversal traversal() {
         Range rowsRange = new Range(0, this.height, 1);
         Range colsRange = new Range(0, this.width, 1);
@@ -99,14 +148,37 @@ public class ProgressBar extends Component {
         };
     }
 
+    /**
+     * Record representing a range for iteration with start, end, and step values.
+     *
+     * @param start        the starting index
+     * @param endExclusive the ending index (exclusive)
+     * @param step         the step size for iteration
+     */
     private record Range(@NonNegative int start, int endExclusive, int step) {
 
     }
 
+    /**
+     * Record representing a traversal pattern for the progress bar.
+     *
+     * @param rows     the range for row iteration
+     * @param cols     the range for column iteration
+     * @param rowMajor whether to iterate rows first (true) or columns first (false)
+     */
     private record Traversal(@NotNull Range rows, @NotNull Range cols, boolean rowMajor) {
 
     }
 
+    /**
+     * Returns the set of slots occupied by this progress bar.
+     * <p>
+     * Includes all slots within the progress bar's width×height area.
+     * Returns an empty set if not visible.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -127,24 +199,42 @@ public class ProgressBar extends Component {
         return slots;
     }
 
+    /**
+     * Returns the width of this progress bar in slots.
+     *
+     * @return the progress bar width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this progress bar in rows.
+     *
+     * @return the progress bar height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Creates a new ProgressBar builder instance.
+     *
+     * @return a new ProgressBar.Builder for constructing progress bars
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder class for constructing ProgressBar instances with a fluent interface.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
         private Function<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);
@@ -157,6 +247,13 @@ public class ProgressBar extends Component {
         private int width = 1;
         private int height = 1;
 
+        /**
+         * Sets the ItemStack to display for completed sections.
+         *
+         * @param doneItem the ItemStack for completed sections
+         * @return this builder for method chaining
+         * @throws NullPointerException if doneItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder doneItem(@NotNull ItemStack doneItem) {
@@ -166,6 +263,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for completed sections.
+         *
+         * @param doneItem function that returns the ItemStack for completed sections
+         * @return this builder for method chaining
+         * @throws NullPointerException if doneItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
@@ -175,6 +279,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack to display for the current progress position.
+         *
+         * @param currentItem the ItemStack for the current progress position
+         * @return this builder for method chaining
+         * @throws NullPointerException if currentItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder currentItem(@NotNull ItemStack currentItem) {
@@ -184,6 +295,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for the current progress position.
+         *
+         * @param currentItem function that returns the ItemStack for the current progress position
+         * @return this builder for method chaining
+         * @throws NullPointerException if currentItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
@@ -193,6 +311,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack to display for incomplete sections.
+         *
+         * @param notDoneItem the ItemStack for incomplete sections
+         * @return this builder for method chaining
+         * @throws NullPointerException if notDoneItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder notDoneItem(@NotNull ItemStack notDoneItem) {
@@ -202,6 +327,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for incomplete sections.
+         *
+         * @param notDoneItem function that returns the ItemStack for incomplete sections
+         * @return this builder for method chaining
+         * @throws NullPointerException if notDoneItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
@@ -211,6 +343,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets the direction in which the progress bar fills.
+         *
+         * @param direction the fill direction (UP, DOWN, LEFT, or RIGHT)
+         * @return this builder for method chaining
+         * @throws NullPointerException if direction is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder direction(@NotNull Direction.Default direction) {
@@ -220,6 +359,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets a static percentage value for the progress bar.
+         *
+         * @param percentage the progress percentage (0.0 to 1.0)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if percentage is negative
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder percentage(@NonNegative double percentage) {
@@ -229,6 +375,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the progress percentage.
+         *
+         * @param percentage function that returns the progress percentage (0.0 to 1.0)
+         * @return this builder for method chaining
+         * @throws NullPointerException if percentage is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder percentage(@NotNull Object2DoubleFunction<MenuContext> percentage) {
@@ -238,6 +391,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of the progress bar in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
@@ -247,6 +407,13 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of the progress bar in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
@@ -256,6 +423,14 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of the progress bar.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
@@ -267,6 +442,11 @@ public class ProgressBar extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured ProgressBar instance.
+         *
+         * @return a new ProgressBar with the specified configuration
+         */
         @NotNull
         public ProgressBar build() {
             return new ProgressBar(

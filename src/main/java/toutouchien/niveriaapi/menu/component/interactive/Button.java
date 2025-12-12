@@ -25,6 +25,16 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A versatile interactive button component with support for animations and dynamic content.
+ * <p>
+ * The Button component provides a comprehensive set of features including:
+ * - Multiple click handler types (left, right, shift variants, drop)
+ * - Animation support with configurable frame sequences and intervals
+ * - Dynamic content updates at regular intervals
+ * - Customizable click sounds
+ * - Multi-slot rendering with configurable dimensions
+ */
 public class Button extends Component {
     private final Function<MenuContext, ItemStack> item;
 
@@ -45,6 +55,26 @@ public class Button extends Component {
 
     private final int width, height;
 
+    /**
+     * Constructs a new Button with the specified parameters.
+     *
+     * @param item                function that provides the static ItemStack
+     * @param onClick             general click handler for mouse clicks
+     * @param onLeftClick         handler for left clicks
+     * @param onRightClick        handler for right clicks
+     * @param onShiftLeftClick    handler for shift+left clicks
+     * @param onShiftRightClick   handler for shift+right clicks
+     * @param onDrop              handler for drop actions
+     * @param sound               sound to play when clicked (may be null)
+     * @param animationFrames     function providing animation frames (may be null)
+     * @param animationInterval   ticks between animation frames
+     * @param stopAnimationOnHide whether to stop animation when button is hidden
+     * @param dynamicItem         function providing dynamic content (may be null)
+     * @param updateInterval      ticks between dynamic updates
+     * @param stopUpdatesOnHide   whether to stop updates when button is hidden
+     * @param width               width of the button in slots
+     * @param height              height of the button in rows
+     */
     private Button(
             Function<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
@@ -79,6 +109,13 @@ public class Button extends Component {
         this.height = height;
     }
 
+    /**
+     * Called when this button is added to a menu.
+     * <p>
+     * Starts animation and dynamic update tasks if configured.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onAdd(@NotNull MenuContext context) {
         if (this.animationFrames != null && this.animationInterval > 0)
@@ -88,12 +125,29 @@ public class Button extends Component {
             this.startUpdates(context);
     }
 
+    /**
+     * Called when this button is removed from a menu.
+     * <p>
+     * Stops all running tasks to prevent memory leaks and ensure proper cleanup.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onRemove(@NotNull MenuContext context) {
         this.stopAnimation();
         this.stopUpdates();
     }
 
+    /**
+     * Handles click events on this button.
+     * <p>
+     * The button supports several interaction modes with priority handling:
+     * 1. Specific click handlers (left, right, shift variants, drop)
+     * 2. General click handler for other mouse clicks
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     @Override
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
@@ -120,6 +174,15 @@ public class Button extends Component {
             this.onClick.accept(event);
     }
 
+    /**
+     * Returns the items to be displayed by this button.
+     * <p>
+     * The button fills all slots within its width×height area with the
+     * current item (static, animated, or dynamic). Returns an empty map if not visible.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -141,6 +204,15 @@ public class Button extends Component {
         return items;
     }
 
+    /**
+     * Returns the set of slots occupied by this button.
+     * <p>
+     * Includes all slots within the button's width×height area.
+     * Returns an empty set if not visible.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -161,18 +233,33 @@ public class Button extends Component {
         return slots;
     }
 
+    /**
+     * Returns the width of this button in slots.
+     *
+     * @return the button width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this button in rows.
+     *
+     * @return the button height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Starts the animation task that cycles through animation frames.
+     *
+     * @param context the menu context
+     */
     private void startAnimation(@NotNull MenuContext context) {
         this.animationTask = Task.syncRepeat(() -> {
             if (!enabled() || (this.stopAnimationOnHide && !visible())) {
@@ -187,6 +274,9 @@ public class Button extends Component {
         }, NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
     }
 
+    /**
+     * Stops the animation task and resets the frame counter.
+     */
     private void stopAnimation() {
         this.currentFrame = 0;
 
@@ -197,6 +287,11 @@ public class Button extends Component {
         this.animationTask = null;
     }
 
+    /**
+     * Starts the dynamic update task that refreshes the button content.
+     *
+     * @param context the menu context
+     */
     private void startUpdates(@NotNull MenuContext context) {
         this.updateTask = Task.syncRepeat(() -> {
             if (!enabled() || (this.stopUpdatesOnHide && !visible())) {
@@ -208,6 +303,9 @@ public class Button extends Component {
         }, NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
     }
 
+    /**
+     * Stops the dynamic update task.
+     */
     private void stopUpdates() {
         if (this.updateTask == null || this.updateTask.isCancelled())
             return;
@@ -216,6 +314,14 @@ public class Button extends Component {
         this.updateTask = null;
     }
 
+    /**
+     * Gets the ItemStack to display based on the current button configuration.
+     * <p>
+     * Priority order: dynamic item → animation frame → static item
+     *
+     * @param context the menu context
+     * @return the appropriate ItemStack for the current state
+     */
     private ItemStack currentItem(@NotNull MenuContext context) {
         if (this.dynamicItem != null)
             return this.dynamicItem.apply(context);
@@ -226,12 +332,20 @@ public class Button extends Component {
         return this.item.apply(context);
     }
 
+    /**
+     * Creates a new Button builder instance.
+     *
+     * @return a new Button.Builder for constructing buttons
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder class for constructing Button instances with a fluent interface.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
@@ -255,6 +369,13 @@ public class Button extends Component {
         private int width = 1;
         private int height = 1;
 
+        /**
+         * Sets the ItemStack to display for this button.
+         *
+         * @param item the ItemStack to display
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder item(@NotNull ItemStack item) {
@@ -264,6 +385,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for this button.
+         *
+         * @param item function that returns the ItemStack to display
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
@@ -273,6 +401,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the general click handler for mouse clicks.
+         *
+         * @param onClick the click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
@@ -282,6 +417,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the left click handler.
+         *
+         * @param onLeftClick the left click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onLeftClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
@@ -291,6 +433,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the right click handler.
+         *
+         * @param onRightClick the right click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onRightClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
@@ -300,6 +449,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the shift+left click handler.
+         *
+         * @param onShiftLeftClick the shift+left click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onShiftLeftClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
@@ -309,6 +465,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the shift+right click handler.
+         *
+         * @param onShiftRightClick the shift+right click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onShiftRightClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
@@ -318,6 +481,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the drop action handler.
+         *
+         * @param onDrop the drop action handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onDrop is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
@@ -327,6 +497,12 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the sound to play when the button is clicked.
+         *
+         * @param sound the sound to play, or null for no sound
+         * @return this builder for method chaining
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
@@ -334,6 +510,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the function providing animation frames for this button.
+         *
+         * @param animationFrames function that returns a list of ItemStacks to cycle through
+         * @return this builder for method chaining
+         * @throws NullPointerException if animationFrames is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
@@ -343,6 +526,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the interval between animation frames in ticks.
+         *
+         * @param animationInterval ticks between frames (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if animationInterval is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder animationInterval(@Positive int animationInterval) {
@@ -352,6 +542,12 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets whether animation should stop when the button is hidden.
+         *
+         * @param stopAnimationOnHide true to stop animation when hidden
+         * @return this builder for method chaining
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder stopAnimationOnHide(boolean stopAnimationOnHide) {
@@ -359,6 +555,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the function providing dynamic content for this button.
+         *
+         * @param dynamicItem function that returns dynamically updating ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if dynamicItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
@@ -368,6 +571,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the interval between dynamic content updates in ticks.
+         *
+         * @param updateInterval ticks between updates (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if updateInterval is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder updateInterval(@Positive int updateInterval) {
@@ -377,6 +587,12 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets whether dynamic updates should stop when the button is hidden.
+         *
+         * @param stopUpdatesOnHide true to stop updates when hidden
+         * @return this builder for method chaining
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder stopUpdatesOnHide(boolean stopUpdatesOnHide) {
@@ -384,6 +600,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of the button in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
@@ -393,6 +616,13 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of the button in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
@@ -402,6 +632,14 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of the button.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
@@ -413,6 +651,11 @@ public class Button extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured Button instance.
+         *
+         * @return a new Button with the specified configuration
+         */
         @NotNull
         public Button build() {
             return new Button(

@@ -20,6 +20,15 @@ import toutouchien.niveriaapi.menu.component.interactive.Button;
 
 import java.util.function.Function;
 
+/**
+ * A container component that displays multiple components across paginated pages.
+ * <p>
+ * The Paginator component organizes a list of child components into pages, displaying
+ * a subset of components based on the current page and the configured page size.
+ * It provides navigation buttons for moving between pages, including back/next buttons
+ * and optional first/last page buttons. Navigation buttons can have different appearances
+ * when disabled (at first/last page).
+ */
 public class Paginator extends Component {
     private final ObjectList<Component> components;
 
@@ -30,6 +39,22 @@ public class Paginator extends Component {
 
     private int page;
 
+    /**
+     * Constructs a new Paginator with the specified parameters.
+     *
+     * @param components       the list of components to paginate
+     * @param backItem         function providing the back button item when enabled
+     * @param nextItem         function providing the next button item when enabled
+     * @param offBackItem      function providing the back button item when disabled
+     * @param offNextItem      function providing the next button item when disabled
+     * @param firstPageItem    function providing the first page button item when enabled
+     * @param lastPageItem     function providing the last page button item when enabled
+     * @param offFirstPageItem function providing the first page button item when disabled
+     * @param offLastPageItem  function providing the last page button item when disabled
+     * @param width            the width of each page in slots
+     * @param height           the height of each page in rows
+     * @param page             the initial page index (0-based)
+     */
     private Paginator(
             ObjectList<Component> components,
             Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
@@ -53,6 +78,15 @@ public class Paginator extends Component {
         this.page = page;
     }
 
+    /**
+     * Returns the items to be displayed by this paginator for the current page.
+     * <p>
+     * Only components visible on the current page are rendered. Components are
+     * positioned within the paginator's area based on their index within the page.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks for the current page
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -85,6 +119,15 @@ public class Paginator extends Component {
         return items;
     }
 
+    /**
+     * Returns the set of slots that this paginator can occupy.
+     * <p>
+     * Returns all possible slots for the current page dimensions to ensure
+     * proper cleanup when switching between pages with different content.
+     *
+     * @param context the menu context
+     * @return a set of all possible slot indices for this paginator
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -103,6 +146,14 @@ public class Paginator extends Component {
         return slots;
     }
 
+    /**
+     * Creates a back navigation button for this paginator.
+     * <p>
+     * The button navigates to the previous page when clicked. If already on the first
+     * page and no disabled item is configured, returns null.
+     *
+     * @return a Button for going to the previous page, or null if not applicable
+     */
     @Nullable
     public Button backButton() {
         if (this.page <= 0 && this.offBackItem == null)
@@ -124,6 +175,14 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a next navigation button for this paginator.
+     * <p>
+     * The button navigates to the next page when clicked. If already on the last
+     * page and no disabled item is configured, returns null.
+     *
+     * @return a Button for going to the next page, or null if not applicable
+     */
     @Nullable
     public Button nextButton() {
         int maxPage = this.maxPage();
@@ -146,6 +205,14 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a first page navigation button for this paginator.
+     * <p>
+     * The button navigates to the first page (index 0) when clicked. If already on
+     * the first page and no disabled item is configured, returns null.
+     *
+     * @return a Button for going to the first page, or null if not applicable
+     */
     @Nullable
     public Button firstPageButton() {
         if (this.page <= 0 && this.offFirstPageItem == null)
@@ -167,6 +234,14 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Creates a last page navigation button for this paginator.
+     * <p>
+     * The button navigates to the last page when clicked. If already on the last
+     * page and no disabled item is configured, returns null.
+     *
+     * @return a Button for going to the last page, or null if not applicable
+     */
     @Nullable
     public Button lastPageButton() {
         int maxPage = this.maxPage();
@@ -189,30 +264,53 @@ public class Paginator extends Component {
                 .build();
     }
 
+    /**
+     * Calculates the maximum page index (0-based) for this paginator.
+     *
+     * @return the highest valid page index, or -1 if no components exist
+     */
     public int maxPage() {
         int maxItemsPerPage = this.width * this.height;
         int totalItems = this.components.size();
         return (int) Math.ceil((double) totalItems / maxItemsPerPage) - 1;
     }
 
+    /**
+     * Returns the width of this paginator in slots.
+     *
+     * @return the paginator width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this paginator in rows.
+     *
+     * @return the paginator height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Creates a new Paginator builder instance.
+     *
+     * @return a new Paginator.Builder for constructing paginators
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder class for constructing Paginator instances with a fluent interface.
+     */
     public static class Builder {
         private final ObjectList<Component> components = new ObjectArrayList<>();
 
@@ -227,6 +325,13 @@ public class Paginator extends Component {
 
         private int width, height;
 
+        /**
+         * Adds a component to the paginator.
+         *
+         * @param component the component to add
+         * @return this builder for method chaining
+         * @throws NullPointerException if component is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder add(@NotNull Component component) {
@@ -236,6 +341,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Adds multiple components to the paginator.
+         *
+         * @param components the list of components to add
+         * @return this builder for method chaining
+         * @throws NullPointerException if components is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder addAll(@NotNull ObjectList<Component> components) {
@@ -245,6 +357,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the enabled back button.
+         *
+         * @param backItem the ItemStack for the back button
+         * @return this builder for method chaining
+         * @throws NullPointerException if backItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder backItem(@NotNull ItemStack backItem) {
@@ -254,6 +373,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the enabled next button.
+         *
+         * @param nextItem the ItemStack for the next button
+         * @return this builder for method chaining
+         * @throws NullPointerException if nextItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder nextItem(@NotNull ItemStack nextItem) {
@@ -263,6 +389,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the disabled back button.
+         *
+         * @param offBackItem the ItemStack for the disabled back button
+         * @return this builder for method chaining
+         * @throws NullPointerException if offBackItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offBackItem(@NotNull ItemStack offBackItem) {
@@ -272,6 +405,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the disabled next button.
+         *
+         * @param offNextItem the ItemStack for the disabled next button
+         * @return this builder for method chaining
+         * @throws NullPointerException if offNextItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offNextItem(@NotNull ItemStack offNextItem) {
@@ -281,6 +421,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the enabled first page button.
+         *
+         * @param firstPageItem the ItemStack for the first page button
+         * @return this builder for method chaining
+         * @throws NullPointerException if firstPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder firstPageItem(@NotNull ItemStack firstPageItem) {
@@ -290,6 +437,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the enabled last page button.
+         *
+         * @param lastPageItem the ItemStack for the last page button
+         * @return this builder for method chaining
+         * @throws NullPointerException if lastPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder lastPageItem(@NotNull ItemStack lastPageItem) {
@@ -299,6 +453,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the disabled first page button.
+         *
+         * @param offFirstPageItem the ItemStack for the disabled first page button
+         * @return this builder for method chaining
+         * @throws NullPointerException if offFirstPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offFirstPageItem(@NotNull ItemStack offFirstPageItem) {
@@ -308,6 +469,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack for the disabled last page button.
+         *
+         * @param offLastPageItem the ItemStack for the disabled last page button
+         * @return this builder for method chaining
+         * @throws NullPointerException if offLastPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offLastPageItem(@NotNull ItemStack offLastPageItem) {
@@ -317,6 +485,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the enabled back button ItemStack.
+         *
+         * @param backItem function that returns the back button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if backItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder backItem(@NotNull Function<MenuContext, ItemStack> backItem) {
@@ -326,6 +501,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the enabled next button ItemStack.
+         *
+         * @param nextItem function that returns the next button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if nextItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder nextItem(@NotNull Function<MenuContext, ItemStack> nextItem) {
@@ -335,6 +517,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the disabled back button ItemStack.
+         *
+         * @param offBackItem function that returns the disabled back button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if offBackItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offBackItem(@NotNull Function<MenuContext, ItemStack> offBackItem) {
@@ -344,6 +533,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the disabled next button ItemStack.
+         *
+         * @param offNextItem function that returns the disabled next button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if offNextItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offNextItem(@NotNull Function<MenuContext, ItemStack> offNextItem) {
@@ -353,6 +549,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the enabled first page button ItemStack.
+         *
+         * @param firstPageItem function that returns the first page button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if firstPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder firstPageItem(@NotNull Function<MenuContext, ItemStack> firstPageItem) {
@@ -362,6 +565,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the enabled last page button ItemStack.
+         *
+         * @param lastPageItem function that returns the last page button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if lastPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder lastPageItem(@NotNull Function<MenuContext, ItemStack> lastPageItem) {
@@ -371,6 +581,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the disabled first page button ItemStack.
+         *
+         * @param offFirstPageItem function that returns the disabled first page button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if offFirstPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offFirstPageItem(@NotNull Function<MenuContext, ItemStack> offFirstPageItem) {
@@ -380,6 +597,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the disabled last page button ItemStack.
+         *
+         * @param offLastPageItem function that returns the disabled last page button ItemStack
+         * @return this builder for method chaining
+         * @throws NullPointerException if offLastPageItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder offLastPageItem(@NotNull Function<MenuContext, ItemStack> offLastPageItem) {
@@ -389,6 +613,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the initial page index for the paginator.
+         *
+         * @param page the initial page index (0-based)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if page is negative
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder page(@NonNegative int page) {
@@ -398,6 +629,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of the paginator in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
@@ -407,6 +645,13 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of the paginator in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
@@ -416,6 +661,14 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of the paginator.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
@@ -427,6 +680,11 @@ public class Paginator extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured Paginator instance.
+         *
+         * @return a new Paginator with the specified configuration
+         */
         @NotNull
         public Paginator build() {
             return new Paginator(

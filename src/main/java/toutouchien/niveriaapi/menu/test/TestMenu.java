@@ -20,17 +20,53 @@ import toutouchien.niveriaapi.utils.ColorUtils;
 import toutouchien.niveriaapi.utils.Direction;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
+/**
+ * A comprehensive test menu demonstrating various menu component functionalities.
+ * <p>
+ * This menu serves as a showcase for the different types of components available
+ * in the menu system, including buttons, toggles, selectors, progress bars, and more.
+ * It demonstrates both static and dynamic content, animations, and various interaction types.
+ */
 public class TestMenu extends Menu {
+
+    /**
+     * Constructs a new TestMenu for the specified player.
+     *
+     * @param player the player who will view this menu
+     */
     public TestMenu(Player player) {
         super(player);
     }
 
+    /**
+     * Returns the title component for this test menu.
+     *
+     * @return a colorized title component
+     */
     @NotNull
     @Override
     protected Component title() {
         return Component.text("Test Menu Hehe :3", ColorUtils.primaryColor());
     }
 
+    /**
+     * Creates and returns the root component for this test menu.
+     * <p>
+     * The menu layout includes various component demonstrations:
+     * - Simple button with click and drop handlers (slot 0)
+     * - Animated button with color-changing frames (slot 2, 2×2 size)
+     * - Dynamic button showing current seconds (slot 8)
+     * - Coordinates display button (slot 13)
+     * - Toggle switch (slot 15)
+     * - Static icon (slot 16)
+     * - GameMode selector (slot 18)
+     * - Double-drop button (slot 20)
+     * - Horizontal progress bar (slot 21, 4×2 size)
+     * - Vertical progress bar (slot 17, 1×5 size)
+     *
+     * @param context the menu context
+     * @return the root grid component containing all test components
+     */
     @NotNull
     @Override
     protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
@@ -49,6 +85,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a simple button with basic click and drop functionality.
+     *
+     * @return a button component that responds to clicks and drops
+     */
     private static Button simpleButton() {
         return Button.create()
                 .item(ItemStack.of(Material.APPLE))
@@ -62,6 +103,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates an animated button that cycles through different colored wool blocks.
+     *
+     * @return a 2×2 animated button with rainbow color progression
+     */
     private static Button animatedButton() {
         return Button.create()
                 .size(2, 2)
@@ -80,6 +126,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a dynamic button that displays the current seconds.
+     *
+     * @return a button that updates every second to show current seconds
+     */
     private static Button dynamicButton() {
         return Button.create()
                 .dynamicItem(context -> {
@@ -95,6 +146,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a dynamic button that displays the player's current coordinates.
+     *
+     * @return a button that updates every tick to show player coordinates
+     */
     private static Button coordinatesDynamicButton() {
         return Button.create()
                 .dynamicItem(context -> {
@@ -113,6 +169,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a simple toggle switch with on/off states.
+     *
+     * @return a toggle component using lime and red dye items
+     */
     private static Toggle toggle() {
         return Toggle.create()
                 .onItem(ItemStack.of(Material.LIME_DYE))
@@ -120,6 +181,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a static display icon with no interaction.
+     *
+     * @return an icon component displaying a bedrock item
+     */
     private static Icon icon() {
         return Icon.create()
                 .item(ItemBuilder.of(Material.BEDROCK)
@@ -128,6 +194,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a GameMode selector that allows cycling through game modes.
+     *
+     * @return a selector component that changes the player's game mode
+     */
     private static Selector<GameMode> selector() {
         return Selector.<GameMode>create()
                 .addOption(ItemBuilder.of(Material.WOODEN_SWORD).name(Component.text("Survival")).build(), GameMode.SURVIVAL)
@@ -138,6 +209,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a double-drop button that requires two quick drop actions to trigger.
+     *
+     * @return a double-drop button that responds to rapid drop actions
+     */
     private static DoubleDropButton doubleDropButton() {
         return DoubleDropButton.create()
                 .item(ItemBuilder.of(Material.CHEST).name(Component.text("Just a chest")).build())
@@ -149,6 +225,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a horizontal progress bar showing 75% completion.
+     *
+     * @return a 4×2 progress bar extending to the right
+     */
     private static ProgressBar rightProgressBar() {
         return ProgressBar.create()
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))
@@ -160,6 +241,11 @@ public class TestMenu extends Menu {
                 .build();
     }
 
+    /**
+     * Creates a vertical progress bar showing 100% completion.
+     *
+     * @return a 1×5 progress bar extending downward
+     */
     private static ProgressBar downProgressBar() {
         return ProgressBar.create()
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))

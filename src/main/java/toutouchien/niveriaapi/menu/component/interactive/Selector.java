@@ -23,6 +23,16 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An interactive selector component that allows cycling through multiple options.
+ * <p>
+ * The Selector component displays a single item representing the currently selected
+ * option and allows players to cycle through available options using left-click
+ * (next) and right-click (previous). It supports customizable options, default
+ * selection, change callbacks, and click sounds.
+ *
+ * @param <T> the type of values associated with selector options
+ */
 public class Selector<T> extends Component {
     private final ObjectList<Option<T>> options;
     private final Function<MenuContext, T> defaultOption;
@@ -34,6 +44,17 @@ public class Selector<T> extends Component {
 
     private int currentIndex;
 
+    /**
+     * Constructs a new Selector with the specified parameters.
+     *
+     * @param options           the list of selectable options
+     * @param defaultOption     function to determine default selection based on context
+     * @param onSelectionChange callback for when selection changes
+     * @param defaultIndex      the initial selected index
+     * @param sound             the sound to play when clicked (may be null)
+     * @param width             the width of the selector in slots
+     * @param height            the height of the selector in rows
+     */
     private Selector(
             ObjectList<Option<T>> options,
             Function<MenuContext, T> defaultOption,
@@ -53,6 +74,14 @@ public class Selector<T> extends Component {
         this.height = height;
     }
 
+    /**
+     * Called when this selector is added to a menu.
+     * <p>
+     * If a default option function is configured, it applies the default
+     * selection based on the menu context.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onAdd(@NotNull MenuContext context) {
         if (this.defaultOption == null)
@@ -62,6 +91,16 @@ public class Selector<T> extends Component {
         this.selection(appliedDefaultOption);
     }
 
+    /**
+     * Handles click events on this selector.
+     * <p>
+     * Left-click advances to the next option, right-click goes to the previous option.
+     * Other click types are ignored. When the selection changes, the configured
+     * callback is invoked with details about the change.
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     @Override
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
@@ -98,6 +137,15 @@ public class Selector<T> extends Component {
         this.onSelectionChange.accept(selectionChangeEvent);
     }
 
+    /**
+     * Returns the items to be displayed by this selector.
+     * <p>
+     * The selector fills all slots within its width×height area with the
+     * current selection's item. Returns an empty map if not visible.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -119,6 +167,15 @@ public class Selector<T> extends Component {
         return items;
     }
 
+    /**
+     * Returns the set of slots occupied by this selector.
+     * <p>
+     * Includes all slots within the selector's width×height area.
+     * Returns an empty set if not visible.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -139,18 +196,33 @@ public class Selector<T> extends Component {
         return slots;
     }
 
+    /**
+     * Returns the width of this selector in slots.
+     *
+     * @return the selector width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this selector in rows.
+     *
+     * @return the selector height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Sets the current selection to the option with the specified value.
+     *
+     * @param value the value to select
+     */
     private void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
             if (Objects.equals(this.options.get(i).value, value))
@@ -158,29 +230,68 @@ public class Selector<T> extends Component {
         }
     }
 
+    /**
+     * Gets the currently selected option.
+     *
+     * @return the current Option instance
+     */
     private Option<T> currentOption() {
         return this.options.get(this.currentIndex);
     }
 
+    /**
+     * Gets the ItemStack to display for the current selection.
+     *
+     * @param context the menu context
+     * @return the ItemStack for the current option
+     */
     private ItemStack currentItem(@NotNull MenuContext context) {
         return this.currentOption().item.apply(context);
     }
 
+    /**
+     * Event record containing information about a selection change.
+     *
+     * @param context  the menu context where the change occurred
+     * @param oldValue the previously selected value
+     * @param newValue the newly selected value
+     * @param oldIndex the previous selection index
+     * @param newIndex the new selection index
+     * @param <T>      the type of values in the selector
+     */
     public record SelectionChangeEvent<T>(@NotNull MenuContext context, @Nullable T oldValue, @Nullable T newValue,
                                           @NonNegative int oldIndex, @NonNegative int newIndex) {
 
     }
 
+    /**
+     * Record representing a selectable option in the selector.
+     *
+     * @param item  function that provides the ItemStack to display for this option
+     * @param value the value associated with this option (may be null)
+     * @param <T>   the type of the option value
+     */
     public record Option<T>(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
 
     }
 
+    /**
+     * Creates a new Selector builder instance.
+     *
+     * @param <T> the type of values for selector options
+     * @return a new Selector.Builder for constructing selectors
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static <T> Builder<T> create() {
         return new Builder<>();
     }
 
+    /**
+     * Builder class for constructing Selector instances with a fluent interface.
+     *
+     * @param <T> the type of values for selector options
+     */
     public static class Builder<T> {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
         private Function<MenuContext, T> defaultOption;
@@ -198,6 +309,14 @@ public class Selector<T> extends Component {
         private int width = 1;
         private int height = 1;
 
+        /**
+         * Adds an option to the selector with a static ItemStack.
+         *
+         * @param item  the ItemStack to display for this option
+         * @param value the value associated with this option (may be null)
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder<T> addOption(@NotNull ItemStack item, @Nullable T value) {
@@ -207,6 +326,14 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Adds an option to the selector with a dynamic ItemStack function.
+         *
+         * @param item  function that provides the ItemStack for this option
+         * @param value the value associated with this option (may be null)
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
@@ -216,6 +343,13 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets the default selected index.
+         *
+         * @param index the index to select by default (0-based)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if index is negative
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> defaultIndex(@NonNegative int index) {
@@ -225,6 +359,13 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets the callback to invoke when the selection changes.
+         *
+         * @param consumer the selection change callback
+         * @return this builder for method chaining
+         * @throws NullPointerException if consumer is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> consumer) {
@@ -234,6 +375,13 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to determine the default option based on context.
+         *
+         * @param defaultOption function that returns the default value to select
+         * @return this builder for method chaining
+         * @throws NullPointerException if defaultOption is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
@@ -243,6 +391,12 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets the sound to play when the selector is clicked.
+         *
+         * @param sound the sound to play, or null for no sound
+         * @return this builder for method chaining
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> sound(@Nullable Sound sound) {
@@ -250,6 +404,13 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of the selector in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> width(@Positive int width) {
@@ -259,6 +420,13 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of the selector in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> height(@Positive int height) {
@@ -267,6 +435,14 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of the selector.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder<T> size(@Positive int width, @Positive int height) {
@@ -278,6 +454,11 @@ public class Selector<T> extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured Selector instance.
+         *
+         * @return a new Selector with the specified configuration
+         */
         @NotNull
         public Selector<T> build() {
             return new Selector<>(

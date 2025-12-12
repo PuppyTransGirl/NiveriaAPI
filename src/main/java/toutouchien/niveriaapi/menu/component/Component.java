@@ -10,6 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+/**
+ * Abstract base class for all menu components.
+ * <p>
+ * Components represent individual UI elements within a menu that can be rendered,
+ * positioned, and interacted with. Each component has a position, size, visibility,
+ * and enabled state, and can handle click events.
+ */
 public abstract class Component {
     private boolean visible = true;
     private boolean enabled = true;
@@ -17,6 +24,15 @@ public abstract class Component {
     private int x = 0;
     private int y = 0;
 
+    /**
+     * Renders this component to the menu's inventory.
+     * <p>
+     * This method retrieves the component's items and slots, then places
+     * the items into the appropriate inventory slots.
+     *
+     * @param context the menu context
+     * @throws NullPointerException if context is null
+     */
     public void render(@NotNull MenuContext context) {
         Preconditions.checkNotNull(context, "context cannot be null");
 
@@ -29,24 +45,73 @@ public abstract class Component {
         }
     }
 
+    /**
+     * Called when this component is added to a menu.
+     * <p>
+     * Override this method to perform initialization logic when the component
+     * becomes part of a menu.
+     *
+     * @param context the menu context
+     */
     public void onAdd(@NotNull MenuContext context) {
 
     }
 
+    /**
+     * Called when this component is removed from a menu.
+     * <p>
+     * Override this method to perform cleanup logic when the component
+     * is no longer part of a menu.
+     *
+     * @param context the menu context
+     */
     public void onRemove(@NotNull MenuContext context) {
 
     }
 
+    /**
+     * Handles click events on this component.
+     * <p>
+     * Override this method to define custom behavior when the component is clicked.
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
 
     }
 
+    /**
+     * Returns a map of slot indices to ItemStacks that this component should display.
+     * <p>
+     * This method must be implemented by subclasses to define what items
+     * the component renders at each slot.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     public abstract Int2ObjectMap<ItemStack> items(@NotNull MenuContext context);
 
+    /**
+     * Returns the set of inventory slot indices that this component occupies.
+     * <p>
+     * This method must be implemented by subclasses to define which slots
+     * the component uses for rendering.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     public abstract IntSet slots(@NotNull MenuContext context);
 
+    /**
+     * Sets the position of this component within the menu grid.
+     *
+     * @param x the x-coordinate (0-8 for standard inventory width)
+     * @param y the y-coordinate (0+ for inventory height)
+     * @throws IllegalArgumentException if x or y is negative
+     */
     public void position(@NonNegative int x, @NonNegative int y) {
         Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
         Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
@@ -55,57 +120,128 @@ public abstract class Component {
         this.y = y;
     }
 
+    /**
+     * Sets the visibility state of this component.
+     *
+     * @param visible true to make the component visible, false to hide it
+     */
     public void visible(boolean visible) {
         this.visible = visible;
     }
 
+    /**
+     * Sets the enabled state of this component.
+     *
+     * @param enabled true to enable the component, false to disable it
+     */
     public void enabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    /**
+     * Returns the x-coordinate of this component's position.
+     *
+     * @return the x-coordinate (0-based)
+     */
     @NonNegative
     public int x() {
         return x;
     }
 
+    /**
+     * Returns the y-coordinate of this component's position.
+     *
+     * @return the y-coordinate (0-based)
+     */
     @NonNegative
     public int y() {
         return y;
     }
 
+    /**
+     * Returns the width of this component in inventory slots.
+     *
+     * @return the component width (must be positive)
+     */
     @Positive
     public abstract int width();
 
+    /**
+     * Returns the height of this component in inventory rows.
+     *
+     * @return the component height (must be positive)
+     */
     @Positive
     public abstract int height();
 
+    /**
+     * Returns the inventory slot index for this component's top-left position.
+     *
+     * @return the slot index calculated from x and y coordinates
+     */
     @NonNegative
     public int slot() {
         return y * 9 + x;
     }
 
+    /**
+     * Returns whether this component is currently visible.
+     *
+     * @return true if visible, false otherwise
+     */
     public boolean visible() {
         return visible;
     }
 
+    /**
+     * Returns whether this component is currently enabled.
+     *
+     * @return true if enabled, false otherwise
+     */
     public boolean enabled() {
         return enabled;
     }
 
+    /**
+     * Returns whether this component can be interacted with.
+     * <p>
+     * A component is interactable when it is both visible and enabled.
+     *
+     * @return true if the component is interactable, false otherwise
+     */
     public boolean interactable() {
         return this.visible && this.enabled;
     }
 
+    /**
+     * Converts an inventory slot index to its x-coordinate.
+     *
+     * @param slot the slot index
+     * @return the x-coordinate (0-8)
+     */
     @NonNegative
     public static int toX(int slot) {
         return slot % 9;
     }
 
+    /**
+     * Converts an inventory slot index to its y-coordinate.
+     *
+     * @param slot the slot index
+     * @return the y-coordinate (0+)
+     */
     @NonNegative
     public static int toY(int slot) {
         return slot / 9;
     }
 
+    /**
+     * Converts x and y coordinates to an inventory slot index.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return the slot index
+     */
     @NonNegative
     public static int toSlot(int x, int y) {
         return y * 9 + x;

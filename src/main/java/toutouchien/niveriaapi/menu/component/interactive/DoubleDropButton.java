@@ -24,6 +24,14 @@ import toutouchien.niveriaapi.utils.Task;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * An interactive button component that responds to double-drop actions.
+ * <p>
+ * This specialized button component displays one item normally and switches to
+ * a different "drop item" when a drop action is detected. If another drop action
+ * occurs within 3 seconds (60 ticks), it triggers a double-drop callback.
+ * The button supports various click handlers for different interaction types.
+ */
 public class DoubleDropButton extends Component {
     private final Function<MenuContext, ItemStack> item;
     private final Function<MenuContext, ItemStack> dropItem;
@@ -36,6 +44,21 @@ public class DoubleDropButton extends Component {
 
     private BukkitTask dropTask;
 
+    /**
+     * Constructs a new DoubleDropButton with the specified parameters.
+     *
+     * @param item              function that provides the normal ItemStack
+     * @param dropItem          function that provides the drop state ItemStack
+     * @param onClick           general click handler for mouse clicks
+     * @param onLeftClick       handler for left clicks
+     * @param onRightClick      handler for right clicks
+     * @param onShiftLeftClick  handler for shift+left clicks
+     * @param onShiftRightClick handler for shift+right clicks
+     * @param onDoubleDrop      handler for double-drop actions
+     * @param sound             sound to play when clicked (may be null)
+     * @param width             width of the button in slots
+     * @param height            height of the button in rows
+     */
     private DoubleDropButton(
             Function<MenuContext, ItemStack> item,
             Function<MenuContext, ItemStack> dropItem,
@@ -62,12 +85,31 @@ public class DoubleDropButton extends Component {
         this.height = height;
     }
 
+    /**
+     * Called when this button is removed from a menu.
+     * <p>
+     * Cancels any pending drop task to prevent memory leaks and
+     * ensure proper cleanup.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onRemove(@NotNull MenuContext context) {
         if (this.dropTask != null)
             this.dropTask.cancel();
     }
 
+    /**
+     * Handles click events on this button.
+     * <p>
+     * The button supports several interaction modes:
+     * - Drop clicks: First drop enters "drop state", second drop within 3 seconds triggers double-drop
+     * - Specific click handlers: Left, right, shift+left, shift+right clicks
+     * - General click handler: Fallback for other mouse clicks
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     @Override
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
@@ -111,6 +153,15 @@ public class DoubleDropButton extends Component {
             this.onClick.accept(event);
     }
 
+    /**
+     * Returns the items to be displayed by this button.
+     * <p>
+     * The button fills all slots within its width×height area with the
+     * current item (normal or drop state). Returns an empty map if not visible.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -132,6 +183,15 @@ public class DoubleDropButton extends Component {
         return items;
     }
 
+    /**
+     * Returns the set of slots occupied by this button.
+     * <p>
+     * Includes all slots within the button's width×height area.
+     * Returns an empty set if not visible.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -152,28 +212,52 @@ public class DoubleDropButton extends Component {
         return slots;
     }
 
+    /**
+     * Returns the width of this button in slots.
+     *
+     * @return the button width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this button in rows.
+     *
+     * @return the button height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Gets the ItemStack to display based on the current button state.
+     *
+     * @param context the menu context
+     * @return the normal item if no drop task is active, otherwise the drop item
+     */
     private ItemStack currentItem(@NotNull MenuContext context) {
         return this.dropTask == null ? this.item.apply(context) : this.dropItem.apply(context);
     }
 
+    /**
+     * Creates a new DoubleDropButton builder instance.
+     *
+     * @return a new DoubleDropButton.Builder for constructing buttons
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder class for constructing DoubleDropButton instances with a fluent interface.
+     */
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
@@ -190,6 +274,13 @@ public class DoubleDropButton extends Component {
         private int width = 1;
         private int height = 1;
 
+        /**
+         * Sets the ItemStack to display in normal state.
+         *
+         * @param item the ItemStack for normal state
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder item(@NotNull ItemStack item) {
@@ -199,6 +290,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the ItemStack to display in drop state.
+         *
+         * @param dropItem the ItemStack for drop state
+         * @return this builder for method chaining
+         * @throws NullPointerException if dropItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder dropItem(@NotNull ItemStack dropItem) {
@@ -208,6 +306,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for normal state.
+         *
+         * @param item function that returns the ItemStack for normal state
+         * @return this builder for method chaining
+         * @throws NullPointerException if item is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
@@ -217,6 +322,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets a function to provide the ItemStack for drop state.
+         *
+         * @param dropItem function that returns the ItemStack for drop state
+         * @return this builder for method chaining
+         * @throws NullPointerException if dropItem is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
@@ -226,6 +338,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the general click handler for mouse clicks.
+         *
+         * @param onClick the click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
@@ -235,6 +354,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the left click handler.
+         *
+         * @param onLeftClick the left click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onLeftClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
@@ -244,6 +370,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the right click handler.
+         *
+         * @param onRightClick the right click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onRightClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
@@ -253,6 +386,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the shift+left click handler.
+         *
+         * @param onShiftLeftClick the shift+left click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onShiftLeftClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
@@ -262,6 +402,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the shift+right click handler.
+         *
+         * @param onShiftRightClick the shift+right click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onShiftRightClick is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
@@ -271,6 +418,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the double-drop action handler.
+         *
+         * @param onDoubleDrop the double-drop handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if onDoubleDrop is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
@@ -280,6 +434,12 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the sound to play when the button is clicked.
+         *
+         * @param sound the sound to play, or null for no sound
+         * @return this builder for method chaining
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
@@ -287,6 +447,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of the button in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
@@ -296,6 +463,13 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of the button in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
@@ -305,6 +479,14 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of the button.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
@@ -316,6 +498,11 @@ public class DoubleDropButton extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured DoubleDropButton instance.
+         *
+         * @return a new DoubleDropButton with the specified configuration
+         */
         @NotNull
         public DoubleDropButton build() {
             return new DoubleDropButton(

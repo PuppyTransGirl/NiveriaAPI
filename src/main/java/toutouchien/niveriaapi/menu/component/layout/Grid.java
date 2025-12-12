@@ -16,6 +16,14 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+/**
+ * A layout component that arranges child components in a rectangular grid.
+ * <p>
+ * The Grid component provides a flexible container for organizing menu components
+ * with optional border and fill items. Components are positioned within the grid
+ * using slot indices or x/y coordinates. The grid handles rendering priority as:
+ * slot components → border → fill.
+ */
 public class Grid extends Component {
     private final int width, height;
 
@@ -24,6 +32,15 @@ public class Grid extends Component {
     private final ItemStack border;
     private final ItemStack fill;
 
+    /**
+     * Constructs a new Grid with the specified parameters.
+     *
+     * @param width          the width of the grid in slots
+     * @param height         the height of the grid in rows
+     * @param slotComponents the list of components contained within this grid
+     * @param border         the ItemStack to use for border decoration (may be null)
+     * @param fill           the ItemStack to use for empty space filling (may be null)
+     */
     private Grid(
             int width, int height,
             ObjectList<Component> slotComponents,
@@ -36,6 +53,13 @@ public class Grid extends Component {
         this.fill = fill;
     }
 
+    /**
+     * Called when this grid is added to a menu.
+     * <p>
+     * Propagates the onAdd event to all child components if the grid is visible.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onAdd(@NotNull MenuContext context) {
         if (!this.visible())
@@ -44,6 +68,13 @@ public class Grid extends Component {
         this.slotComponents.forEach(component -> component.onAdd(context));
     }
 
+    /**
+     * Called when this grid is removed from a menu.
+     * <p>
+     * Propagates the onRemove event to all child components if the grid is visible.
+     *
+     * @param context the menu context
+     */
     @Override
     public void onRemove(@NotNull MenuContext context) {
         if (!this.visible())
@@ -52,6 +83,16 @@ public class Grid extends Component {
         this.slotComponents.forEach(component -> component.onRemove(context));
     }
 
+    /**
+     * Handles click events within this grid.
+     * <p>
+     * Delegates click events to the appropriate child component based on
+     * which slots the component occupies. Only processes clicks if the grid
+     * is interactable.
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     @Override
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
@@ -65,7 +106,16 @@ public class Grid extends Component {
         }
     }
 
-    // slotComponents -> border -> fill
+    /**
+     * Returns the items to be displayed in this grid.
+     * <p>
+     * Rendering priority: slot components → border → fill.
+     * Child components take precedence, followed by border decoration,
+     * and finally fill items for any remaining empty slots.
+     *
+     * @param context the menu context
+     * @return a map from slot indices to ItemStacks
+     */
     @NotNull
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
@@ -93,7 +143,15 @@ public class Grid extends Component {
         return items;
     }
 
-    // slotComponents -> border -> fill
+    /**
+     * Returns the set of slots occupied by this grid.
+     * <p>
+     * Includes all slots occupied by child components, plus any slots
+     * that would contain border or fill items.
+     *
+     * @param context the menu context
+     * @return a set of slot indices
+     */
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
@@ -119,18 +177,35 @@ public class Grid extends Component {
         return slots;
     }
 
+    /**
+     * Returns the width of this grid in slots.
+     *
+     * @return the grid width
+     */
     @Positive
     @Override
     public int width() {
         return this.width;
     }
 
+    /**
+     * Returns the height of this grid in rows.
+     *
+     * @return the grid height
+     */
     @Positive
     @Override
     public int height() {
         return this.height;
     }
 
+    /**
+     * Determines if the specified coordinates represent a border position.
+     *
+     * @param x the absolute x-coordinate
+     * @param y the absolute y-coordinate
+     * @return true if the position is on the grid border, false otherwise
+     */
     private boolean border(int x, int y) {
         return x == this.x()
                 || x == this.x() + this.width - 1
@@ -138,12 +213,20 @@ public class Grid extends Component {
                 || y == this.y() + this.height - 1;
     }
 
+    /**
+     * Creates a new Grid builder instance.
+     *
+     * @return a new Grid.Builder for constructing grids
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
     }
 
+    /**
+     * Builder class for constructing Grid instances with a fluent interface.
+     */
     public static class Builder {
         private int width, height;
 
@@ -152,6 +235,15 @@ public class Grid extends Component {
         private ItemStack border;
         private ItemStack fill;
 
+        /**
+         * Adds a component to the grid at the specified slot index.
+         *
+         * @param slot      the slot index where the component should be placed
+         * @param component the component to add
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if slot is negative, component is null,
+         *                                  or component doesn't fit within grid bounds
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder add(@NonNegative int slot, @NotNull Component component) {
@@ -181,6 +273,15 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Adds a component to the grid at the specified x/y coordinates.
+         *
+         * @param x         the x-coordinate (0-based)
+         * @param y         the y-coordinate (0-based)
+         * @param component the component to add
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if coordinates are negative or component is null
+         */
         @NotNull
         @Contract(value = "_, _, _ -> this", mutates = "this")
         public Builder add(@NonNegative int x, @NonNegative int y, @NotNull Component component) {
@@ -191,6 +292,13 @@ public class Grid extends Component {
             return add(y * 9 + x, component);
         }
 
+        /**
+         * Sets the border ItemStack for this grid.
+         *
+         * @param border the ItemStack to use for border decoration
+         * @return this builder for method chaining
+         * @throws NullPointerException if border is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder border(@NotNull ItemStack border) {
@@ -200,6 +308,13 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Sets the fill ItemStack for this grid.
+         *
+         * @param fill the ItemStack to use for empty space filling
+         * @return this builder for method chaining
+         * @throws NullPointerException if fill is null
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder fill(@NotNull ItemStack fill) {
@@ -209,6 +324,13 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Sets the width of this grid.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
@@ -218,6 +340,13 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Sets the height of this grid.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
@@ -227,6 +356,14 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Sets both width and height of this grid.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
@@ -238,6 +375,11 @@ public class Grid extends Component {
             return this;
         }
 
+        /**
+         * Builds and returns the configured Grid instance.
+         *
+         * @return a new Grid with the specified configuration
+         */
         @NotNull
         public Grid build() {
             return new Grid(
