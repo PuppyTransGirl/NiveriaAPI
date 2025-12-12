@@ -92,10 +92,10 @@ public class ProgressBar extends Component {
         Range colsRange = new Range(0, this.width, 1);
 
         return switch (this.direction) {
-            case RIGHT -> new Traversal(rowsRange, colsRange, true);
-            case LEFT -> new Traversal(rowsRange, new Range(this.width - 1, -1, -1), true);
-            case DOWN -> new Traversal(rowsRange, colsRange, false);
             case UP -> new Traversal(new Range(this.height - 1, -1, -1), colsRange, false);
+            case LEFT -> new Traversal(rowsRange, new Range(this.width - 1, -1, -1), true);
+            case RIGHT -> new Traversal(rowsRange, colsRange, true);
+            case DOWN -> new Traversal(rowsRange, colsRange, false);
         };
     }
 
