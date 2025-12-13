@@ -28,8 +28,8 @@ import java.util.function.Function;
  * width and height.
  */
 public class Toggle extends Component {
-    private final Function<MenuContext, ItemStack> onItem, offItem;
-    private final Sound sound;
+    private Function<MenuContext, ItemStack> onItem, offItem;
+    private Sound sound;
     private final int width, height;
 
     private boolean currentState;
@@ -136,6 +136,81 @@ public class Toggle extends Component {
         }
 
         return slots;
+    }
+
+    /**
+     * Sets the current state of this toggle.
+     *
+     * @param state the new state (true for on, false for off)
+     */
+    public void state(boolean state) {
+        this.currentState = state;
+    }
+
+    /**
+     * Gets the current state of this toggle.
+     *
+     * @return the current state (true for on, false for off)
+     */
+    public boolean state() {
+        return this.currentState;
+    }
+
+    /**
+     * Sets the ItemStack to display when the toggle is on.
+     *
+     * @param onItem the ItemStack for the on state
+     * @throws NullPointerException if onItem is null
+     */
+    public void onItem(@NotNull ItemStack onItem) {
+        Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
+        this.onItem = context -> onItem;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack when the toggle is on.
+     *
+     * @param onItem function that returns the ItemStack for the on state
+     * @throws NullPointerException if onItem is null
+     */
+    public void onItem(@NotNull Function<MenuContext, ItemStack> onItem) {
+        Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
+        this.onItem = onItem;
+    }
+
+    /**
+     * Sets the ItemStack to display when the toggle is off.
+     *
+     * @param offItem the ItemStack for the off state
+     * @throws NullPointerException if offItem is null
+     */
+    public void offItem(@NotNull ItemStack offItem) {
+        Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
+        this.offItem = context -> offItem;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack when the toggle is off.
+     *
+     * @param offItem function that returns the ItemStack for the off state
+     * @throws NullPointerException if offItem is null
+     */
+    public void offItem(@NotNull Function<MenuContext, ItemStack> offItem) {
+        Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
+        this.offItem = offItem;
+    }
+
+    /**
+     * Sets the sound to play when the toggle is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     */
+    public void sound(@Nullable Sound sound) {
+        this.sound = sound;
     }
 
     /**

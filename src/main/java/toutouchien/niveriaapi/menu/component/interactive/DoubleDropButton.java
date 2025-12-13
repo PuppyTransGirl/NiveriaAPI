@@ -33,12 +33,12 @@ import java.util.function.Function;
  * The button supports various click handlers for different interaction types.
  */
 public class DoubleDropButton extends Component {
-    private final Function<MenuContext, ItemStack> item;
-    private final Function<MenuContext, ItemStack> dropItem;
+    private Function<MenuContext, ItemStack> item;
+    private Function<MenuContext, ItemStack> dropItem;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
+    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
-    private final Sound sound;
+    private Sound sound;
 
     private final int width, height;
 
@@ -242,6 +242,135 @@ public class DoubleDropButton extends Component {
      */
     private ItemStack currentItem(@NotNull MenuContext context) {
         return this.dropTask == null ? this.item.apply(context) : this.dropItem.apply(context);
+    }
+
+    /**
+     * Sets the normal ItemStack to display for this button.
+     *
+     * @param item the ItemStack to display normally
+     * @throws NullPointerException if item is null
+     */
+    public void item(@NotNull ItemStack item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = context -> item;
+    }
+
+    /**
+     * Sets a function to provide the normal ItemStack for this button.
+     *
+     * @param item function that returns the normal ItemStack
+     * @throws NullPointerException if item is null
+     */
+    public void item(@NotNull Function<MenuContext, ItemStack> item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = item;
+    }
+
+    /**
+     * Sets the drop state ItemStack to display for this button.
+     *
+     * @param dropItem the ItemStack to display in drop state
+     * @throws NullPointerException if dropItem is null
+     */
+    public void dropItem(@NotNull ItemStack dropItem) {
+        Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
+
+        this.dropItem = context -> dropItem;
+    }
+
+    /**
+     * Sets a function to provide the drop state ItemStack for this button.
+     *
+     * @param dropItem function that returns the drop state ItemStack
+     * @throws NullPointerException if dropItem is null
+     */
+    public void dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
+        Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
+
+        this.dropItem = dropItem;
+    }
+
+    /**
+     * Sets the sound to play when the button is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     */
+    public void sound(@Nullable Sound sound) {
+        this.sound = sound;
+    }
+
+    /**
+     * Sets the general click handler for this button.
+     *
+     * @param onClick the click handler
+     * @throws NullPointerException if onClick is null
+     */
+    public void onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+        this.onClick = onClick;
+    }
+
+    /**
+     * Sets the left-click handler for this button.
+     *
+     * @param onLeftClick the left-click handler
+     * @throws NullPointerException if onLeftClick is null
+     */
+    public void onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
+
+        this.onLeftClick = onLeftClick;
+    }
+
+    /**
+     * Sets the right-click handler for this button.
+     *
+     * @param onRightClick the right-click handler
+     * @throws NullPointerException if onRightClick is null
+     */
+    public void onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
+
+        this.onRightClick = onRightClick;
+    }
+
+    /**
+     * Sets the shift-left-click handler for this button.
+     *
+     * @param onShiftLeftClick the shift-left-click handler
+     * @throws NullPointerException if onShiftLeftClick is null
+     */
+    public void onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+        this.onShiftLeftClick = onShiftLeftClick;
+    }
+
+    /**
+     * Sets the shift-right-click handler for this button.
+     *
+     * @param onShiftRightClick the shift-right-click handler
+     * @throws NullPointerException if onShiftRightClick is null
+     */
+    public void onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+        this.onShiftRightClick = onShiftRightClick;
+    }
+
+    /**
+     * Sets the double-drop handler for this button.
+     *
+     * @param onDoubleDrop the double-drop handler
+     * @throws NullPointerException if onDoubleDrop is null
+     */
+    public void onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
+        Preconditions.checkNotNull(onDoubleDrop, "onDoubleDrop cannot be null");
+
+        this.onDoubleDrop = onDoubleDrop;
     }
 
     /**

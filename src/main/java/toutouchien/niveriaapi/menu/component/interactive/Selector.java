@@ -34,11 +34,11 @@ import java.util.function.Function;
  * @param <T> the type of values associated with selector options
  */
 public class Selector<T> extends Component {
-    private final ObjectList<Option<T>> options;
-    private final Function<MenuContext, T> defaultOption;
-    private final Consumer<SelectionChangeEvent<T>> onSelectionChange;
+    private ObjectList<Option<T>> options;
+    private Function<MenuContext, T> defaultOption;
+    private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
-    private final Sound sound;
+    private Sound sound;
 
     private final int width, height;
 
@@ -223,11 +223,85 @@ public class Selector<T> extends Component {
      *
      * @param value the value to select
      */
-    private void selection(T value) {
+    public void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
             if (Objects.equals(this.options.get(i).value, value))
                 this.currentIndex = i;
         }
+    }
+
+    /**
+     * Gets the current selection value.
+     *
+     * @return the current selected value
+     */
+    public T selection() {
+        return this.currentOption().value;
+    }
+
+    /**
+     * Sets the current selection by index.
+     *
+     * @param index the index of the option to select
+     * @throws IllegalArgumentException if index is out of bounds
+     */
+    public void selectionIndex(@NonNegative int index) {
+        Preconditions.checkArgument(index >= 0 && index < this.options.size(), 
+            "index must be between 0 and %s: %s", this.options.size() - 1, index);
+
+        this.currentIndex = index;
+    }
+
+    /**
+     * Gets the current selection index.
+     *
+     * @return the index of the currently selected option
+     */
+    public int selectionIndex() {
+        return this.currentIndex;
+    }
+
+    /**
+     * Adds a new option to this selector.
+     *
+     * @param item  the ItemStack to display for this option
+     * @param value the value associated with this option
+     * @throws NullPointerException if item or value is null
+     */
+    public void addOption(@NotNull ItemStack item, @NotNull T value) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+        Preconditions.checkNotNull(value, "value cannot be null");
+
+        this.options.add(new Option<>(context -> item, value));
+    }
+
+    /**
+     * Clears all options from this selector.
+     */
+    public void clearOptions() {
+        this.options.clear();
+        this.currentIndex = 0;
+    }
+
+    /**
+     * Sets the sound to play when cycling through options.
+     *
+     * @param sound the sound to play, or null for no sound
+     */
+    public void sound(@Nullable Sound sound) {
+        this.sound = sound;
+    }
+
+    /**
+     * Sets the selection change callback.
+     *
+     * @param onSelectionChange callback for when selection changes
+     * @throws NullPointerException if onSelectionChange is null
+     */
+    public void onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> onSelectionChange) {
+        Preconditions.checkNotNull(onSelectionChange, "onSelectionChange cannot be null");
+
+        this.onSelectionChange = onSelectionChange;
     }
 
     /**

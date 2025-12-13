@@ -84,6 +84,33 @@ public abstract class Menu implements InventoryHolder {
     }
 
     /**
+     * Updates and re-renders the entire menu.
+     * <p>
+     * This method should be called after modifying component properties
+     * to reflect the changes in the displayed inventory.
+     */
+    public void update() {
+        if (this.root != null) {
+            this.root.render(this.context);
+        }
+    }
+
+    /**
+     * Updates and re-renders a specific component in the menu.
+     * <p>
+     * This method should be called after modifying component properties
+     * to reflect the changes in the displayed inventory.
+     *
+     * @param component the component to update and re-render
+     * @throws NullPointerException if component is null
+     */
+    public void update(@NotNull Component component) {
+        Preconditions.checkNotNull(component, "component cannot be null");
+
+        component.render(this.context);
+    }
+
+    /**
      * Returns the title component for this menu's inventory.
      * <p>
      * This method must be implemented by subclasses to define the menu's title.

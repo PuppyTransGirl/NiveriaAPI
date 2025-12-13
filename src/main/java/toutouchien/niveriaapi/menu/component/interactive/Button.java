@@ -36,21 +36,21 @@ import java.util.function.Function;
  * - Multi-slot rendering with configurable dimensions
  */
 public class Button extends Component {
-    private final Function<MenuContext, ItemStack> item;
+    private Function<MenuContext, ItemStack> item;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
+    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
-    private final Sound sound;
+    private Sound sound;
 
-    private final Function<MenuContext, ObjectList<ItemStack>> animationFrames;
-    private final int animationInterval;
-    private final boolean stopAnimationOnHide;
+    private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+    private int animationInterval;
+    private boolean stopAnimationOnHide;
     private BukkitTask animationTask;
     private int currentFrame;
 
-    private final Function<MenuContext, ItemStack> dynamicItem;
-    private final int updateInterval;
-    private final boolean stopUpdatesOnHide;
+    private Function<MenuContext, ItemStack> dynamicItem;
+    private int updateInterval;
+    private boolean stopUpdatesOnHide;
     private BukkitTask updateTask;
 
     private final int width, height;
@@ -330,6 +330,159 @@ public class Button extends Component {
             return this.animationFrames.apply(context).get(this.currentFrame);
 
         return this.item.apply(context);
+    }
+
+    /**
+     * Sets the static ItemStack to display for this button.
+     *
+     * @param item the ItemStack to display
+     * @throws NullPointerException if item is null
+     */
+    public void item(@NotNull ItemStack item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = context -> item;
+    }
+
+    /**
+     * Sets a function to provide the static ItemStack for this button.
+     *
+     * @param item function that returns the ItemStack to display
+     * @throws NullPointerException if item is null
+     */
+    public void item(@NotNull Function<MenuContext, ItemStack> item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = item;
+    }
+
+    /**
+     * Sets a function to provide dynamic content for this button.
+     *
+     * @param dynamicItem function that returns the dynamic ItemStack
+     * @throws NullPointerException if dynamicItem is null
+     */
+    public void dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+        Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
+
+        this.dynamicItem = dynamicItem;
+    }
+
+    /**
+     * Sets the animation frames for this button.
+     *
+     * @param animationFrames function that returns the list of animation frames
+     * @throws NullPointerException if animationFrames is null
+     */
+    public void animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+        Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
+
+        this.animationFrames = animationFrames;
+    }
+
+    /**
+     * Sets the animation interval in ticks.
+     *
+     * @param animationInterval the interval between animation frames in ticks
+     * @throws IllegalArgumentException if animationInterval is less than 1
+     */
+    public void animationInterval(@Positive int animationInterval) {
+        Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %s", animationInterval);
+
+        this.animationInterval = animationInterval;
+    }
+
+    /**
+     * Sets the update interval in ticks for dynamic content.
+     *
+     * @param updateInterval the interval between updates in ticks
+     * @throws IllegalArgumentException if updateInterval is less than 1
+     */
+    public void updateInterval(@Positive int updateInterval) {
+        Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %s", updateInterval);
+
+        this.updateInterval = updateInterval;
+    }
+
+    /**
+     * Sets the sound to play when the button is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     */
+    public void sound(@Nullable Sound sound) {
+        this.sound = sound;
+    }
+
+    /**
+     * Sets the general click handler for this button.
+     *
+     * @param onClick the click handler
+     * @throws NullPointerException if onClick is null
+     */
+    public void onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+        this.onClick = onClick;
+    }
+
+    /**
+     * Sets the left-click handler for this button.
+     *
+     * @param onLeftClick the left-click handler
+     * @throws NullPointerException if onLeftClick is null
+     */
+    public void onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
+
+        this.onLeftClick = onLeftClick;
+    }
+
+    /**
+     * Sets the right-click handler for this button.
+     *
+     * @param onRightClick the right-click handler
+     * @throws NullPointerException if onRightClick is null
+     */
+    public void onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
+
+        this.onRightClick = onRightClick;
+    }
+
+    /**
+     * Sets the shift-left-click handler for this button.
+     *
+     * @param onShiftLeftClick the shift-left-click handler
+     * @throws NullPointerException if onShiftLeftClick is null
+     */
+    public void onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+        this.onShiftLeftClick = onShiftLeftClick;
+    }
+
+    /**
+     * Sets the shift-right-click handler for this button.
+     *
+     * @param onShiftRightClick the shift-right-click handler
+     * @throws NullPointerException if onShiftRightClick is null
+     */
+    public void onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+        this.onShiftRightClick = onShiftRightClick;
+    }
+
+    /**
+     * Sets the drop handler for this button.
+     *
+     * @param onDrop the drop handler
+     * @throws NullPointerException if onDrop is null
+     */
+    public void onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
+        Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
+
+        this.onDrop = onDrop;
     }
 
     /**

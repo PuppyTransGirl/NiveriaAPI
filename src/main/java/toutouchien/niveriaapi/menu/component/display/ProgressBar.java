@@ -28,11 +28,11 @@ import java.util.function.Function;
  * The percentage value determines how much of the bar is filled.
  */
 public class ProgressBar extends Component {
-    private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
+    private Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
-    private final Direction.Default direction;
+    private Direction.Default direction;
 
-    private final Object2DoubleFunction<MenuContext> percentage;
+    private Object2DoubleFunction<MenuContext> percentage;
 
     private final int width;
     private final int height;
@@ -197,6 +197,114 @@ public class ProgressBar extends Component {
         }
 
         return slots;
+    }
+
+    /**
+     * Sets the percentage value for this progress bar.
+     *
+     * @param percentage the progress percentage (0.0 to 1.0)
+     * @throws IllegalArgumentException if percentage is negative
+     */
+    public void percentage(@NonNegative double percentage) {
+        Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %s", percentage);
+
+        this.percentage = context -> percentage;
+    }
+
+    /**
+     * Sets a function to provide the progress percentage.
+     *
+     * @param percentage function that returns the progress percentage (0.0 to 1.0)
+     * @throws NullPointerException if percentage is null
+     */
+    public void percentage(@NotNull Object2DoubleFunction<MenuContext> percentage) {
+        Preconditions.checkNotNull(percentage, "percentage cannot be null");
+
+        this.percentage = percentage;
+    }
+
+    /**
+     * Sets the ItemStack to display for completed sections.
+     *
+     * @param doneItem the ItemStack for completed sections
+     * @throws NullPointerException if doneItem is null
+     */
+    public void doneItem(@NotNull ItemStack doneItem) {
+        Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
+
+        this.doneItem = context -> doneItem;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for completed sections.
+     *
+     * @param doneItem function that returns the ItemStack for completed sections
+     * @throws NullPointerException if doneItem is null
+     */
+    public void doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
+        Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
+
+        this.doneItem = doneItem;
+    }
+
+    /**
+     * Sets the ItemStack to display for the current progress position.
+     *
+     * @param currentItem the ItemStack for the current progress position
+     * @throws NullPointerException if currentItem is null
+     */
+    public void currentItem(@NotNull ItemStack currentItem) {
+        Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
+
+        this.currentItem = context -> currentItem;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for the current progress position.
+     *
+     * @param currentItem function that returns the ItemStack for the current progress position
+     * @throws NullPointerException if currentItem is null
+     */
+    public void currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
+        Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
+
+        this.currentItem = currentItem;
+    }
+
+    /**
+     * Sets the ItemStack to display for incomplete sections.
+     *
+     * @param notDoneItem the ItemStack for incomplete sections
+     * @throws NullPointerException if notDoneItem is null
+     */
+    public void notDoneItem(@NotNull ItemStack notDoneItem) {
+        Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
+
+        this.notDoneItem = context -> notDoneItem;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for incomplete sections.
+     *
+     * @param notDoneItem function that returns the ItemStack for incomplete sections
+     * @throws NullPointerException if notDoneItem is null
+     */
+    public void notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
+        Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
+
+        this.notDoneItem = notDoneItem;
+    }
+
+    /**
+     * Sets the direction in which the progress bar fills.
+     *
+     * @param direction the fill direction (UP, DOWN, LEFT, or RIGHT)
+     * @throws NullPointerException if direction is null
+     */
+    public void direction(@NotNull Direction.Default direction) {
+        Preconditions.checkNotNull(direction, "direction cannot be null");
+
+        this.direction = direction;
     }
 
     /**
