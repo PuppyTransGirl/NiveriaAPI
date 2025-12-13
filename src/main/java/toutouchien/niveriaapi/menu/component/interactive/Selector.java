@@ -222,21 +222,26 @@ public class Selector<T> extends Component {
      * Sets the current selection to the option with the specified value.
      *
      * @param value the value to select
+     * @throws IllegalArgumentException if value is not found in options
      */
     public void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
-            if (Objects.equals(this.options.get(i).value, value))
+            if (Objects.equals(this.options.get(i).value, value)) {
                 this.currentIndex = i;
+                return;
+            }
         }
+        throw new IllegalArgumentException("Value not found in options: " + value);
     }
 
     /**
      * Gets the current selection value.
      *
-     * @return the current selected value
+     * @return the current selected value, or null if no options exist
      */
     public T selection() {
-        return this.currentOption().value;
+        Option<T> option = this.currentOption();
+        return option != null ? option.value : null;
     }
 
     /**
@@ -273,14 +278,23 @@ public class Selector<T> extends Component {
         Preconditions.checkNotNull(value, "value cannot be null");
 
         this.options.add(new Option<>(context -> item, value));
+        
+        // If this is the first option, set it as selected
+        if (this.currentIndex < 0) {
+            this.currentIndex = 0;
+        }
     }
 
     /**
      * Clears all options from this selector.
+     * <p>
+     * Note: After clearing, the selector will be in an invalid state until
+     * new options are added. You should add at least one option before
+     * re-rendering the selector.
      */
     public void clearOptions() {
         this.options.clear();
-        this.currentIndex = 0;
+        this.currentIndex = -1;
     }
 
     /**
@@ -307,9 +321,11 @@ public class Selector<T> extends Component {
     /**
      * Gets the currently selected option.
      *
-     * @return the current Option instance
+     * @return the current Option instance, or null if no options exist
      */
     private Option<T> currentOption() {
+        if (this.currentIndex < 0 || this.currentIndex >= this.options.size())
+            return null;
         return this.options.get(this.currentIndex);
     }
 
@@ -317,10 +333,13 @@ public class Selector<T> extends Component {
      * Gets the ItemStack to display for the current selection.
      *
      * @param context the menu context
-     * @return the ItemStack for the current option
+     * @return the ItemStack for the current option, or empty item if no options
      */
     private ItemStack currentItem(@NotNull MenuContext context) {
-        return this.currentOption().item.apply(context);
+        Option<T> option = this.currentOption();
+        if (option == null)
+            return ItemStack.empty();
+        return option.item.apply(context);
     }
 
     /**
