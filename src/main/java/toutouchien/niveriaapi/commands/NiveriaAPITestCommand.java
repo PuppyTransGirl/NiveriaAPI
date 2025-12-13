@@ -22,7 +22,7 @@ public class NiveriaAPITestCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal("test")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test"))
-                .requires(css -> css.getExecutor() instanceof Player)
+                .requires(CommandUtils::playerExecutorRequirement)
                 .then(basicCommand())
                 .then(confirmationCommand())
                 .then(paginatorCommand());
