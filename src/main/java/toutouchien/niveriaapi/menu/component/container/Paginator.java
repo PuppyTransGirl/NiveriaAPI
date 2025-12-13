@@ -39,6 +39,7 @@ public class Paginator extends Component {
     private final int width, height;
 
     private int page;
+    private ObjectList<Component> cachedPageComponents;
 
     /**
      * Constructs a new Paginator with the specified parameters.
@@ -84,12 +85,7 @@ public class Paginator extends Component {
         if (!this.interactable())
             return;
 
-        int maxItemsPerPage = this.width * this.height;
-        int startIndex = this.page * maxItemsPerPage;
-        int endIndex = Math.min(startIndex + maxItemsPerPage, this.components.size());
-
-        for (int i = startIndex; i < endIndex; i++) {
-            Component component = this.components.get(i);
+        for (Component component : this.currentPageComponents()) {
             if (component.slots(context).contains(event.getSlot())) {
                 component.onClick(event, context);
                 break;
@@ -111,28 +107,24 @@ public class Paginator extends Component {
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
 
-        int maxItemsPerPage = this.width * this.height;
-        int totalItems = this.components.size();
-        int startIndex = this.page * maxItemsPerPage;
-        int endIndex = Math.min(startIndex + maxItemsPerPage, totalItems);
-
-        for (int i = startIndex; i < endIndex; i++) {
-            int relativeIndex = i - startIndex;
-            int localX = (relativeIndex % this.width);
-            int localY = 1 + (relativeIndex / this.width);
+        int componentIndex = 0;
+        for (Component component : this.currentPageComponents()) {
+            int localX = (componentIndex % this.width);
+            int localY = 1 + (componentIndex / this.width);
 
             int compX = this.x() + localX;
             int compY = this.y() + localY;
 
             int baseSlot = (compY - 1) * 9 + compX;
 
-            Component component = this.components.get(i);
             Int2ObjectMap<ItemStack> compItems = component.items(context);
             for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
                 int innerSlot = entry.getIntKey();
                 ItemStack item = entry.getValue();
                 items.put(baseSlot + innerSlot, item);
             }
+
+            componentIndex++;
         }
 
         return items;
@@ -166,6 +158,36 @@ public class Paginator extends Component {
     }
 
     /**
+     * Returns the list of components to display on the current page.
+     * <p>
+     * This method caches the result to avoid recalculating the component
+     * list on every render and interaction. The cache is invalidated when
+     * the page changes.
+     *
+     * @return a list of components for the current page
+     */
+    @NotNull
+    private ObjectList<Component> currentPageComponents() {
+        if (this.cachedPageComponents != null)
+            return this.cachedPageComponents;
+
+        int maxItemsPerPage = this.width * this.height;
+        int totalItems = this.components.size();
+        int startIndex = this.page * maxItemsPerPage;
+        int endIndex = Math.min(startIndex + maxItemsPerPage, totalItems);
+
+        this.cachedPageComponents = new ObjectArrayList<>(this.components.subList(startIndex, endIndex));
+        return this.cachedPageComponents;
+    }
+
+    /**
+     * Invalidates the cached page components, forcing recalculation on next access.
+     */
+    private void invalidateCache() {
+        this.cachedPageComponents = null;
+    }
+
+    /**
      * Creates a back navigation button for this paginator.
      * <p>
      * The button navigates to the previous page when clicked. If already on the first
@@ -189,6 +211,7 @@ public class Paginator extends Component {
                         return;
 
                     this.page--;
+                    this.invalidateCache();
                     this.render(event.context());
                 })
                 .build();
@@ -219,6 +242,7 @@ public class Paginator extends Component {
                         return;
 
                     this.page++;
+                    this.invalidateCache();
                     this.render(event.context());
                 })
                 .build();
@@ -248,6 +272,7 @@ public class Paginator extends Component {
                         return;
 
                     this.page = 0;
+                    this.invalidateCache();
                     this.render(event.context());
                 })
                 .build();
@@ -278,6 +303,7 @@ public class Paginator extends Component {
                         return;
 
                     this.page = maxPage;
+                    this.invalidateCache();
                     this.render(event.context());
                 })
                 .build();
