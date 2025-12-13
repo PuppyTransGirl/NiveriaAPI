@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
+import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Function;
 
@@ -76,6 +77,24 @@ public class Paginator extends Component {
         this.width = width;
         this.height = height;
         this.page = page;
+    }
+
+    @Override
+    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+        if (!this.interactable())
+            return;
+
+        int maxItemsPerPage = this.width * this.height;
+        int startIndex = this.page * maxItemsPerPage;
+        int endIndex = Math.min(startIndex + maxItemsPerPage, this.components.size());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            Component component = this.components.get(i);
+            if (component.slots(context).contains(event.getSlot())) {
+                component.onClick(event, context);
+                break;
+            }
+        }
     }
 
     /**

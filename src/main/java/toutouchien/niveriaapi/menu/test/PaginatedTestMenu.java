@@ -80,7 +80,14 @@ public class PaginatedTestMenu extends Menu {
                 .filter(material -> world.isEnabled(material.asItemType())) // Remove disabled experimental features
                 .filter(material -> !material.isAir())
                 .map(ItemStack::of)
-                .map(itemStack -> Button.create().item(itemStack).build())
+                .map(itemStack -> {
+                    return Button.create()
+                            .item(itemStack)
+                            .onClick(event -> {
+                                event.player().sendMessage(Component.translatable(event.getCurrentItem().translationKey()));
+                            })
+                            .build();
+                })
                 .collect(ObjectArrayList.toList());
 
         builder.addAll(materials);
