@@ -220,6 +220,9 @@ public class Selector<T> extends Component {
 
     /**
      * Sets the current selection to the option with the specified value.
+     * <p>
+     * This method allows programmatic control of the selector's state.
+     * To set selection by index instead, use {@link #selectionIndex(int)}.
      *
      * @param value the value to select
      * @throws IllegalArgumentException if value is not found in options
@@ -248,9 +251,11 @@ public class Selector<T> extends Component {
      * Sets the current selection by index.
      *
      * @param index the index of the option to select
-     * @throws IllegalArgumentException if index is out of bounds
+     * @throws IllegalArgumentException if index is out of bounds or no options exist
      */
     public void selectionIndex(@NonNegative int index) {
+        Preconditions.checkArgument(this.options.size() > 0, 
+            "Cannot set selection index when no options exist");
         Preconditions.checkArgument(index >= 0 && index < this.options.size(), 
             "index must be between 0 and %s: %s", this.options.size() - 1, index);
 
