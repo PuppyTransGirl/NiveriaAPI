@@ -80,6 +80,16 @@ public class Paginator extends Component {
         this.page = page;
     }
 
+    /**
+     * Handles click events within the paginator.
+     * <p>
+     * This method delegates the click event to the appropriate child component
+     * based on the clicked slot. If the paginator is not interactable, the event
+     * is ignored.
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
     @Override
     public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (!this.interactable())
