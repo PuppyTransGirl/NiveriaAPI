@@ -17,6 +17,7 @@ import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -30,6 +31,7 @@ import java.util.function.Function;
 // TODO: Add Callback for state change
 public class Toggle extends Component {
     private Function<MenuContext, ItemStack> onItem, offItem;
+    private Consumer<ToggleEvent> onToggle;
     private Sound sound;
     private final int width, height;
 
@@ -47,14 +49,16 @@ public class Toggle extends Component {
      */
     private Toggle(
             Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
-            boolean currentState,
+            Consumer<ToggleEvent> onToggle,
             Sound sound,
+            boolean currentState,
             int width, int height
     ) {
         this.onItem = onItem;
         this.offItem = offItem;
-        this.currentState = currentState;
+        this.onToggle = onToggle;
         this.sound = sound;
+        this.currentState = currentState;
         this.width = width;
         this.height = height;
     }
@@ -78,6 +82,9 @@ public class Toggle extends Component {
 
         this.currentState = !this.currentState;
         this.render(context);
+
+        ToggleEvent toggleEvent = new ToggleEvent(event, this.currentState);
+        this.onToggle.accept(toggleEvent);
     }
 
     /**
@@ -147,6 +154,10 @@ public class Toggle extends Component {
      */
     private ItemStack currentItem(@NotNull MenuContext context) {
         return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
+    }
+
+    public record ToggleEvent(@NotNull NiveriaInventoryClickEvent clickEvent, boolean newState) {
+
     }
 
     /**
@@ -279,7 +290,7 @@ public class Toggle extends Component {
         private Function<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);
 
-        private boolean currentState;
+        private Consumer<ToggleEvent> onToggle;
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
@@ -287,6 +298,8 @@ public class Toggle extends Component {
                 1F,
                 1F
         );
+
+        private boolean currentState;
 
         private int width = 1;
         private int height = 1;
@@ -355,16 +368,12 @@ public class Toggle extends Component {
             return this;
         }
 
-        /**
-         * Sets the initial state of the toggle.
-         *
-         * @param state true for "on" state, false for "off" state
-         * @return this builder for method chaining
-         */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder currentState(boolean state) {
-            this.currentState = state;
+        public Builder onToggle(@NotNull Consumer<ToggleEvent> onToggle) {
+            Preconditions.checkNotNull(onToggle, "onToggle cannot be null");
+
+            this.onToggle = onToggle;
             return this;
         }
 
@@ -378,6 +387,19 @@ public class Toggle extends Component {
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
+            return this;
+        }
+
+        /**
+         * Sets the initial state of the toggle.
+         *
+         * @param state true for "on" state, false for "off" state
+         * @return this builder for method chaining
+         */
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder currentState(boolean state) {
+            this.currentState = state;
             return this;
         }
 
@@ -432,8 +454,9 @@ public class Toggle extends Component {
             return new Toggle(
                     this.onItem,
                     this.offItem,
-                    this.currentState,
+                    this.onToggle,
                     this.sound,
+                    this.currentState,
                     this.width,
                     this.height
             );

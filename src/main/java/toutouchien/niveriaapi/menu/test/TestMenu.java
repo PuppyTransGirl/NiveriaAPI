@@ -97,7 +97,7 @@ public class TestMenu extends Menu {
                     click.player().sendRichMessage("<rainbow>You clicked the apple!");
                 })
                 .onDrop(click -> {
-                    click.player().sendRichMessage("<red>Why?");
+                    click.player().sendRichMessage("<red>Newton");
                     click.player().closeInventory();
                 })
                 .build();
@@ -178,6 +178,9 @@ public class TestMenu extends Menu {
         return Toggle.create()
                 .onItem(ItemStack.of(Material.LIME_DYE))
                 .offItem(ItemStack.of(Material.RED_DYE))
+                .onToggle(event -> {
+                    event.clickEvent().player().sendRichMessage("<bold>" + event.newState());
+                })
                 .build();
     }
 

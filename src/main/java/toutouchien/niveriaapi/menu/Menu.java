@@ -18,7 +18,7 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  */
 public abstract class Menu implements InventoryHolder {
     private Inventory inventory;
-    private final MenuContext context;
+    protected final MenuContext context;
     private final Player player;
 
     private Component root;

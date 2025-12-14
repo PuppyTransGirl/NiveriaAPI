@@ -295,6 +295,38 @@ public class ProgressBar extends Component {
     }
 
     /**
+     * Sets a static percentage value for the progress bar.
+     *
+     * @param percentage the progress percentage (0.0 to 1.0)
+     * @return this progress bar for method chaining
+     * @throws IllegalArgumentException if percentage is negative
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar percentage(@NonNegative double percentage) {
+        Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %s", percentage);
+
+        this.percentage = context -> percentage;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the progress percentage.
+     *
+     * @param percentage function that returns the progress percentage (0.0 to 1.0)
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if percentage is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar percentage(@NotNull Object2DoubleFunction<MenuContext> percentage) {
+        Preconditions.checkNotNull(percentage, "percentage cannot be null");
+
+        this.percentage = percentage;
+        return this;
+    }
+
+    /**
      * Returns the width of this progress bar in slots.
      *
      * @return the progress bar width
