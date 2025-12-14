@@ -28,8 +28,8 @@ import java.util.function.Function;
  * Icons can span multiple slots with configurable width and height.
  */
 public class Icon extends Component {
-    private final Function<MenuContext, ItemStack> item;
-    private final Sound sound;
+    private Function<MenuContext, ItemStack> item;
+    private Sound sound;
 
     private final int width, height;
 
@@ -132,6 +132,52 @@ public class Icon extends Component {
         }
 
         return slots;
+    }
+
+
+    /**
+     * Sets the ItemStack to display for this icon.
+     *
+     * @param item the ItemStack to display
+     * @return this icon for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Icon item(@NotNull ItemStack item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = context -> item;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for this icon.
+     *
+     * @param item function that returns the ItemStack to display
+     * @return this icon for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Icon item(@NotNull Function<MenuContext, ItemStack> item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = item;
+        return this;
+    }
+
+    /**
+     * Sets the sound to play when the icon is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     * @return this icon for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Icon sound(@Nullable Sound sound) {
+        this.sound = sound;
+        return this;
     }
 
     /**

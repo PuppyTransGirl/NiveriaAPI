@@ -28,14 +28,13 @@ import java.util.function.Function;
  * The percentage value determines how much of the bar is filled.
  */
 public class ProgressBar extends Component {
-    private final Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
+    private Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
     private final Direction.Default direction;
 
-    private final Object2DoubleFunction<MenuContext> percentage;
+    private Object2DoubleFunction<MenuContext> percentage;
 
-    private final int width;
-    private final int height;
+    private final int width, height;
 
     /**
      * Constructs a new ProgressBar with the specified parameters.
@@ -197,6 +196,102 @@ public class ProgressBar extends Component {
         }
 
         return slots;
+    }
+
+    /**
+     * Sets the ItemStack to display for completed sections.
+     *
+     * @param doneItem the ItemStack for completed sections
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if doneItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar doneItem(@NotNull ItemStack doneItem) {
+        Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
+
+        this.doneItem = context -> doneItem;
+        return this;
+    }
+
+    /**
+     * Sets the ItemStack to display for the current progress position.
+     *
+     * @param currentItem the ItemStack for the current progress position
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if currentItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar currentItem(@NotNull ItemStack currentItem) {
+        Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
+
+        this.currentItem = context -> currentItem;
+        return this;
+    }
+
+    /**
+     * Sets the ItemStack to display for incomplete sections.
+     *
+     * @param notDoneItem the ItemStack for incomplete sections
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if notDoneItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar notDoneItem(@NotNull ItemStack notDoneItem) {
+        Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
+
+        this.notDoneItem = context -> notDoneItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for completed sections.
+     *
+     * @param doneItem function that returns the ItemStack for completed sections
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if doneItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
+        Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
+
+        this.doneItem = doneItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for the current progress position.
+     *
+     * @param currentItem function that returns the ItemStack for the current progress position
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if currentItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
+        Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
+
+        this.currentItem = currentItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for incomplete sections.
+     *
+     * @param notDoneItem function that returns the ItemStack for incomplete sections
+     * @return this progress bar for method chaining
+     * @throws NullPointerException if notDoneItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public ProgressBar notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
+        Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
+
+        this.notDoneItem = notDoneItem;
+        return this;
     }
 
     /**

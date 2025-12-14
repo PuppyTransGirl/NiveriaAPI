@@ -25,27 +25,6 @@ public abstract class Component {
     private int y = 0;
 
     /**
-     * Renders this component to the menu's inventory.
-     * <p>
-     * This method retrieves the component's items and slots, then places
-     * the items into the appropriate inventory slots.
-     *
-     * @param context the menu context
-     * @throws NullPointerException if context is null
-     */
-    public void render(@NotNull MenuContext context) {
-        Preconditions.checkNotNull(context, "context cannot be null");
-
-        Int2ObjectMap<ItemStack> items = this.items(context);
-        IntSet slots = this.slots(context);
-
-        for (int slot : slots) {
-            ItemStack item = items.get(slot);
-            context.menu().getInventory().setItem(slot, item);
-        }
-    }
-
-    /**
      * Called when this component is added to a menu.
      * <p>
      * Override this method to perform initialization logic when the component
@@ -104,6 +83,27 @@ public abstract class Component {
      */
     @NotNull
     public abstract IntSet slots(@NotNull MenuContext context);
+
+    /**
+     * Renders this component to the menu's inventory.
+     * <p>
+     * This method retrieves the component's items and slots, then places
+     * the items into the appropriate inventory slots.
+     *
+     * @param context the menu context
+     * @throws NullPointerException if context is null
+     */
+    public void render(@NotNull MenuContext context) {
+        Preconditions.checkNotNull(context, "context cannot be null");
+
+        Int2ObjectMap<ItemStack> items = this.items(context);
+        IntSet slots = this.slots(context);
+
+        for (int slot : slots) {
+            ItemStack item = items.get(slot);
+            context.menu().getInventory().setItem(slot, item);
+        }
+    }
 
     /**
      * Sets the position of this component within the menu grid.

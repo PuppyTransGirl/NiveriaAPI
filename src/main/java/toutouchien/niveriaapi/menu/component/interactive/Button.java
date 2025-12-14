@@ -36,21 +36,21 @@ import java.util.function.Function;
  * - Multi-slot rendering with configurable dimensions
  */
 public class Button extends Component {
-    private final Function<MenuContext, ItemStack> item;
+    private Function<MenuContext, ItemStack> item;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
+    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
-    private final Sound sound;
+    private Sound sound;
 
-    private final Function<MenuContext, ObjectList<ItemStack>> animationFrames;
-    private final int animationInterval;
-    private final boolean stopAnimationOnHide;
+    private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+    private int animationInterval;
+    private boolean stopAnimationOnHide;
     private BukkitTask animationTask;
     private int currentFrame;
 
-    private final Function<MenuContext, ItemStack> dynamicItem;
-    private final int updateInterval;
-    private final boolean stopUpdatesOnHide;
+    private Function<MenuContext, ItemStack> dynamicItem;
+    private int updateInterval;
+    private boolean stopUpdatesOnHide;
     private BukkitTask updateTask;
 
     private final int width, height;
@@ -234,28 +234,6 @@ public class Button extends Component {
     }
 
     /**
-     * Returns the width of this button in slots.
-     *
-     * @return the button width
-     */
-    @Positive
-    @Override
-    public int width() {
-        return this.width;
-    }
-
-    /**
-     * Returns the height of this button in rows.
-     *
-     * @return the button height
-     */
-    @Positive
-    @Override
-    public int height() {
-        return this.height;
-    }
-
-    /**
      * Starts the animation task that cycles through animation frames.
      *
      * @param context the menu context
@@ -330,6 +308,259 @@ public class Button extends Component {
             return this.animationFrames.apply(context).get(this.currentFrame);
 
         return this.item.apply(context);
+    }
+
+    /**
+     * Sets the ItemStack to display for this button.
+     *
+     * @param item the ItemStack to display
+     * @return this button for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button item(@NotNull ItemStack item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = context -> item;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for this button.
+     *
+     * @param item function that returns the ItemStack to display
+     * @return this button for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button item(@NotNull Function<MenuContext, ItemStack> item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = item;
+        return this;
+    }
+
+    /**
+     * Sets the general click handler for mouse clicks.
+     *
+     * @param onClick the click handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+        this.onClick = onClick;
+        return this;
+    }
+
+    /**
+     * Sets the left click handler.
+     *
+     * @param onLeftClick the left click handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onLeftClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
+
+        this.onLeftClick = onLeftClick;
+        return this;
+    }
+
+    /**
+     * Sets the right click handler.
+     *
+     * @param onRightClick the right click handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onRightClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
+
+        this.onRightClick = onRightClick;
+        return this;
+    }
+
+    /**
+     * Sets the shift+left click handler.
+     *
+     * @param onShiftLeftClick the shift+left click handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onShiftLeftClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+        this.onShiftLeftClick = onShiftLeftClick;
+        return this;
+    }
+
+    /**
+     * Sets the shift+right click handler.
+     *
+     * @param onShiftRightClick the shift+right click handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onShiftRightClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+        this.onShiftRightClick = onShiftRightClick;
+        return this;
+    }
+
+    /**
+     * Sets the drop action handler.
+     *
+     * @param onDrop the drop action handler
+     * @return this button for method chaining
+     * @throws NullPointerException if onDrop is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
+        Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
+
+        this.onDrop = onDrop;
+        return this;
+    }
+
+    /**
+     * Sets the sound to play when the button is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     * @return this button for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button sound(@Nullable Sound sound) {
+        this.sound = sound;
+        return this;
+    }
+
+    /**
+     * Sets the function providing animation frames for this button.
+     *
+     * @param animationFrames function that returns a list of ItemStacks to cycle through
+     * @return this button for method chaining
+     * @throws NullPointerException if animationFrames is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+        Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
+
+        this.animationFrames = animationFrames;
+        return this;
+    }
+
+    /**
+     * Sets the interval between animation frames in ticks.
+     *
+     * @param animationInterval ticks between frames (must be positive)
+     * @return this button for method chaining
+     * @throws IllegalArgumentException if animationInterval is less than 1
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button animationInterval(@Positive int animationInterval) {
+        Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %s", animationInterval);
+
+        this.animationInterval = animationInterval;
+        return this;
+    }
+
+    /**
+     * Sets whether animation should stop when the button is hidden.
+     *
+     * @param stopAnimationOnHide true to stop animation when hidden
+     * @return this button for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button stopAnimationOnHide(boolean stopAnimationOnHide) {
+        this.stopAnimationOnHide = stopAnimationOnHide;
+        return this;
+    }
+
+    /**
+     * Sets the function providing dynamic content for this button.
+     *
+     * @param dynamicItem function that returns dynamically updating ItemStack
+     * @return this button for method chaining
+     * @throws NullPointerException if dynamicItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+        Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
+
+        this.dynamicItem = dynamicItem;
+        return this;
+    }
+
+    /**
+     * Sets the interval between dynamic content updates in ticks.
+     *
+     * @param updateInterval ticks between updates (must be positive)
+     * @return this button for method chaining
+     * @throws IllegalArgumentException if updateInterval is less than 1
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button updateInterval(@Positive int updateInterval) {
+        Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %s", updateInterval);
+
+        this.updateInterval = updateInterval;
+        return this;
+    }
+
+    /**
+     * Sets whether dynamic updates should stop when the button is hidden.
+     *
+     * @param stopUpdatesOnHide true to stop updates when hidden
+     * @return this button for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Button stopUpdatesOnHide(boolean stopUpdatesOnHide) {
+        this.stopUpdatesOnHide = stopUpdatesOnHide;
+        return this;
+    }
+
+    /**
+     * Returns the width of this button in slots.
+     *
+     * @return the button width
+     */
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    /**
+     * Returns the height of this button in rows.
+     *
+     * @return the button height
+     */
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
     }
 
     /**

@@ -33,12 +33,12 @@ import java.util.function.Function;
  * The button supports various click handlers for different interaction types.
  */
 public class DoubleDropButton extends Component {
-    private final Function<MenuContext, ItemStack> item;
-    private final Function<MenuContext, ItemStack> dropItem;
+    private Function<MenuContext, ItemStack> item;
+    private Function<MenuContext, ItemStack> dropItem;
 
-    private final Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
+    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
-    private final Sound sound;
+    private Sound sound;
 
     private final int width, height;
 
@@ -210,6 +210,179 @@ public class DoubleDropButton extends Component {
         }
 
         return slots;
+    }
+
+    /**
+     * Sets the ItemStack to display in normal state.
+     *
+     * @param item the ItemStack for normal state
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton item(@NotNull ItemStack item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = context -> item;
+        return this;
+    }
+
+    /**
+     * Sets the ItemStack to display in drop state.
+     *
+     * @param dropItem the ItemStack for drop state
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if dropItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton dropItem(@NotNull ItemStack dropItem) {
+        Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
+
+        this.dropItem = context -> dropItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for normal state.
+     *
+     * @param item function that returns the ItemStack for normal state
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton item(@NotNull Function<MenuContext, ItemStack> item) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.item = item;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for drop state.
+     *
+     * @param dropItem function that returns the ItemStack for drop state
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if dropItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
+        Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
+
+        this.dropItem = dropItem;
+        return this;
+    }
+
+    /**
+     * Sets the general click handler for mouse clicks.
+     *
+     * @param onClick the click handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+        this.onClick = onClick;
+        return this;
+    }
+
+    /**
+     * Sets the left click handler.
+     *
+     * @param onLeftClick the left click handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onLeftClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
+
+        this.onLeftClick = onLeftClick;
+        return this;
+    }
+
+    /**
+     * Sets the right click handler.
+     *
+     * @param onRightClick the right click handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onRightClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
+
+        this.onRightClick = onRightClick;
+        return this;
+    }
+
+    /**
+     * Sets the shift+left click handler.
+     *
+     * @param onShiftLeftClick the shift+left click handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onShiftLeftClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+
+        this.onShiftLeftClick = onShiftLeftClick;
+        return this;
+    }
+
+    /**
+     * Sets the shift+right click handler.
+     *
+     * @param onShiftRightClick the shift+right click handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onShiftRightClick is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+
+        this.onShiftRightClick = onShiftRightClick;
+        return this;
+    }
+
+    /**
+     * Sets the double-drop action handler.
+     *
+     * @param onDoubleDrop the double-drop handler
+     * @return this double drop button for method chaining
+     * @throws NullPointerException if onDoubleDrop is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
+        Preconditions.checkNotNull(onDoubleDrop, "onDoubleDrop cannot be null");
+
+        this.onDoubleDrop = onDoubleDrop;
+        return this;
+    }
+
+    /**
+     * Sets the sound to play when the button is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     * @return this double drop button for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleDropButton sound(@Nullable Sound sound) {
+        this.sound = sound;
+        return this;
     }
 
     /**

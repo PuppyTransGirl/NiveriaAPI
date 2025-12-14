@@ -34,11 +34,11 @@ import java.util.function.Function;
  * @param <T> the type of values associated with selector options
  */
 public class Selector<T> extends Component {
-    private final ObjectList<Option<T>> options;
-    private final Function<MenuContext, T> defaultOption;
-    private final Consumer<SelectionChangeEvent<T>> onSelectionChange;
+    private ObjectList<Option<T>> options;
+    private Function<MenuContext, T> defaultOption;
+    private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
-    private final Sound sound;
+    private Sound sound;
 
     private final int width, height;
 
@@ -197,28 +197,6 @@ public class Selector<T> extends Component {
     }
 
     /**
-     * Returns the width of this selector in slots.
-     *
-     * @return the selector width
-     */
-    @Positive
-    @Override
-    public int width() {
-        return this.width;
-    }
-
-    /**
-     * Returns the height of this selector in rows.
-     *
-     * @return the selector height
-     */
-    @Positive
-    @Override
-    public int height() {
-        return this.height;
-    }
-
-    /**
      * Sets the current selection to the option with the specified value.
      *
      * @param value the value to select
@@ -276,6 +254,123 @@ public class Selector<T> extends Component {
     }
 
     /**
+     * Adds an option to the selector with a static ItemStack.
+     *
+     * @param item  the ItemStack to display for this option
+     * @param value the value associated with this option (may be null)
+     * @return this selector for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Selector<T> addOption(@NotNull ItemStack item, @Nullable T value) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.options.add(new Option<>(context -> item, value));
+        return this;
+    }
+
+    /**
+     * Adds an option to the selector with a dynamic ItemStack function.
+     *
+     * @param item  function that provides the ItemStack for this option
+     * @param value the value associated with this option (may be null)
+     * @return this selector for method chaining
+     * @throws NullPointerException if item is null
+     */
+    @NotNull
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Selector<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+        Preconditions.checkNotNull(item, "item cannot be null");
+
+        this.options.add(new Option<>(item, value));
+        return this;
+    }
+
+    /**
+     * Removes the option with the specified value from the selector.
+     *
+     * @param value the value of the option to remove
+     * @return this selector for method chaining
+     * @throws NullPointerException if value is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Selector<T> removeOption(@NotNull T value) {
+        Preconditions.checkNotNull(value, "value cannot be null");
+
+        this.options.removeIf(option -> Objects.equals(option.value, value));
+        return this;
+    }
+
+    /**
+     * Sets the callback to invoke when the selection changes.
+     *
+     * @param consumer the selection change callback
+     * @return this selector for method chaining
+     * @throws NullPointerException if consumer is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Selector<T> onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> consumer) {
+        Preconditions.checkNotNull(consumer, "consumer cannot be null");
+
+        this.onSelectionChange = consumer;
+        return this;
+    }
+
+    /**
+     * Sets a function to determine the default option based on context.
+     *
+     * @param defaultOption function that returns the default value to select
+     * @return this selector for method chaining
+     * @throws NullPointerException if defaultOption is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Selector<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
+        Preconditions.checkNotNull(defaultOption, "defaultOption cannot be null");
+
+        this.defaultOption = defaultOption;
+        return this;
+    }
+
+    /**
+     * Sets the sound to play when the selector is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     * @return this selector for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Selector<T> sound(@Nullable Sound sound) {
+        this.sound = sound;
+        return this;
+    }
+
+    /**
+     * Returns the width of this selector in slots.
+     *
+     * @return the selector width
+     */
+    @Positive
+    @Override
+    public int width() {
+        return this.width;
+    }
+
+    /**
+     * Returns the height of this selector in rows.
+     *
+     * @return the selector height
+     */
+    @Positive
+    @Override
+    public int height() {
+        return this.height;
+    }
+
+    /**
      * Creates a new Selector builder instance.
      *
      * @param <T> the type of values for selector options
@@ -322,7 +417,7 @@ public class Selector<T> extends Component {
         public Builder<T> addOption(@NotNull ItemStack item, @Nullable T value) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
-            options.add(new Option<>(context -> item, value));
+            this.options.add(new Option<>(context -> item, value));
             return this;
         }
 
@@ -339,7 +434,7 @@ public class Selector<T> extends Component {
         public Builder<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
-            options.add(new Option<>(item, value));
+            this.options.add(new Option<>(item, value));
             return this;
         }
 

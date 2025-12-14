@@ -27,9 +27,10 @@ import java.util.function.Function;
  * on/off items, click sounds, and can span multiple slots with configurable
  * width and height.
  */
+// TODO: Add Callback for state change
 public class Toggle extends Component {
-    private final Function<MenuContext, ItemStack> onItem, offItem;
-    private final Sound sound;
+    private Function<MenuContext, ItemStack> onItem, offItem;
+    private Sound sound;
     private final int width, height;
 
     private boolean currentState;
@@ -139,6 +140,106 @@ public class Toggle extends Component {
     }
 
     /**
+     * Gets the ItemStack to display based on the current toggle state.
+     *
+     * @param context the menu context
+     * @return the appropriate ItemStack for the current state
+     */
+    private ItemStack currentItem(@NotNull MenuContext context) {
+        return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
+    }
+
+    /**
+     * Sets the ItemStack to display when the toggle is in the "on" state.
+     *
+     * @param onItem the ItemStack for the "on" state
+     * @return this selector for method chaining
+     * @throws NullPointerException if onItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle onItem(@NotNull ItemStack onItem) {
+        Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
+        this.onItem = context -> onItem;
+        return this;
+    }
+
+    /**
+     * Sets the ItemStack to display when the toggle is in the "off" state.
+     *
+     * @param offItem the ItemStack for the "off" state
+     * @return this selector for method chaining
+     * @throws NullPointerException if offItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle offItem(@NotNull ItemStack offItem) {
+        Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
+        this.offItem = context -> offItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for the "on" state.
+     *
+     * @param onItem function that returns the ItemStack for the "on" state
+     * @return this selector for method chaining
+     * @throws NullPointerException if onItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle onItem(@NotNull Function<MenuContext, ItemStack> onItem) {
+        Preconditions.checkNotNull(onItem, "onItem cannot be null");
+
+        this.onItem = onItem;
+        return this;
+    }
+
+    /**
+     * Sets a function to provide the ItemStack for the "off" state.
+     *
+     * @param offItem function that returns the ItemStack for the "off" state
+     * @return this selector for method chaining
+     * @throws NullPointerException if offItem is null
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle offItem(@NotNull Function<MenuContext, ItemStack> offItem) {
+        Preconditions.checkNotNull(offItem, "offItem cannot be null");
+
+        this.offItem = offItem;
+        return this;
+    }
+
+    /**
+     * Sets the initial state of the toggle.
+     *
+     * @param state true for "on" state, false for "off" state
+     * @return this selector for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle currentState(boolean state) {
+        this.currentState = state;
+        return this;
+    }
+
+    /**
+     * Sets the sound to play when the toggle is clicked.
+     *
+     * @param sound the sound to play, or null for no sound
+     * @return this selector for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle sound(@Nullable Sound sound) {
+        this.sound = sound;
+        return this;
+    }
+
+    /**
      * Returns the width of this toggle in slots.
      *
      * @return the toggle width
@@ -158,16 +259,6 @@ public class Toggle extends Component {
     @Override
     public int height() {
         return this.height;
-    }
-
-    /**
-     * Gets the ItemStack to display based on the current toggle state.
-     *
-     * @param context the menu context
-     * @return the appropriate ItemStack for the current state
-     */
-    private ItemStack currentItem(@NotNull MenuContext context) {
-        return currentState ? this.onItem.apply(context) : this.offItem.apply(context);
     }
 
     /**
