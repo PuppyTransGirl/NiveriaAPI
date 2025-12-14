@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
@@ -76,6 +77,7 @@ public abstract class Menu implements InventoryHolder {
      * @param event the inventory click event to handle
      * @throws NullPointerException if event is null
      */
+    @Overexcited(reason = "Calls render on each click")
     public void handleClick(@NotNull NiveriaInventoryClickEvent event) {
         Preconditions.checkNotNull(event, "event cannot be null");
 

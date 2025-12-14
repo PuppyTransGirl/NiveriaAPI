@@ -14,6 +14,7 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.Component;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -30,6 +31,7 @@ import java.util.function.Function;
  * and optional first/last page buttons. Navigation buttons can have different appearances
  * when disabled (at first/last page).
  */
+@Overexcited(reason = "Needs to be based on the component slots instead of using all these calculations (onClick, items)")
 public class Paginator extends Component {
     private final ObjectList<Component> components;
 

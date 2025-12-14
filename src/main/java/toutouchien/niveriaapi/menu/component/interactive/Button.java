@@ -270,7 +270,7 @@ public class Button extends Component {
             List<ItemStack> frames = this.animationFrames.apply(context);
 
             this.currentFrame = (this.currentFrame + 1) % frames.size();
-            render(context);
+            this.render(context);
         }, NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
     }
 
@@ -299,7 +299,7 @@ public class Button extends Component {
                 return;
             }
 
-            render(context);
+            this.render(context);
         }, NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
     }
 
