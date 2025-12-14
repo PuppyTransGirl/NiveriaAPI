@@ -83,9 +83,8 @@ public class Paginator extends Component {
     /**
      * Handles click events within the paginator.
      * <p>
-     * This method delegates the click event to the appropriate child component
-     * based on the clicked slot. If the paginator is not interactable, the event
-     * is ignored.
+     * Determines which component was clicked based on the event slot and
+     * delegates the click event to that component.
      *
      * @param event   the inventory click event
      * @param context the menu context
