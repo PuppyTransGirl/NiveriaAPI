@@ -99,7 +99,7 @@ public class Grid extends Component {
             return;
 
         for (Component component : this.slotComponents) {
-            if (component.slots(context).contains(event.getSlot())) {
+            if (component.slots(context).contains(event.slot())) {
                 component.onClick(event, context);
                 break;
             }

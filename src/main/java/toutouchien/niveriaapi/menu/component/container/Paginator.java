@@ -110,7 +110,7 @@ public class Paginator extends Component {
             Int2ObjectMap<ItemStack> compItems = component.items(context);
             for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
                 int innerSlot = entry.getIntKey();
-                if (event.getSlot() == baseSlot + innerSlot) {
+                if (event.slot() == baseSlot + innerSlot) {
                     component.onClick(event, context);
                     return;
                 }

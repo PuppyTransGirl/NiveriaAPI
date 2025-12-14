@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.index.qual.NonNegative;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
@@ -76,6 +77,11 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     @NotNull
     public Player player() {
         return (Player) getWhoClicked();
+    }
+
+    @NonNegative
+    public int slot() {
+        return getSlot();
     }
 
     /**
