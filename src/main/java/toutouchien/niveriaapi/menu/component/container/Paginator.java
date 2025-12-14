@@ -95,11 +95,26 @@ public class Paginator extends Component {
         if (!this.interactable())
             return;
 
+        int componentIndex = 0;
         for (Component component : this.currentPageComponents()) {
-            if (component.slots(context).contains(event.getSlot())) {
-                component.onClick(event, context);
-                break;
+            int localX = (componentIndex % this.width);
+            int localY = 1 + (componentIndex / this.width);
+
+            int compX = this.x() + localX;
+            int compY = this.y() + localY;
+
+            int baseSlot = (compY - 1) * 9 + compX;
+
+            Int2ObjectMap<ItemStack> compItems = component.items(context);
+            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
+                int innerSlot = entry.getIntKey();
+                if (event.getSlot() == baseSlot + innerSlot) {
+                    component.onClick(event, context);
+                    return;
+                }
             }
+
+            componentIndex++;
         }
     }
 
