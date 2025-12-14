@@ -9,8 +9,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import toutouchien.niveriaapi.menu.component.premade.ConfirmationMenu;
+import toutouchien.niveriaapi.menu.test.BasicTestMenu;
+import toutouchien.niveriaapi.menu.test.DynamicTestMenu;
 import toutouchien.niveriaapi.menu.test.PaginatedTestMenu;
-import toutouchien.niveriaapi.menu.test.TestMenu;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
@@ -25,6 +26,7 @@ public class NiveriaAPITestCommand {
                 .requires(CommandUtils::playerExecutorRequirement)
                 .then(basicCommand())
                 .then(confirmationCommand())
+                .then(dynamicCommand())
                 .then(paginatorCommand());
     }
 
@@ -33,7 +35,7 @@ public class NiveriaAPITestCommand {
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.basic"))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
-                    TestMenu menu = new TestMenu(player);
+                    BasicTestMenu menu = new BasicTestMenu(player);
                     menu.open();
 
                     return Command.SINGLE_SUCCESS;
@@ -54,6 +56,18 @@ public class NiveriaAPITestCommand {
                             event -> event.player().sendRichMessage("You clicked <green>Yes"),
                             event -> event.player().sendRichMessage("You clicked <red>No")
                     );
+                    menu.open();
+
+                    return Command.SINGLE_SUCCESS;
+                });
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> dynamicCommand() {
+        return Commands.literal("dynamic")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.dynamic"))
+                .executes(ctx -> {
+                    Player player = (Player) ctx.getSource().getExecutor();
+                    DynamicTestMenu menu = new DynamicTestMenu(player);
                     menu.open();
 
                     return Command.SINGLE_SUCCESS;

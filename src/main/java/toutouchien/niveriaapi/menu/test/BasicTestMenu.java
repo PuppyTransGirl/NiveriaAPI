@@ -27,14 +27,14 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
  * in the menu system, including buttons, toggles, selectors, progress bars, and more.
  * It demonstrates both static and dynamic content, animations, and various interaction types.
  */
-public class TestMenu extends Menu {
+public class BasicTestMenu extends Menu {
 
     /**
      * Constructs a new TestMenu for the specified player.
      *
      * @param player the player who will view this menu
      */
-    public TestMenu(Player player) {
+    public BasicTestMenu(Player player) {
         super(player);
     }
 

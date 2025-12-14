@@ -28,7 +28,6 @@ import java.util.function.Function;
  * on/off items, click sounds, and can span multiple slots with configurable
  * width and height.
  */
-// TODO: Add Callback for state change
 public class Toggle extends Component {
     private Function<MenuContext, ItemStack> onItem, offItem;
     private Consumer<ToggleEvent> onToggle;
@@ -83,8 +82,10 @@ public class Toggle extends Component {
         this.currentState = !this.currentState;
         this.render(context);
 
-        ToggleEvent toggleEvent = new ToggleEvent(event, this.currentState);
-        this.onToggle.accept(toggleEvent);
+        if (this.onToggle != null) {
+            ToggleEvent toggleEvent = new ToggleEvent(event, this.currentState);
+            this.onToggle.accept(toggleEvent);
+        }
     }
 
     /**
@@ -225,15 +226,18 @@ public class Toggle extends Component {
     }
 
     /**
-     * Sets the initial state of the toggle.
+     * Sets the toggle state change handler.
      *
-     * @param state true for "on" state, false for "off" state
+     * @param onToggle the consumer to handle toggle state changes
      * @return this selector for method chaining
+     * @throws NullPointerException if onToggle is null
      */
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Toggle currentState(boolean state) {
-        this.currentState = state;
+    public Toggle onToggle(@NotNull Consumer<ToggleEvent> onToggle) {
+        Preconditions.checkNotNull(onToggle, "onToggle cannot be null");
+
+        this.onToggle = onToggle;
         return this;
     }
 
@@ -247,6 +251,19 @@ public class Toggle extends Component {
     @Contract(value = "_ -> this", mutates = "this")
     public Toggle sound(@Nullable Sound sound) {
         this.sound = sound;
+        return this;
+    }
+
+    /**
+     * Sets the initial state of the toggle.
+     *
+     * @param state true for "on" state, false for "off" state
+     * @return this selector for method chaining
+     */
+    @NotNull
+    @Contract(value = "_ -> this", mutates = "this")
+    public Toggle currentState(boolean state) {
+        this.currentState = state;
         return this;
     }
 
