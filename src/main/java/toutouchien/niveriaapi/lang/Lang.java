@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -539,8 +540,26 @@ public class Lang {
             return;
 
         audience.sendMessage(message);
-        if (sound != null)
+        if (sound != null) {
             audience.playSound(sound, Sound.Emitter.self());
+            return;
+        }
+
+        String soundString = args == null ? getString(audience, key + "_sound") : getString(audience, key + "_sound", args);
+        if (soundString.equals(key + "_sound"))
+            return;
+
+        try {
+            String[] split = soundString.split(";");
+            Key soundKey = Key.key(split[0]);
+            Sound.Source source = Sound.Source.valueOf(split[1]);
+            float volume = Integer.parseInt(split[2]);
+            float pitch = Integer.parseInt(split[3]);
+
+            audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
+        } catch (Exception e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to play sound for key: {} (sound string: {})", key, soundString, e);
+        }
     }
 
     /**
