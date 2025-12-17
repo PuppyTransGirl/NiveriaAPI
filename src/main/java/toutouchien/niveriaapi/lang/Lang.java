@@ -564,10 +564,10 @@ public class Lang {
                 return;
             }
 
-            Key soundKey = Key.key(split[0]);
-            Sound.Source source = Sound.Source.valueOf(split[1]);
-            float volume = Float.parseFloat(split[2]);
-            float pitch = Float.parseFloat(split[3]);
+            Key soundKey = Key.key(split[0].trim());
+            Sound.Source source = Sound.Source.valueOf(split[1].trim());
+            float volume = Float.parseFloat(split[2].trim());
+            float pitch = Float.parseFloat(split[3].trim());
 
             audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
         } catch (Exception e) {
