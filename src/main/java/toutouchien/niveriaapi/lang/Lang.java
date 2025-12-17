@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -524,9 +525,16 @@ public class Lang {
     /**
      * Gets a formatted, localized message, plays a sound, and sends it directly
      * to an {@link Audience}.
+     * <p>
+     * If the provided sound is {@code null}, the method will attempt to derive
+     * a sound from the language file by appending "_sound" to the message key.
+     * The sound string must follow the format: {@code <sound_key>;<source>;<volume>;<pitch>}
+     * (e.g., {@code "minecraft:entity.ender_dragon.death;MASTER;1.0;1.0"}).
+     * If the sound key is not found or the format is invalid, the sound will be
+     * skipped silently (with error logging).
      *
      * @param audience The recipient of the message.
-     * @param sound    The sound to play when sending the message.
+     * @param sound    The sound to play when sending the message, or {@code null} to derive from the language file using the "{@code key_sound}" convention.
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
@@ -539,8 +547,32 @@ public class Lang {
             return;
 
         audience.sendMessage(message);
-        if (sound != null)
+        if (sound != null) {
             audience.playSound(sound, Sound.Emitter.self());
+            return;
+        }
+
+        String soundString = args == null ? getString(audience, key + "_sound") : getString(audience, key + "_sound", args);
+        if (soundString.equals(key + "_sound"))
+            return;
+
+        try {
+            String[] split = soundString.split(";");
+            if (split.length != 4) {
+                NiveriaAPI.instance().getSLF4JLogger().error("Invalid sound string format for key: {} (sound string: {})", key, soundString);
+                NiveriaAPI.instance().getSLF4JLogger().error("Expected format: <sound_key>;<source>;<volume>;<pitch>");
+                return;
+            }
+
+            Key soundKey = Key.key(split[0].trim());
+            Sound.Source source = Sound.Source.valueOf(split[1].trim());
+            float volume = Float.parseFloat(split[2].trim());
+            float pitch = Float.parseFloat(split[3].trim());
+
+            audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
+        } catch (Exception e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to play sound for key: {} (sound string: {})", key, soundString, e);
+        }
     }
 
     /**
