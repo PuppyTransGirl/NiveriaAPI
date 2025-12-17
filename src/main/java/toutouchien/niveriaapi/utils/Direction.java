@@ -1,11 +1,15 @@
 package toutouchien.niveriaapi.utils;
 
 public class Direction {
+    private Direction() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public enum Default {
         UP,
         LEFT,
         RIGHT,
-        DOWN;
+        DOWN
     }
 
     public enum Cardinal {

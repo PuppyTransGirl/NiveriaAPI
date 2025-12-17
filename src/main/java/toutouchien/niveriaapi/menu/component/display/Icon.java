@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Function;
@@ -27,7 +26,7 @@ import java.util.function.Function;
  * when clicked, though they can optionally play a sound for audio feedback.
  * Icons can span multiple slots with configurable width and height.
  */
-public class Icon extends Component {
+public class Icon extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
     private Sound sound;
 
@@ -219,12 +218,7 @@ public class Icon extends Component {
     public static class Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
-        private Sound sound = Sound.sound(
-                Key.key("minecraft", "ui.button.click"),
-                Sound.Source.UI,
-                1F,
-                1F
-        );
+        private Sound sound = null;
 
         private int width = 1;
         private int height = 1;

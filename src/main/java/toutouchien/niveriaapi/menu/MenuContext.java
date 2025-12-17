@@ -56,7 +56,7 @@ public class MenuContext {
      * Stores a value in the context's data map.
      *
      * @param key   the key to associate with the value
-     * @param value the value to store, or null to remove the key
+     * @param value the value to store
      * @throws NullPointerException if key is null
      */
     public void set(@NotNull String key, @Nullable Object value) {
@@ -118,6 +118,6 @@ public class MenuContext {
      * to ensure proper cleanup of resources.
      */
     public void close() {
-        this.data.clear();
+        this.clear();
     }
 }

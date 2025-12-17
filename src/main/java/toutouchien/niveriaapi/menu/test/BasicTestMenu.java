@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.display.Icon;
 import toutouchien.niveriaapi.menu.component.display.ProgressBar;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -69,7 +70,7 @@ public class BasicTestMenu extends Menu {
      */
     @NotNull
     @Override
-    protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
+    protected MenuComponent root(@NotNull MenuContext context) {
         return Grid.create()
                 .size(9, 6)
                 .add(0, simpleButton())

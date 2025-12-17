@@ -17,7 +17,7 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * positioned, and interacted with. Each component has a position, size, visibility,
  * and enabled state, and can handle click events.
  */
-public abstract class Component {
+public abstract class MenuComponent {
     private boolean visible = true;
     private boolean enabled = true;
 
@@ -95,6 +95,9 @@ public abstract class Component {
      */
     public void render(@NotNull MenuContext context) {
         Preconditions.checkNotNull(context, "context cannot be null");
+
+        if (!this.visible())
+            return;
 
         Int2ObjectMap<ItemStack> items = this.items(context);
         IntSet slots = this.slots(context);

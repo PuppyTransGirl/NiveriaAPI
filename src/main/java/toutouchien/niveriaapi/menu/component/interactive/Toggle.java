@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ import java.util.function.Function;
  * on/off items, click sounds, and can span multiple slots with configurable
  * width and height.
  */
-public class Toggle extends Component {
+public class Toggle extends MenuComponent {
     private Function<MenuContext, ItemStack> onItem, offItem;
     private Consumer<ToggleEvent> onToggle;
     private Sound sound;

@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.container.Paginator;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
@@ -63,7 +64,7 @@ public class PaginatedTestMenu extends Menu {
      */
     @NotNull
     @Override
-    protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
+    protected MenuComponent root(@NotNull MenuContext context) {
         Paginator.Builder builder = Paginator.create()
                 .size(7, 3)
                 .firstPageItem(ItemStack.of(Material.SPECTRAL_ARROW))
@@ -74,7 +75,7 @@ public class PaginatedTestMenu extends Menu {
                 .offLastPageItem(ItemStack.of(Material.ORANGE_DYE));
 
         World world = this.player().getWorld();
-        ObjectList<toutouchien.niveriaapi.menu.component.Component> materials = Arrays.stream(Material.values())
+        ObjectList<MenuComponent> materials = Arrays.stream(Material.values())
                 .filter(material -> !material.isLegacy())
                 .filter(Material::isItem) // Remove things like Piston Head
                 .filter(material -> world.isEnabled(material.asItemType())) // Remove disabled experimental features

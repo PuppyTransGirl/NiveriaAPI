@@ -17,10 +17,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -33,8 +34,8 @@ import java.util.function.Function;
  * when disabled (at first/last page).
  */
 @Overexcited(reason = "Needs to be based on the component slots instead of using all these calculations (onClick, items)")
-public class Paginator extends Component {
-    private ObjectList<Component> components;
+public class Paginator extends MenuComponent {
+    private final ObjectList<MenuComponent> components;
 
     private Function<MenuContext, ItemStack> backItem, nextItem, offBackItem, offNextItem;
     private Function<MenuContext, ItemStack> firstPageItem, lastPageItem, offFirstPageItem, offLastPageItem;
@@ -42,7 +43,7 @@ public class Paginator extends Component {
     private final int width, height;
 
     private int page;
-    private ObjectList<Component> cachedPageComponents;
+    private ObjectList<MenuComponent> cachedPageComponents;
 
     /**
      * Constructs a new Paginator with the specified parameters.
@@ -61,7 +62,7 @@ public class Paginator extends Component {
      * @param page             the initial page index (0-based)
      */
     private Paginator(
-            ObjectList<Component> components,
+            ObjectList<MenuComponent> components,
             Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
             Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,
             Function<MenuContext, ItemStack> firstPageItem, Function<MenuContext, ItemStack> lastPageItem,
@@ -98,7 +99,7 @@ public class Paginator extends Component {
             return;
 
         int componentIndex = 0;
-        for (Component component : this.currentPageComponents()) {
+        for (MenuComponent component : this.currentPageComponents()) {
             int localX = (componentIndex % this.width);
             int localY = 1 + (componentIndex / this.width);
 
@@ -135,7 +136,7 @@ public class Paginator extends Component {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
 
         int componentIndex = 0;
-        for (Component component : this.currentPageComponents()) {
+        for (MenuComponent component : this.currentPageComponents()) {
             int localX = (componentIndex % this.width);
             int localY = 1 + (componentIndex / this.width);
 
@@ -200,7 +201,7 @@ public class Paginator extends Component {
      * @return a list of components for the current page
      */
     @NotNull
-    private ObjectList<Component> currentPageComponents() {
+    private ObjectList<MenuComponent> currentPageComponents() {
         if (this.cachedPageComponents != null)
             return this.cachedPageComponents;
 
@@ -259,18 +260,17 @@ public class Paginator extends Component {
      */
     @Nullable
     public Button nextButton() {
-        int maxPage = this.maxPage();
-        if (this.page >= maxPage && this.offNextItem == null)
+        if (this.page >= this.maxPage() && this.offNextItem == null)
             return null;
 
         return Button.create()
                 .item(context -> {
-                    return this.page < maxPage
+                    return this.page < this.maxPage()
                             ? this.nextItem.apply(context)
                             : this.offNextItem.apply(context);
                 })
                 .onClick(event -> {
-                    if (this.page >= maxPage)
+                    if (this.page >= this.maxPage())
                         return;
 
                     this.page++;
@@ -318,17 +318,17 @@ public class Paginator extends Component {
      */
     @Nullable
     public Button lastPageButton() {
-        int maxPage = this.maxPage();
-        if (this.page >= maxPage && this.offLastPageItem == null)
+        if (this.page >= this.maxPage() && this.offLastPageItem == null)
             return null;
 
         return Button.create()
                 .item(context -> {
-                    return this.page < maxPage
+                    return this.page < this.maxPage()
                             ? this.lastPageItem.apply(context)
                             : this.offLastPageItem.apply(context);
                 })
                 .onClick(event -> {
+                    int maxPage = this.maxPage();
                     if (this.page >= maxPage)
                         return;
 
@@ -358,7 +358,7 @@ public class Paginator extends Component {
      */
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator add(@NotNull Component component) {
+    public Paginator add(@NotNull MenuComponent component) {
         Preconditions.checkNotNull(component, "component cannot be null");
 
         this.components.add(component);
@@ -374,7 +374,7 @@ public class Paginator extends Component {
      */
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator addAll(@NotNull ObjectList<Component> components) {
+    public Paginator addAll(@NotNull ObjectList<MenuComponent> components) {
         Preconditions.checkNotNull(components, "components cannot be null");
 
         this.components.addAll(components);
@@ -403,7 +403,7 @@ public class Paginator extends Component {
      */
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator remove(@NotNull Component component) {
+    public Paginator remove(@NotNull MenuComponent component) {
         Preconditions.checkNotNull(component, "component cannot be null");
 
         this.components.remove(component);
@@ -422,9 +422,10 @@ public class Paginator extends Component {
     public Paginator removeAll(@NotNull IntSet indexes) {
         Preconditions.checkNotNull(indexes, "indexes cannot be null");
 
-        for (int index : indexes) {
-            this.components.remove(index);
-        }
+        int[] sorted = indexes.toIntArray();
+        Arrays.sort(sorted);
+        for (int i = sorted.length - 1; i >= 0; i--)
+            this.components.remove(sorted[i]);
 
         return this;
     }
@@ -438,7 +439,7 @@ public class Paginator extends Component {
      */
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator removeAll(@NotNull ObjectSet<Component> components) {
+    public Paginator removeAll(@NotNull ObjectSet<MenuComponent> components) {
         Preconditions.checkNotNull(components, "components cannot be null");
 
         this.components.removeAll(components);
@@ -766,7 +767,7 @@ public class Paginator extends Component {
      * Builder class for constructing Paginator instances with a fluent interface.
      */
     public static class Builder {
-        private final ObjectList<Component> components = new ObjectArrayList<>();
+        private final ObjectList<MenuComponent> components = new ObjectArrayList<>();
 
         private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
         private Function<MenuContext, ItemStack> nextItem = context -> new ItemStack(Material.ARROW);
@@ -777,7 +778,8 @@ public class Paginator extends Component {
 
         private int page;
 
-        private int width, height;
+        private int width = 1;
+        private int height = 1;
 
         /**
          * Adds a component to the paginator.
@@ -788,7 +790,7 @@ public class Paginator extends Component {
          */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder add(@NotNull Component component) {
+        public Builder add(@NotNull MenuComponent component) {
             Preconditions.checkNotNull(component, "component cannot be null");
 
             this.components.add(component);
@@ -804,7 +806,7 @@ public class Paginator extends Component {
          */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder addAll(@NotNull ObjectList<Component> components) {
+        public Builder addAll(@NotNull ObjectList<MenuComponent> components) {
             Preconditions.checkNotNull(components, "components cannot be null");
 
             this.components.addAll(components);

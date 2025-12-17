@@ -13,7 +13,7 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 /**
@@ -24,10 +24,10 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * using slot indices or x/y coordinates. The grid handles rendering priority as:
  * slot components → border → fill.
  */
-public class Grid extends Component {
+public class Grid extends MenuComponent {
     private final int width, height;
 
-    private final ObjectList<Component> slotComponents;
+    private final ObjectList<MenuComponent> slotComponents;
 
     private final ItemStack border;
     private final ItemStack fill;
@@ -43,7 +43,7 @@ public class Grid extends Component {
      */
     private Grid(
             int width, int height,
-            ObjectList<Component> slotComponents,
+            ObjectList<MenuComponent> slotComponents,
             ItemStack border, ItemStack fill
     ) {
         this.width = width;
@@ -98,7 +98,7 @@ public class Grid extends Component {
         if (!this.interactable())
             return;
 
-        for (Component component : this.slotComponents) {
+        for (MenuComponent component : this.slotComponents) {
             if (component.slots(context).contains(event.slot())) {
                 component.onClick(event, context);
                 break;
@@ -121,7 +121,7 @@ public class Grid extends Component {
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
 
-        for (Component slotComponent : this.slotComponents)
+        for (MenuComponent slotComponent : this.slotComponents)
             items.putAll(slotComponent.items(context));
 
         if (this.border == null && this.fill == null)
@@ -157,7 +157,7 @@ public class Grid extends Component {
     public IntSet slots(@NotNull MenuContext context) {
         IntSet slots = new IntOpenHashSet();
 
-        for (Component slotComponent : this.slotComponents)
+        for (MenuComponent slotComponent : this.slotComponents)
             slots.addAll(slotComponent.slots(context));
 
         if (this.border == null && this.fill == null)
@@ -230,7 +230,7 @@ public class Grid extends Component {
     public static class Builder {
         private int width, height;
 
-        private final ObjectList<Component> slotComponents = new ObjectArrayList<>();
+        private final ObjectList<MenuComponent> slotComponents = new ObjectArrayList<>();
 
         private ItemStack border;
         private ItemStack fill;
@@ -246,7 +246,7 @@ public class Grid extends Component {
          */
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int slot, @NotNull Component component) {
+        public Builder add(@NonNegative int slot, @NotNull MenuComponent component) {
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
@@ -263,7 +263,7 @@ public class Grid extends Component {
                     compX >= 0 && compY >= 0 &&
                             compX + compWidth <= this.width &&
                             compY + compHeight <= this.height,
-                    "Component %s does not fit inside the grid of size %sx%s at position (%s, %s) with size %sx%s. (Have you set the grid size before adding components ?)",
+                    "MenuComponent %s does not fit inside the grid of size %sx%s at position (%s, %s) with size %sx%s. (Have you set the grid size before adding components ?)",
                     component.getClass().getSimpleName(),
                     this.width, this.height,
                     compX, compY,
@@ -284,7 +284,7 @@ public class Grid extends Component {
          */
         @NotNull
         @Contract(value = "_, _, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int x, @NonNegative int y, @NotNull Component component) {
+        public Builder add(@NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");

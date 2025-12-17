@@ -10,7 +10,7 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.utils.Direction;
 
 import java.util.function.BiConsumer;
@@ -27,7 +27,7 @@ import java.util.function.Function;
  * The progress can be displayed in four directions: UP, DOWN, LEFT, or RIGHT.
  * The percentage value determines how much of the bar is filled.
  */
-public class ProgressBar extends Component {
+public class ProgressBar extends MenuComponent {
     private Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
     private final Direction.Default direction;

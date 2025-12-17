@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.utils.Task;
 
@@ -32,7 +32,7 @@ import java.util.function.Function;
  * occurs within 3 seconds (60 ticks), it triggers a double-drop callback.
  * The button supports various click handlers for different interaction types.
  */
-public class DoubleDropButton extends Component {
+public class DoubleDropButton extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
     private Function<MenuContext, ItemStack> dropItem;
 
@@ -115,9 +115,6 @@ public class DoubleDropButton extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null)
-            context.player().playSound(this.sound, Sound.Emitter.self());
-
         ClickType click = event.getClick();
         if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) {
             if (this.dropTask != null) {
@@ -133,6 +130,9 @@ public class DoubleDropButton extends Component {
                 }, NiveriaAPI.instance(), 60L);
             }
 
+            if (this.sound != null)
+                context.player().playSound(this.sound, Sound.Emitter.self());
+
             return;
         }
 
@@ -146,11 +146,18 @@ public class DoubleDropButton extends Component {
 
         if (handler != null) {
             handler.accept(event);
+
+            if (this.sound != null)
+                context.player().playSound(this.sound, Sound.Emitter.self());
             return;
         }
 
-        if (this.onClick != null && click.isMouseClick())
+        if (this.onClick != null && click.isMouseClick()) {
             this.onClick.accept(event);
+
+            if (this.sound != null)
+                context.player().playSound(this.sound, Sound.Emitter.self());
+        }
     }
 
     /**

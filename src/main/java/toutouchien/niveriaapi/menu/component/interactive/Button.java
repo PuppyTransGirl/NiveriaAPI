@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.utils.Task;
 
@@ -35,7 +35,7 @@ import java.util.function.Function;
  * - Customizable click sounds
  * - Multi-slot rendering with configurable dimensions
  */
-public class Button extends Component {
+public class Button extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
 
     private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
@@ -153,9 +153,6 @@ public class Button extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null)
-            context.player().playSound(this.sound, Sound.Emitter.self());
-
         Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
             case LEFT, DOUBLE_CLICK -> this.onLeftClick;
             case RIGHT -> this.onRightClick;
@@ -167,11 +164,18 @@ public class Button extends Component {
 
         if (handler != null) {
             handler.accept(event);
+
+            if (this.sound != null)
+                context.player().playSound(this.sound, Sound.Emitter.self());
             return;
         }
 
-        if (this.onClick != null && event.getClick().isMouseClick())
+        if (this.onClick != null && event.getClick().isMouseClick()) {
             this.onClick.accept(event);
+
+            if (this.sound != null)
+                context.player().playSound(this.sound, Sound.Emitter.self());
+        }
     }
 
     /**
@@ -246,6 +250,8 @@ public class Button extends Component {
             }
 
             List<ItemStack> frames = this.animationFrames.apply(context);
+            if (frames.isEmpty())
+                return;
 
             this.currentFrame = (this.currentFrame + 1) % frames.size();
             this.render(context);
@@ -304,8 +310,13 @@ public class Button extends Component {
         if (this.dynamicItem != null)
             return this.dynamicItem.apply(context);
 
-        if (this.animationFrames != null)
-            return this.animationFrames.apply(context).get(this.currentFrame);
+        if (this.animationFrames != null) {
+            ObjectList<ItemStack> frames = this.animationFrames.apply(context);
+            if (frames.isEmpty())
+                return this.item.apply(context);
+
+            return frames.get(this.currentFrame % frames.size());
+        }
 
         return this.item.apply(context);
     }

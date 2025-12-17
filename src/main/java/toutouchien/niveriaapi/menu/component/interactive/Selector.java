@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 import java.util.Objects;
@@ -33,8 +33,8 @@ import java.util.function.Function;
  *
  * @param <T> the type of values associated with selector options
  */
-public class Selector<T> extends Component {
-    private ObjectList<Option<T>> options;
+public class Selector<T> extends MenuComponent {
+    private final ObjectList<Option<T>> options;
     private Function<MenuContext, T> defaultOption;
     private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
@@ -106,9 +106,6 @@ public class Selector<T> extends Component {
         if (!this.interactable())
             return;
 
-        if (this.sound != null)
-            context.player().playSound(this.sound, Sound.Emitter.self());
-
         int operation = switch (event.getClick()) {
             case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> 1;
             case RIGHT, SHIFT_RIGHT -> -1;
@@ -117,6 +114,9 @@ public class Selector<T> extends Component {
 
         if (operation == 0)
             return;
+
+        if (this.sound != null)
+            context.player().playSound(this.sound, Sound.Emitter.self());
 
         Option<T> oldOption = this.currentOption();
         int oldIndex = this.currentIndex;
@@ -203,8 +203,10 @@ public class Selector<T> extends Component {
      */
     private void selection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
-            if (Objects.equals(this.options.get(i).value, value))
+            if (Objects.equals(this.options.get(i).value, value)) {
                 this.currentIndex = i;
+                break;
+            }
         }
     }
 
@@ -299,7 +301,21 @@ public class Selector<T> extends Component {
     public Selector<T> removeOption(@NotNull T value) {
         Preconditions.checkNotNull(value, "value cannot be null");
 
+        int removedIndex = -1;
+        for (int i = 0; i < this.options.size(); i++) {
+            if (Objects.equals(this.options.get(i).value, value)) {
+                removedIndex = i;
+                break;
+            }
+        }
+
         this.options.removeIf(option -> Objects.equals(option.value, value));
+
+        if (removedIndex >= 0 && removedIndex < this.currentIndex)
+            this.currentIndex--;
+        else if (this.currentIndex >= this.options.size())
+            this.currentIndex = Math.max(0, this.options.size() - 1);
+
         return this;
     }
 
@@ -556,6 +572,12 @@ public class Selector<T> extends Component {
          */
         @NotNull
         public Selector<T> build() {
+            Preconditions.checkArgument(
+                    this.options.isEmpty() || this.defaultIndex < this.options.size(),
+                    "defaultIndex (%s) must be less than options size (%s)",
+                    this.defaultIndex, this.options.size()
+            );
+
             return new Selector<>(
                     this.options,
                     this.defaultOption,

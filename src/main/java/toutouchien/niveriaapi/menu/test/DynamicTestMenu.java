@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.display.Icon;
 import toutouchien.niveriaapi.menu.component.display.ProgressBar;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -58,7 +59,7 @@ public class DynamicTestMenu extends Menu {
      */
     @NotNull
     @Override
-    protected toutouchien.niveriaapi.menu.component.Component root(@NotNull MenuContext context) {
+    protected MenuComponent root(@NotNull MenuContext context) {
         this.progressBar = ProgressBar.create()
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))
                 .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
@@ -121,6 +122,7 @@ public class DynamicTestMenu extends Menu {
                         .name(Component.text("Reset"))
                         .build())
                 .onClick(click -> {
+                    this.currentProgress = 0;
                     updateComponents();
                     click.player().sendMessage("Progress reset to 0%");
                 })

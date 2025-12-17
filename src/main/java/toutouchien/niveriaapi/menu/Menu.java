@@ -1,13 +1,14 @@
 package toutouchien.niveriaapi.menu;
 
 import com.google.common.base.Preconditions;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import toutouchien.niveriaapi.annotations.Overexcited;
-import toutouchien.niveriaapi.menu.component.Component;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 /**
@@ -21,7 +22,7 @@ public abstract class Menu implements InventoryHolder {
     protected final MenuContext context;
     private final Player player;
 
-    private Component root;
+    private MenuComponent root;
 
     /**
      * Constructs a new Menu for the specified player.
@@ -43,7 +44,7 @@ public abstract class Menu implements InventoryHolder {
      * renders the menu contents, and opens it for the player.
      */
     public void open() {
-        net.kyori.adventure.text.Component title = this.title();
+        Component title = this.title();
         this.root = this.root(this.context);
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
 
@@ -93,7 +94,7 @@ public abstract class Menu implements InventoryHolder {
      * @return the title component displayed at the top of the inventory
      */
     @NotNull
-    protected abstract net.kyori.adventure.text.Component title();
+    protected abstract Component title();
 
     /**
      * Creates and returns the root component for this menu.
@@ -105,7 +106,7 @@ public abstract class Menu implements InventoryHolder {
      * @return the root component that defines the menu's structure
      */
     @NotNull
-    protected abstract Component root(@NotNull MenuContext context);
+    protected abstract MenuComponent root(@NotNull MenuContext context);
 
     /**
      * Returns the player associated with this menu.
@@ -137,6 +138,9 @@ public abstract class Menu implements InventoryHolder {
     @NotNull
     @Override
     public Inventory getInventory() {
+        if (this.inventory == null)
+            throw new IllegalStateException("Menu inventory has not been initialized. Did you forget to call open() ?");
+
         return inventory;
     }
 }
