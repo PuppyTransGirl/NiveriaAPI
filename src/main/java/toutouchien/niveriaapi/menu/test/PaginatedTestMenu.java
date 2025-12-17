@@ -65,14 +65,15 @@ public class PaginatedTestMenu extends Menu {
     @NotNull
     @Override
     protected MenuComponent root(@NotNull MenuContext context) {
-        Paginator.Builder builder = Paginator.create()
+        Paginator paginator = Paginator.create()
                 .size(7, 3)
                 .firstPageItem(ItemStack.of(Material.SPECTRAL_ARROW))
                 .lastPageItem(ItemStack.of(Material.SPECTRAL_ARROW))
                 .offBackItem(ItemStack.of(Material.RED_DYE))
                 .offNextItem(ItemStack.of(Material.RED_DYE))
                 .offFirstPageItem(ItemStack.of(Material.ORANGE_DYE))
-                .offLastPageItem(ItemStack.of(Material.ORANGE_DYE));
+                .offLastPageItem(ItemStack.of(Material.ORANGE_DYE))
+                .build();
 
         World world = this.player().getWorld();
         ObjectList<MenuComponent> materials = Arrays.stream(Material.values())
@@ -86,14 +87,16 @@ public class PaginatedTestMenu extends Menu {
                             .item(itemStack)
                             .onClick(event -> {
                                 event.player().sendMessage(Component.translatable(event.getCurrentItem().translationKey()));
+
+                                MenuContext ctx = event.context();
+                                paginator.remove(ctx, event.slot());
+                                paginator.render(ctx);
                             })
                             .build();
                 })
                 .collect(ObjectArrayList.toList());
 
-        builder.addAll(materials);
-
-        Paginator paginator = builder.build();
+        paginator.addAll(materials);
 
         return Grid.create()
                 .size(9, 6)

@@ -382,15 +382,39 @@ public class Paginator extends MenuComponent {
     }
 
     /**
-     * Removes a component at the specified index from the paginator.
+     * Removes a component from the paginator based on the specified slot.
      *
-     * @param index the index of the component to remove
+     * @param context the menu context
+     * @param slot    the slot index of the component to remove
      * @return this paginator for method chaining
+     * @throws NullPointerException if context is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator remove(int index) {
-        this.components.remove(index);
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator remove(@NotNull MenuContext context, int slot) {
+        // Remove component based on the slot and not the index
+        int componentIndex = 0;
+        for (MenuComponent component : this.currentPageComponents()) {
+            int localX = (componentIndex % this.width);
+            int localY = 1 + (componentIndex / this.width);
+
+            int compX = this.x() + localX;
+            int compY = this.y() + localY;
+
+            int baseSlot = (compY - 1) * 9 + compX;
+
+            Int2ObjectMap<ItemStack> compItems = component.items(context);
+            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
+                int innerSlot = entry.getIntKey();
+                if (slot == baseSlot + innerSlot) {
+                    this.components.remove(component);
+                    return this;
+                }
+            }
+
+            componentIndex++;
+        }
+
         return this;
     }
 
