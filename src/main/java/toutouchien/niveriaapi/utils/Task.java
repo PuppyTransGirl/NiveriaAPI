@@ -46,7 +46,7 @@ public class Task {
     public static BukkitTask syncLater(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
-        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
+        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
 
         return Bukkit.getScheduler().runTaskLater(plugin, runnable, delay);
     }
@@ -64,8 +64,8 @@ public class Task {
     public static BukkitTask syncRepeat(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
-        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
-        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", interval);
+        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
+        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %s", interval);
 
         return Bukkit.getScheduler().runTaskTimer(plugin, runnable, delay, interval);
     }
@@ -98,7 +98,7 @@ public class Task {
     public static ScheduledTask asyncLater(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
-        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
+        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
         return Bukkit.getAsyncScheduler().runDelayed(plugin, consumer, delay, timeUnit);
@@ -118,8 +118,8 @@ public class Task {
     public static ScheduledTask asyncRepeat(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
-        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %d", delay);
-        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %d", interval);
+        Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
+        Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %s", interval);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
         return Bukkit.getAsyncScheduler().runAtFixedRate(plugin, consumer, delay, interval, timeUnit);
