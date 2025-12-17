@@ -2,6 +2,7 @@ package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,5 +29,18 @@ public class CommandUtils {
 
         return css.getSender().hasPermission(permission)
                 && css.getExecutor() instanceof Permissible perm && perm.hasPermission(permission);
+    }
+
+    /**
+     * Checks if the executor of the command source stack is a player.
+     *
+     * @param css The command source stack to check.
+     * @return {@code true} if the executor is a player, {@code false} otherwise.
+     * @throws NullPointerException if css is null.
+     */
+    public static boolean playerExecutorRequirement(@NotNull CommandSourceStack css) {
+        Preconditions.checkNotNull(css, "css cannot be null");
+
+        return css.getExecutor() instanceof Player;
     }
 }

@@ -28,6 +28,7 @@ public class NiveriaAPICommand {
                 .then(fixCommandsCommand())
                 .then(pingCommand())
                 .then(reloadCommand())
+                .then(NiveriaAPITestCommand.get())
                 .build();
     }
 

@@ -88,7 +88,7 @@ public class ItemBuilder {
     public static ItemBuilder of(@NotNull ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
         Preconditions.checkArgument(!itemStack.getType().isAir(), "itemStack cannot be air");
-        Preconditions.checkArgument(itemStack.getAmount() >= 1, "itemStack amount cannot be less than 1: %d", itemStack.getAmount());
+        Preconditions.checkArgument(itemStack.getAmount() >= 1, "itemStack amount cannot be less than 1: %s", itemStack.getAmount());
 
         return new ItemBuilder(itemStack);
     }
@@ -107,7 +107,7 @@ public class ItemBuilder {
     public static ItemBuilder of(@NotNull Material material, @Positive int amount) {
         Preconditions.checkNotNull(material, "material cannot be null");
         Preconditions.checkArgument(!material.isAir(), "material cannot be air");
-        Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %d", amount);
+        Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %s", amount);
 
         return new ItemBuilder(ItemStack.of(material, amount));
     }
@@ -153,7 +153,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder amount(@Positive int amount) {
-        Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %d", amount);
+        Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %s", amount);
 
         itemStack.setAmount(amount);
         return this;
@@ -268,7 +268,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder durability(@NonNegative int durability) {
-        Preconditions.checkArgument(durability >= 0, "durability cannot be negative: %d", durability);
+        Preconditions.checkArgument(durability >= 0, "durability cannot be negative: %s", durability);
 
         itemStack.setData(DataComponentTypes.DAMAGE, maxDamage() - durability);
         return this;
@@ -294,7 +294,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder damage(@NonNegative int damage) {
-        Preconditions.checkArgument(damage >= 0, "damage cannot be negative: %d", damage);
+        Preconditions.checkArgument(damage >= 0, "damage cannot be negative: %s", damage);
 
         itemStack.setData(DataComponentTypes.DAMAGE, damage);
         return this;
@@ -321,7 +321,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder maxDamage(@Positive int maxDamage) {
-        Preconditions.checkArgument(maxDamage >= 1, "maxDamage must be positive: %d", maxDamage);
+        Preconditions.checkArgument(maxDamage >= 1, "maxDamage must be positive: %s", maxDamage);
 
         itemStack.setData(DataComponentTypes.MAX_DAMAGE, maxDamage);
         return this;
@@ -350,7 +350,7 @@ public class ItemBuilder {
     @Contract(value = "_, _ -> this", mutates = "this")
     public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
         Preconditions.checkNotNull(enchantment, "enchantment cannot be null");
-        Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %d", level);
+        Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %s", level);
 
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
         ItemEnchantments.Builder itemEnchantments = ItemEnchantments.itemEnchantments()
@@ -374,7 +374,7 @@ public class ItemBuilder {
     @Contract(value = "_, _ -> this", mutates = "this")
     public ItemBuilder enchantment(@NotNull Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
         Preconditions.checkNotNull(enchantment, "enchantment cannot be null");
-        Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %d", level);
+        Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %s", level);
 
         ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
                 .add(enchantment, level)
@@ -718,7 +718,7 @@ public class ItemBuilder {
      */
     @Nullable
     public Component loreLine(@NonNegative int index) {
-        Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
+        Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
         if (data == null)
@@ -763,7 +763,7 @@ public class ItemBuilder {
     @Contract(value = "_, _ -> this", mutates = "this")
     public ItemBuilder setLoreLine(@NotNull Component line, @NonNegative int index) {
         Preconditions.checkNotNull(line, "line cannot be null");
-        Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
+        Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
         List<Component> lore = new ArrayList<>(data.lines());
@@ -803,7 +803,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder removeLoreLine(@NonNegative int index) {
-        Preconditions.checkArgument(index >= 0, "index cannot be negative: %d", index);
+        Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
         List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).lines());
         lore.remove(index);
@@ -1078,7 +1078,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder maxStackSize(@IntRange(from = 1, to = 99) int maxStackSize) {
-        Preconditions.checkArgument(maxStackSize >= 1 && maxStackSize <= 99, "maxStackSize must be between 1 and 99: %d", maxStackSize);
+        Preconditions.checkArgument(maxStackSize >= 1 && maxStackSize <= 99, "maxStackSize must be between 1 and 99: %s", maxStackSize);
 
         itemStack.setData(DataComponentTypes.MAX_STACK_SIZE, maxStackSize);
         return this;

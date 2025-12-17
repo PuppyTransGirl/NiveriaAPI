@@ -23,7 +23,7 @@ public class MathUtils {
      * @throws IllegalArgumentException if scale is less than 1.
      */
     public static double decimalRound(double value, @Positive int scale) {
-        Preconditions.checkArgument(scale >= 1, "scale cannot be less than 1: %d", scale);
+        Preconditions.checkArgument(scale >= 1, "scale cannot be less than 1: %s", scale);
 
         return BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_EVEN).doubleValue();
     }
@@ -37,7 +37,7 @@ public class MathUtils {
      * @throws IllegalArgumentException if scale is less than 1.
      */
     public static float decimalRound(float value, @Positive int scale) {
-        Preconditions.checkArgument(scale >= 1, "scale cannot be less than 1: %d", scale);
+        Preconditions.checkArgument(scale >= 1, "scale cannot be less than 1: %s", scale);
 
         return BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_EVEN).floatValue();
     }
