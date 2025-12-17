@@ -525,9 +525,16 @@ public class Lang {
     /**
      * Gets a formatted, localized message, plays a sound, and sends it directly
      * to an {@link Audience}.
+     * <p>
+     * If the provided sound is {@code null}, the method will attempt to derive
+     * a sound from the language file by appending "_sound" to the message key.
+     * The sound string must follow the format: {@code <sound_key>;<source>;<volume>;<pitch>}
+     * (e.g., {@code "minecraft:entity.ender_dragon.death;MASTER;1.0;1.0"}).
+     * If the sound key is not found or the format is invalid, the sound will be
+     * skipped silently (with error logging).
      *
      * @param audience The recipient of the message.
-     * @param sound    The sound to play when sending the message.
+     * @param sound    The sound to play when sending the message, or {@code null} to derive from the language file using the "{@code key_sound}" convention.
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
