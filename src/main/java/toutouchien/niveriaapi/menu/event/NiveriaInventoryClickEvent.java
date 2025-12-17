@@ -78,6 +78,11 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
         return (Player) getWhoClicked();
     }
 
+    /**
+     * Returns the slot index that was clicked.
+     *
+     * @return the clicked slot index
+     */
     public int slot() {
         return getSlot();
     }
