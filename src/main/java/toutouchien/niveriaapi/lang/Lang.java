@@ -551,10 +551,16 @@ public class Lang {
 
         try {
             String[] split = soundString.split(";");
+            if (split.length != 4) {
+                NiveriaAPI.instance().getSLF4JLogger().error("Invalid sound string format for key: {} (sound string: {})", key, soundString);
+                NiveriaAPI.instance().getSLF4JLogger().error("Expected format: <sound_key>;<source>;<volume>;<pitch>");
+                return;
+            }
+
             Key soundKey = Key.key(split[0]);
             Sound.Source source = Sound.Source.valueOf(split[1]);
-            float volume = Integer.parseInt(split[2]);
-            float pitch = Integer.parseInt(split[3]);
+            float volume = Float.parseFloat(split[2]);
+            float pitch = Float.parseFloat(split[3]);
 
             audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
         } catch (Exception e) {
