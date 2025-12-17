@@ -33,6 +33,7 @@ public class NiveriaAPITestCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> basicCommand() {
         return Commands.literal("basic")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.basic"))
+                .requires(CommandUtils::playerExecutorRequirement)
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     BasicTestMenu menu = new BasicTestMenu(player);
@@ -45,6 +46,7 @@ public class NiveriaAPITestCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> confirmationCommand() {
         return Commands.literal("confirmation")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.confirmation"))
+                .requires(CommandUtils::playerExecutorRequirement)
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     ConfirmationMenu menu = new ConfirmationMenu(
@@ -65,6 +67,7 @@ public class NiveriaAPITestCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> dynamicCommand() {
         return Commands.literal("dynamic")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.dynamic"))
+                .requires(CommandUtils::playerExecutorRequirement)
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     DynamicTestMenu menu = new DynamicTestMenu(player);
@@ -77,6 +80,7 @@ public class NiveriaAPITestCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> paginatorCommand() {
         return Commands.literal("paginator")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.paginator"))
+                .requires(CommandUtils::playerExecutorRequirement)
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     PaginatedTestMenu menu = new PaginatedTestMenu(player);
