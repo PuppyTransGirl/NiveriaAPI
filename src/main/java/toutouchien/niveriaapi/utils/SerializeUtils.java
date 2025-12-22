@@ -14,7 +14,7 @@ import java.io.*;
 import java.util.UUID;
 
 /**
- * Utility class for serializing and deserializing various Bukkit objects.
+ * Utility class for serializing and deserializing various objects.
  */
 public class SerializeUtils {
     private SerializeUtils() {

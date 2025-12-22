@@ -12,7 +12,7 @@ import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 /**
- * Abstract base class for creating custom GUI menus in Bukkit/Spigot.
+ * Abstract base class for creating custom GUI menus.
  * <p>
  * This class provides a framework for building interactive inventory-based menus
  * with component-based rendering and event handling.
