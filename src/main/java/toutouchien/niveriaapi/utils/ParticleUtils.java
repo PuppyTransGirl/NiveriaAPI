@@ -517,7 +517,7 @@ public class ParticleUtils {
                 return;
 
             spawnParticle(entity.getLocation().add(0, 1, 0), particle, count, offsetX, offsetY, offsetZ, speed, null, false);
-        }, plugin, 0, interval);
+        }, plugin, 0, interval * 50L, TimeUnit.MILLISECONDS);
 
         if (durationTicks == -1)
             return task;
@@ -575,7 +575,7 @@ public class ParticleUtils {
             spawnParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, null, false);
 
             currentFrame[0]++;
-        }, plugin, 0, ticksPerFrame);
+        }, plugin, 0, ticksPerFrame * 50L, TimeUnit.MILLISECONDS);
 
         if (durationTicks == -1)
             return;

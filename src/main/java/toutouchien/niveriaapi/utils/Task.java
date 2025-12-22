@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * Utility class for scheduling synchronous and asynchronous tasks in a Bukkit/Spigot/Paper server.
+ * Utility class for scheduling synchronous and asynchronous tasks in a server.
  */
 public class Task {
     private Task() {
@@ -39,16 +39,18 @@ public class Task {
      *
      * @param runnable The task to run.
      * @param plugin   The plugin scheduling the task.
-     * @param delay    The delay in ticks before the task is executed.
+     * @param delay    The delay before the task is executed.
+     * @param timeUnit The time unit of the delay.
      * @return The scheduled BukkitTask.
      */
     @NotNull
-    public static BukkitTask syncLater(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay) {
+    public static BukkitTask syncLater(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
+        Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskLater(plugin, runnable, delay);
+        return Bukkit.getScheduler().runTaskLater(plugin, runnable, timeUnit.toMillis(delay) / 50);
     }
 
     /**
@@ -56,18 +58,20 @@ public class Task {
      *
      * @param runnable The task to run.
      * @param plugin   The plugin scheduling the task.
-     * @param delay    The delay in ticks before the first execution.
-     * @param interval The interval in ticks between subsequent executions.
+     * @param delay    The delay before the first execution.
+     * @param interval The interval between subsequent executions.
+     * @param timeUnit The time unit of the delay and interval.
      * @return The scheduled BukkitTask.
      */
     @NotNull
-    public static BukkitTask syncRepeat(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval) {
+    public static BukkitTask syncRepeat(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval, @NotNull TimeUnit timeUnit) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
         Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %s", interval);
+        Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskTimer(plugin, runnable, delay, interval);
+        return Bukkit.getScheduler().runTaskTimer(plugin, runnable, timeUnit.toMillis(delay) / 50, timeUnit.toMillis(interval) / 50);
     }
 
     /**
