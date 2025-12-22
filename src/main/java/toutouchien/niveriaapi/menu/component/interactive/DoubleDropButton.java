@@ -21,6 +21,7 @@ import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.utils.Task;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -127,7 +128,7 @@ public class DoubleDropButton extends MenuComponent {
                 this.dropTask = Task.syncLater(() -> {
                     this.dropTask = null;
                     render(context);
-                }, NiveriaAPI.instance(), 60L);
+                }, NiveriaAPI.instance(), 3L, TimeUnit.SECONDS);
             }
 
             if (this.sound != null)

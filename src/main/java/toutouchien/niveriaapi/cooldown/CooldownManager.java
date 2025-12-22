@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A comprehensive cooldown management system for Bukkit plugins using Keys,
+ * A comprehensive cooldown management system for plugins using Keys,
  * with database persistence enabled by default.
  * <p>
  * This system allows tracking cooldowns for players or any UUID-based entity with

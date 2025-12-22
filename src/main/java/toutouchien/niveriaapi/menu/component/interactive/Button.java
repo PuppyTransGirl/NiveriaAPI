@@ -22,6 +22,7 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.utils.Task;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -255,7 +256,7 @@ public class Button extends MenuComponent {
 
             this.currentFrame = (this.currentFrame + 1) % frames.size();
             this.render(context);
-        }, NiveriaAPI.instance(), this.animationInterval, this.animationInterval);
+        }, NiveriaAPI.instance(), this.animationInterval * 50L, this.animationInterval * 50L, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -284,7 +285,7 @@ public class Button extends MenuComponent {
             }
 
             this.render(context);
-        }, NiveriaAPI.instance(), this.updateInterval, this.updateInterval);
+        }, NiveriaAPI.instance(), this.updateInterval * 50L, this.updateInterval * 50L, TimeUnit.MILLISECONDS);
     }
 
     /**
