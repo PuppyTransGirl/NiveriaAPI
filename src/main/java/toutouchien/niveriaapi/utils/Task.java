@@ -50,7 +50,7 @@ public class Task {
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskLater(plugin, runnable, timeUnit.toMillis(delay));
+        return Bukkit.getScheduler().runTaskLater(plugin, runnable, timeUnit.toMillis(delay) / 50);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Task {
         Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %s", interval);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskTimer(plugin, runnable, timeUnit.toMillis(delay), timeUnit.toMillis(interval));
+        return Bukkit.getScheduler().runTaskTimer(plugin, runnable, timeUnit.toMillis(delay) / 50, timeUnit.toMillis(interval) / 50);
     }
 
     /**
