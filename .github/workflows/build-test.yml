@@ -6,12 +6,14 @@ on:
       - ".gitignore"
       - "LICENSE"
       - "README.md"
+      - ".coderabbit.yaml"
     branches: [ '**' ]
   push:
     paths-ignore:
       - ".gitignore"
       - "LICENSE"
       - "README.md"
+      - ".coderabbit.yaml"
     branches: [ 'master' ]
 
 
