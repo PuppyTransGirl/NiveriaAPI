@@ -41,6 +41,7 @@ dependencies {
     compileOnly("net.luckperms:api:${luckpermsVersion}")
     compileOnly("dev.lone:api-itemsadder:${itemsAdderVersion}")
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:${worldguardVersion}") {
+        // Exclude libraries provided by Paper to prevent version conflicts
         exclude(group = "com.google.code.gson", module = "gson")
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "it.unimi.dsi", module = "fastutil")
