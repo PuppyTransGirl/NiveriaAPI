@@ -10,10 +10,18 @@ import toutouchien.niveriaapi.hook.impl.luckperms.LuckPermsMetaCache;
 import toutouchien.niveriaapi.hook.impl.luckperms.MetaCache;
 import toutouchien.niveriaapi.hook.impl.luckperms.SimpleMetaCache;
 
+/**
+ * Hook for integrating with the LuckPerms plugin to manage metadata caching.
+ */
 public class LuckPermsHook extends Hook {
     private boolean enabled;
     private MetaCache metaCache;
 
+    /**
+     * Constructs a LuckPermsHook with the specified plugin instance.
+     *
+     * @param plugin The NiveriaAPI plugin instance.
+     */
     public LuckPermsHook(@NotNull NiveriaAPI plugin) {
         super(plugin);
     }
@@ -40,6 +48,11 @@ public class LuckPermsHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from LuckPerms");
     }
 
+    /**
+     * Retrieves the MetaCache for LuckPerms.
+     *
+     * @return The {@link MetaCache} instance.
+     */
     @NotNull
     public MetaCache metaCache() {
         return metaCache;

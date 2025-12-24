@@ -77,6 +77,7 @@ tasks {
         downloadPlugins {
             modrinth("LuckPerms", "v5.5.17-bukkit")
             github("jpenilla", "TabTPS", "v1.3.29", "tabtps-paper-1.3.29.jar")
+            modrinth("ServerLogViewer-Paper", "1.0.0")
         }
     }
 
@@ -86,6 +87,22 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    javadoc {
+        isFailOnError = false
+        options.encoding = "UTF-8"
+    }
+
+    register<Jar>("javadocJar") {
+        dependsOn(javadoc)
+        archiveClassifier.set("javadoc")
+        from(javadoc.get().destinationDir)
+    }
+
+    register<Jar>("sourcesJar") {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
     }
 
     processResources {
@@ -101,4 +118,9 @@ tasks {
             expand(props)
         }
     }
+}
+
+artifacts {
+    add("archives", tasks.named("sourcesJar"))
+    add("archives", tasks.named("javadocJar"))
 }

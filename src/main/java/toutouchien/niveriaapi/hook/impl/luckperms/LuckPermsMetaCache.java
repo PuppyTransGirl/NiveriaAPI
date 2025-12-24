@@ -15,11 +15,20 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * MetaCache implementation using LuckPerms as the backend.
+ */
 public class LuckPermsMetaCache implements MetaCache {
     private final NiveriaAPI plugin;
     private final LuckPerms luckPerms;
     private final Map<String, Map<String, Object>> cache = new ConcurrentHashMap<>();
 
+    /**
+     * Constructs a LuckPermsMetaCache with the specified plugin and LuckPerms instance.
+     *
+     * @param plugin    The NiveriaAPI plugin instance.
+     * @param luckPerms The LuckPerms instance.
+     */
     public LuckPermsMetaCache(@NotNull NiveriaAPI plugin, @NotNull LuckPerms luckPerms) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(luckPerms, "luckPerms cannot be null");

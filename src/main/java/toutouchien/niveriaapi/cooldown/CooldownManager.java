@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A comprehensive cooldown management system for Bukkit plugins using Keys,
+ * A comprehensive cooldown management system for plugins using Keys,
  * with database persistence enabled by default.
  * <p>
  * This system allows tracking cooldowns for players or any UUID-based entity with
@@ -248,7 +248,7 @@ public class CooldownManager {
      *
      * @param uuid The UUID.
      * @param key  The cooldown identifier.
-     * @return True if a cooldown was found and removed from memory, false otherwise.
+     * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
     public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
@@ -263,7 +263,7 @@ public class CooldownManager {
      *
      * @param player The player.
      * @param key    The cooldown identifier.
-     * @return True if a cooldown was found and removed from memory, false otherwise.
+     * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
     public boolean removeCooldown(@NotNull Player player, @NotNull Key key) {
         Preconditions.checkNotNull(player, "player cannot be null");
@@ -280,7 +280,7 @@ public class CooldownManager {
      * @param key                The cooldown identifier.
      * @param removeFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
      *                           Set to false to remove from memory only.
-     * @return True if a cooldown was found and removed from memory, false otherwise.
+     * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
     public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key, boolean removeFromDatabase) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
@@ -302,7 +302,7 @@ public class CooldownManager {
      * @param key                The cooldown identifier.
      * @param removeFromDatabase Whether to attempt to remove this cooldown from the database as well if it's persistent.
      *                           Set to false to remove from memory only.
-     * @return True if a cooldown was found and removed from memory, false otherwise.
+     * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
     public boolean removeCooldown(@NotNull Player player, @NotNull Key key, boolean removeFromDatabase) {
         Preconditions.checkNotNull(player, "player cannot be null");

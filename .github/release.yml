@@ -3,16 +3,24 @@ changelog:
     - title: "Minecraft Update"
       labels:
         - "minecraft update"
-    - title: New Features
+
+    - title: "New Features"
       labels:
         - "feature"
-    - title: Optimizations
+
+    - title: "Bug Fixes"
+      labels:
+        - "bug"
+
+    - title: "Optimizations"
       labels:
         - "optimization"
-    - title: Changes & Enhancements
+
+    - title: "Changes & Enhancements"
       labels:
         - "refactor"
         - "enhancement"
-    - title: Other
+
+    - title: "Other"
       labels:
         - "*"

@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -26,6 +27,33 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import java.io.File;
 import java.util.Locale;
 
+
+/**
+ * Central language and localization utility for NiveriaAPI.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *     <li>Load and cache per-locale message files from {@code /lang/*.yml}.</li>
+ *     <li>Resolve messages by key to raw strings or {@link Component}s.</li>
+ *     <li>Optionally use per-player locales (via {@link Player#locale()}) or a
+ *         server-wide default locale configured in {@code config.yml}.</li>
+ *     <li>Support MiniMessage-based formatting with custom per-locale tags
+ *         (e.g. prefixes, named colors, separators).</li>
+ *     <li>Provide convenience methods to send localized messages (optionally
+ *         with sounds) directly to an {@link Audience}.</li>
+ * </ul>
+ * <p>
+ * Usage:
+ * <ol>
+ *     <li>Call {@link #load(JavaPlugin)} once during plugin startup.</li>
+ *     <li>Use {@link #get(String)} / {@link #get(Audience, String)} for
+ *         components or {@link #getString(String)} for raw strings.</li>
+ *     <li>Use {@link #sendMessage(Audience, String, Object...)} to send
+ *         localized messages directly.</li>
+ * </ol>
+ * <p>
+ * This is a static utility class and cannot be instantiated.
+ */
 public class Lang {
     private static final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> MESSAGES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     // Locale → ( Category → ( Key → Pattern ) )
@@ -45,6 +73,11 @@ public class Lang {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Initializes the language system by loading configuration and message files.
+     *
+     * @param plugin The main plugin instance.
+     */
     public static void load(@NotNull JavaPlugin plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
@@ -492,9 +525,16 @@ public class Lang {
     /**
      * Gets a formatted, localized message, plays a sound, and sends it directly
      * to an {@link Audience}.
+     * <p>
+     * If the provided sound is {@code null}, the method will attempt to derive
+     * a sound from the language file by appending "_sound" to the message key.
+     * The sound string must follow the format: {@code <sound_key>;<source>;<volume>;<pitch>}
+     * (e.g., {@code "minecraft:entity.ender_dragon.death;MASTER;1.0;1.0"}).
+     * If the sound key is not found or the format is invalid, the sound will be
+     * skipped silently (with error logging).
      *
      * @param audience The recipient of the message.
-     * @param sound    The sound to play when sending the message.
+     * @param sound    The sound to play when sending the message, or {@code null} to derive from the language file using the "{@code key_sound}" convention.
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
@@ -507,8 +547,32 @@ public class Lang {
             return;
 
         audience.sendMessage(message);
-        if (sound != null)
+        if (sound != null) {
             audience.playSound(sound, Sound.Emitter.self());
+            return;
+        }
+
+        String soundString = args == null ? getString(audience, key + "_sound") : getString(audience, key + "_sound", args);
+        if (soundString.equals(key + "_sound"))
+            return;
+
+        try {
+            String[] split = soundString.split(";");
+            if (split.length != 4) {
+                NiveriaAPI.instance().getSLF4JLogger().error("Invalid sound string format for key: {} (sound string: {})", key, soundString);
+                NiveriaAPI.instance().getSLF4JLogger().error("Expected format: <sound_key>;<source>;<volume>;<pitch>");
+                return;
+            }
+
+            Key soundKey = Key.key(split[0].trim());
+            Sound.Source source = Sound.Source.valueOf(split[1].trim());
+            float volume = Float.parseFloat(split[2].trim());
+            float pitch = Float.parseFloat(split[3].trim());
+
+            audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
+        } catch (Exception e) {
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to play sound for key: {} (sound string: {})", key, soundString, e);
+        }
     }
 
     /**

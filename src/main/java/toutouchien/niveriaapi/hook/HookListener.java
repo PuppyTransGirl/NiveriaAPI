@@ -7,9 +7,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Listener for player join and leave events to notify the HookManager.
+ */
 public class HookListener implements Listener {
     private final HookManager hookManager;
 
+    /**
+     * Constructs a HookListener with the specified HookManager.
+     *
+     * @param hookManager The HookManager instance.
+     */
     public HookListener(@NotNull HookManager hookManager) {
         Preconditions.checkNotNull(hookManager, "hookManager cannot be null");
 
