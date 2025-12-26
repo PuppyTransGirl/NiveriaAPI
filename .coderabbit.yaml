@@ -18,6 +18,7 @@ reviews:
       enabled: false
     unit_tests:
       enabled: false
+  review_status: false
 chat:
   art: false
   auto_reply: false
