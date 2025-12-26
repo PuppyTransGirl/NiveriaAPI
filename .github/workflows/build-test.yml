@@ -98,8 +98,8 @@ jobs:
         with:
           path: |
             ~/.gradle/caches
-            ~/.gradle/wrapper
-            ~/.gradle/build-cache
+            ~/.gradle/9.2.1
+            ~/gradle/*
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/gradle.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
