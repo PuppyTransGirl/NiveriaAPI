@@ -16,13 +16,14 @@ on:
       - ".coderabbit.yaml"
     branches: [ 'master' ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  GRADLE_OPTS: >-
-    -Dorg.gradle.jvmargs=-Xmx2g -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-    -Dorg.gradle.parallel=true
-    -Dorg.gradle.workers.max=2
-    -Dorg.gradle.configuration-cache=true
-    -Dorg.gradle.dependency-verification=off
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
+  JAVA_VERSION: "21"
+  GRAALVM_DISTRIBUTION: "graalvm"
 
 jobs:
   test:
@@ -33,30 +34,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@v1
+      - name:  Cache GraalVM
+        id: cache-graalvm
+        uses: actions/cache@v4
         with:
-          java-version: '21'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path:  ${{ runner.tool_cache }}/Java_${{ env.GRAALVM_DISTRIBUTION }}_jdk-${{ env.JAVA_VERSION }}*
+          key: ${{ runner.os }}-graalvm-${{ env.JAVA_VERSION }}
 
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}-${{ hashFiles('**/settings.gradle*') }}
+            ~/gradle/*
+          key:  ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/gradle.properties') }}
           restore-keys: |
-            gradle-${{ runner.os }}-
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+            ${{ runner.os }}-gradle-
+      - name: Set up GraalVM JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
-          gradle-home-cache-cleanup: true
+          distribution: ${{ env.GRAALVM_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
 
       - name: Run Tests with Gradle
-        run: ./gradlew test --no-daemon --stacktrace
+        run: ./gradlew test --stacktrace --build-cache
 
       - name: Report test results
         uses: dorny/test-reporter@v2
@@ -82,27 +82,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@v1
+      - name: Cache GraalVM
+        id: cache-graalvm
+        uses: actions/cache@v4
         with:
-          java-version: '21'
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.tool_cache }}/Java_${{ env.GRAALVM_DISTRIBUTION }}_jdk-${{ env.JAVA_VERSION }}*
+          key: ${{ runner.os }}-graalvm-${{ env.JAVA_VERSION }}
 
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}-${{ hashFiles('**/settings.gradle*') }}
+            ~/gradle/*
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/gradle.properties') }}
           restore-keys: |
-            gradle-${{ runner.os }}-
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+            ${{ runner.os }}-gradle-
+      - name: Set up GraalVM JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/master' }}
-          gradle-home-cache-cleanup: true
+          distribution: ${{ env.GRAALVM_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
 
       - name: Derive short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
@@ -111,10 +110,10 @@ jobs:
         env:
           SNAPSHOT: true
           GITHUB_SHA: ${{ github.sha }}
-        run: ./gradlew jar javadocJar sourcesJar --no-daemon --stacktrace
+        run: ./gradlew jar javadocJar sourcesJar -x test --stacktrace --build-cache
 
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v5
         with:
           name: NiveriaAPI-${{ env.SHORT_SHA }}
-          path: build/libs/*.jar
+          path: build/libs/*
