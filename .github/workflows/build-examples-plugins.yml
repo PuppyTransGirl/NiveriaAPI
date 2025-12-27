@@ -49,10 +49,6 @@ jobs:
           java-version: 21
           cache: gradle
 
-      - name: Make gradlew executable
-        working-directory: ./examples/HomePlugin
-        run: chmod +x ./gradlew
-
       - name: Derive short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
