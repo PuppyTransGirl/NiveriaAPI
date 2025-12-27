@@ -1,6 +1,9 @@
 package toutouchien.homeplugin.managers;
 
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,13 +28,13 @@ public class HomeManager {
         this.loadHomes();
     }
 
-    public boolean homeExists(UUID uuid, String name) {
+    public boolean homeExists(UUID uuid, String homeName) {
         ObjectSet<Home> playerHomes = this.homes.get(uuid);
         if (playerHomes == null)
             return false;
 
-        for (Home home :  playerHomes) {
-            if (home.name().equalsIgnoreCase(name))
+        for (Home home : playerHomes) {
+            if (home.name().equalsIgnoreCase(homeName))
                 return true;
         }
 
@@ -46,6 +49,20 @@ public class HomeManager {
         );
 
         this.homes.putIfAbsent(player.getUniqueId(), new ObjectOpenHashSet<>()).add(newHome);
+    }
+
+    public void deleteHome(UUID uuid, String homeName) {
+        ObjectSet<Home> playerHomes = this.homes.get(uuid);
+        if (playerHomes == null)
+            return;
+
+        for (Home home : playerHomes) {
+            if (home.name().equalsIgnoreCase(homeName)) {
+                playerHomes.remove(home);
+                this.homes.put(uuid, playerHomes);
+                return;
+            }
+        }
     }
 
     public void loadHomes() {
