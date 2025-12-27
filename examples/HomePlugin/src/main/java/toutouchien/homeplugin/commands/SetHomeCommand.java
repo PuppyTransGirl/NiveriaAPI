@@ -26,17 +26,17 @@ public class SetHomeCommand {
 
                             String homeName = ctx.getArgument("name", String.class);
                             if (homeName.length() > 20) {
-                                Lang.sendMessage(player, "niveriaapi.sethome.too_long");
+                                Lang.sendMessage(player, "homeplugin.sethome.too_long");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             if (homeManager.homeExists(uuid, homeName)) {
-                                Lang.sendMessage(player, "niveriaapi.sethome.already_exists");
+                                Lang.sendMessage(player, "homeplugin.sethome.already_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             homeManager.createHome(player, homeName);
-                            Lang.sendMessage(player, "niveriaapi.sethome.created", homeName);
+                            Lang.sendMessage(player, "homeplugin.sethome.created", homeName);
                             return Command.SINGLE_SUCCESS;
                         }))
                 .build();

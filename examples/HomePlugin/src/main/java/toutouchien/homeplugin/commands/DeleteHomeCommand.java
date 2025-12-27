@@ -37,12 +37,12 @@ public class DeleteHomeCommand {
 
                             String homeName = ctx.getArgument("name", String.class);
                             if (!homeManager.homeExists(uuid, homeName)) {
-                                Lang.sendMessage(player, "niveriaapi.deletehome.doesnt_exists");
+                                Lang.sendMessage(player, "homeplugin.deletehome.doesnt_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             homeManager.deleteHome(uuid, homeName);
-                            Lang.sendMessage(player, "niveriaapi.deletehome.deleted", homeName);
+                            Lang.sendMessage(player, "homeplugin.deletehome.deleted", homeName);
                             return Command.SINGLE_SUCCESS;
                         }))
                 .build();

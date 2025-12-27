@@ -37,7 +37,7 @@ public class HomeCommand {
 
                             String homeName = ctx.getArgument("name", String.class);
                             if (!homeManager.homeExists(uuid, homeName)) {
-                                Lang.sendMessage(player, "niveriaapi.home.doesnt_exists");
+                                Lang.sendMessage(player, "homeplugin.home.doesnt_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 

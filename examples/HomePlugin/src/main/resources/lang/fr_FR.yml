@@ -23,7 +23,7 @@ special-tags:
 # ======================== FEATURES ==========================
 # ============================================================
 
-niveriaapi:
+homeplugin:
   deletehome:
     doesnt_exists: "<prefix:home/> <separator> <ncolor:error>Ce home n'existe pas.</ncolor>"
     deleted: "<prefix:home/> <separator> <ncolor:success>Home \"%s\" supprimé avec succès.</ncolor>"
