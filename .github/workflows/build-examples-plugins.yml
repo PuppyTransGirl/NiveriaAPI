@@ -53,11 +53,10 @@ jobs:
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Build with snapshot version
-        working-directory: ./examples/HomePlugin
         env:
           SNAPSHOT: true
           GITHUB_SHA: ${{ github.sha }}
-        run: ./gradlew jar javadocJar sourcesJar --no-daemon --stacktrace
+        run: ./gradlew -p examples/HomePlugin jar javadocJar sourcesJar --no-daemon --stacktrace
 
       - name: Upload Plugin JAR
         uses: actions/upload-artifact@v5
