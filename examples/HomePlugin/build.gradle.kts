@@ -18,7 +18,7 @@ repositories {
 dependencies {
     paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
 
-    compileOnly("toutouchien.niveriaapi:niveriaapi:${niveriaApiVersion}")
+    compileOnly("toutouchien.niveriaapi:NiveriaAPI:${niveriaApiVersion}")
 }
 
 paperweight {
