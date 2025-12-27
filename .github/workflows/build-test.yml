@@ -7,7 +7,7 @@ on:
       - "LICENSE"
       - "README.md"
       - ".coderabbit.yaml"
-      - "examples/"
+      - "examples/**"
     branches: [ '**' ]
   push:
     paths-ignore:
@@ -15,7 +15,7 @@ on:
       - "LICENSE"
       - "README.md"
       - ".coderabbit.yaml"
-      - "examples/"
+      - "examples/**"
     branches: [ 'master' ]
 
 
