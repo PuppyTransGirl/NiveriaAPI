@@ -25,7 +25,7 @@ public class SetHomeCommand {
                             UUID uuid = player.getUniqueId();
 
                             String homeName = ctx.getArgument("name", String.class);
-                            if (homeName.length() > 32) {
+                            if (homeName.length() > 20) {
                                 Lang.sendMessage(player, "niveriaapi.sethome.too_long");
                                 return Command.SINGLE_SUCCESS;
                             }
