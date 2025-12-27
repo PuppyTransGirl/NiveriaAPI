@@ -7,6 +7,7 @@ import toutouchien.homeplugin.commands.DeleteHomeCommand;
 import toutouchien.homeplugin.commands.HomeCommand;
 import toutouchien.homeplugin.commands.SetHomeCommand;
 import toutouchien.homeplugin.managers.HomeManager;
+import toutouchien.niveriaapi.lang.Lang;
 
 import java.util.Arrays;
 
@@ -30,6 +31,8 @@ public class HomePlugin extends JavaPlugin {
                     SetHomeCommand.get()
             ).forEach(registrar::register);
         });
+
+        Lang.load(this);
 
         (this.homeManager = new HomeManager(this.getDataFolder())).start();
     }
