@@ -10,10 +10,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import toutouchien.homeplugin.models.Home;
+import toutouchien.niveriaapi.NiveriaAPI;
+import toutouchien.niveriaapi.delay.Delay;
+import toutouchien.niveriaapi.delay.DelayBuilder;
+import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class HomeManager {
     private final File homesFolder;
@@ -26,19 +31,6 @@ public class HomeManager {
 
     public void start() {
         this.loadHomes();
-    }
-
-    public boolean homeExists(UUID uuid, String homeName) {
-        ObjectSet<Home> playerHomes = this.homes.get(uuid);
-        if (playerHomes == null)
-            return false;
-
-        for (Home home : playerHomes) {
-            if (home.name().equalsIgnoreCase(homeName))
-                return true;
-        }
-
-        return false;
     }
 
     public void createHome(Player player, String homeName) {
@@ -63,6 +55,52 @@ public class HomeManager {
                 return;
             }
         }
+    }
+
+    public void teleportHome(Player player, String homeName) {
+        Home home = this.home(player.getUniqueId(), homeName);
+        if (home == null)
+            return;
+
+        Consumer<Player> teleportationConsumer = p -> {
+            p.teleportAsync(home.location()).thenAcceptAsync(result -> {
+                Lang.sendMessage(p, "homeplugin.home.teleported");
+            });
+        };
+
+        Delay delay = DelayBuilder.of(player)
+                .delay(3)
+                .chat(true)
+                .successConsumer(teleportationConsumer)
+                .build();
+
+        NiveriaAPI.instance().delayManager().start(delay);
+    }
+
+    public boolean homeExists(UUID uuid, String homeName) {
+        ObjectSet<Home> playerHomes = this.homes.get(uuid);
+        if (playerHomes == null)
+            return false;
+
+        for (Home home : playerHomes) {
+            if (home.name().equalsIgnoreCase(homeName))
+                return true;
+        }
+
+        return false;
+    }
+
+    public Home home(UUID uuid, String homeName) {
+        ObjectSet<Home> playerHomes = this.homes.get(uuid);
+        if (playerHomes == null)
+            return null;
+
+        for (Home home : playerHomes) {
+            if (home.name().equalsIgnoreCase(homeName))
+                return home;
+        }
+
+        return null;
     }
 
     public ObjectSet<Home> homes(UUID uuid) {

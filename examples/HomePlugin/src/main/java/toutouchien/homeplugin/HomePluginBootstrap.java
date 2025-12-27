@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import toutouchien.homeplugin.commands.DeleteHomeCommand;
+import toutouchien.homeplugin.commands.HomeCommand;
 import toutouchien.homeplugin.commands.SetHomeCommand;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public class HomePluginBootstrap implements PluginBootstrap {
             Commands registrar = commands.registrar();
             Arrays.asList(
                     DeleteHomeCommand.get(),
+                    HomeCommand.get(),
                     SetHomeCommand.get()
             ).forEach(registrar::register);
         });
