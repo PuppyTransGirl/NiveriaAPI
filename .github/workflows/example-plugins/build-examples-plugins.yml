@@ -1,0 +1,70 @@
+name: Examples Plugins Build
+
+on:
+  pull_request:
+    paths-ignore:
+      - ".gitignore"
+      - "LICENSE"
+      - "README.md"
+      - ".coderabbit.yaml"
+    branches: [ '**' ]
+  push:
+    paths-ignore:
+      - ".gitignore"
+      - "LICENSE"
+      - "README.md"
+      - ".coderabbit.yaml"
+    branches: [ 'master' ]
+
+
+jobs:
+  build:
+    name: Build HomePlugin
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      checks: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up GraalVM JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: graalvm
+          java-version: 21
+          cache: gradle
+
+      - name: Make gradlew executable
+        working-directory: ./examples/HomePlugin
+        run: chmod +x ./gradlew
+
+      - name: Derive short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Build with snapshot version
+        working-directory: ./examples/HomePlugin
+        env:
+          SNAPSHOT: true
+          GITHUB_SHA: ${{ github.sha }}
+        run: ./gradlew jar javadocJar sourcesJar --no-daemon --stacktrace
+
+      - name: Upload Plugin JAR
+        uses: actions/upload-artifact@v5
+        with:
+          name: HomePlugin-${{ env.SHORT_SHA }}
+          path: /examples/HomePlugin/build/libs/*
