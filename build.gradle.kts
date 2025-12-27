@@ -125,3 +125,19 @@ artifacts {
     add("archives", tasks.named("sourcesJar"))
     add("archives", tasks.named("javadocJar"))
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

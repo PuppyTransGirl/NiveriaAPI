@@ -1,0 +1,30 @@
+# ============================================================
+# ===============  OTHER (PREFIXES, COLORS, ETC.) ============
+# ============================================================
+
+special-tags:
+  # ---------------- PREFIXES ----------------
+  prefix:
+    home: "<gradient:#2EB62C:#83D475>ʜᴏᴍᴇ</gradient>"
+
+  # ---------------- COLORS ----------------
+  ncolor:
+    primary: "#FC67FA"
+    secondary: "#F4C4F3"
+    success: "#7AF291"
+    error: "#F27474"
+    default: "#B0AEC1"
+
+  # ---------------- OTHER ----------------
+  other:
+    separator: "<#B0AEC1>»</#B0AEC1>"
+
+# ============================================================
+# ======================== FEATURES ==========================
+# ============================================================
+
+niveriaapi:
+  sethome:
+    too_long: "<prefix:home/> <separator> <ncolor:error>The home name is too long.</ncolor>"
+    already_exists: "<prefix:home/> <separator> <ncolor:error>This home name already exists.</ncolor>"
+    created: "<prefix:home/> <separator> <ncolor:success>Home \"%s\" created successfully.</ncolor>"
