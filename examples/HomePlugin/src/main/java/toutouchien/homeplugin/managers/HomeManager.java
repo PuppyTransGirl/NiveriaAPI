@@ -45,7 +45,7 @@ public class HomeManager {
                 Material.GRASS_BLOCK
         );
 
-        this.homes.putIfAbsent(player.getUniqueId(), new ObjectOpenHashSet<>()).add(newHome);
+        this.homes.computeIfAbsent(player.getUniqueId(), k -> new ObjectOpenHashSet<>()).add(newHome);
     }
 
     public void deleteHome(UUID uuid, String homeName) {
@@ -109,7 +109,7 @@ public class HomeManager {
     }
 
     public ObjectSet<Home> homes(UUID uuid) {
-        return this.homes.putIfAbsent(uuid, new ObjectOpenHashSet<>());
+        return this.homes.computeIfAbsent(uuid, k -> new ObjectOpenHashSet<>());
     }
 
     public void loadHomes() {
