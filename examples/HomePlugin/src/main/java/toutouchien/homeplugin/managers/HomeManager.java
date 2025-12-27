@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import toutouchien.homeplugin.HomePlugin;
 import toutouchien.homeplugin.models.Home;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.delay.Delay;
@@ -31,6 +32,10 @@ public class HomeManager {
 
     public void start() {
         this.loadHomes();
+    }
+
+    public void stop() {
+        this.saveHomes();
     }
 
     public void createHome(Player player, String homeName) {
@@ -131,5 +136,28 @@ public class HomeManager {
         }
 
         this.homes.putAll(tempHomes);
+    }
+
+    public void saveHomes() {
+        for (UUID uuid : homes.keySet()) {
+            ObjectSet<Home> playerHomes = homes.get(uuid);
+            if (playerHomes == null || playerHomes.isEmpty())
+                continue;
+
+            File homeFile = new File(homesFolder, uuid.toString());
+            YamlConfiguration config = new YamlConfiguration();
+
+            for (Home home : playerHomes) {
+                String homeName = home.name();
+                config.set(homeName + ".location", home.location());
+                config.set(homeName + ".icon", home.icon().name());
+            }
+
+            try {
+                config.save(homeFile);
+            } catch (Exception e) {
+                HomePlugin.instance().getSLF4JLogger().error("Could not save homes to {}", homeFile.getAbsolutePath(), e);
+            }
+        }
     }
 }

@@ -18,6 +18,11 @@ public class HomePlugin extends JavaPlugin {
         (this.homeManager = new HomeManager(this.getDataFolder())).start();
     }
 
+    @Override
+    public void onDisable() {
+        this.homeManager.stop();
+    }
+
     public HomeManager homeManager() {
         return this.homeManager;
     }
