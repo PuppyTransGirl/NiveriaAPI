@@ -7,6 +7,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
 import toutouchien.homeplugin.HomePlugin;
 import toutouchien.homeplugin.managers.HomeManager;
+import toutouchien.homeplugin.models.Home;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.commands.StorageFriendlyStringArgument;
@@ -19,6 +20,16 @@ public class DeleteHomeCommand {
                 .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.deletehome"))
                 .requires(CommandUtils::playerExecutorRequirement)
                 .then(Commands.argument("name", new StorageFriendlyStringArgument())
+                        .suggests((ctx, builder) -> {
+                            HomeManager homeManager = HomePlugin.instance().homeManager();
+                            Player player = (Player) ctx.getSource().getExecutor();
+                            UUID uuid = player.getUniqueId();
+
+                            for (Home home : homeManager.homes(uuid))
+                                builder.suggest(home.name());
+
+                            return builder.buildFuture();
+                        })
                         .executes(ctx -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();
                             Player player = (Player) ctx.getSource().getExecutor();

@@ -65,6 +65,10 @@ public class HomeManager {
         }
     }
 
+    public ObjectSet<Home> homes(UUID uuid) {
+        return this.homes.putIfAbsent(uuid, new ObjectOpenHashSet<>());
+    }
+
     public void loadHomes() {
         File[] files = this.homesFolder.listFiles();
         if (files == null)
