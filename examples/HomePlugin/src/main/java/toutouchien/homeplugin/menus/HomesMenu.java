@@ -65,7 +65,8 @@ public class HomesMenu extends Menu {
                             .name(Lang.get("homeplugin.menu.home.name", home.name()))
                             .lore(
                                     Lang.get("homeplugin.menu.home.lore.0"),
-                                    Lang.get("homeplugin.menu.home.lore.1")
+                                    Lang.get("homeplugin.menu.home.lore.1"),
+                                    Lang.get("homeplugin.menu.home.lore.2")
                             )
                             .build()
                     )
@@ -80,6 +81,14 @@ public class HomesMenu extends Menu {
                     .onLeftClick(event -> {
                         this.homeManager.teleportHome(context.player(), home);
                         context.player().closeInventory();
+                    })
+                    .onRightClick(event -> {
+                        new ItemSelectorMenu(this.player(), selectedMaterial -> {
+                            home.icon(selectedMaterial);
+                            MenuContext ctx = event.context();
+                            paginator.render(ctx);
+                            open();
+                        }).open();
                     })
                     .onDoubleDrop(event -> {
                         this.homeManager.deleteHome(context.player().getUniqueId(), home);
