@@ -40,12 +40,13 @@ public class HomeCommand {
                             UUID uuid = player.getUniqueId();
 
                             String homeName = ctx.getArgument("name", String.class);
-                            if (!homeManager.homeExists(uuid, homeName)) {
+                            Home home = homeManager.home(uuid, homeName);
+                            if (home == null) {
                                 Lang.sendMessage(player, "homeplugin.home.doesnt_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 
-                            homeManager.teleportHome(player, homeName);
+                            homeManager.teleportHome(player, home);
                             return Command.SINGLE_SUCCESS;
                         }))
                 .build();
