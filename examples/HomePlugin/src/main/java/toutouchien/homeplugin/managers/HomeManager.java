@@ -71,7 +71,6 @@ public class HomeManager {
             return;
 
         playerHomes.remove(home);
-        this.homes.put(uuid, playerHomes);
     }
 
     public void teleportHome(Player player, String homeName) {
