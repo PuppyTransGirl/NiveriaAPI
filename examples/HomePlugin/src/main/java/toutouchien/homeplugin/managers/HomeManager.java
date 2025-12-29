@@ -15,6 +15,8 @@ import toutouchien.homeplugin.models.Home;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.delay.Delay;
 import toutouchien.niveriaapi.delay.DelayBuilder;
+import toutouchien.niveriaapi.hook.HookType;
+import toutouchien.niveriaapi.hook.impl.LuckPermsHook;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 
@@ -89,8 +91,9 @@ public class HomeManager {
             });
         };
 
+        LuckPermsHook luckPermsHook = NiveriaAPI.instance().hookManager().hook(HookType.LuckpermsHook);
         Delay delay = DelayBuilder.of(player)
-                .delay(3)
+                .delay(luckPermsHook == null ? 3 : luckPermsHook.metaCache().integerMeta(player, "home-teleport-delay", 3))
                 .chat(true)
                 .successConsumer(teleportationConsumer)
                 .build();
