@@ -64,4 +64,4 @@ homeplugin:
     last_page: "<ncolor:secondary>Last Page</ncolor>"
 
   reload:
-    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
+    done: "<prefix:home/> <separator> <ncolor:success>HomePlugin has been reloaded. (%s ms)</ncolor>"
