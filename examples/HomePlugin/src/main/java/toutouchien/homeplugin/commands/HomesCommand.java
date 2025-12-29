@@ -28,7 +28,7 @@ public class HomesCommand {
                     UUID uuid = player.getUniqueId();
 
                     if (homeManager.homes(uuid).isEmpty()) {
-                        player.sendMessage(Lang.get("homeplugin.command.homes.no_homes"));
+                        player.sendMessage(Lang.get("homeplugin.homes.no_homes"));
                         return Command.SINGLE_SUCCESS;
                     }
 
