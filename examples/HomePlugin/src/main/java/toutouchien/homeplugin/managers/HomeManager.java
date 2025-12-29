@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -126,19 +127,42 @@ public class HomeManager {
         Object2ObjectMap<UUID, ObjectSet<Home>> tempHomes = new Object2ObjectOpenHashMap<>();
 
         for (File homeFile : files) {
+            String fileName = homeFile.getName();
+            if (fileName.endsWith(".yml"))
+                fileName = fileName.substring(0, fileName.length() - 4);
+
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(fileName);
+            } catch (IllegalArgumentException e) {
+                HomePlugin.instance().getSLF4JLogger().warn("Invalid home file name: {}", homeFile.getAbsolutePath());
+                continue;
+            }
+
             FileConfiguration homeConfig = YamlConfiguration.loadConfiguration(homeFile);
             ObjectSet<Home> playerHomes = new ObjectOpenHashSet<>();
 
             for (String homeName : homeConfig.getKeys(false)) {
                 ConfigurationSection section = homeConfig.getConfigurationSection(homeName);
+                if (section == null) {
+                    HomePlugin.instance().getSLF4JLogger().warn("Invalid home section for {} in file {}", homeName, homeFile.getAbsolutePath());
+                    continue;
+                }
+
+                Location location = section.getLocation("location");
+                if (location == null) {
+                    HomePlugin.instance().getSLF4JLogger().warn("Invalid location for home {} in file {}", homeName, homeFile.getAbsolutePath());
+                    continue;
+                }
+
                 playerHomes.add(new Home(
                         homeName,
-                        section.getLocation("location"),
+                        location,
                         StringUtils.match(section.getString("icon"), Material.class, Material.GRASS_BLOCK)
                 ));
             }
 
-            tempHomes.put(UUID.fromString(homeFile.getName()), playerHomes);
+            tempHomes.put(uuid, playerHomes);
         }
 
         this.homes.putAll(tempHomes);
