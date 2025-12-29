@@ -40,9 +40,10 @@ public class StringUtils {
      * @return An Optional containing the matched enum constant, or empty if no match found
      */
     @NotNull
-    public static <T extends Enum<T>> Optional<T> match(@NotNull String key, @NotNull Class<T> enumClass) {
-        Preconditions.checkNotNull(key, "key cannot be null");
+    public static <T extends Enum<T>> Optional<T> match(@Nullable String key, @NotNull Class<T> enumClass) {
         Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
+        if (key == null)
+            return Optional.empty();
 
         try {
             return Optional.of(Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT)));
@@ -60,9 +61,10 @@ public class StringUtils {
      * @param defaultValue The default value to return if no match is found
      * @return The matched enum constant, or the default value if no match found
      */
-    public static <T extends Enum<T>> T match(@NotNull String key, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
-        Preconditions.checkNotNull(key, "key cannot be null");
+    public static <T extends Enum<T>> T match(@Nullable String key, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
         Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
+        if (key == null)
+            return defaultValue;
 
         try {
             return Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT));
