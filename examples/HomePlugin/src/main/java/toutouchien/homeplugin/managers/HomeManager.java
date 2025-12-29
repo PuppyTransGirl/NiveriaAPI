@@ -175,7 +175,7 @@ public class HomeManager {
             if (playerHomes == null || playerHomes.isEmpty())
                 continue;
 
-            File homeFile = new File(homesFolder, uuid.toString());
+            File homeFile = new File(homesFolder, uuid.toString() + ".yml");
             YamlConfiguration config = new YamlConfiguration();
 
             for (Home home : playerHomes) {
