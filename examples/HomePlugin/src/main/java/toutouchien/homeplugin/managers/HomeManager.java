@@ -18,6 +18,7 @@ import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.io.File;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -154,8 +155,9 @@ public class HomeManager {
     }
 
     public void saveHomes() {
-        for (UUID uuid : homes.keySet()) {
-            ObjectSet<Home> playerHomes = homes.get(uuid);
+        for (Map.Entry<UUID, ObjectSet<Home>> entry : homes.entrySet()) {
+            UUID uuid = entry.getKey();
+            ObjectSet<Home> playerHomes = entry.getValue();
             if (playerHomes == null || playerHomes.isEmpty())
                 continue;
 
