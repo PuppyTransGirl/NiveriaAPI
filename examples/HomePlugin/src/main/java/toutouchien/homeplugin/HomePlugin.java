@@ -3,10 +3,7 @@ package toutouchien.homeplugin;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
-import toutouchien.homeplugin.commands.DeleteHomeCommand;
-import toutouchien.homeplugin.commands.HomeCommand;
-import toutouchien.homeplugin.commands.HomesCommand;
-import toutouchien.homeplugin.commands.SetHomeCommand;
+import toutouchien.homeplugin.commands.*;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.niveriaapi.lang.Lang;
 
@@ -27,6 +24,8 @@ public class HomePlugin extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             Commands registrar = commands.registrar();
             Arrays.asList(
+                    HomePluginCommand.get(),
+
                     DeleteHomeCommand.get(),
                     HomeCommand.get(),
                     HomesCommand.get(),
@@ -37,6 +36,10 @@ public class HomePlugin extends JavaPlugin {
         Lang.load(this);
 
         (this.homeManager = new HomeManager(this.getDataFolder())).start();
+    }
+
+    public void reload() {
+        Lang.reload(this);
     }
 
     @Override

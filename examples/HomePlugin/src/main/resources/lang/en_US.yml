@@ -62,3 +62,6 @@ homeplugin:
     previous: "<ncolor:secondary>Previous Page</ncolor>"
     first_page: "<ncolor:secondary>First Page</ncolor>"
     last_page: "<ncolor:secondary>Last Page</ncolor>"
+
+  reload:
+    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
