@@ -98,16 +98,7 @@ public class HomeManager {
     }
 
     public boolean homeExists(UUID uuid, String homeName) {
-        ObjectSet<Home> playerHomes = this.homes.get(uuid);
-        if (playerHomes == null)
-            return false;
-
-        for (Home home : playerHomes) {
-            if (home.name().equalsIgnoreCase(homeName))
-                return true;
-        }
-
-        return false;
+        return this.home(uuid, homeName) != null;
     }
 
     public Home home(UUID uuid, String homeName) {
