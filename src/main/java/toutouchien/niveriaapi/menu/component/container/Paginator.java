@@ -11,7 +11,6 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -218,11 +217,11 @@ public class Paginator extends MenuComponent {
      * Creates a back navigation button for this paginator.
      * <p>
      * The button navigates to the previous page when clicked. If already on the first
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the previous page, or null if not applicable
+     * @return a Button for going to the previous page
      */
-    @Nullable
+    @NotNull
     public Button backButton() {
         return Button.create()
                 .item(context -> {
@@ -248,11 +247,11 @@ public class Paginator extends MenuComponent {
      * Creates a next navigation button for this paginator.
      * <p>
      * The button navigates to the next page when clicked. If already on the last
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the next page, or null if not applicable
+     * @return a Button for going to the next page
      */
-    @Nullable
+    @NotNull
     public Button nextButton() {
         return Button.create()
                 .item(context -> {
@@ -277,12 +276,12 @@ public class Paginator extends MenuComponent {
     /**
      * Creates a first page navigation button for this paginator.
      * <p>
-     * The button navigates to the first page (index 0) when clicked. If already on
-     * the first page and no disabled item is configured, returns null.
+     * The button navigates to the first page when clicked. If already on the first
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the first page, or null if not applicable
+     * @return a Button for going to the first page
      */
-    @Nullable
+    @NotNull
     public Button firstPageButton() {
         return Button.create()
                 .item(context -> {
@@ -308,11 +307,11 @@ public class Paginator extends MenuComponent {
      * Creates a last page navigation button for this paginator.
      * <p>
      * The button navigates to the last page when clicked. If already on the last
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the last page, or null if not applicable
+     * @return a Button for going to the last page
      */
-    @Nullable
+    @NotNull
     public Button lastPageButton() {
         return Button.create()
                 .item(context -> {
