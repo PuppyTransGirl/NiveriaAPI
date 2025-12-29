@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 import toutouchien.homeplugin.commands.DeleteHomeCommand;
 import toutouchien.homeplugin.commands.HomeCommand;
+import toutouchien.homeplugin.commands.HomesCommand;
 import toutouchien.homeplugin.commands.SetHomeCommand;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.niveriaapi.lang.Lang;
@@ -28,6 +29,7 @@ public class HomePlugin extends JavaPlugin {
             Arrays.asList(
                     DeleteHomeCommand.get(),
                     HomeCommand.get(),
+                    HomesCommand.get(),
                     SetHomeCommand.get()
             ).forEach(registrar::register);
         });

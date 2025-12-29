@@ -55,11 +55,19 @@ public class HomeManager {
 
         for (Home home : playerHomes) {
             if (home.name().equalsIgnoreCase(homeName)) {
-                playerHomes.remove(home);
-                this.homes.put(uuid, playerHomes);
+                this.deleteHome(uuid, home);
                 return;
             }
         }
+    }
+
+    public void deleteHome(UUID uuid, Home home) {
+        ObjectSet<Home> playerHomes = this.homes.get(uuid);
+        if (playerHomes == null)
+            return;
+
+        playerHomes.remove(home);
+        this.homes.put(uuid, playerHomes);
     }
 
     public void teleportHome(Player player, String homeName) {
@@ -67,6 +75,10 @@ public class HomeManager {
         if (home == null)
             return;
 
+        this.teleportHome(player, home);
+    }
+
+    public void teleportHome(Player player, Home home) {
         Consumer<Player> teleportationConsumer = p -> {
             p.teleportAsync(home.location()).thenAcceptAsync(result -> {
                 Lang.sendMessage(p, "homeplugin.home.teleported");

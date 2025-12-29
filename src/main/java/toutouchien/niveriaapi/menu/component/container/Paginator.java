@@ -231,14 +231,15 @@ public class Paginator extends MenuComponent {
      */
     @Nullable
     public Button backButton() {
-        if (this.page <= 0 && this.offBackItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page > 0
-                            ? this.backItem.apply(context)
-                            : this.offBackItem.apply(context);
+                    if (this.page > 0)
+                        return this.backItem.apply(context);
+
+                    if (this.offBackItem != null)
+                        return this.offBackItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page <= 0)
@@ -260,14 +261,15 @@ public class Paginator extends MenuComponent {
      */
     @Nullable
     public Button nextButton() {
-        if (this.page >= this.maxPage() && this.offNextItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page < this.maxPage()
-                            ? this.nextItem.apply(context)
-                            : this.offNextItem.apply(context);
+                    if (this.page < this.maxPage())
+                        return this.nextItem.apply(context);
+
+                    if (this.offNextItem != null)
+                        return this.offNextItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page >= this.maxPage())
@@ -289,14 +291,15 @@ public class Paginator extends MenuComponent {
      */
     @Nullable
     public Button firstPageButton() {
-        if (this.page <= 0 && this.offFirstPageItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page > 0
-                            ? this.firstPageItem.apply(context)
-                            : this.offFirstPageItem.apply(context);
+                    if (this.page > 0)
+                        return this.firstPageItem.apply(context);
+
+                    if (this.offFirstPageItem != null)
+                        return this.offFirstPageItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page <= 0)
@@ -318,14 +321,15 @@ public class Paginator extends MenuComponent {
      */
     @Nullable
     public Button lastPageButton() {
-        if (this.page >= this.maxPage() && this.offLastPageItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page < this.maxPage()
-                            ? this.lastPageItem.apply(context)
-                            : this.offLastPageItem.apply(context);
+                    if (this.page < this.maxPage())
+                        return this.lastPageItem.apply(context);
+
+                    if (this.offLastPageItem != null)
+                        return this.offLastPageItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     int maxPage = this.maxPage();

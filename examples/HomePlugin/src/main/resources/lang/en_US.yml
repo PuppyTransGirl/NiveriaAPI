@@ -36,3 +36,21 @@ homeplugin:
     too_long: "<prefix:home/> <separator> <ncolor:error>The home name is too long.</ncolor>"
     already_exists: "<prefix:home/> <separator> <ncolor:error>This home name already exists.</ncolor>"
     created: "<prefix:home/> <separator> <ncolor:success>Home \"%s\" created successfully.</ncolor>"
+
+  homes:
+    no_homes: "<prefix:home/> <separator> <ncolor:error>You have not set any home.</ncolor>"
+
+  menu:
+    title: "<ncolor:primary>Your Homes</ncolor>"
+    next: "<ncolor:secondary>Next Page</ncolor>"
+    previous: "<ncolor:secondary>Previous Page</ncolor>"
+    home:
+      name: "<ncolor:primary>%s</ncolor>"
+      lore:
+        0: "<ncolor:default>Click to teleport to this home.</ncolor>"
+        1: "<ncolor:default>Drop this item to delete this home.</ncolor>"
+    home_dropped:
+      name: "<ncolor:error>%s</ncolor>"
+      lore:
+        0: "<ncolor:error>Are you sure you want to delete this home?</ncolor>"
+        1: "<ncolor:default>Drop this item again to confirm.</ncolor>"
