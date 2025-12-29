@@ -13,11 +13,11 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class StorageFriendlyStringArgument implements CustomArgumentType<String, String> {
     private static final SimpleCommandExceptionType ERROR_DOT_IN_STRING = new SimpleCommandExceptionType(
-            MessageComponentSerializer.message().serialize(Component.text("The string cannot contains dots."))
+            MessageComponentSerializer.message().serialize(Component.text("The string cannot contain dots."))
     );
 
     private static final SimpleCommandExceptionType ERROR_PLUS_IN_STRING = new SimpleCommandExceptionType(
-            MessageComponentSerializer.message().serialize(Component.text("The string cannot contains plus signs."))
+            MessageComponentSerializer.message().serialize(Component.text("The string cannot contain plus signs."))
     );
 
     @Override
