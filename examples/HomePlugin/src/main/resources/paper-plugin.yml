@@ -1,0 +1,12 @@
+name: HomePlugin
+version: '${version}'
+main: toutouchien.homeplugin.HomePlugin
+api-version: '${minecraftVersion}'
+load: STARTUP
+authors: [ Toutouchien ]
+
+dependencies:
+  server:
+    NiveriaAPI:
+      load: BEFORE
+      required: true

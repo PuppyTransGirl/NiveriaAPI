@@ -1,0 +1,67 @@
+# ============================================================
+# ===============  OTHER (PREFIXES, COLORS, ETC.) ============
+# ============================================================
+
+special-tags:
+  # ---------------- PREFIXES ----------------
+  prefix:
+    home: "<gradient:#2EB62C:#83D475>ʜᴏᴍᴇ</gradient>"
+
+  # ---------------- COLORS ----------------
+  ncolor:
+    primary: "#FC67FA"
+    secondary: "#F4C4F3"
+    success: "#7AF291"
+    error: "#F27474"
+    default: "#B0AEC1"
+
+  # ---------------- OTHER ----------------
+  other:
+    separator: "<#B0AEC1>»</#B0AEC1>"
+
+# ============================================================
+# ======================== FEATURES ==========================
+# ============================================================
+
+homeplugin:
+  deletehome:
+    doesnt_exists: "<prefix:home/> <separator> <ncolor:error>Ce home n'existe pas.</ncolor>"
+    deleted: "<prefix:home/> <separator> <ncolor:success>Home \"%s\" supprimé avec succès.</ncolor>"
+
+  home:
+    doesnt_exists: "<prefix:home/> <separator> <ncolor:error>Ce home n'existe pas.</ncolor>"
+    teleported: "<prefix:home/> <separator> <ncolor:success>Vous avez été téléporté à votre home.</ncolor>"
+
+  sethome:
+    too_long: "<prefix:home/> <separator> <ncolor:error>Le nom du home est trop long.</ncolor>"
+    already_exists: "<prefix:home/> <separator> <ncolor:error>Ce nom de home existe déjà.</ncolor>"
+    created: "<prefix:home/> <separator> <ncolor:success>Home \"%s\" créé avec succès.</ncolor>"
+
+  homes:
+    no_homes: "<prefix:home/> <separator> <ncolor:error>Vous n'avez défini aucun home.</ncolor>"
+
+  menu:
+    title: "<ncolor:primary>Vos Homes</ncolor>"
+    next: "<ncolor:secondary>Page Suivante</ncolor>"
+    previous: "<ncolor:secondary>Page Précédente</ncolor>"
+    home:
+      name: "<ncolor:primary>%s</ncolor>"
+      lore:
+        0: "<ncolor:default>Clique gauche pour vous téléporter à ce home.</ncolor>"
+        1: "<ncolor:default>Clique droit pour modifier l'icône de ce home.</ncolor>"
+        2: "<ncolor:default>Jettez cet item pour supprimer ce home.</ncolor>"
+    home_dropped:
+      name: "<ncolor:error>%s</ncolor>"
+      lore:
+        0: "<ncolor:error>Êtes-vous sûr de vouloir supprimer ce home ?</ncolor>"
+        1: "<ncolor:default>Jettez cet item à nouveau pour confirmer.</ncolor>"
+
+  menu_item_selector:
+    title: "<ncolor:primary>Sélection de l'icône</ncolor>"
+    next: "<ncolor:secondary>Page Suivante</ncolor>"
+    previous: "<ncolor:secondary>Page Précédente</ncolor>"
+    first_page: "<ncolor:secondary>Première Page</ncolor>"
+    last_page: "<ncolor:secondary>Dernière Page</ncolor>"
+
+  reload:
+    done: "<prefix:home/> <separator> <ncolor:success>HomePlugin a été rechargé. (%s ms)</ncolor>"

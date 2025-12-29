@@ -11,7 +11,7 @@ special-tags:
   ncolor:
     primary: "#FC67FA"
     secondary: "#F4C4F3"
-    valid: "#7AF291"
+    success: "#7AF291"
     error: "#F27474"
     default: "#B0AEC1"
 
@@ -25,15 +25,15 @@ special-tags:
 
 niveriaapi:
   fixcommands:
-    single: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d player.</ncolor>"
-    multiple: "<prefix:niveria/> <separator> <ncolor:valid>You have reloaded commands for %d players.</ncolor>"
+    single: "<prefix:niveria/> <separator> <ncolor:success>You have reloaded commands for %d player.</ncolor>"
+    multiple: "<prefix:niveria/> <separator> <ncolor:success>You have reloaded commands for %d players.</ncolor>"
 
   ping:
     header: "<prefix:niveria/> <separator> <ncolor:default>Database ping</ncolor>"
     line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %.2f ms"
 
   reload:
-    done: "<prefix:niveria/> <separator> <ncolor:valid>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
+    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI has been reloaded. (%s ms)</ncolor>"
 
 
 delay:
