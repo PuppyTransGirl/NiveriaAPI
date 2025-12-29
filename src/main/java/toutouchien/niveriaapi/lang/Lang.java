@@ -82,21 +82,19 @@ public class Lang {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
         saveDefaultMessages(plugin);
-        loadConfig(plugin);
+        loadConfig();
         loadMessages(plugin);
     }
 
     /**
-     * Loads language settings from the plugin's `config.yml`.
+     * Loads language settings from NiveriaAPI's `config.yml`.
      * <p>
      * This method reads the `lang` key to set the server's default locale and
      * the `use_player_locale` key to determine if player-specific locales
      * should be used.
-     *
-     * @param plugin The main plugin instance.
      */
-    private static void loadConfig(@NotNull JavaPlugin plugin) {
-        FileConfiguration config = plugin.getConfig();
+    private static void loadConfig() {
+        FileConfiguration config = NiveriaAPI.instance().getConfig();
         String langCode = config.getString("lang", DEFAULT_LANG);
         defaultLocale = Locale.forLanguageTag(langCode.replace('_', '-'));
         usePlayerLocale = config.getBoolean("use_player_locale", false);
@@ -155,7 +153,7 @@ public class Lang {
         }
 
         if (!messages.isEmpty())
-            MESSAGES.put(locale, messages);
+            MESSAGES.computeIfAbsent(locale, k -> new Object2ObjectOpenHashMap<>()).putAll(messages);
 
         loadSpecialTags(locale, langConfig);
     }
@@ -226,8 +224,19 @@ public class Lang {
             byCategory.put(category, entries);
         }
 
-        if (!byCategory.isEmpty())
+        if (byCategory.isEmpty())
+            return;
+
+        if (!LOCALE_SPECIAL_TAGS.containsKey(locale)) {
             LOCALE_SPECIAL_TAGS.put(locale, byCategory);
+            return;
+        }
+
+        Object2ObjectMap<String, Object2ObjectMap<String, String>> existing = LOCALE_SPECIAL_TAGS.get(locale);
+        for (String category : byCategory.keySet()) {
+            Object2ObjectMap<String, String> entries = byCategory.get(category);
+            existing.computeIfAbsent(category, k -> new Object2ObjectOpenHashMap<>()).putAll(entries);
+        }
     }
 
     /**
