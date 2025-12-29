@@ -27,6 +27,9 @@ public class HomeManager {
 
     public HomeManager(File dataFolder) {
         this.homesFolder = new File(dataFolder, "homes");
+        if (!this.homesFolder.exists())
+            this.homesFolder.mkdirs();
+
         this.homes = new Object2ObjectOpenHashMap<>();
     }
 
