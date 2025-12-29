@@ -15,6 +15,10 @@ import toutouchien.niveriaapi.utils.commands.StorageFriendlyStringArgument;
 import java.util.UUID;
 
 public class DeleteHomeCommand {
+    private DeleteHomeCommand() {
+        throw new IllegalStateException("Command class");
+    }
+
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("deletehome")
                 .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.deletehome"))

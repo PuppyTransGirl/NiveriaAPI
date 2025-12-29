@@ -14,6 +14,10 @@ import toutouchien.niveriaapi.utils.commands.StorageFriendlyStringArgument;
 import java.util.UUID;
 
 public class SetHomeCommand {
+    private SetHomeCommand() {
+        throw new IllegalStateException("Command class");
+    }
+
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("sethome")
                 .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.sethome"))
