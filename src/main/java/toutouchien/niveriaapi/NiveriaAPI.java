@@ -79,8 +79,10 @@ public class NiveriaAPI extends JavaPlugin {
         }
 
         this.chatInputManager = new ChatInputManager();
-        if (!isUnitTestVersion())
-            this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger()));
+        if (!isUnitTestVersion()) {
+            CooldownDatabase database = this.databaseDisabled ? null : new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger());
+            this.cooldownManager = new CooldownManager(this, database);
+        }
         (this.delayManager = new DelayManager(this)).initialize();
         (this.hookManager = new HookManager(this)).onEnable();
 
