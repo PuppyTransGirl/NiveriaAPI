@@ -71,15 +71,20 @@ public class CooldownManager {
      * @param plugin   The main plugin instance.
      * @param database The database implementation for persistent cooldowns. Must not be null.
      */
-    public CooldownManager(@NotNull NiveriaAPI plugin, @NotNull CooldownDatabase database) {
+    public CooldownManager(@NotNull NiveriaAPI plugin, @Nullable CooldownDatabase database) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
-        Preconditions.checkNotNull(database, "database cannot be null");
 
         this.plugin = plugin;
         this.database = database;
         loadPersistentCooldowns();
 
         this.cleanupTask = Task.asyncRepeat(ignored -> cleanupExpiredCooldowns(), plugin, DEFAULT_CLEANUP_MINUTES, DEFAULT_CLEANUP_MINUTES, TimeUnit.MINUTES);
+
+        if (database == null) {
+            this.databaseCleanupTask = null;
+            return;
+        }
+
         this.databaseCleanupTask = Task.asyncRepeat(ignored -> cleanupDatabaseCooldowns(), plugin, DATABASE_CLEANUP_MINUTES, DATABASE_CLEANUP_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -88,6 +93,9 @@ public class CooldownManager {
      * Should be called on startup. Runs asynchronously.
      */
     private void loadPersistentCooldowns() {
+        if (this.database == null)
+            return;
+
         Task.async(task -> {
             List<Cooldown> persistentCooldowns = database.loadAllCooldowns();
             persistentCooldowns.forEach(cooldown -> {
@@ -121,7 +129,7 @@ public class CooldownManager {
         Cooldown cooldown = new Cooldown(uuid, key, duration.toMillis() + System.currentTimeMillis(), persistent);
         cooldowns.put(new CompositeKey(key, uuid), cooldown);
 
-        if (persistent)
+        if (persistent && this.database != null)
             database.saveCooldown(cooldown);
 
         return cooldown;
@@ -289,7 +297,8 @@ public class CooldownManager {
         CompositeKey compositeKey = new CompositeKey(key, uuid);
         Cooldown removed = cooldowns.remove(compositeKey);
 
-        if ((removed != null && removed.persistent() && removeFromDatabase) || (removed == null && removeFromDatabase))
+        boolean hasToRemove = (removed != null && removed.persistent() && removeFromDatabase) || (removed == null && removeFromDatabase);
+        if (hasToRemove && this.database != null)
             database.deleteCooldown(uuid, key);
 
         return removed != null;
@@ -461,7 +470,7 @@ public class CooldownManager {
 
         cooldowns.entrySet().removeIf(entry -> entry.getKey().uuid() == uuid);
 
-        if (removeFromDatabase)
+        if (removeFromDatabase && this.database != null)
             database.deleteAllCooldowns(uuid);
     }
 
@@ -517,7 +526,7 @@ public class CooldownManager {
                 continue;
 
             count++;
-            if (!removed.persistent() || !removeFromDatabase)
+            if (!removed.persistent() || !removeFromDatabase || this.database == null)
                 continue;
 
             database.deleteCooldown(removed.uuid(), removed.key());
@@ -568,7 +577,7 @@ public class CooldownManager {
                 continue;
 
             count++;
-            if (!removed.persistent() || !removeFromDatabase)
+            if (!removed.persistent() || !removeFromDatabase || this.database == null)
                 continue;
 
             database.deleteCooldown(removed.uuid(), removed.key());
@@ -601,7 +610,7 @@ public class CooldownManager {
         if (cleanupTask != null && !cleanupTask.isCancelled())
             cleanupTask.cancel();
 
-        if (databaseCleanupTask != null && !databaseCleanupTask.isCancelled())
+        if (databaseCleanupTask != null && !databaseCleanupTask.isCancelled() && this.database != null)
             databaseCleanupTask.cancel();
     }
 

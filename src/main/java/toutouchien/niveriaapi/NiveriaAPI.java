@@ -60,7 +60,7 @@ public class NiveriaAPI extends JavaPlugin {
 
                 if (mongoDBConnectionString == null || mongoDBConnectionString.isEmpty()) {
                     this.getSLF4JLogger().warn("No MongoDB connection string provided ! Skipping MongoDB initialization.");
-                    this.getSLF4JLogger().warn("The cooldown system and any database-related features will be disabled.");
+                    this.getSLF4JLogger().warn("Any database-related features will be disabled.");
                     this.databaseDisabled = true;
                 } else {
                     this.mongoManager = new MongoManager(mongoDBConnectionString);
@@ -72,12 +72,14 @@ public class NiveriaAPI extends JavaPlugin {
                     registerSharedDefaults();
                 }
             } catch (Exception e) {
-                this.getSLF4JLogger().error("Failed to initialize MongoDB connections !", e);
+                this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
+                this.getServer().shutdown();
+                return;
             }
         }
 
         this.chatInputManager = new ChatInputManager();
-        if (!isUnitTestVersion() && !this.databaseDisabled)
+        if (!isUnitTestVersion())
             this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger()));
         (this.delayManager = new DelayManager(this)).initialize();
         (this.hookManager = new HookManager(this)).onEnable();
