@@ -1,6 +1,7 @@
 package toutouchien.homeplugin.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -10,7 +11,6 @@ import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.homeplugin.models.Home;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
-import toutouchien.niveriaapi.utils.commands.StorageFriendlyStringArgument;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class HomeCommand {
         return Commands.literal("home")
                 .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.home"))
                 .requires(CommandUtils::playerExecutorRequirement)
-                .then(Commands.argument("name", new StorageFriendlyStringArgument())
+                .then(Commands.argument("name", StringArgumentType.word())
                         .suggests((ctx, builder) -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();
                             Player player = (Player) ctx.getSource().getExecutor();

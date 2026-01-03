@@ -1,6 +1,7 @@
 package toutouchien.homeplugin.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -9,7 +10,6 @@ import toutouchien.homeplugin.HomePlugin;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
-import toutouchien.niveriaapi.utils.commands.StorageFriendlyStringArgument;
 
 import java.util.UUID;
 
@@ -22,13 +22,18 @@ public class SetHomeCommand {
         return Commands.literal("sethome")
                 .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.sethome"))
                 .requires(CommandUtils::playerExecutorRequirement)
-                .then(Commands.argument("name", new StorageFriendlyStringArgument())
+                .then(Commands.argument("name", StringArgumentType.word())
                         .executes(ctx -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();
                             Player player = (Player) ctx.getSource().getExecutor();
                             UUID uuid = player.getUniqueId();
 
                             String homeName = ctx.getArgument("name", String.class);
+                            if (homeName.contains(".") || homeName.contains("+")) {
+                                Lang.sendMessage(player, "homeplugin.sethome.invalid_character");
+                                return Command.SINGLE_SUCCESS;
+                            }
+
                             if (homeName.length() > 20) {
                                 Lang.sendMessage(player, "homeplugin.sethome.too_long");
                                 return Command.SINGLE_SUCCESS;
