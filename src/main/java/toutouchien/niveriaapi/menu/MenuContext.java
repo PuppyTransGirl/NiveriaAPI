@@ -28,9 +28,7 @@ public class MenuContext {
     private boolean wasPreviousMenuCall;
 
     /**
-     * Constructs a new MenuContext.
-     *
-     * @throws NullPointerException if menu is null
+     * Creates a new MenuContext instance.
      */
     public MenuContext() {
         this.previousMenus = new ArrayDeque<>();
@@ -69,6 +67,15 @@ public class MenuContext {
 
         this.wasPreviousMenuCall = true;
         return previousMenus.pollLast();
+    }
+
+    /**
+     * Checks if there is a previous menu in the navigation stack.
+     *
+     * @return true if there is a previous menu, false otherwise
+     */
+    public boolean hasPreviousMenu() {
+        return !this.previousMenus.isEmpty();
     }
 
     /**
