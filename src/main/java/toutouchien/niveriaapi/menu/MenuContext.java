@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * Context object that provides state management and access to menu-related data.
  * <p>
@@ -16,19 +19,21 @@ import org.jetbrains.annotations.Nullable;
  * and offering convenient access to the menu and player instances.
  */
 public class MenuContext {
-    private Menu menu;
+    private static final int MAX_PREVIOUS_MENUS = 64;
+
+    private final Deque<Menu> previousMenus;
     private final Object2ObjectMap<String, Object> data;
 
+    private Menu menu;
+    private boolean wasPreviousMenuCall;
+
     /**
-     * Constructs a new MenuContext for the specified menu.
+     * Constructs a new MenuContext.
      *
-     * @param menu the menu this context belongs to
      * @throws NullPointerException if menu is null
      */
-    public MenuContext(@NotNull Menu menu) {
-        Preconditions.checkNotNull(menu, "menu cannot be null");
-
-        this.menu = menu;
+    public MenuContext() {
+        this.previousMenus = new ArrayDeque<>();
         this.data = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     }
 
@@ -53,6 +58,20 @@ public class MenuContext {
     }
 
     /**
+     * Returns the previous menu in the navigation stack.
+     *
+     * @return the previous menu instance, or null if there is none
+     */
+    @Nullable
+    public Menu previousMenu() {
+        if (this.previousMenus.isEmpty())
+            return null;
+
+        this.wasPreviousMenuCall = true;
+        return previousMenus.pollLast();
+    }
+
+    /**
      * Sets the menu associated with this context.
      *
      * @param menu the menu instance to set
@@ -60,7 +79,22 @@ public class MenuContext {
      */
     void menu(@NotNull Menu menu) {
         Preconditions.checkNotNull(menu, "menu cannot be null");
+        lastMenu();
+
         this.menu = menu;
+        this.wasPreviousMenuCall = false;
+    }
+
+    /**
+     * Stores the current menu in the previous menus stack.
+     */
+    private void lastMenu() {
+        if (this.menu == null || this.wasPreviousMenuCall || !this.menu.canGoBackToThisMenu())
+            return;
+
+        this.previousMenus.add(this.menu);
+        if (this.previousMenus.size() >= MAX_PREVIOUS_MENUS)
+            this.previousMenus.removeFirst();
     }
 
     /**

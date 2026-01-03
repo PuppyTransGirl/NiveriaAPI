@@ -12,6 +12,7 @@ import toutouchien.niveriaapi.menu.component.premade.ConfirmationMenu;
 import toutouchien.niveriaapi.menu.test.BasicTestMenu;
 import toutouchien.niveriaapi.menu.test.DynamicTestMenu;
 import toutouchien.niveriaapi.menu.test.PaginatedTestMenu;
+import toutouchien.niveriaapi.menu.test.PreviousTestMenu;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
@@ -27,7 +28,8 @@ public class NiveriaAPITestCommand {
                 .then(basicCommand())
                 .then(confirmationCommand())
                 .then(dynamicCommand())
-                .then(paginatorCommand());
+                .then(paginatorCommand())
+                .then(previousCommand());
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> basicCommand() {
@@ -85,6 +87,18 @@ public class NiveriaAPITestCommand {
                     Player player = (Player) ctx.getSource().getExecutor();
                     PaginatedTestMenu menu = new PaginatedTestMenu(player);
                     menu.open();
+
+                    return Command.SINGLE_SUCCESS;
+                });
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> previousCommand() {
+        return Commands.literal("previous")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.previous"))
+                .requires(CommandUtils::playerExecutorRequirement)
+                .executes(ctx -> {
+                    Player player = (Player) ctx.getSource().getExecutor();
+                    new PreviousTestMenu(player).open();
 
                     return Command.SINGLE_SUCCESS;
                 });

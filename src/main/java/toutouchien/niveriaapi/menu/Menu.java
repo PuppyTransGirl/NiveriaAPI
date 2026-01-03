@@ -34,7 +34,7 @@ public abstract class Menu implements InventoryHolder {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
-        this.context = new MenuContext(this);
+        this.context = new MenuContext();
     }
 
 	/**
@@ -112,6 +112,18 @@ public abstract class Menu implements InventoryHolder {
      */
     @NotNull
     protected abstract Component title();
+
+    /**
+     * Indicates whether the menu can be returned to using the previous menu system.
+     * <p>
+     * Subclasses can override this method to disable returning to this menu
+     * from another menu.
+     *
+     * @return true if the menu can be returned to, false otherwise
+     */
+    protected boolean canGoBackToThisMenu() {
+        return true;
+    }
 
     /**
      * Creates and returns the root component for this menu.
