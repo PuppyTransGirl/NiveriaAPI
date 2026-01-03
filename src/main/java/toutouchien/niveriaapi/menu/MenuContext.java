@@ -100,7 +100,7 @@ public class MenuContext {
             return;
 
         this.previousMenus.add(this.menu);
-        if (this.previousMenus.size() >= MAX_PREVIOUS_MENUS)
+        if (this.previousMenus.size() > MAX_PREVIOUS_MENUS)
             this.previousMenus.removeFirst();
     }
 
