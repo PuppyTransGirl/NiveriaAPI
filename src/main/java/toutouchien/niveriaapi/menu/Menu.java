@@ -37,6 +37,21 @@ public abstract class Menu implements InventoryHolder {
         this.context = new MenuContext(this);
     }
 
+	/**
+	 * Constructs a new Menu with the specified player and context.
+	 *
+	 * @param player  the player who will interact with this menu
+	 * @param context the menu context for component interaction
+	 * @throws NullPointerException if player or context is null
+	 */
+	protected Menu(@NotNull Player player, @NotNull MenuContext context) {
+		Preconditions.checkNotNull(player, "player cannot be null");
+		Preconditions.checkNotNull(context, "context cannot be null");
+
+		this.player = player;
+		this.context = context;
+	}
+
     /**
      * Opens the menu for the player.
      * <p>
@@ -44,6 +59,8 @@ public abstract class Menu implements InventoryHolder {
      * renders the menu contents, and opens it for the player.
      */
     public void open() {
+		context.menu(this);
+
         Component title = this.title();
         this.root = this.root(this.context);
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);

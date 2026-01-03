@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * and offering convenient access to the menu and player instances.
  */
 public class MenuContext {
-    private final Menu menu;
+    private Menu menu;
     private final Object2ObjectMap<String, Object> data;
 
     /**
@@ -50,6 +50,17 @@ public class MenuContext {
     @NotNull
     public Player player() {
         return this.menu.player();
+    }
+
+    /**
+     * Sets the menu associated with this context.
+     *
+     * @param menu the menu instance to set
+     * @throws NullPointerException if menu is null
+     */
+    void menu(@NotNull Menu menu) {
+        Preconditions.checkNotNull(menu, "menu cannot be null");
+        this.menu = menu;
     }
 
     /**
