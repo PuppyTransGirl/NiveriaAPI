@@ -85,9 +85,9 @@ public class MenuContext {
     }
 
     /**
-     * Sets the menu associated with this context.
+     * Sets the current menu in the context, storing the previous menu if applicable.
      *
-     * @param menu the menu instance to set
+     * @param menu the new menu to set
      * @throws NullPointerException if menu is null
      */
     void menu(@NotNull Menu menu) {
@@ -104,7 +104,7 @@ public class MenuContext {
     }
 
     /**
-     * Stores the current menu in the previous menus stack.
+     * Stores the current menu in the previous menus stack if applicable.
      */
     private void lastMenu() {
         if (this.wasPreviousMenuCall || !this.menu.canGoBackToThisMenu())
