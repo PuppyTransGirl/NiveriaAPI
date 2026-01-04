@@ -29,7 +29,10 @@ public class MenuContext {
     private boolean firstMenuSet = true;
 
     /**
-     * Creates a new MenuContext instance.
+     * Constructs a new MenuContext for the specified menu.
+     *
+     * @param menu the menu associated with this context
+     * @throws NullPointerException if menu is null
      */
     public MenuContext(@NotNull Menu menu) {
         this.previousMenus = new ArrayDeque<>();

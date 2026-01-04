@@ -53,13 +53,12 @@ public class PreviousTestMenu extends Menu {
                         .build())
                 .onClick(event -> {
                     Menu previous = event.context().previousMenu();
-                    System.out.println(previous);
-                    System.out.println(event.context().menu());
-                    if (previous != null) {
-                        previous.open();
-                    } else {
+                    if (previous == null) {
                         event.player().sendMessage(Component.text("No previous menu found!", NamedTextColor.RED));
+                        return;
                     }
+
+                    previous.open();
                 })
                 .build();
     }
