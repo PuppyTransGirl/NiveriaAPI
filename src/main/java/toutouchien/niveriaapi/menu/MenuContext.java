@@ -101,7 +101,6 @@ public class MenuContext {
 
         this.menu = menu;
         this.wasPreviousMenuCall = false;
-        this.firstMenuSet = false;
     }
 
     /**
