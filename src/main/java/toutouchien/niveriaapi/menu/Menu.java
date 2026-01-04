@@ -34,7 +34,7 @@ public abstract class Menu implements InventoryHolder {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
-        this.context = new MenuContext();
+        this.context = new MenuContext(this);
     }
 
 	/**

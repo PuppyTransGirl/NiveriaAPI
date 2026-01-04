@@ -53,6 +53,8 @@ public class PreviousTestMenu extends Menu {
                         .build())
                 .onClick(event -> {
                     Menu previous = event.context().previousMenu();
+                    System.out.println(previous);
+                    System.out.println(event.context().menu());
                     if (previous != null) {
                         previous.open();
                     } else {

@@ -12,11 +12,11 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * Context object that provides state management and access to menu-related data.
+ * Represents the context of a menu, managing navigation history and data storage.
  * <p>
- * This class serves as a bridge between menu components and the menu itself,
- * providing a thread-safe key-value store for sharing data between components
- * and offering convenient access to the menu and player instances.
+ * This class allows for tracking previous menus in a stack-like manner,
+ * enabling users to navigate back through their menu history.
+ * It also provides a key-value store for persisting data across menu interactions.
  */
 public class MenuContext {
     private static final int MAX_PREVIOUS_MENUS = 64;
@@ -26,13 +26,16 @@ public class MenuContext {
 
     private Menu menu;
     private boolean wasPreviousMenuCall;
+    private boolean firstMenuSet = true;
 
     /**
      * Creates a new MenuContext instance.
      */
-    public MenuContext() {
+    public MenuContext(@NotNull Menu menu) {
         this.previousMenus = new ArrayDeque<>();
         this.data = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+
+        this.menu = menu;
     }
 
     /**
@@ -86,17 +89,23 @@ public class MenuContext {
      */
     void menu(@NotNull Menu menu) {
         Preconditions.checkNotNull(menu, "menu cannot be null");
+        if (this.firstMenuSet) {
+            this.firstMenuSet = false;
+            return;
+        }
+
         lastMenu();
 
         this.menu = menu;
         this.wasPreviousMenuCall = false;
+        this.firstMenuSet = false;
     }
 
     /**
      * Stores the current menu in the previous menus stack.
      */
     private void lastMenu() {
-        if (this.menu == null || this.wasPreviousMenuCall || !this.menu.canGoBackToThisMenu())
+        if (this.wasPreviousMenuCall || !this.menu.canGoBackToThisMenu())
             return;
 
         this.previousMenus.add(this.menu);
