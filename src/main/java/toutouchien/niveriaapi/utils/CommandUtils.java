@@ -50,6 +50,12 @@ public class CommandUtils {
                 && (executor == null || executor.hasPermission(permission));
     }
 
+    /**
+     * Retrieves the command sender from the command context.
+     *
+     * @param ctx The command context.
+     * @return The command sender.
+     */
     public static CommandSender sender(@NotNull CommandContext<CommandSourceStack> ctx) {
         Preconditions.checkNotNull(ctx, "ctx cannot be null");
         CommandSourceStack css = ctx.getSource();
