@@ -29,6 +29,9 @@ public class CommandUtils {
 
     /**
      * Checks if the command source stack meets the default requirements.
+     * The requiresPlayer parameter affects the permission check for the executor.
+     * If true, the executor must be a player with the specified permission.
+     * If false, the executor can be null or any entity with the specified permission.
      *
      * @param css            The command source stack.
      * @param permission     The required permission.
