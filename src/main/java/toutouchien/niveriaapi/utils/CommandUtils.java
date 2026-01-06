@@ -1,9 +1,11 @@
 package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
+import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,32 +17,51 @@ public class CommandUtils {
     }
 
     /**
-     * Checks if the command source stack meets the default requirements for executing a command.
-     * This includes checking if both the sender and executor have the specified permission.
+     * Checks if the command source stack meets the default requirements.
      *
-     * @param css        The command source stack to check.
-     * @param permission The permission node to check against.
-     * @return {@code true} if both the sender and executor have the specified permission, {@code false} otherwise.
-     * @throws NullPointerException if css or permission is null.
+     * @param css        The command source stack.
+     * @param permission The required permission.
+     * @return True if the requirements are met, false otherwise.
      */
     public static boolean defaultRequirements(@NotNull CommandSourceStack css, @NotNull String permission) {
-        Preconditions.checkNotNull(css, "css cannot be null");
-        Preconditions.checkNotNull(permission, "permission cannot be null");
-
-        return css.getSender().hasPermission(permission)
-                && css.getExecutor() instanceof Permissible perm && perm.hasPermission(permission);
+        return defaultRequirements(css, permission, false);
     }
 
     /**
-     * Checks if the executor of the command source stack is a player.
+     * Checks if the command source stack meets the default requirements.
+     * The requiresPlayer parameter affects the permission check for the executor.
+     * If true, the executor must be a player with the specified permission.
+     * If false, the executor can be null or any entity with the specified permission.
      *
-     * @param css The command source stack to check.
-     * @return {@code true} if the executor is a player, {@code false} otherwise.
-     * @throws NullPointerException if css is null.
+     * @param css            The command source stack.
+     * @param permission     The required permission.
+     * @param requiresPlayer Whether the executor must be a player.
+     * @return True if the requirements are met, false otherwise.
      */
-    public static boolean playerExecutorRequirement(@NotNull CommandSourceStack css) {
+    public static boolean defaultRequirements(@NotNull CommandSourceStack css, @NotNull String permission, boolean requiresPlayer) {
         Preconditions.checkNotNull(css, "css cannot be null");
+        Preconditions.checkNotNull(permission, "permission cannot be null");
 
-        return css.getExecutor() instanceof Player;
+        CommandSender sender = css.getSender();
+        Entity executor = css.getExecutor();
+        if (requiresPlayer) {
+            return sender.hasPermission(permission)
+                    && executor instanceof Player player && player.hasPermission(permission);
+        }
+
+        return sender.hasPermission(permission)
+                && (executor == null || executor.hasPermission(permission));
+    }
+
+    /**
+     * Retrieves the command sender from the command context.
+     *
+     * @param ctx The command context.
+     * @return The command sender.
+     */
+    public static CommandSender sender(@NotNull CommandContext<CommandSourceStack> ctx) {
+        Preconditions.checkNotNull(ctx, "ctx cannot be null");
+        CommandSourceStack css = ctx.getSource();
+        return css.getExecutor() != null ? css.getExecutor() : css.getSender();
     }
 }
