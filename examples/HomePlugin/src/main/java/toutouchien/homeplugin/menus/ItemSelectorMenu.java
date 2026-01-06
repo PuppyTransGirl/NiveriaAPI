@@ -28,6 +28,12 @@ public class ItemSelectorMenu extends Menu {
         this.materialConsumer = materialConsumer;
     }
 
+    public ItemSelectorMenu(@NotNull Player player, @NotNull MenuContext context, Consumer<Material> materialConsumer) {
+        super(player, context);
+
+        this.materialConsumer = materialConsumer;
+    }
+
     @NotNull
     @Override
     protected Component title() {

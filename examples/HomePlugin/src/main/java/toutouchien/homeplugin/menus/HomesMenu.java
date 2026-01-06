@@ -83,7 +83,7 @@ public class HomesMenu extends Menu {
                         context.player().closeInventory();
                     })
                     .onRightClick(event -> {
-                        new ItemSelectorMenu(this.player(), selectedMaterial -> {
+                        new ItemSelectorMenu(this.player(), event.context(), selectedMaterial -> {
                             home.icon(selectedMaterial);
                             MenuContext ctx = event.context();
                             paginator.render(ctx);
