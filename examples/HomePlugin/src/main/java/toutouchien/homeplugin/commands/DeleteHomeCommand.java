@@ -21,8 +21,7 @@ public class DeleteHomeCommand {
 
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("deletehome")
-                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.deletehome"))
-                .requires(CommandUtils::playerExecutorRequirement)
+                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.deletehome", true))
                 .then(Commands.argument("name", StringArgumentType.word())
                         .suggests((ctx, builder) -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();
