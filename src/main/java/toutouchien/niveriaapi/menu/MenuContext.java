@@ -8,28 +8,37 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
- * Context object that provides state management and access to menu-related data.
+ * Represents the context of a menu, managing navigation history and data storage.
  * <p>
- * This class serves as a bridge between menu components and the menu itself,
- * providing a thread-safe key-value store for sharing data between components
- * and offering convenient access to the menu and player instances.
+ * This class allows for tracking previous menus in a stack-like manner,
+ * enabling users to navigate back through their menu history.
+ * It also provides a key-value store for persisting data across menu interactions.
  */
 public class MenuContext {
-    private final Menu menu;
+    private static final int MAX_PREVIOUS_MENUS = 64;
+
+    private final Deque<Menu> previousMenus;
     private final Object2ObjectMap<String, Object> data;
+
+    private Menu menu;
+    private boolean wasPreviousMenuCall;
+    private boolean firstMenuSet = true;
 
     /**
      * Constructs a new MenuContext for the specified menu.
      *
-     * @param menu the menu this context belongs to
+     * @param menu the menu associated with this context
      * @throws NullPointerException if menu is null
      */
     public MenuContext(@NotNull Menu menu) {
-        Preconditions.checkNotNull(menu, "menu cannot be null");
+        this.previousMenus = new ArrayDeque<>();
+        this.data = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
         this.menu = menu;
-        this.data = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     }
 
     /**
@@ -50,6 +59,60 @@ public class MenuContext {
     @NotNull
     public Player player() {
         return this.menu.player();
+    }
+
+    /**
+     * Returns the previous menu in the navigation stack.
+     *
+     * @return the previous menu instance, or null if there is none
+     */
+    @Nullable
+    public Menu previousMenu() {
+        if (this.previousMenus.isEmpty())
+            return null;
+
+        this.wasPreviousMenuCall = true;
+        return previousMenus.pollLast();
+    }
+
+    /**
+     * Checks if there is a previous menu in the navigation stack.
+     *
+     * @return true if there is a previous menu, false otherwise
+     */
+    public boolean hasPreviousMenu() {
+        return !this.previousMenus.isEmpty();
+    }
+
+    /**
+     * Sets the current menu in the context, storing the previous menu if applicable.
+     *
+     * @param menu the new menu to set
+     * @throws NullPointerException if menu is null
+     */
+    void menu(@NotNull Menu menu) {
+        Preconditions.checkNotNull(menu, "menu cannot be null");
+        if (this.firstMenuSet) {
+            this.firstMenuSet = false;
+            return;
+        }
+
+        lastMenu();
+
+        this.menu = menu;
+        this.wasPreviousMenuCall = false;
+    }
+
+    /**
+     * Stores the current menu in the previous menus stack if applicable.
+     */
+    private void lastMenu() {
+        if (this.wasPreviousMenuCall || !this.menu.canGoBackToThisMenu())
+            return;
+
+        this.previousMenus.add(this.menu);
+        if (this.previousMenus.size() > MAX_PREVIOUS_MENUS)
+            this.previousMenus.removeFirst();
     }
 
     /**
