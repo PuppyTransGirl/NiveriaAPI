@@ -20,8 +20,7 @@ public class SetHomeCommand {
 
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("sethome")
-                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.sethome"))
-                .requires(CommandUtils::playerExecutorRequirement)
+                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.sethome", true))
                 .then(Commands.argument("name", StringArgumentType.word())
                         .executes(ctx -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();

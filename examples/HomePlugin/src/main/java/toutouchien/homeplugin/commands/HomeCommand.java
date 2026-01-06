@@ -21,8 +21,7 @@ public class HomeCommand {
 
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("home")
-                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.home"))
-                .requires(CommandUtils::playerExecutorRequirement)
+                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.home", true))
                 .then(Commands.argument("name", StringArgumentType.word())
                         .suggests((ctx, builder) -> {
                             HomeManager homeManager = HomePlugin.instance().homeManager();

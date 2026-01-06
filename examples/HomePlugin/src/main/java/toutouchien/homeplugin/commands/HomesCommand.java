@@ -20,8 +20,7 @@ public class HomesCommand {
 
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("homes")
-                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.homes"))
-                .requires(CommandUtils::playerExecutorRequirement)
+                .requires(css -> CommandUtils.defaultRequirements(css, "homeplugin.command.homes", true))
                 .executes(ctx -> {
                     HomeManager homeManager = HomePlugin.instance().homeManager();
                     Player player = (Player) ctx.getSource().getExecutor();
