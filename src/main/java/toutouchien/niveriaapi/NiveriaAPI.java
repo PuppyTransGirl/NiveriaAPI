@@ -154,6 +154,7 @@ public class NiveriaAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.bStats.shutdown();
         this.hookManager.onDisable();
 
         if (!isUnitTestVersion() && !this.databaseDisabled)
@@ -163,7 +164,6 @@ public class NiveriaAPI extends JavaPlugin {
             this.mongoManager.shutdown();
 
         Bukkit.getScheduler().cancelTasks(this);
-        this.bStats.shutdown();
     }
 
     private void registerSharedDefaults() {
