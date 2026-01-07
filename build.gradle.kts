@@ -112,7 +112,7 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-${project.version}.jar")
 
-        relocate("org.bstats", "${project.version}.libs.org.bstats")
+        relocate("org.bstats", "${project.group}.libs.org.bstats")
     }
 
     processResources {
