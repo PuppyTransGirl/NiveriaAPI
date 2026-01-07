@@ -1,6 +1,7 @@
 package toutouchien.niveriaapi;
 
 import org.bson.Document;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 
 public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+    private static final int BSTATS_PLUGIN_ID = 28754;
 
     private static NiveriaAPI instance;
 
@@ -30,6 +32,8 @@ public class NiveriaAPI extends JavaPlugin {
     private HookManager hookManager;
     private MongoManager mongoManager;
     private NiveriaDatabaseManager niveriaDatabaseManager;
+
+    private Metrics bStats;
 
     private boolean databaseDisabled;
 
@@ -43,6 +47,8 @@ public class NiveriaAPI extends JavaPlugin {
         saveDefaultConfig();
 
         preLoadUtilsClasses();
+
+        this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
         Lang.load(this);
 
@@ -156,6 +162,7 @@ public class NiveriaAPI extends JavaPlugin {
             this.mongoManager.shutdown();
 
         Bukkit.getScheduler().cancelTasks(this);
+        this.bStats.shutdown();
     }
 
     private void registerSharedDefaults() {
