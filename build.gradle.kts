@@ -1,6 +1,7 @@
 plugins {
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
     id("xyz.jpenilla.run-paper") version "3.0.2"
+    id("com.gradleup.shadow") version "9.3.1"
     id("maven-publish")
 }
 
@@ -14,6 +15,7 @@ val bluemapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
+val bStatsVersion: String by project
 val junitVersion: String by project
 val mockbukkitVersion: String by project
 
@@ -50,6 +52,7 @@ dependencies {
 
     // Dependencies
     compileOnly("org.mongodb:mongodb-driver-sync:${mongoDBVersion}")
+    implementation("org.bstats:bstats-bukkit:${bStatsVersion}")
 
     // Test Dependencies
     testImplementation(paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT"))
@@ -104,6 +107,12 @@ tasks {
     register<Jar>("sourcesJar") {
         archiveClassifier.set("sources")
         from(sourceSets.main.get().allSource)
+    }
+
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+
+        relocate("org.bstats", "${project.group}.libs.org.bstats")
     }
 
     processResources {
