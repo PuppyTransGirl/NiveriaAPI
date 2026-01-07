@@ -154,9 +154,10 @@ public class NiveriaAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.hookManager.onDisable();
+
         if (!isUnitTestVersion() && !this.databaseDisabled)
             this.cooldownManager.shutdown();
-        this.hookManager.onDisable();
 
         if (!isUnitTestVersion() && !this.databaseDisabled)
             this.mongoManager.shutdown();
