@@ -47,11 +47,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle (jar + javadocJar + sourcesJar)
+      - name: Build with Gradle (shadowJar + javadocJar + sourcesJar)
         env:
           GITHUB_SHA: ${{ github.sha }}
           MILESTONE_TITLE: ${{ github.event.milestone.title }}
-        run: ./gradlew jar javadocJar sourcesJar --no-daemon --stacktrace
+        run: ./gradlew shadowJar javadocJar sourcesJar --no-daemon --stacktrace
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
