@@ -15,7 +15,6 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -159,7 +158,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param event   the inventory click event
      * @param context the menu context
      */
-    private void handleDropClick(@NonNull NiveriaInventoryClickEvent event, @NonNull MenuContext context) {
+    private void handleDropClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
         if (this.dropTask != null) {
             this.dropTask.cancel();
             this.dropTask = null;

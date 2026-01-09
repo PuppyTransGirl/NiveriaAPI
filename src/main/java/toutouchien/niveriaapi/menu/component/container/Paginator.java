@@ -351,7 +351,7 @@ public class Paginator extends MenuComponent {
     /**
      * Adds a component to the paginator.
      *
-     * @param context the menu context
+     * @param context   the menu context
      * @param component the component to add
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
@@ -373,7 +373,7 @@ public class Paginator extends MenuComponent {
     /**
      * Adds multiple components to the paginator.
      *
-     * @param context the menu context
+     * @param context    the menu context
      * @param components the list of components to add
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
@@ -381,6 +381,7 @@ public class Paginator extends MenuComponent {
     @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
     public Paginator addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(components, "components cannot be null");
 
         for (MenuComponent component : components)
@@ -398,7 +399,10 @@ public class Paginator extends MenuComponent {
      */
     @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator remove(@NotNull MenuContext context, int slot) {
+    public Paginator remove(@NotNull MenuContext context, @NonNegative int slot) {
+        Preconditions.checkNotNull(context, "context cannot be null");
+        Preconditions.checkArgument(slot >= 0, "slot cannot be less than 0: %s", slot);
+
         ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
         for (int i = 0; i < pageComponents.size(); i++) {
             if (i >= this.layoutSlots.size())
@@ -426,7 +430,7 @@ public class Paginator extends MenuComponent {
     /**
      * Removes a specific component from the paginator.
      *
-     * @param context the menu context
+     * @param context   the menu context
      * @param component the component to remove
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
@@ -434,6 +438,7 @@ public class Paginator extends MenuComponent {
     @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
     public Paginator remove(@NotNull MenuContext context, @NotNull MenuComponent component) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
         this.components.remove(component);
@@ -454,6 +459,7 @@ public class Paginator extends MenuComponent {
     @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
     public Paginator removeAll(@NotNull MenuContext context, @NotNull IntSet indexes) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(indexes, "indexes cannot be null");
 
         int[] sorted = indexes.toIntArray();
@@ -469,7 +475,7 @@ public class Paginator extends MenuComponent {
     /**
      * Removes multiple components from the paginator.
      *
-     * @param context the menu context
+     * @param context    the menu context
      * @param components the set of components to remove
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
@@ -823,6 +829,7 @@ public class Paginator extends MenuComponent {
         /**
          * Adds a component to the paginator.
          *
+         * @param context   menu context
          * @param component the component to add
          * @return this builder for method chaining
          * @throws NullPointerException if component is null
@@ -830,6 +837,7 @@ public class Paginator extends MenuComponent {
         @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder add(@NotNull MenuContext context, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(component, "component cannot be null");
 
             this.components.add(component);

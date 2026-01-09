@@ -295,6 +295,7 @@ public class Grid extends MenuComponent {
         @NotNull
         @Contract(value = "_, _, _, _ -> this", mutates = "this")
         public Builder add(@NotNull MenuContext context, @NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
