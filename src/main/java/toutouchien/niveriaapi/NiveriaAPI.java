@@ -155,7 +155,9 @@ public class NiveriaAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        this.bStats.shutdown();
+        if (!isUnitTestVersion())
+            this.bStats.shutdown();
+
         this.hookManager.onDisable();
 
         if (!isUnitTestVersion() && !this.databaseDisabled)
