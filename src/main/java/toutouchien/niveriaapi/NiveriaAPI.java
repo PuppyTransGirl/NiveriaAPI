@@ -48,7 +48,8 @@ public class NiveriaAPI extends JavaPlugin {
 
         preLoadUtilsClasses();
 
-        this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
+        if (!isUnitTestVersion())
+            this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
         Lang.load(this);
 
