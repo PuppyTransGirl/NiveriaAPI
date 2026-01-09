@@ -15,6 +15,7 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -48,6 +49,7 @@ public class DoubleDropButton extends MenuComponent {
     /**
      * Constructs a new DoubleDropButton with the specified parameters.
      *
+     * @param id                unique identifier for the button
      * @param item              function that provides the normal ItemStack
      * @param dropItem          function that provides the drop state ItemStack
      * @param onClick           general click handler for mouse clicks
@@ -61,6 +63,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param height            height of the button in rows
      */
     private DoubleDropButton(
+            String id,
             Function<MenuContext, ItemStack> item,
             Function<MenuContext, ItemStack> dropItem,
             Consumer<NiveriaInventoryClickEvent> onClick,
@@ -70,6 +73,7 @@ public class DoubleDropButton extends MenuComponent {
             Sound sound,
             int width, int height
     ) {
+        super(id);
         this.item = item;
         this.dropItem = dropItem;
 
@@ -118,22 +122,7 @@ public class DoubleDropButton extends MenuComponent {
 
         ClickType click = event.getClick();
         if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) {
-            if (this.dropTask != null) {
-                this.dropTask.cancel();
-                this.dropTask = null;
-
-                if (this.onDoubleDrop != null)
-                    this.onDoubleDrop.accept(event);
-            } else {
-                this.dropTask = Task.syncLater(() -> {
-                    this.dropTask = null;
-                    render(context);
-                }, NiveriaAPI.instance(), 3L, TimeUnit.SECONDS);
-            }
-
-            if (this.sound != null)
-                context.player().playSound(this.sound, Sound.Emitter.self());
-
+            handleDropClick(event, context);
             return;
         }
 
@@ -159,6 +148,33 @@ public class DoubleDropButton extends MenuComponent {
             if (this.sound != null)
                 context.player().playSound(this.sound, Sound.Emitter.self());
         }
+    }
+
+    /**
+     * Handles drop click events for double-drop functionality.
+     * <p>
+     * On the first drop click, starts a 3-second timer to enter drop state.
+     * If a second drop click occurs within this period, triggers the double-drop action.
+     *
+     * @param event   the inventory click event
+     * @param context the menu context
+     */
+    private void handleDropClick(@NonNull NiveriaInventoryClickEvent event, @NonNull MenuContext context) {
+        if (this.dropTask != null) {
+            this.dropTask.cancel();
+            this.dropTask = null;
+
+            if (this.onDoubleDrop != null)
+                this.onDoubleDrop.accept(event);
+        } else {
+            this.dropTask = Task.syncLater(() -> {
+                this.dropTask = null;
+                render(context);
+            }, NiveriaAPI.instance(), 3L, TimeUnit.SECONDS);
+        }
+
+        if (this.sound != null)
+            context.player().playSound(this.sound, Sound.Emitter.self());
     }
 
     /**
@@ -439,7 +455,7 @@ public class DoubleDropButton extends MenuComponent {
     /**
      * Builder class for constructing DoubleDropButton instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 
@@ -687,6 +703,7 @@ public class DoubleDropButton extends MenuComponent {
         @NotNull
         public DoubleDropButton build() {
             return new DoubleDropButton(
+                    this.id,
                     this.item,
                     this.dropItem,
                     this.onClick,

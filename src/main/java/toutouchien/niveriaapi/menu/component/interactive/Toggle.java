@@ -39,20 +39,23 @@ public class Toggle extends MenuComponent {
     /**
      * Constructs a new Toggle with the specified parameters.
      *
+     * @param id           unique identifier for this toggle
      * @param onItem       function that provides the ItemStack when toggle is on
      * @param offItem      function that provides the ItemStack when toggle is off
-     * @param currentState the initial state of the toggle
-     * @param sound        the sound to play when clicked (may be null)
-     * @param width        the width of the toggle in slots
-     * @param height       the height of the toggle in rows
+     * @param currentState initial state of the toggle
+     * @param sound        sound to play when clicked (may be null)
+     * @param width        width of the toggle in slots
+     * @param height       height of the toggle in rows
      */
     private Toggle(
+            String id,
             Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
             Consumer<ToggleEvent> onToggle,
             Sound sound,
             boolean currentState,
             int width, int height
     ) {
+        super(id);
         this.onItem = onItem;
         this.offItem = offItem;
         this.onToggle = onToggle;
@@ -303,7 +306,7 @@ public class Toggle extends MenuComponent {
     /**
      * Builder class for constructing Toggle instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder {
         private Function<MenuContext, ItemStack> onItem = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> offItem = context -> ItemStack.of(Material.STONE);
 
@@ -476,6 +479,7 @@ public class Toggle extends MenuComponent {
         @NotNull
         public Toggle build() {
             return new Toggle(
+                    this.id,
                     this.onItem,
                     this.offItem,
                     this.onToggle,

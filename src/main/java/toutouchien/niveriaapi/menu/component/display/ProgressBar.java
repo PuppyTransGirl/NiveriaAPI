@@ -39,20 +39,23 @@ public class ProgressBar extends MenuComponent {
     /**
      * Constructs a new ProgressBar with the specified parameters.
      *
+     * @param id          unique identifier for this progress bar
      * @param doneItem    function that provides the ItemStack for completed sections
      * @param currentItem function that provides the ItemStack for the current progress position
      * @param notDoneItem function that provides the ItemStack for incomplete sections
-     * @param direction   the direction in which the progress bar fills
+     * @param direction   direction in which the progress bar fills
      * @param percentage  function that returns the progress percentage (0.0 to 1.0)
-     * @param width       the width of the progress bar in slots
-     * @param height      the height of the progress bar in rows
+     * @param width       width of the progress bar in slots
+     * @param height      height of the progress bar in rows
      */
     private ProgressBar(
+            String id,
             Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
             Direction.Default direction,
             Object2DoubleFunction<MenuContext> percentage,
             int width, int height
     ) {
+        super(id);
         this.doneItem = doneItem;
         this.currentItem = currentItem;
         this.notDoneItem = notDoneItem;
@@ -362,7 +365,7 @@ public class ProgressBar extends MenuComponent {
     /**
      * Builder class for constructing ProgressBar instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder {
         private Function<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
         private Function<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);
         private Function<MenuContext, ItemStack> notDoneItem = context -> ItemStack.of(Material.RED_CONCRETE);
@@ -577,6 +580,7 @@ public class ProgressBar extends MenuComponent {
         @NotNull
         public ProgressBar build() {
             return new ProgressBar(
+                    this.id,
                     this.doneItem,
                     this.currentItem,
                     this.notDoneItem,

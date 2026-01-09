@@ -35,17 +35,20 @@ public class Grid extends MenuComponent {
     /**
      * Constructs a new Grid with the specified parameters.
      *
-     * @param width          the width of the grid in slots
-     * @param height         the height of the grid in rows
-     * @param slotComponents the list of components contained within this grid
-     * @param border         the ItemStack to use for border decoration (may be null)
-     * @param fill           the ItemStack to use for empty space filling (may be null)
+     * @param id             unique identifier for this grid
+     * @param width          width of the grid in slots
+     * @param height          height of the grid in rows
+     * @param slotComponents list of components contained within this grid
+     * @param border         ItemStack to use for border decoration (may be null)
+     * @param fill           ItemStack to use for empty space filling (may be null)
      */
     private Grid(
+            String id,
             int width, int height,
             ObjectList<MenuComponent> slotComponents,
             ItemStack border, ItemStack fill
     ) {
+        super(id);
         this.width = width;
         this.height = height;
         this.slotComponents = slotComponents;
@@ -227,7 +230,7 @@ public class Grid extends MenuComponent {
     /**
      * Builder class for constructing Grid instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder {
         private int width, height;
 
         private final ObjectList<MenuComponent> slotComponents = new ObjectArrayList<>();
@@ -383,6 +386,7 @@ public class Grid extends MenuComponent {
         @NotNull
         public Grid build() {
             return new Grid(
+                    this.id,
                     this.width, this.height,
                     this.slotComponents,
                     this.border, this.fill

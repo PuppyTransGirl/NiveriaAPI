@@ -47,15 +47,17 @@ public class Selector<T> extends MenuComponent {
     /**
      * Constructs a new Selector with the specified parameters.
      *
-     * @param options           the list of selectable options
+     * @param id                unique identifier for this selector
+     * @param options           list of selectable options
      * @param defaultOption     function to determine default selection based on context
      * @param onSelectionChange callback for when selection changes
-     * @param defaultIndex      the initial selected index
-     * @param sound             the sound to play when clicked (may be null)
-     * @param width             the width of the selector in slots
-     * @param height            the height of the selector in rows
+     * @param defaultIndex      initial selected index
+     * @param sound             sound to play when clicked (may be null)
+     * @param width             width of the selector in slots
+     * @param height            height of the selector in rows
      */
     private Selector(
+            String id,
             ObjectList<Option<T>> options,
             Function<MenuContext, T> defaultOption,
             Consumer<SelectionChangeEvent<T>> onSelectionChange,
@@ -63,6 +65,7 @@ public class Selector<T> extends MenuComponent {
             Sound sound,
             int width, int height
     ) {
+        super(id);
         this.options = options;
         this.defaultOption = defaultOption;
         this.onSelectionChange = onSelectionChange;
@@ -403,7 +406,7 @@ public class Selector<T> extends MenuComponent {
      *
      * @param <T> the type of values for selector options
      */
-    public static class Builder<T> {
+    public static class Builder<T> extends MenuComponent.Builder {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
         private Function<MenuContext, T> defaultOption;
         private Consumer<SelectionChangeEvent<T>> onSelectionChange;
@@ -579,6 +582,7 @@ public class Selector<T> extends MenuComponent {
             );
 
             return new Selector<>(
+                    this.id,
                     this.options,
                     this.defaultOption,
                     this.onSelectionChange,

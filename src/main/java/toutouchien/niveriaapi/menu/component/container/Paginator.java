@@ -43,6 +43,7 @@ public class Paginator extends MenuComponent {
     /**
      * Constructs a new Paginator with the specified parameters.
      *
+     * @param id               the unique identifier for this paginator
      * @param components       the list of components to paginate
      * @param backItem         function providing the back button item when enabled
      * @param nextItem         function providing the next button item when enabled
@@ -57,6 +58,7 @@ public class Paginator extends MenuComponent {
      * @param page             the initial page index (0-based)
      */
     private Paginator(
+            String id,
             ObjectList<MenuComponent> components,
             Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
             Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,
@@ -65,6 +67,7 @@ public class Paginator extends MenuComponent {
             int width, int height,
             int page
     ) {
+        super(id);
         this.components = components;
         this.backItem = backItem;
         this.nextItem = nextItem;
@@ -778,7 +781,7 @@ public class Paginator extends MenuComponent {
     /**
      * Builder class for constructing Paginator instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder {
         private final ObjectList<MenuComponent> components = new ObjectArrayList<>();
 
         private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
@@ -1156,6 +1159,7 @@ public class Paginator extends MenuComponent {
         @NotNull
         public Paginator build() {
             return new Paginator(
+                    this.id,
                     this.components,
                     this.backItem,
                     this.nextItem,
