@@ -300,7 +300,7 @@ public class Grid extends MenuComponent {
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            return add(context, y * 9 + x, component);
+            return add(context, y * this.width + x, component);
         }
 
         /**

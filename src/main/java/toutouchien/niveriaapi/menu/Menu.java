@@ -120,6 +120,9 @@ public abstract class Menu implements InventoryHolder {
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
+        if (this.componentIDs.containsKey(id))
+            throw new IllegalArgumentException("A component with id '" + id + "' is already registered.");
+
         this.componentIDs.put(id, component);
     }
 

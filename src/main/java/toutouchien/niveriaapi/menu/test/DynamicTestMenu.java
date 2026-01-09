@@ -23,6 +23,8 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
  * after creation and update them in real-time.
  */
 public class DynamicTestMenu extends Menu {
+    private static final String PROGRESS_ID = "progress";
+    private static final String STATUS_ID = "status";
     private int currentProgress = 0;
 
     /**
@@ -58,7 +60,7 @@ public class DynamicTestMenu extends Menu {
     @Override
     protected MenuComponent root(@NotNull MenuContext context) {
         ProgressBar progressBar = ProgressBar.create()
-                .id("progress")
+                .id(PROGRESS_ID)
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))
                 .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
                 .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
@@ -68,7 +70,7 @@ public class DynamicTestMenu extends Menu {
                 .build();
 
         Icon statusIcon = Icon.create()
-                .id("status")
+                .id(STATUS_ID)
                 .item(statusItem())
                 .build();
 
@@ -145,8 +147,8 @@ public class DynamicTestMenu extends Menu {
      * - Changes the status icon based on progress level
      */
     private void updateComponents() {
-        ProgressBar progressBar = (ProgressBar) this.componentByID("progress");
-        Icon statusIcon = (Icon) this.componentByID("status");
+        ProgressBar progressBar = (ProgressBar) this.componentByID(PROGRESS_ID);
+        Icon statusIcon = (Icon) this.componentByID(STATUS_ID);
 
         progressBar.percentage(this.currentProgress());
 

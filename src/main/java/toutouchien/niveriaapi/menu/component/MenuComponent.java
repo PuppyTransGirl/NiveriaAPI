@@ -243,9 +243,9 @@ public abstract class MenuComponent {
         protected String id;
 
         /**
-         * Sets the ID for this grid.
+         * Sets the ID for this component.
          *
-         * @param id the unique identifier for the grid
+         * @param id the unique identifier for the component
          * @return this builder for method chaining
          * @throws NullPointerException if id is null
          */
