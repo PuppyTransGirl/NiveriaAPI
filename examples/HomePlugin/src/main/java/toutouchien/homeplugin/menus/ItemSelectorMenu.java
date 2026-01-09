@@ -71,11 +71,11 @@ public class ItemSelectorMenu extends Menu {
 
         return Grid.create()
                 .size(9, 6)
-                .add(10, paginator)
-                .add(45, paginator.firstPageButton())
-                .add(46, paginator.backButton())
-                .add(52, paginator.nextButton())
-                .add(53, paginator.lastPageButton())
+                .add(context, 10, paginator)
+                .add(context, 45, paginator.firstPageButton())
+                .add(context, 46, paginator.backButton())
+                .add(context, 52, paginator.nextButton())
+                .add(context, 53, paginator.lastPageButton())
                 .build();
     }
 }

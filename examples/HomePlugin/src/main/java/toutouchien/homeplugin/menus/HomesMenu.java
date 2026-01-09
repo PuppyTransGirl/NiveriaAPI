@@ -99,14 +99,14 @@ public class HomesMenu extends Menu {
                     })
                     .build();
 
-            paginator.add(button);
+            paginator.add(context, button);
         }
 
         return Grid.create()
                 .size(9, 5)
-                .add(11, paginator)
-                .add(36, paginator.backButton())
-                .add(44, paginator.nextButton())
+                .add(context, 11, paginator)
+                .add(context, 36, paginator.backButton())
+                .add(context, 44, paginator.nextButton())
                 .build();
     }
 }
