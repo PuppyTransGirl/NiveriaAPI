@@ -99,7 +99,7 @@ public class ConfirmationMenu extends Menu {
                 .add(context, 15, yesButton());
 
         if (this.explanationItem != null)
-            builder.add(13, explanationIcon());
+            builder.add(context, 13, explanationIcon());
 
         return builder.build();
     }
