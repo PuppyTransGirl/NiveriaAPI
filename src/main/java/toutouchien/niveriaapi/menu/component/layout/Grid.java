@@ -255,12 +255,7 @@ public class Grid extends MenuComponent {
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            slotComponents.add(component);
             component.position(toX(slot), toY(slot));
-
-            String addedID = component.id();
-            if (addedID != null)
-                context.menu().registerComponentID(addedID, component);
 
             // Check that the component fits inside the grid
             int compX = component.x();
@@ -278,6 +273,11 @@ public class Grid extends MenuComponent {
                     compX, compY,
                     compWidth, compHeight
             );
+
+            slotComponents.add(component);
+            String addedID = component.id();
+            if (addedID != null)
+                context.menu().registerComponentID(addedID, component);
 
             return this;
         }

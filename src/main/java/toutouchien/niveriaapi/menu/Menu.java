@@ -75,6 +75,7 @@ public abstract class Menu implements InventoryHolder {
         this.root.render(this.context);
 
         this.player.openInventory(this.inventory);
+        this.onOpen();
     }
 
     /**
@@ -90,6 +91,7 @@ public abstract class Menu implements InventoryHolder {
             this.player.closeInventory();
 
         this.context.close();
+        this.onClose();
     }
 
     /**
@@ -118,6 +120,7 @@ public abstract class Menu implements InventoryHolder {
      */
     public void registerComponentID(@NotNull String id, @NotNull MenuComponent component) {
         Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkArgument(!id.isEmpty(), "id cannot be empty");
         Preconditions.checkNotNull(component, "component cannot be null");
 
         if (this.componentIDs.containsKey(id))
@@ -171,6 +174,26 @@ public abstract class Menu implements InventoryHolder {
      */
     @NotNull
     protected abstract MenuComponent root(@NotNull MenuContext context);
+
+    /**
+     * Called when the menu is opened.
+     * <p>
+     * Subclasses can override this method to perform actions when the menu
+     * is opened.
+     */
+    protected void onOpen() {
+
+    }
+
+    /**
+     * Called when the menu is closed.
+     * <p>
+     * Subclasses can override this method to perform actions when the menu
+     * is closed.
+     */
+    protected void onClose() {
+
+    }
 
     /**
      * Returns the player associated with this menu.
