@@ -249,6 +249,7 @@ public abstract class MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if id is null
          */
+        @SuppressWarnings("unchecked")
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public T id(@NotNull String id) {
