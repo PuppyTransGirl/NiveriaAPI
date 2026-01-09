@@ -37,7 +37,7 @@ public class ConfirmationMenu extends Menu {
      * @param yesItem         the ItemStack to display for the "yes" button
      * @param noItem          the ItemStack to display for the "no" button
      * @param title           the title component displayed at the top of the menu
-     * @param explanationItem optional ItemStack to display as an explanation (may be null)
+     * @param explanationItem optional ItemStack to display as an explanation (can be null)
      * @param yesConsumer     the action to perform when the yes button is clicked
      * @param noConsumer      the action to perform when the no button is clicked
      * @throws NullPointerException if any required parameter is null
