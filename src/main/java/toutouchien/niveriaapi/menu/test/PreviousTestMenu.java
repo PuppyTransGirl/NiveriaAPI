@@ -36,13 +36,13 @@ public class PreviousTestMenu extends Menu {
     protected @NotNull MenuComponent root(@NotNull MenuContext context) {
         return Grid.create()
                 .size(9, 3)
-                .add(0, previousMenuButton())
-                .add(4, Icon.create()
+                .add(context, 0, previousMenuButton())
+                .add(context, 4, Icon.create()
                         .item(ItemBuilder.of(Material.BOOK)
                                 .name(Component.text("Current Menu ID: " + System.identityHashCode(this)))
                                 .build())
                         .build())
-                .add(8, nextMenuButton())
+                .add(context, 8, nextMenuButton())
                 .build();
     }
 

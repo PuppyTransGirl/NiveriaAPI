@@ -8,6 +8,7 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
@@ -27,9 +28,12 @@ public abstract class MenuComponent {
     private int x = 0;
     private int y = 0;
 
-    protected MenuComponent(@NotNull String id) {
-        Preconditions.checkNotNull(id, "id cannot be null");
-
+    /**
+     * Constructs a new MenuComponent with the specified ID.
+     *
+     * @param id the unique identifier for this component, or null for a default ID
+     */
+    protected MenuComponent(@Nullable String id) {
         this.id = id;
     }
 
@@ -155,7 +159,7 @@ public abstract class MenuComponent {
      *
      * @return the component ID
      */
-    @NotNull
+    @Nullable
     public String id() {
         return id;
     }

@@ -130,11 +130,11 @@ public class DynamicTestMenu extends Menu {
 
         return Grid.create()
                 .size(9, 6)
-                .add(11, progressBar)
-                .add(31, statusIcon)
-                .add(39, decrementButton)
-                .add(41, incrementButton)
-                .add(49, resetButton)
+                .add(context, 11, progressBar)
+                .add(context, 31, statusIcon)
+                .add(context, 39, decrementButton)
+                .add(context, 41, incrementButton)
+                .add(context, 49, resetButton)
                 .build();
     }
 

@@ -1,12 +1,14 @@
 package toutouchien.niveriaapi.menu;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -19,8 +21,10 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  */
 public abstract class Menu implements InventoryHolder {
     private Inventory inventory;
-    protected final MenuContext context;
     private final Player player;
+    protected final MenuContext context;
+
+    private final Object2ObjectOpenHashMap<String, MenuComponent> componentIDs;
 
     private MenuComponent root;
 
@@ -35,6 +39,7 @@ public abstract class Menu implements InventoryHolder {
 
         this.player = player;
         this.context = new MenuContext(this);
+        this.componentIDs = new Object2ObjectOpenHashMap<>();
     }
 
 	/**
@@ -50,6 +55,7 @@ public abstract class Menu implements InventoryHolder {
 
 		this.player = player;
 		this.context = context;
+        this.componentIDs = new Object2ObjectOpenHashMap<>();
 	}
 
     /**
@@ -104,6 +110,32 @@ public abstract class Menu implements InventoryHolder {
     }
 
     /**
+     * Registers a component with a unique identifier for later retrieval.
+     *
+     * @param id        the unique identifier for the component
+     * @param component the menu component to register
+     * @throws NullPointerException if id or component is null
+     */
+    public void registerComponentID(@NotNull String id, @NotNull MenuComponent component) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkNotNull(component, "component cannot be null");
+
+        this.componentIDs.put(id, component);
+    }
+
+    /**
+     * Unregisters a component by its unique identifier.
+     *
+     * @param id the unique identifier of the component to unregister
+     * @throws NullPointerException if id is null
+     */
+    public void unregisterComponentID(@NotNull String id) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+
+        this.componentIDs.remove(id);
+    }
+
+    /**
      * Returns the title component for this menu's inventory.
      * <p>
      * This method must be implemented by subclasses to define the menu's title.
@@ -155,6 +187,20 @@ public abstract class Menu implements InventoryHolder {
     @NotNull
     public MenuContext context() {
         return context;
+    }
+
+    /**
+     * Retrieves a registered component by its unique identifier.
+     *
+     * @param id the unique identifier of the component
+     * @return the menu component associated with the given id, or null if not found
+     * @throws NullPointerException if id is null
+     */
+    @Nullable
+    public MenuComponent componentByID(@NotNull String id) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+
+        return this.componentIDs.get(id);
     }
 
     /**

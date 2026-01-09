@@ -37,7 +37,7 @@ public class Grid extends MenuComponent {
      *
      * @param id             unique identifier for this grid
      * @param width          width of the grid in slots
-     * @param height          height of the grid in rows
+     * @param height         height of the grid in rows
      * @param slotComponents list of components contained within this grid
      * @param border         ItemStack to use for border decoration (may be null)
      * @param fill           ItemStack to use for empty space filling (may be null)
@@ -241,6 +241,7 @@ public class Grid extends MenuComponent {
         /**
          * Adds a component to the grid at the specified slot index.
          *
+         * @param context   the menu context
          * @param slot      the slot index where the component should be placed
          * @param component the component to add
          * @return this builder for method chaining
@@ -248,13 +249,18 @@ public class Grid extends MenuComponent {
          *                                  or component doesn't fit within grid bounds
          */
         @NotNull
-        @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int slot, @NotNull MenuComponent component) {
+        @Contract(value = "_, _, _ -> this", mutates = "this")
+        public Builder add(@NotNull MenuContext context, @NonNegative int slot, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
             slotComponents.add(component);
             component.position(toX(slot), toY(slot));
+
+            String addedID = component.id();
+            if (addedID != null)
+                context.menu().registerComponentID(addedID, component);
 
             // Check that the component fits inside the grid
             int compX = component.x();
@@ -279,6 +285,7 @@ public class Grid extends MenuComponent {
         /**
          * Adds a component to the grid at the specified x/y coordinates.
          *
+         * @param context   the menu context
          * @param x         the x-coordinate (0-based)
          * @param y         the y-coordinate (0-based)
          * @param component the component to add
@@ -286,13 +293,13 @@ public class Grid extends MenuComponent {
          * @throws IllegalArgumentException if coordinates are negative or component is null
          */
         @NotNull
-        @Contract(value = "_, _, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
+        @Contract(value = "_, _, _, _ -> this", mutates = "this")
+        public Builder add(@NotNull MenuContext context, @NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            return add(y * 9 + x, component);
+            return add(context, y * 9 + x, component);
         }
 
         /**

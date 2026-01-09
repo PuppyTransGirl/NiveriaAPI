@@ -95,8 +95,8 @@ public class ConfirmationMenu extends Menu {
     protected MenuComponent root(@NotNull MenuContext context) {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
-                .add(11, noButton())
-                .add(15, yesButton());
+                .add(context, 11, noButton())
+                .add(context, 15, yesButton());
 
         if (this.explanationItem != null)
             builder.add(13, explanationIcon());
