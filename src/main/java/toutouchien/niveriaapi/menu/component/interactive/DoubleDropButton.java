@@ -455,7 +455,7 @@ public class DoubleDropButton extends MenuComponent {
     /**
      * Builder class for constructing DoubleDropButton instances with a fluent interface.
      */
-    public static class Builder extends MenuComponent.Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 

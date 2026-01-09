@@ -239,7 +239,7 @@ public abstract class MenuComponent {
         return this.visible && this.enabled;
     }
 
-    protected static class Builder {
+    protected static class Builder<T> {
         protected String id;
 
         /**
@@ -251,11 +251,11 @@ public abstract class MenuComponent {
          */
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder id(@NotNull String id) {
+        public T id(@NotNull String id) {
             Preconditions.checkNotNull(id, "id cannot be null");
 
             this.id = id;
-            return this;
+            return (T) this;
         }
     }
 

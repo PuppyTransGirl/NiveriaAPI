@@ -805,7 +805,7 @@ public class Paginator extends MenuComponent {
     /**
      * Builder class for constructing Paginator instances with a fluent interface.
      */
-    public static class Builder extends MenuComponent.Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private final ObjectList<MenuComponent> components = new ObjectArrayList<>();
 
         private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);

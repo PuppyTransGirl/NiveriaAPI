@@ -592,8 +592,7 @@ public class Button extends MenuComponent {
     /**
      * Builder class for constructing Button instances with a fluent interface.
      */
-    public static class Builder {
-        private String id;
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
@@ -615,22 +614,6 @@ public class Button extends MenuComponent {
 
         private int width = 1;
         private int height = 1;
-
-        /**
-         * Sets the ID for this button.
-         *
-         * @param id the unique identifier for the button
-         * @return this builder for method chaining
-         * @throws NullPointerException if id is null
-         */
-        @NotNull
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder id(@NotNull String id) {
-            Preconditions.checkNotNull(id, "id cannot be null");
-
-            this.id = id;
-            return this;
-        }
 
         /**
          * Sets the ItemStack to display for this button.

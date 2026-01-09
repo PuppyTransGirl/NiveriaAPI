@@ -230,7 +230,7 @@ public class Grid extends MenuComponent {
     /**
      * Builder class for constructing Grid instances with a fluent interface.
      */
-    public static class Builder extends MenuComponent.Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private int width, height;
 
         private final ObjectList<MenuComponent> slotComponents = new ObjectArrayList<>();

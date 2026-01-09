@@ -365,7 +365,7 @@ public class ProgressBar extends MenuComponent {
     /**
      * Builder class for constructing ProgressBar instances with a fluent interface.
      */
-    public static class Builder extends MenuComponent.Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> doneItem = context -> ItemStack.of(Material.LIME_CONCRETE);
         private Function<MenuContext, ItemStack> currentItem = context -> ItemStack.of(Material.ORANGE_CONCRETE);
         private Function<MenuContext, ItemStack> notDoneItem = context -> ItemStack.of(Material.RED_CONCRETE);

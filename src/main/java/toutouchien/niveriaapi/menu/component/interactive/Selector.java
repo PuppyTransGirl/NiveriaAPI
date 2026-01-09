@@ -406,7 +406,7 @@ public class Selector<T> extends MenuComponent {
      *
      * @param <T> the type of values for selector options
      */
-    public static class Builder<T> extends MenuComponent.Builder {
+    public static class Builder<T> extends MenuComponent.Builder<Builder<T>> {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
         private Function<MenuContext, T> defaultOption;
         private Consumer<SelectionChangeEvent<T>> onSelectionChange;

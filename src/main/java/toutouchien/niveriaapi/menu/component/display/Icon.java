@@ -218,7 +218,7 @@ public class Icon extends MenuComponent {
     /**
      * Builder class for constructing Icon instances with a fluent interface.
      */
-    public static class Builder extends MenuComponent.Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Sound sound = null;
