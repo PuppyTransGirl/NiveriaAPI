@@ -50,7 +50,7 @@ public class ItemSelectorMenu extends Menu {
                 .backItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu_item_selector.previous")).build())
                 .firstPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.first_page")).build())
                 .lastPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.last_page")).build())
-                .addAll(
+                .addAll(context,
                         Arrays.stream(Material.values())
                                 .filter(material -> !material.isLegacy())
                                 .filter(Material::isItem) // Remove things like Piston Head
