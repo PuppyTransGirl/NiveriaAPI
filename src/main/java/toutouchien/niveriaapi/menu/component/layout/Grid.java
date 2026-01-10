@@ -71,7 +71,7 @@ public class Grid extends MenuComponent {
     /**
      * Called when this grid is removed from a menu.
      * <p>
-     * Propagates the onRemove event to all child components if the grid is visible.
+     * Cleans up all child components and unregisters their IDs from the menu.
      *
      * @param context the menu context
      */
