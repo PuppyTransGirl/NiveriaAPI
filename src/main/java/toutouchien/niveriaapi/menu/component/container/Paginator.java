@@ -87,6 +87,24 @@ public class Paginator extends MenuComponent {
     }
 
     /**
+     * Called when this paginator is added to a menu.
+     * <p>
+     * Propagates the onAdd event to all child components if the paginator is visible.
+     *
+     * @param context the menu context
+     */
+    @Override
+    public void onAdd(@NotNull MenuContext context) {
+        this.components.forEach(component -> {
+            component.onAdd(context);
+
+            String addedID = component.id();
+            if (addedID != null)
+                context.menu().registerComponentID(addedID, component);
+        });
+    }
+
+    /**
      * Called when this paginator is removed from a menu.
      * <p>
      * Cleans up all child components and unregisters their IDs from the menu.
@@ -98,8 +116,9 @@ public class Paginator extends MenuComponent {
         this.components.forEach(component -> {
             component.onRemove(context);
 
-            if (component.id() != null)
-                context.menu().unregisterComponentID(component.id());
+            String removedID = component.id();
+            if (removedID != null)
+                context.menu().unregisterComponentID(removedID);
         });
     }
 
@@ -862,10 +881,6 @@ public class Paginator extends MenuComponent {
             Preconditions.checkNotNull(component, "component cannot be null");
 
             this.components.add(component);
-            String addedID = component.id();
-            if (addedID != null)
-                context.menu().registerComponentID(addedID, component);
-
             return this;
         }
 
