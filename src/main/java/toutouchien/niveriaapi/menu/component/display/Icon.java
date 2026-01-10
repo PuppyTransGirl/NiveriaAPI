@@ -35,16 +35,19 @@ public class Icon extends MenuComponent {
     /**
      * Constructs a new Icon with the specified parameters.
      *
+     * @param id     unique identifier for the icon
      * @param item   function that provides the ItemStack to display
      * @param sound  sound to play when clicked (may be null for no sound)
      * @param width  width of the icon in slots
      * @param height height of the icon in rows
      */
     private Icon(
+            String id,
             Function<MenuContext, ItemStack> item,
             Sound sound,
             int width, int height
     ) {
+        super(id);
         this.item = item;
 
         this.sound = sound;
@@ -215,7 +218,7 @@ public class Icon extends MenuComponent {
     /**
      * Builder class for constructing Icon instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Sound sound = null;
@@ -327,6 +330,7 @@ public class Icon extends MenuComponent {
         @NotNull
         public Icon build() {
             return new Icon(
+                    this.id,
                     this.item,
                     this.sound,
                     this.width,

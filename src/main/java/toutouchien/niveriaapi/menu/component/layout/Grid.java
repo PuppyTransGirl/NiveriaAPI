@@ -35,17 +35,20 @@ public class Grid extends MenuComponent {
     /**
      * Constructs a new Grid with the specified parameters.
      *
-     * @param width          the width of the grid in slots
-     * @param height         the height of the grid in rows
-     * @param slotComponents the list of components contained within this grid
-     * @param border         the ItemStack to use for border decoration (may be null)
-     * @param fill           the ItemStack to use for empty space filling (may be null)
+     * @param id             unique identifier for this grid
+     * @param width          width of the grid in slots
+     * @param height         height of the grid in rows
+     * @param slotComponents list of components contained within this grid
+     * @param border         ItemStack to use for border decoration (may be null)
+     * @param fill           ItemStack to use for empty space filling (may be null)
      */
     private Grid(
+            String id,
             int width, int height,
             ObjectList<MenuComponent> slotComponents,
             ItemStack border, ItemStack fill
     ) {
+        super(id);
         this.width = width;
         this.height = height;
         this.slotComponents = slotComponents;
@@ -62,25 +65,31 @@ public class Grid extends MenuComponent {
      */
     @Override
     public void onAdd(@NotNull MenuContext context) {
-        if (!this.visible())
-            return;
+        this.slotComponents.forEach(component -> {
+            component.onAdd(context);
 
-        this.slotComponents.forEach(component -> component.onAdd(context));
+            String addedID = component.id();
+            if (addedID != null)
+                context.menu().registerComponentID(addedID, component);
+        });
     }
 
     /**
      * Called when this grid is removed from a menu.
      * <p>
-     * Propagates the onRemove event to all child components if the grid is visible.
+     * Cleans up all child components and unregisters their IDs from the menu.
      *
      * @param context the menu context
      */
     @Override
     public void onRemove(@NotNull MenuContext context) {
-        if (!this.visible())
-            return;
+        this.slotComponents.forEach(component -> {
+            component.onRemove(context);
 
-        this.slotComponents.forEach(component -> component.onRemove(context));
+            String removedID = component.id();
+            if (removedID != null)
+                context.menu().unregisterComponentID(removedID);
+        });
     }
 
     /**
@@ -227,7 +236,7 @@ public class Grid extends MenuComponent {
     /**
      * Builder class for constructing Grid instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private int width, height;
 
         private final ObjectList<MenuComponent> slotComponents = new ObjectArrayList<>();
@@ -238,6 +247,7 @@ public class Grid extends MenuComponent {
         /**
          * Adds a component to the grid at the specified slot index.
          *
+         * @param context   the menu context
          * @param slot      the slot index where the component should be placed
          * @param component the component to add
          * @return this builder for method chaining
@@ -245,12 +255,12 @@ public class Grid extends MenuComponent {
          *                                  or component doesn't fit within grid bounds
          */
         @NotNull
-        @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int slot, @NotNull MenuComponent component) {
+        @Contract(value = "_, _, _ -> this", mutates = "this")
+        public Builder add(@NotNull MenuContext context, @NonNegative int slot, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            slotComponents.add(component);
             component.position(toX(slot), toY(slot));
 
             // Check that the component fits inside the grid
@@ -270,12 +280,14 @@ public class Grid extends MenuComponent {
                     compWidth, compHeight
             );
 
+            slotComponents.add(component);
             return this;
         }
 
         /**
          * Adds a component to the grid at the specified x/y coordinates.
          *
+         * @param context   the menu context
          * @param x         the x-coordinate (0-based)
          * @param y         the y-coordinate (0-based)
          * @param component the component to add
@@ -283,13 +295,14 @@ public class Grid extends MenuComponent {
          * @throws IllegalArgumentException if coordinates are negative or component is null
          */
         @NotNull
-        @Contract(value = "_, _, _ -> this", mutates = "this")
-        public Builder add(@NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
+        @Contract(value = "_, _, _, _ -> this", mutates = "this")
+        public Builder add(@NotNull MenuContext context, @NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            return add(y * 9 + x, component);
+            return add(context, y * this.width + x, component);
         }
 
         /**
@@ -383,6 +396,7 @@ public class Grid extends MenuComponent {
         @NotNull
         public Grid build() {
             return new Grid(
+                    this.id,
                     this.width, this.height,
                     this.slotComponents,
                     this.border, this.fill

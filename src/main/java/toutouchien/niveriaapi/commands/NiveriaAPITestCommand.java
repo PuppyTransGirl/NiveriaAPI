@@ -90,7 +90,6 @@ public class NiveriaAPITestCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> previousCommand() {
         return Commands.literal("previous")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.previous"))
-                .requires(CommandUtils::playerExecutorRequirement)
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     new PreviousTestMenu(player).open();
