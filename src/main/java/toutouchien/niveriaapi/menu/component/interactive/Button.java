@@ -59,6 +59,7 @@ public class Button extends MenuComponent {
     /**
      * Constructs a new Button with the specified parameters.
      *
+     * @param id                  unique identifier for the button
      * @param item                function that provides the static ItemStack
      * @param onClick             general click handler for mouse clicks
      * @param onLeftClick         handler for left clicks
@@ -77,6 +78,7 @@ public class Button extends MenuComponent {
      * @param height              height of the button in rows
      */
     private Button(
+            String id,
             Function<MenuContext, ItemStack> item,
             Consumer<NiveriaInventoryClickEvent> onClick,
             Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
@@ -87,6 +89,7 @@ public class Button extends MenuComponent {
             Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide,
             int width, int height
     ) {
+        super(id);
         this.item = item;
 
         this.onClick = onClick;
@@ -589,7 +592,7 @@ public class Button extends MenuComponent {
     /**
      * Builder class for constructing Button instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
@@ -902,6 +905,7 @@ public class Button extends MenuComponent {
         @NotNull
         public Button build() {
             return new Button(
+                    this.id,
                     this.item,
                     this.onClick,
                     this.onLeftClick,

@@ -50,7 +50,7 @@ public class ItemSelectorMenu extends Menu {
                 .backItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu_item_selector.previous")).build())
                 .firstPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.first_page")).build())
                 .lastPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.last_page")).build())
-                .addAll(
+                .addAll(context,
                         Arrays.stream(Material.values())
                                 .filter(material -> !material.isLegacy())
                                 .filter(Material::isItem) // Remove things like Piston Head
@@ -71,11 +71,11 @@ public class ItemSelectorMenu extends Menu {
 
         return Grid.create()
                 .size(9, 6)
-                .add(10, paginator)
-                .add(45, paginator.firstPageButton())
-                .add(46, paginator.backButton())
-                .add(52, paginator.nextButton())
-                .add(53, paginator.lastPageButton())
+                .add(context, 10, paginator)
+                .add(context, 45, paginator.firstPageButton())
+                .add(context, 46, paginator.backButton())
+                .add(context, 52, paginator.nextButton())
+                .add(context, 53, paginator.lastPageButton())
                 .build();
     }
 }

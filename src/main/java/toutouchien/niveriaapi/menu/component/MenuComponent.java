@@ -6,7 +6,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
@@ -18,11 +20,22 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * and enabled state, and can handle click events.
  */
 public abstract class MenuComponent {
+    private final String id;
+
     private boolean visible = true;
     private boolean enabled = true;
 
     private int x = 0;
     private int y = 0;
+
+    /**
+     * Constructs a new MenuComponent with the specified ID.
+     *
+     * @param id the unique identifier for this component, or null for a default ID
+     */
+    protected MenuComponent(@Nullable String id) {
+        this.id = id;
+    }
 
     /**
      * Called when this component is added to a menu.
@@ -142,6 +155,16 @@ public abstract class MenuComponent {
     }
 
     /**
+     * Returns the unique identifier of this component.
+     *
+     * @return the component ID
+     */
+    @Nullable
+    public String id() {
+        return id;
+    }
+
+    /**
      * Returns the x-coordinate of this component's position.
      *
      * @return the x-coordinate (0-based)
@@ -214,6 +237,27 @@ public abstract class MenuComponent {
      */
     public boolean interactable() {
         return this.visible && this.enabled;
+    }
+
+    protected static class Builder<T> {
+        protected String id;
+
+        /**
+         * Sets the ID for this component.
+         *
+         * @param id the unique identifier for the component
+         * @return this builder for method chaining
+         * @throws NullPointerException if id is null
+         */
+        @SuppressWarnings("unchecked")
+        @NotNull
+        @Contract(value = "_ -> this", mutates = "this")
+        public T id(@NotNull String id) {
+            Preconditions.checkNotNull(id, "id cannot be null");
+
+            this.id = id;
+            return (T) this;
+        }
     }
 
     /**

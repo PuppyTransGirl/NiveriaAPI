@@ -73,16 +73,16 @@ public class BasicTestMenu extends Menu {
     protected MenuComponent root(@NotNull MenuContext context) {
         return Grid.create()
                 .size(9, 6)
-                .add(0, simpleButton())
-                .add(2, animatedButton())
-                .add(8, dynamicButton())
-                .add(13, coordinatesDynamicButton())
-                .add(15, toggle())
-                .add(16, icon())
-                .add(18, selector())
-                .add(20, doubleDropButton())
-                .add(21, rightProgressBar())
-                .add(17, downProgressBar())
+                .add(context, 0, simpleButton())
+                .add(context, 2, animatedButton())
+                .add(context, 8, dynamicButton())
+                .add(context, 13, coordinatesDynamicButton())
+                .add(context, 15, toggle())
+                .add(context, 16, icon())
+                .add(context, 18, selector())
+                .add(context, 20, doubleDropButton())
+                .add(context, 21, rightProgressBar())
+                .add(context, 17, downProgressBar())
                 .build();
     }
 

@@ -48,7 +48,8 @@ public class NiveriaAPI extends JavaPlugin {
 
         preLoadUtilsClasses();
 
-        this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
+        if (!isUnitTestVersion())
+            this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
         Lang.load(this);
 
@@ -154,7 +155,9 @@ public class NiveriaAPI extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        this.bStats.shutdown();
+        if (!isUnitTestVersion())
+            this.bStats.shutdown();
+
         this.hookManager.onDisable();
 
         if (!isUnitTestVersion() && !this.databaseDisabled)
