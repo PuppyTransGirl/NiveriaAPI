@@ -87,6 +87,23 @@ public class Paginator extends MenuComponent {
     }
 
     /**
+     * Called when this paginator is removed from a menu.
+     * <p>
+     * Propagates the onRemove event to all child components if the grid is visible.
+     *
+     * @param context the menu context
+     */
+    @Override
+    public void onRemove(@NotNull MenuContext context) {
+        this.components.forEach(component -> {
+            component.onRemove(context);
+
+            if (component.id() != null)
+                context.menu().unregisterComponentID(component.id());
+        });
+    }
+
+    /**
      * Updates the cached list of absolute inventory slots that this paginator controls.
      * Should be called whenever the paginator's position (x, y) or dimensions change.
      */
@@ -855,17 +872,19 @@ public class Paginator extends MenuComponent {
         /**
          * Adds multiple components to the paginator.
          *
+         * @param context   menu context
          * @param components the list of components to add
          * @return this builder for method chaining
          * @throws NullPointerException if components is null
          */
         @NotNull
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder addAll(@NotNull ObjectList<MenuComponent> components) {
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(components, "components cannot be null");
 
             for (MenuComponent component : components)
-                this.components.add(component);
+                this.add(context, component);
             return this;
         }
 

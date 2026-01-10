@@ -65,9 +65,6 @@ public class Grid extends MenuComponent {
      */
     @Override
     public void onAdd(@NotNull MenuContext context) {
-        if (!this.visible())
-            return;
-
         this.slotComponents.forEach(component -> component.onAdd(context));
     }
 
@@ -80,10 +77,12 @@ public class Grid extends MenuComponent {
      */
     @Override
     public void onRemove(@NotNull MenuContext context) {
-        if (!this.visible())
-            return;
+        this.slotComponents.forEach(component -> {
+            component.onRemove(context);
 
-        this.slotComponents.forEach(component -> component.onRemove(context));
+            if (component.id() != null)
+                context.menu().unregisterComponentID(component.id());
+        });
     }
 
     /**
