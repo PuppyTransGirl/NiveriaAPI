@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "assignees": ["PuppyTransGirl"]
   "dependencyDashboard": false,
   "labels": ["dependencies"],
   "milestone": 1,
