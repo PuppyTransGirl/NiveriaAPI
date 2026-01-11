@@ -13,12 +13,13 @@ repositories {
     mavenLocal()
 
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
     paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT")
 
-    compileOnly("toutouchien.niveriaapi:NiveriaAPI:${niveriaApiVersion}")
+    compileOnly("com.github.PuppyTransGirl:NiveriaAPI:${niveriaApiVersion}")
 }
 
 paperweight {
