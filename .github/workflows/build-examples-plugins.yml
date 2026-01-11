@@ -64,7 +64,7 @@ jobs:
         run: ./gradlew -p examples/HomePlugin jar --no-daemon --stacktrace
 
       - name: Upload Plugin JAR
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: HomePlugin-${{ env.SHORT_SHA }}
           path: examples/HomePlugin/build/libs/*
