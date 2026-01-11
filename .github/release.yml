@@ -21,6 +21,10 @@ changelog:
         - "refactor"
         - "enhancement"
 
+    - title: "Dependencies"
+      labels:
+        - "renovate"
+
     - title: "Other"
       labels:
         - "*"

@@ -63,7 +63,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.milestone.title }}
-          name: Release milestone ${{ github.event.milestone.title }}
+          name: Release ${{ github.event.milestone.title }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           make_latest: true
