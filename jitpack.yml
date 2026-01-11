@@ -1,2 +1,2 @@
 jdk:
-  - graalvm21
+  - openjdk21
