@@ -23,7 +23,7 @@ changelog:
 
     - title: "Dependencies"
       labels:
-        - "renovate"
+        - "dependencies"
 
     - title: "Other"
       labels:
