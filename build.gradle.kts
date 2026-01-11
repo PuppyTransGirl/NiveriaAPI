@@ -43,7 +43,12 @@ dependencies {
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
     compileOnly("net.luckperms:api:${luckpermsVersion}")
     compileOnly("dev.lone:api-itemsadder:${itemsAdderVersion}")
-    compileOnly("com.sk89q.worldguard:worldguard-bukkit:${worldguardVersion}")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:${worldguardVersion}") {
+        // Exclude libraries provided by Paper to prevent version conflicts
+        exclude(group = "com.google.code.gson", module = "gson")
+        exclude(group = "com.google.guava", module = "guava")
+        exclude(group = "it.unimi.dsi", module = "fastutil")
+    }
     compileOnly("com.github.angeschossen:LandsAPI:${landsVersion}")
     compileOnly("de.bluecolored:bluemap-api:${bluemapVersion}")
     compileOnly("xyz.jpenilla:squaremap-api:${squaremapVersion}")
