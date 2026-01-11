@@ -1,6 +1,7 @@
 package toutouchien.niveriaapi;
 
 import org.bson.Document;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 
 public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+    private static final int BSTATS_PLUGIN_ID = 28754;
 
     private static NiveriaAPI instance;
 
@@ -30,6 +32,10 @@ public class NiveriaAPI extends JavaPlugin {
     private HookManager hookManager;
     private MongoManager mongoManager;
     private NiveriaDatabaseManager niveriaDatabaseManager;
+
+    private Metrics bStats;
+
+    private boolean databaseDisabled;
 
     @Override
     public void onLoad() {
@@ -41,6 +47,9 @@ public class NiveriaAPI extends JavaPlugin {
         saveDefaultConfig();
 
         preLoadUtilsClasses();
+
+        if (!isUnitTestVersion())
+            this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
         Lang.load(this);
 
@@ -56,13 +65,19 @@ public class NiveriaAPI extends JavaPlugin {
                     this.getSLF4JLogger().info("Loading MongoDB Connection String from the environment variable.");
                 }
 
-                this.mongoManager = new MongoManager(mongoDBConnectionString);
-                this.getSLF4JLogger().info("MongoManager initialized.");
+                if (mongoDBConnectionString == null || mongoDBConnectionString.isEmpty()) {
+                    this.getSLF4JLogger().warn("No MongoDB connection string provided ! Skipping MongoDB initialization.");
+                    this.getSLF4JLogger().warn("Any database-related features will be disabled.");
+                    this.databaseDisabled = true;
+                } else {
+                    this.mongoManager = new MongoManager(mongoDBConnectionString);
+                    this.getSLF4JLogger().info("MongoManager initialized.");
 
-                this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
-                this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
+                    this.niveriaDatabaseManager = new NiveriaDatabaseManager(this);
+                    this.getSLF4JLogger().info("NiveriaDatabaseManager initialized for the shared 'Niveria' database.");
 
-                registerSharedDefaults();
+                    registerSharedDefaults();
+                }
             } catch (Exception e) {
                 this.getSLF4JLogger().error("Failed to initialize MongoDB connections ! Stopping the server.", e);
                 this.getServer().shutdown();
@@ -71,8 +86,10 @@ public class NiveriaAPI extends JavaPlugin {
         }
 
         this.chatInputManager = new ChatInputManager();
-        if (!isUnitTestVersion())
-            this.cooldownManager = new CooldownManager(this, new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger()));
+        if (!isUnitTestVersion()) {
+            CooldownDatabase database = this.databaseDisabled ? null : new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger());
+            this.cooldownManager = new CooldownManager(this, database);
+        }
         (this.delayManager = new DelayManager(this)).initialize();
         (this.hookManager = new HookManager(this)).onEnable();
 
@@ -122,7 +139,7 @@ public class NiveriaAPI extends JavaPlugin {
                 new MenuListener()
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
 
-        if (!isUnitTestVersion()) {
+        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null) {
             pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
         }
     }
@@ -139,10 +156,14 @@ public class NiveriaAPI extends JavaPlugin {
     @Override
     public void onDisable() {
         if (!isUnitTestVersion())
-            this.cooldownManager.shutdown();
+            this.bStats.shutdown();
+
         this.hookManager.onDisable();
 
-        if (!isUnitTestVersion())
+        if (!isUnitTestVersion() && !this.databaseDisabled)
+            this.cooldownManager.shutdown();
+
+        if (!isUnitTestVersion() && !this.databaseDisabled)
             this.mongoManager.shutdown();
 
         Bukkit.getScheduler().cancelTasks(this);

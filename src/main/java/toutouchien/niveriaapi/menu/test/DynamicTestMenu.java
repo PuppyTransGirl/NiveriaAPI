@@ -23,9 +23,8 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
  * after creation and update them in real-time.
  */
 public class DynamicTestMenu extends Menu {
-    private ProgressBar progressBar;
-    private Icon statusIcon;
-
+    private static final String PROGRESS_ID = "progress";
+    private static final String STATUS_ID = "status";
     private int currentProgress = 0;
 
     /**
@@ -60,7 +59,8 @@ public class DynamicTestMenu extends Menu {
     @NotNull
     @Override
     protected MenuComponent root(@NotNull MenuContext context) {
-        this.progressBar = ProgressBar.create()
+        ProgressBar progressBar = ProgressBar.create()
+                .id(PROGRESS_ID)
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))
                 .currentItem(ItemStack.of(Material.ORANGE_CONCRETE))
                 .notDoneItem(ItemStack.of(Material.RED_CONCRETE))
@@ -69,7 +69,8 @@ public class DynamicTestMenu extends Menu {
                 .size(5, 1)
                 .build();
 
-        this.statusIcon = Icon.create()
+        Icon statusIcon = Icon.create()
+                .id(STATUS_ID)
                 .item(statusItem())
                 .build();
 
@@ -130,11 +131,11 @@ public class DynamicTestMenu extends Menu {
 
         return Grid.create()
                 .size(9, 6)
-                .add(11, progressBar)
-                .add(31, statusIcon)
-                .add(39, decrementButton)
-                .add(41, incrementButton)
-                .add(49, resetButton)
+                .add(context, 11, progressBar)
+                .add(context, 31, statusIcon)
+                .add(context, 39, decrementButton)
+                .add(context, 41, incrementButton)
+                .add(context, 49, resetButton)
                 .build();
     }
 
@@ -146,12 +147,15 @@ public class DynamicTestMenu extends Menu {
      * - Changes the status icon based on progress level
      */
     private void updateComponents() {
-        this.progressBar.percentage(this.currentProgress());
+        ProgressBar progressBar = (ProgressBar) this.componentByID(PROGRESS_ID);
+        Icon statusIcon = (Icon) this.componentByID(STATUS_ID);
 
-        this.statusIcon.item(this.statusItem());
+        progressBar.percentage(this.currentProgress());
 
-        this.progressBar.render(this.context);
-        this.statusIcon.render(this.context);
+        statusIcon.item(this.statusItem());
+
+        progressBar.render(this.context);
+        statusIcon.render(this.context);
     }
 
     /**

@@ -1,6 +1,8 @@
 plugins {
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
     id("xyz.jpenilla.run-paper") version "3.0.2"
+    id("com.gradleup.shadow") version "9.3.1"
+    id("maven-publish")
 }
 
 val minecraftVersion: String by project
@@ -13,6 +15,7 @@ val bluemapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
+val bStatsVersion: String by project
 val junitVersion: String by project
 val mockbukkitVersion: String by project
 
@@ -54,6 +57,7 @@ dependencies {
 
     // Dependencies
     compileOnly("org.mongodb:mongodb-driver-sync:${mongoDBVersion}")
+    implementation("org.bstats:bstats-bukkit:${bStatsVersion}")
 
     // Test Dependencies
     testImplementation(paperweight.paperDevBundle("${minecraftVersion}-R0.1-SNAPSHOT"))
@@ -110,6 +114,12 @@ tasks {
         from(sourceSets.main.get().allSource)
     }
 
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+
+        relocate("org.bstats", "${project.group}.libs.org.bstats")
+    }
+
     processResources {
         filteringCharset = "UTF-8"
 
@@ -128,4 +138,20 @@ tasks {
 artifacts {
     add("archives", tasks.named("sourcesJar"))
     add("archives", tasks.named("javadocJar"))
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }

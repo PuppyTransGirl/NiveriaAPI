@@ -96,15 +96,15 @@ public class PaginatedTestMenu extends Menu {
                 })
                 .collect(ObjectArrayList.toList());
 
-        paginator.addAll(materials);
+        paginator.addAll(context, materials);
 
         return Grid.create()
                 .size(9, 6)
-                .add(45, paginator.firstPageButton())
-                .add(46, paginator.backButton())
-                .add(52, paginator.nextButton())
-                .add(53, paginator.lastPageButton())
-                .add(10, paginator)
+                .add(context, 45, paginator.firstPageButton())
+                .add(context, 46, paginator.backButton())
+                .add(context, 52, paginator.nextButton())
+                .add(context, 53, paginator.lastPageButton())
+                .add(context, 10, paginator)
                 .build();
     }
 }

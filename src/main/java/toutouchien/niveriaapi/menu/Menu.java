@@ -1,12 +1,14 @@
 package toutouchien.niveriaapi.menu;
 
 import com.google.common.base.Preconditions;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -19,8 +21,10 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  */
 public abstract class Menu implements InventoryHolder {
     private Inventory inventory;
-    protected final MenuContext context;
     private final Player player;
+    protected final MenuContext context;
+
+    private final Object2ObjectOpenHashMap<String, MenuComponent> componentIDs;
 
     private MenuComponent root;
 
@@ -35,7 +39,24 @@ public abstract class Menu implements InventoryHolder {
 
         this.player = player;
         this.context = new MenuContext(this);
+        this.componentIDs = new Object2ObjectOpenHashMap<>();
     }
+
+	/**
+	 * Constructs a new Menu with the specified player and context.
+	 *
+	 * @param player  the player who will interact with this menu
+	 * @param context the menu context for component interaction
+	 * @throws NullPointerException if player or context is null
+	 */
+	protected Menu(@NotNull Player player, @NotNull MenuContext context) {
+		Preconditions.checkNotNull(player, "player cannot be null");
+		Preconditions.checkNotNull(context, "context cannot be null");
+
+		this.player = player;
+		this.context = context;
+        this.componentIDs = new Object2ObjectOpenHashMap<>();
+	}
 
     /**
      * Opens the menu for the player.
@@ -44,6 +65,8 @@ public abstract class Menu implements InventoryHolder {
      * renders the menu contents, and opens it for the player.
      */
     public void open() {
+		context.menu(this);
+
         Component title = this.title();
         this.root = this.root(this.context);
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
@@ -52,6 +75,7 @@ public abstract class Menu implements InventoryHolder {
         this.root.render(this.context);
 
         this.player.openInventory(this.inventory);
+        this.onOpen();
     }
 
     /**
@@ -67,6 +91,7 @@ public abstract class Menu implements InventoryHolder {
             this.player.closeInventory();
 
         this.context.close();
+        this.onClose();
     }
 
     /**
@@ -87,6 +112,36 @@ public abstract class Menu implements InventoryHolder {
     }
 
     /**
+     * Registers a component with a unique identifier for later retrieval.
+     *
+     * @param id        the unique identifier for the component
+     * @param component the menu component to register
+     * @throws NullPointerException if id or component is null
+     */
+    public void registerComponentID(@NotNull String id, @NotNull MenuComponent component) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+        Preconditions.checkArgument(!id.isEmpty(), "id cannot be empty");
+        Preconditions.checkNotNull(component, "component cannot be null");
+
+        if (this.componentIDs.containsKey(id))
+            throw new IllegalStateException("A component with id '" + id + "' is already registered.");
+
+        this.componentIDs.put(id, component);
+    }
+
+    /**
+     * Unregisters a component by its unique identifier.
+     *
+     * @param id the unique identifier of the component to unregister
+     * @throws NullPointerException if id is null
+     */
+    public void unregisterComponentID(@NotNull String id) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+
+        this.componentIDs.remove(id);
+    }
+
+    /**
      * Returns the title component for this menu's inventory.
      * <p>
      * This method must be implemented by subclasses to define the menu's title.
@@ -95,6 +150,18 @@ public abstract class Menu implements InventoryHolder {
      */
     @NotNull
     protected abstract Component title();
+
+    /**
+     * Indicates whether the menu can be returned to using the previous menu system.
+     * <p>
+     * Subclasses can override this method to disable returning to this menu
+     * from another menu.
+     *
+     * @return true if the menu can be returned to, false otherwise
+     */
+    protected boolean canGoBackToThisMenu() {
+        return true;
+    }
 
     /**
      * Creates and returns the root component for this menu.
@@ -107,6 +174,26 @@ public abstract class Menu implements InventoryHolder {
      */
     @NotNull
     protected abstract MenuComponent root(@NotNull MenuContext context);
+
+    /**
+     * Called when the menu is opened.
+     * <p>
+     * Subclasses can override this method to perform actions when the menu
+     * is opened.
+     */
+    protected void onOpen() {
+
+    }
+
+    /**
+     * Called when the menu is closed.
+     * <p>
+     * Subclasses can override this method to perform actions when the menu
+     * is closed.
+     */
+    protected void onClose() {
+
+    }
 
     /**
      * Returns the player associated with this menu.
@@ -126,6 +213,20 @@ public abstract class Menu implements InventoryHolder {
     @NotNull
     public MenuContext context() {
         return context;
+    }
+
+    /**
+     * Retrieves a registered component by its unique identifier.
+     *
+     * @param id the unique identifier of the component
+     * @return the menu component associated with the given id, or null if not found
+     * @throws NullPointerException if id is null
+     */
+    @Nullable
+    public MenuComponent componentByID(@NotNull String id) {
+        Preconditions.checkNotNull(id, "id cannot be null");
+
+        return this.componentIDs.get(id);
     }
 
     /**

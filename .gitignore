@@ -120,6 +120,7 @@ gradle-app.setting
 
 # run-paper
 run/**
+examples/HomePlugin/run/**
 
 # Mockbukkit
 logs/*

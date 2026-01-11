@@ -1,10 +1,7 @@
 package toutouchien.niveriaapi.menu.component.container;
 
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -14,8 +11,6 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -33,7 +28,6 @@ import java.util.function.Function;
  * and optional first/last page buttons. Navigation buttons can have different appearances
  * when disabled (at first/last page).
  */
-@Overexcited(reason = "Needs to be based on the component slots instead of using all these calculations (onClick, items)")
 public class Paginator extends MenuComponent {
     private final ObjectList<MenuComponent> components;
 
@@ -41,6 +35,7 @@ public class Paginator extends MenuComponent {
     private Function<MenuContext, ItemStack> firstPageItem, lastPageItem, offFirstPageItem, offLastPageItem;
 
     private final int width, height;
+    private final IntList layoutSlots;
 
     private int page;
     private ObjectList<MenuComponent> cachedPageComponents;
@@ -48,6 +43,7 @@ public class Paginator extends MenuComponent {
     /**
      * Constructs a new Paginator with the specified parameters.
      *
+     * @param id               the unique identifier for this paginator
      * @param components       the list of components to paginate
      * @param backItem         function providing the back button item when enabled
      * @param nextItem         function providing the next button item when enabled
@@ -62,6 +58,7 @@ public class Paginator extends MenuComponent {
      * @param page             the initial page index (0-based)
      */
     private Paginator(
+            String id,
             ObjectList<MenuComponent> components,
             Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
             Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,
@@ -70,6 +67,7 @@ public class Paginator extends MenuComponent {
             int width, int height,
             int page
     ) {
+        super(id);
         this.components = components;
         this.backItem = backItem;
         this.nextItem = nextItem;
@@ -82,13 +80,76 @@ public class Paginator extends MenuComponent {
         this.width = width;
         this.height = height;
         this.page = page;
+        this.layoutSlots = new IntArrayList(width * height);
+
+        // Initial calculation of layout slots
+        this.updateLayoutSlots();
+    }
+
+    /**
+     * Called when this paginator is added to a menu.
+     * <p>
+     * Propagates the onAdd event to all child components if the paginator is visible.
+     *
+     * @param context the menu context
+     */
+    @Override
+    public void onAdd(@NotNull MenuContext context) {
+        this.components.forEach(component -> {
+            component.onAdd(context);
+
+            String addedID = component.id();
+            if (addedID != null)
+                context.menu().registerComponentID(addedID, component);
+        });
+    }
+
+    /**
+     * Called when this paginator is removed from a menu.
+     * <p>
+     * Cleans up all child components and unregisters their IDs from the menu.
+     *
+     * @param context the menu context
+     */
+    @Override
+    public void onRemove(@NotNull MenuContext context) {
+        this.components.forEach(component -> {
+            component.onRemove(context);
+
+            String removedID = component.id();
+            if (removedID != null)
+                context.menu().unregisterComponentID(removedID);
+        });
+    }
+
+    /**
+     * Updates the cached list of absolute inventory slots that this paginator controls.
+     * Should be called whenever the paginator's position (x, y) or dimensions change.
+     */
+    private void updateLayoutSlots() {
+        this.layoutSlots.clear();
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                int absX = this.x() + col;
+                int absY = this.y() + row;
+
+                this.layoutSlots.add(MenuComponent.toSlot(absX, absY));
+            }
+        }
+    }
+
+    @Override
+    public void position(@NonNegative int x, @NonNegative int y) {
+        super.position(x, y);
+        // Position changed, we must re-calculate the absolute slots for the grid
+        this.updateLayoutSlots();
     }
 
     /**
      * Handles click events within the paginator.
      * <p>
-     * Determines which component was clicked based on the event slot and
-     * delegates the click event to that component.
+     * Iterates through the current page's components, ensures they are correctly
+     * positioned, and delegates the event if the click falls within their slots.
      *
      * @param event   the inventory click event
      * @param context the menu context
@@ -98,34 +159,24 @@ public class Paginator extends MenuComponent {
         if (!this.interactable())
             return;
 
-        int componentIndex = 0;
-        for (MenuComponent component : this.currentPageComponents()) {
-            int localX = (componentIndex % this.width);
-            int localY = 1 + (componentIndex / this.width);
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
+        for (int i = 0; i < pageComponents.size(); i++) {
+            if (i >= this.layoutSlots.size())
+                break; // Should not happen if page size matches, but safety check
 
-            int compX = this.x() + localX;
-            int compY = this.y() + localY;
-
-            int baseSlot = (compY - 1) * 9 + compX;
-
-            Int2ObjectMap<ItemStack> compItems = component.items(context);
-            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
-                int innerSlot = entry.getIntKey();
-                if (event.slot() == baseSlot + innerSlot) {
-                    component.onClick(event, context);
-                    return;
-                }
+            MenuComponent component = pageComponents.get(i);
+            if (component.slots(context).contains(event.slot())) {
+                component.onClick(event, context);
+                return;
             }
-
-            componentIndex++;
         }
     }
 
     /**
      * Returns the items to be displayed by this paginator for the current page.
      * <p>
-     * Only components visible on the current page are rendered. Components are
-     * positioned within the paginator's area based on their index within the page.
+     * Components are assigned to the pre-calculated layout slots. The component's
+     * position is updated to match the slot, and its items are then collected.
      *
      * @param context the menu context
      * @return a map from slot indices to ItemStacks for the current page
@@ -134,25 +185,16 @@ public class Paginator extends MenuComponent {
     @Override
     public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
 
-        int componentIndex = 0;
-        for (MenuComponent component : this.currentPageComponents()) {
-            int localX = (componentIndex % this.width);
-            int localY = 1 + (componentIndex / this.width);
+        for (int i = 0; i < pageComponents.size(); i++) {
+            if (i >= this.layoutSlots.size()) break;
 
-            int compX = this.x() + localX;
-            int compY = this.y() + localY;
+            MenuComponent component = pageComponents.get(i);
+            int slot = this.layoutSlots.getInt(i);
 
-            int baseSlot = (compY - 1) * 9 + compX;
-
-            Int2ObjectMap<ItemStack> compItems = component.items(context);
-            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
-                int innerSlot = entry.getIntKey();
-                ItemStack item = entry.getValue();
-                items.put(baseSlot + innerSlot, item);
-            }
-
-            componentIndex++;
+            component.position(MenuComponent.toX(slot), MenuComponent.toY(slot));
+            items.putAll(component.items(context));
         }
 
         return items;
@@ -161,8 +203,8 @@ public class Paginator extends MenuComponent {
     /**
      * Returns the set of slots that this paginator can occupy.
      * <p>
-     * Returns all possible slots for the current page dimensions to ensure
-     * proper cleanup when switching between pages with different content.
+     * Returns the pre-calculated set of all slots in the pagination grid to ensure
+     * proper cleanup of the area when pages change.
      *
      * @param context the menu context
      * @return a set of all possible slot indices for this paginator
@@ -170,19 +212,8 @@ public class Paginator extends MenuComponent {
     @NotNull
     @Override
     public IntSet slots(@NotNull MenuContext context) {
-        IntSet slots = new IntOpenHashSet();
-
-        // Instead of only adding the slots of the current page, we add all the possible slots on the current page
-        // If we don't do this, the menu system will not remove old items when switching pages
-        for (int yOffset = 0; yOffset < this.height; yOffset++) {
-            for (int xOffset = 0; xOffset < this.width; xOffset++) {
-                int compX = this.x() + xOffset;
-                int compY = this.y() + 1 + yOffset; // Account for the 1 + offset in localY
-                slots.add((compY - 1) * 9 + compX);
-            }
-        }
-
-        return slots;
+        // Return all slots controlled by the paginator grid
+        return new IntOpenHashSet(this.layoutSlots);
     }
 
     @Override
@@ -225,20 +256,21 @@ public class Paginator extends MenuComponent {
      * Creates a back navigation button for this paginator.
      * <p>
      * The button navigates to the previous page when clicked. If already on the first
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the previous page, or null if not applicable
+     * @return a Button for going to the previous page
      */
-    @Nullable
+    @NotNull
     public Button backButton() {
-        if (this.page <= 0 && this.offBackItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page > 0
-                            ? this.backItem.apply(context)
-                            : this.offBackItem.apply(context);
+                    if (this.page > 0)
+                        return this.backItem.apply(context);
+
+                    if (this.offBackItem != null)
+                        return this.offBackItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page <= 0)
@@ -254,20 +286,21 @@ public class Paginator extends MenuComponent {
      * Creates a next navigation button for this paginator.
      * <p>
      * The button navigates to the next page when clicked. If already on the last
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the next page, or null if not applicable
+     * @return a Button for going to the next page
      */
-    @Nullable
+    @NotNull
     public Button nextButton() {
-        if (this.page >= this.maxPage() && this.offNextItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page < this.maxPage()
-                            ? this.nextItem.apply(context)
-                            : this.offNextItem.apply(context);
+                    if (this.page < this.maxPage())
+                        return this.nextItem.apply(context);
+
+                    if (this.offNextItem != null)
+                        return this.offNextItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page >= this.maxPage())
@@ -282,21 +315,22 @@ public class Paginator extends MenuComponent {
     /**
      * Creates a first page navigation button for this paginator.
      * <p>
-     * The button navigates to the first page (index 0) when clicked. If already on
-     * the first page and no disabled item is configured, returns null.
+     * The button navigates to the first page when clicked. If already on the first
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the first page, or null if not applicable
+     * @return a Button for going to the first page
      */
-    @Nullable
+    @NotNull
     public Button firstPageButton() {
-        if (this.page <= 0 && this.offFirstPageItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page > 0
-                            ? this.firstPageItem.apply(context)
-                            : this.offFirstPageItem.apply(context);
+                    if (this.page > 0)
+                        return this.firstPageItem.apply(context);
+
+                    if (this.offFirstPageItem != null)
+                        return this.offFirstPageItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     if (this.page <= 0)
@@ -312,20 +346,21 @@ public class Paginator extends MenuComponent {
      * Creates a last page navigation button for this paginator.
      * <p>
      * The button navigates to the last page when clicked. If already on the last
-     * page and no disabled item is configured, returns null.
+     * page and no disabled item is configured, an AIR item is displayed.
      *
-     * @return a Button for going to the last page, or null if not applicable
+     * @return a Button for going to the last page
      */
-    @Nullable
+    @NotNull
     public Button lastPageButton() {
-        if (this.page >= this.maxPage() && this.offLastPageItem == null)
-            return null;
-
         return Button.create()
                 .item(context -> {
-                    return this.page < this.maxPage()
-                            ? this.lastPageItem.apply(context)
-                            : this.offLastPageItem.apply(context);
+                    if (this.page < this.maxPage())
+                        return this.lastPageItem.apply(context);
+
+                    if (this.offLastPageItem != null)
+                        return this.offLastPageItem.apply(context);
+
+                    return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
                     int maxPage = this.maxPage();
@@ -352,32 +387,41 @@ public class Paginator extends MenuComponent {
     /**
      * Adds a component to the paginator.
      *
+     * @param context   the menu context
      * @param component the component to add
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator add(@NotNull MenuComponent component) {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator add(@NotNull MenuContext context, @NotNull MenuComponent component) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
         this.components.add(component);
+        String addedID = component.id();
+        if (addedID != null)
+            context.menu().registerComponentID(addedID, component);
+
         return this;
     }
 
     /**
      * Adds multiple components to the paginator.
      *
+     * @param context    the menu context
      * @param components the list of components to add
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator addAll(@NotNull ObjectList<MenuComponent> components) {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(components, "components cannot be null");
 
-        this.components.addAll(components);
+        for (MenuComponent component : components)
+            this.add(context, component);
         return this;
     }
 
@@ -391,65 +435,79 @@ public class Paginator extends MenuComponent {
      */
     @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator remove(@NotNull MenuContext context, int slot) {
-        // Remove component based on the slot and not the index
-        int componentIndex = 0;
-        for (MenuComponent component : this.currentPageComponents()) {
-            int localX = (componentIndex % this.width);
-            int localY = 1 + (componentIndex / this.width);
+    public Paginator remove(@NotNull MenuContext context, @NonNegative int slot) {
+        Preconditions.checkNotNull(context, "context cannot be null");
+        Preconditions.checkArgument(slot >= 0, "slot cannot be less than 0: %s", slot);
 
-            int compX = this.x() + localX;
-            int compY = this.y() + localY;
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
+        for (int i = 0; i < pageComponents.size(); i++) {
+            if (i >= this.layoutSlots.size())
+                break;
 
-            int baseSlot = (compY - 1) * 9 + compX;
+            MenuComponent component = pageComponents.get(i);
+            int targetSlot = this.layoutSlots.getInt(i);
 
-            Int2ObjectMap<ItemStack> compItems = component.items(context);
-            for (Int2ObjectMap.Entry<ItemStack> entry : compItems.int2ObjectEntrySet()) {
-                int innerSlot = entry.getIntKey();
-                if (slot == baseSlot + innerSlot) {
-                    this.components.remove(component);
-                    return this;
-                }
-            }
+            // Temporarily position to check slots
+            component.position(MenuComponent.toX(targetSlot), MenuComponent.toY(targetSlot));
 
-            componentIndex++;
+            if (!component.slots(context).contains(slot))
+                continue;
+
+            this.components.remove(component);
+            String removedID = component.id();
+            if (removedID != null)
+                context.menu().unregisterComponentID(removedID);
+
+            return this;
         }
-
         return this;
     }
 
     /**
      * Removes a specific component from the paginator.
      *
+     * @param context   the menu context
      * @param component the component to remove
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator remove(@NotNull MenuComponent component) {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator remove(@NotNull MenuContext context, @NotNull MenuComponent component) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
         this.components.remove(component);
+        String removedID = component.id();
+        if (removedID != null)
+            context.menu().unregisterComponentID(removedID);
         return this;
     }
 
     /**
      * Removes multiple components at the specified indexes from the paginator.
      *
+     * @param context the menu context
      * @param indexes the set of indexes of components to remove
      * @return this paginator for method chaining
      * @throws NullPointerException if indexes is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator removeAll(@NotNull IntSet indexes) {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator removeAll(@NotNull MenuContext context, @NotNull IntSet indexes) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(indexes, "indexes cannot be null");
 
         int[] sorted = indexes.toIntArray();
         Arrays.sort(sorted);
-        for (int i = sorted.length - 1; i >= 0; i--)
-            this.components.remove(sorted[i]);
+        for (int i = sorted.length - 1; i >= 0; i--) {
+            int index = sorted[i];
+            if (index >= this.components.size())
+                break; // The next indexes will always be bigger
+
+            MenuComponent component = this.components.get(index);
+            this.remove(context, component);
+        }
 
         return this;
     }
@@ -457,16 +515,19 @@ public class Paginator extends MenuComponent {
     /**
      * Removes multiple components from the paginator.
      *
+     * @param context    the menu context
      * @param components the set of components to remove
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
      */
     @NotNull
-    @Contract(value = "_ -> this", mutates = "this")
-    public Paginator removeAll(@NotNull ObjectSet<MenuComponent> components) {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public Paginator removeAll(@NotNull MenuContext context, @NotNull ObjectSet<MenuComponent> components) {
+        Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(components, "components cannot be null");
 
-        this.components.removeAll(components);
+        for (MenuComponent component : components)
+            this.remove(context, component);
         return this;
     }
 
@@ -790,7 +851,7 @@ public class Paginator extends MenuComponent {
     /**
      * Builder class for constructing Paginator instances with a fluent interface.
      */
-    public static class Builder {
+    public static class Builder extends MenuComponent.Builder<Builder> {
         private final ObjectList<MenuComponent> components = new ObjectArrayList<>();
 
         private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
@@ -808,13 +869,15 @@ public class Paginator extends MenuComponent {
         /**
          * Adds a component to the paginator.
          *
+         * @param context   menu context
          * @param component the component to add
          * @return this builder for method chaining
          * @throws NullPointerException if component is null
          */
         @NotNull
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder add(@NotNull MenuComponent component) {
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder add(@NotNull MenuContext context, @NotNull MenuComponent component) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(component, "component cannot be null");
 
             this.components.add(component);
@@ -824,16 +887,19 @@ public class Paginator extends MenuComponent {
         /**
          * Adds multiple components to the paginator.
          *
+         * @param context   menu context
          * @param components the list of components to add
          * @return this builder for method chaining
          * @throws NullPointerException if components is null
          */
         @NotNull
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder addAll(@NotNull ObjectList<MenuComponent> components) {
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+            Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(components, "components cannot be null");
 
-            this.components.addAll(components);
+            for (MenuComponent component : components)
+                this.add(context, component);
             return this;
         }
 
@@ -1168,6 +1234,7 @@ public class Paginator extends MenuComponent {
         @NotNull
         public Paginator build() {
             return new Paginator(
+                    this.id,
                     this.components,
                     this.backItem,
                     this.nextItem,

@@ -37,7 +37,7 @@ public class ConfirmationMenu extends Menu {
      * @param yesItem         the ItemStack to display for the "yes" button
      * @param noItem          the ItemStack to display for the "no" button
      * @param title           the title component displayed at the top of the menu
-     * @param explanationItem optional ItemStack to display as an explanation (may be null)
+     * @param explanationItem optional ItemStack to display as an explanation (can be null)
      * @param yesConsumer     the action to perform when the yes button is clicked
      * @param noConsumer      the action to perform when the no button is clicked
      * @throws NullPointerException if any required parameter is null
@@ -95,11 +95,11 @@ public class ConfirmationMenu extends Menu {
     protected MenuComponent root(@NotNull MenuContext context) {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
-                .add(11, noButton())
-                .add(15, yesButton());
+                .add(context, 11, noButton())
+                .add(context, 15, yesButton());
 
         if (this.explanationItem != null)
-            builder.add(13, explanationIcon());
+            builder.add(context, 13, explanationIcon());
 
         return builder.build();
     }
