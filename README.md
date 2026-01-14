@@ -1,6 +1,6 @@
 # NiveriaAPI
 
-[![CodeFactor](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi/badge)](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi) ![GitHub Release](https://img.shields.io/github/v/release/PuppyTransGirl/NiveriaAPI?label=version)
+[![CodeFactor](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi/badge)](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi) [![GitHub Release](https://img.shields.io/github/v/release/PuppyTransGirl/NiveriaAPI?label=version)](https://github.com/PuppyTransGirl/NiveriaAPI/releases/latest)
 
 NiveriaAPI is a lightweight helper library for Paper plugins that speeds up development with reusable menus, localization, cooldowns, MongoDB persistence, and utilities. Always maintained for the latest Minecraft release.\
 !!! This plugin only supports Paper servers or forks !!!
