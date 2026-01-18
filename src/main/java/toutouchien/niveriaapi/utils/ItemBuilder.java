@@ -1392,7 +1392,7 @@ public class ItemBuilder {
 
             itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
         } else
-            itemStack.editMeta(meta -> meta.setHideTooltip(true));
+            itemStack.editMeta(meta -> meta.setHideTooltip(hideTooltip));
 
         return this;
     }

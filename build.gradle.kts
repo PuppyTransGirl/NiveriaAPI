@@ -6,6 +6,7 @@ plugins {
 }
 
 val minecraftVersion: String by project
+val minMinecraftVersion: String by project
 val placeholderApiVersion: String by project
 val luckpermsVersion: String by project
 val itemsAdderVersion: String by project
@@ -126,7 +127,7 @@ tasks {
 
         val props = mapOf(
             "version" to version,
-            "minMinecraftVersion" to minecraftVersion
+            "minMinecraftVersion" to minMinecraftVersion
         )
 
         inputs.properties(props)
