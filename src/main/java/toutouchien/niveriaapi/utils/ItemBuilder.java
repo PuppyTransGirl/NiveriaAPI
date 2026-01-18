@@ -644,9 +644,16 @@ public class ItemBuilder {
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder unbreakable(boolean unbreakable) {
         if (unbreakable) {
-            itemStack.editMeta(meta -> meta.setUnbreakable(unbreakable)); // Not with components to be compatible with 1.21.4
-        } else
-            itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+                itemStack.setData(DataComponentTypes.UNBREAKABLE);
+            else
+                itemStack.editMeta(meta -> meta.setUnbreakable(true)); // Not with components to be compatible with 1.21.4
+        } else {
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+                itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
+            else
+                itemStack.editMeta(meta -> meta.setUnbreakable(false));
+        }
 
         return this;
     }
@@ -657,7 +664,10 @@ public class ItemBuilder {
      * @return true if unbreakable
      */
     public boolean unbreakable() {
-        return itemStack.hasData(DataComponentTypes.UNBREAKABLE);
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+            return itemStack.hasData(DataComponentTypes.UNBREAKABLE);
+        else
+            return itemStack.getItemMeta().isUnbreakable();
     }
 
     /**
