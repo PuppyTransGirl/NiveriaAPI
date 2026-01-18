@@ -57,23 +57,23 @@ public enum VersionUtils {
     }
 
     public static boolean isHigherThan(VersionUtils target) {
-        return serverVersion.value > target.value;
+        return version().value > target.value;
     }
 
     public static boolean isHigherThanOrEquals(VersionUtils target) {
-        return serverVersion.value >= target.value;
+        return version().value >= target.value;
     }
 
     public static boolean isLowerThan(VersionUtils target) {
-        return serverVersion.value < target.value;
+        return version().value < target.value;
     }
 
     public static boolean isLowerThanOrEquals(VersionUtils target) {
-        return serverVersion.value <= target.value;
+        return version().value <= target.value;
     }
 
     public static boolean equals(VersionUtils target) {
-        return serverVersion.value == target.value;
+        return version().value == target.value;
     }
 
     @Override
