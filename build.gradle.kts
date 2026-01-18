@@ -87,6 +87,7 @@ tasks {
             modrinth("LuckPerms", "v5.5.17-bukkit")
             github("jpenilla", "TabTPS", "v1.3.29", "tabtps-paper-1.3.29.jar")
             modrinth("ServerLogViewer-Paper", "1.0.0")
+            modrinth("ViaVersion", "5.7.2-SNAPSHOT+903")
         }
     }
 
