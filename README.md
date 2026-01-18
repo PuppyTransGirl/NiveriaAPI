@@ -149,7 +149,7 @@ String stringMessage = Lang.getString("welcome_message");
 
 // Send a localized message to a player
 Player player = ...; // Get the player instance
-        Lang.send(player, "welcome_message");
+Lang.send(player, "welcome_message");
 ```
 </details>
 
@@ -168,17 +168,17 @@ Key sprintKey = Key.key("plugin_name", "ability_sprint");
 cooldownManager.setCooldown(player, fireballKey, Duration.ofSeconds(30));
 
 // Register another persistent cooldown (explicitly persistent)
-        cooldownManager.setCooldown(player, teleportKey, Duration.ofHours(1), true);
+cooldownManager.setCooldown(player, teleportKey, Duration.ofHours(1), true);
 
 // Register a non-persistent cooldown (in-memory only)
-        cooldownManager.setCooldown(player, sprintKey, Duration.ofSeconds(5), false);
+cooldownManager.setCooldown(player, sprintKey, Duration.ofSeconds(5), false);
 
 // Check if player is in cooldown
-        if (cooldownManager.inCooldown(player, fireballKey)) {
-long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
+if(cooldownManager.inCooldown(player, fireballKey)){
+    long remainingSeconds = cooldownManager.remainingTime(player, fireballKey).getSeconds();
     player.sendMessage(Component.text("You must wait " + remainingSeconds + " seconds to use this ability again!", NamedTextColor.RED));
-        return;
-        }
+    return;
+}
 ```
 </details>
 

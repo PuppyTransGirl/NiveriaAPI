@@ -6,6 +6,7 @@ plugins {
 }
 
 val minecraftVersion: String by project
+val minMinecraftVersion: String by project
 val placeholderApiVersion: String by project
 val luckpermsVersion: String by project
 val itemsAdderVersion: String by project
@@ -87,6 +88,7 @@ tasks {
             modrinth("LuckPerms", "v5.5.17-bukkit")
             github("jpenilla", "TabTPS", "v1.3.29", "tabtps-paper-1.3.29.jar")
             modrinth("ServerLogViewer-Paper", "1.0.0")
+            modrinth("ViaVersion", "5.7.2-SNAPSHOT+903")
         }
     }
 
@@ -125,7 +127,7 @@ tasks {
 
         val props = mapOf(
             "version" to version,
-            "minecraftVersion" to minecraftVersion
+            "minMinecraftVersion" to minMinecraftVersion
         )
 
         inputs.properties(props)
