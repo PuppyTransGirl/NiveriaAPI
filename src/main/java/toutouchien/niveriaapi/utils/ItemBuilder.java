@@ -13,6 +13,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -642,10 +643,17 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder unbreakable(boolean unbreakable) {
-        if (unbreakable)
-            itemStack.setData(DataComponentTypes.UNBREAKABLE);
-        else
-            itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
+        if (unbreakable) {
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
+                itemStack.setData(DataComponentTypes.UNBREAKABLE);
+            else
+                itemStack.editMeta(meta -> meta.setUnbreakable(true)); // Not with components to be compatible with 1.21.4
+        } else {
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
+                itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
+            else
+                itemStack.editMeta(meta -> meta.setUnbreakable(false));
+        }
 
         return this;
     }
@@ -656,7 +664,10 @@ public class ItemBuilder {
      * @return true if unbreakable
      */
     public boolean unbreakable() {
-        return itemStack.hasData(DataComponentTypes.UNBREAKABLE);
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
+            return itemStack.hasData(DataComponentTypes.UNBREAKABLE);
+        else
+            return itemStack.getItemMeta().isUnbreakable();
     }
 
     /**
@@ -1338,19 +1349,24 @@ public class ItemBuilder {
      * @param typesToHide data component types to hide from tooltip
      * @return this builder
      */
+    @SuppressWarnings({"deprecation", "java:S1874"})
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder hide(@NotNull DataComponentType @NotNull ... typesToHide) {
         Preconditions.checkNotNull(typesToHide, "typesToHide cannot be null");
 
-        if (itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY) && itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip())
-            return this;
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
+            if (itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY) && itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip())
+                return this;
 
-        TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
-                .addHiddenComponents(typesToHide)
-                .build();
+            TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
+                    .addHiddenComponents(typesToHide)
+                    .build();
 
-        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+            itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+        } else
+            itemStack.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+
         return this;
     }
 
@@ -1361,10 +1377,13 @@ public class ItemBuilder {
      */
     @NotNull
     public Set<DataComponentType> hiddenComponents() {
-        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
-            return Collections.emptySet();
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
+            if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
+                return Collections.emptySet();
 
-        return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hiddenComponents();
+            return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hiddenComponents();
+        } else
+            return Collections.emptySet();
     }
 
     /**
@@ -1376,11 +1395,15 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder hideTooltip(boolean hideTooltip) {
-        TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
-                .hideTooltip(hideTooltip)
-                .build();
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
+            TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
+                    .hideTooltip(hideTooltip)
+                    .build();
 
-        itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+            itemStack.setData(DataComponentTypes.TOOLTIP_DISPLAY, tooltipDisplay);
+        } else
+            itemStack.editMeta(meta -> meta.setHideTooltip(hideTooltip));
+
         return this;
     }
 
@@ -1390,10 +1413,13 @@ public class ItemBuilder {
      * @return true if tooltip is hidden
      */
     public boolean hideTooltip() {
-        if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
-            return false;
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
+            if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
+                return false;
 
-        return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip();
+            return itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip();
+        } else
+            return itemStack.getItemMeta().isHideTooltip();
     }
 
     /*
@@ -1401,83 +1427,111 @@ public class ItemBuilder {
      * material constants and returns WHITE by default.
      */
     private DyeColor dyeColor(@NotNull Material material) {
-        return switch (material) {
-            case ORANGE_BANNER, ORANGE_BED, ORANGE_BUNDLE, ORANGE_CANDLE, ORANGE_CANDLE_CAKE, ORANGE_CARPET,
-                 ORANGE_CONCRETE, ORANGE_CONCRETE_POWDER, ORANGE_DYE, ORANGE_WOOL, ORANGE_GLAZED_TERRACOTTA,
-                 ORANGE_TERRACOTTA, ORANGE_SHULKER_BOX, ORANGE_STAINED_GLASS, ORANGE_STAINED_GLASS_PANE,
-                 ORANGE_WALL_BANNER, ORANGE_HARNESS, ORANGE_TULIP, TORCHFLOWER, OPEN_EYEBLOSSOM -> DyeColor.ORANGE;
+        return switch (material.name()) {
+            case "ORANGE_BANNER", "ORANGE_BED", "ORANGE_BUNDLE", "ORANGE_CANDLE", "ORANGE_CANDLE_CAKE", "ORANGE_CARPET",
+                 "ORANGE_CONCRETE", "ORANGE_CONCRETE_POWDER", "ORANGE_DYE", "ORANGE_WOOL", "ORANGE_GLAZED_TERRACOTTA",
+                 "ORANGE_TERRACOTTA", "ORANGE_SHULKER_BOX", "ORANGE_STAINED_GLASS", "ORANGE_STAINED_GLASS_PANE",
+                 "ORANGE_WALL_BANNER", "ORANGE_HARNESS", "ORANGE_TULIP", "TORCHFLOWER", "OPEN_EYEBLOSSOM" ->
+                    DyeColor.ORANGE;
 
-            case MAGENTA_BANNER, MAGENTA_BED, MAGENTA_BUNDLE, MAGENTA_CANDLE, MAGENTA_CANDLE_CAKE, MAGENTA_CARPET,
-                 MAGENTA_CONCRETE, MAGENTA_CONCRETE_POWDER, MAGENTA_DYE, MAGENTA_WOOL, MAGENTA_GLAZED_TERRACOTTA,
-                 MAGENTA_TERRACOTTA, MAGENTA_SHULKER_BOX, MAGENTA_STAINED_GLASS, MAGENTA_STAINED_GLASS_PANE,
-                 MAGENTA_WALL_BANNER, MAGENTA_HARNESS, ALLIUM, LILAC -> DyeColor.MAGENTA;
+            case "MAGENTA_BANNER", "MAGENTA_BED", "MAGENTA_BUNDLE", "MAGENTA_CANDLE", "MAGENTA_CANDLE_CAKE",
+                 "MAGENTA_CARPET",
+                 "MAGENTA_CONCRETE", "MAGENTA_CONCRETE_POWDER", "MAGENTA_DYE", "MAGENTA_WOOL",
+                 "MAGENTA_GLAZED_TERRACOTTA",
+                 "MAGENTA_TERRACOTTA", "MAGENTA_SHULKER_BOX", "MAGENTA_STAINED_GLASS", "MAGENTA_STAINED_GLASS_PANE",
+                 "MAGENTA_WALL_BANNER", "MAGENTA_HARNESS", "ALLIUM", "LILAC" -> DyeColor.MAGENTA;
 
-            case LIGHT_BLUE_BANNER, LIGHT_BLUE_BED, LIGHT_BLUE_BUNDLE, LIGHT_BLUE_CANDLE, LIGHT_BLUE_CANDLE_CAKE,
-                 LIGHT_BLUE_CARPET, LIGHT_BLUE_CONCRETE, LIGHT_BLUE_CONCRETE_POWDER, LIGHT_BLUE_DYE, LIGHT_BLUE_WOOL,
-                 LIGHT_BLUE_GLAZED_TERRACOTTA, LIGHT_BLUE_TERRACOTTA, LIGHT_BLUE_SHULKER_BOX, LIGHT_BLUE_STAINED_GLASS,
-                 LIGHT_BLUE_STAINED_GLASS_PANE, LIGHT_BLUE_WALL_BANNER, LIGHT_BLUE_HARNESS ->
-                    DyeColor.LIGHT_BLUE;
+            case "LIGHT_BLUE_BANNER", "LIGHT_BLUE_BED", "LIGHT_BLUE_BUNDLE", "LIGHT_BLUE_CANDLE",
+                 "LIGHT_BLUE_CANDLE_CAKE",
+                 "LIGHT_BLUE_CARPET", "LIGHT_BLUE_CONCRETE", "LIGHT_BLUE_CONCRETE_POWDER", "LIGHT_BLUE_DYE",
+                 "LIGHT_BLUE_WOOL",
+                 "LIGHT_BLUE_GLAZED_TERRACOTTA", "LIGHT_BLUE_TERRACOTTA", "LIGHT_BLUE_SHULKER_BOX",
+                 "LIGHT_BLUE_STAINED_GLASS",
+                 "LIGHT_BLUE_STAINED_GLASS_PANE", "LIGHT_BLUE_WALL_BANNER", "LIGHT_BLUE_HARNESS" -> DyeColor.LIGHT_BLUE;
 
-            case YELLOW_BANNER, YELLOW_BED, YELLOW_BUNDLE, YELLOW_CANDLE, YELLOW_CANDLE_CAKE, YELLOW_CARPET,
-                 YELLOW_CONCRETE, YELLOW_CONCRETE_POWDER, YELLOW_DYE, YELLOW_WOOL, YELLOW_GLAZED_TERRACOTTA,
-                 YELLOW_TERRACOTTA, YELLOW_SHULKER_BOX, YELLOW_STAINED_GLASS, YELLOW_STAINED_GLASS_PANE,
-                 YELLOW_WALL_BANNER, YELLOW_HARNESS, DANDELION, SUNFLOWER, WILDFLOWERS -> DyeColor.YELLOW;
+            case "YELLOW_BANNER", "YELLOW_BED", "YELLOW_BUNDLE", "YELLOW_CANDLE", "YELLOW_CANDLE_CAKE", "YELLOW_CARPET",
+                 "YELLOW_CONCRETE", "YELLOW_CONCRETE_POWDER", "YELLOW_DYE", "YELLOW_WOOL", "YELLOW_GLAZED_TERRACOTTA",
+                 "YELLOW_TERRACOTTA", "YELLOW_SHULKER_BOX", "YELLOW_STAINED_GLASS", "YELLOW_STAINED_GLASS_PANE",
+                 "YELLOW_WALL_BANNER", "YELLOW_HARNESS", "DANDELION", "SUNFLOWER", "WILDFLOWERS" -> DyeColor.YELLOW;
 
-            case LIME_BANNER, LIME_BED, LIME_BUNDLE, LIME_CANDLE, LIME_CANDLE_CAKE, LIME_CARPET, LIME_CONCRETE,
-                 LIME_CONCRETE_POWDER, LIME_DYE, LIME_WOOL, LIME_GLAZED_TERRACOTTA, LIME_TERRACOTTA, LIME_SHULKER_BOX,
-                 LIME_STAINED_GLASS, LIME_STAINED_GLASS_PANE, LIME_WALL_BANNER, LIME_HARNESS, SEA_PICKLE ->
+            case "LIME_BANNER", "LIME_BED", "LIME_BUNDLE", "LIME_CANDLE", "LIME_CANDLE_CAKE", "LIME_CARPET",
+                 "LIME_CONCRETE",
+                 "LIME_CONCRETE_POWDER", "LIME_DYE", "LIME_WOOL", "LIME_GLAZED_TERRACOTTA", "LIME_TERRACOTTA",
+                 "LIME_SHULKER_BOX",
+                 "LIME_STAINED_GLASS", "LIME_STAINED_GLASS_PANE", "LIME_WALL_BANNER", "LIME_HARNESS", "SEA_PICKLE" ->
                     DyeColor.LIME;
 
-            case PINK_BANNER, PINK_BED, PINK_BUNDLE, PINK_CANDLE, PINK_CANDLE_CAKE, PINK_CARPET, PINK_CONCRETE,
-                 PINK_CONCRETE_POWDER, PINK_DYE, PINK_WOOL, PINK_GLAZED_TERRACOTTA, PINK_TERRACOTTA, PINK_SHULKER_BOX,
-                 PINK_STAINED_GLASS, PINK_STAINED_GLASS_PANE, PINK_WALL_BANNER, PINK_HARNESS, PINK_TULIP, PEONY,
-                 PINK_PETALS -> DyeColor.PINK;
+            case "PINK_BANNER", "PINK_BED", "PINK_BUNDLE", "PINK_CANDLE", "PINK_CANDLE_CAKE", "PINK_CARPET",
+                 "PINK_CONCRETE",
+                 "PINK_CONCRETE_POWDER", "PINK_DYE", "PINK_WOOL", "PINK_GLAZED_TERRACOTTA", "PINK_TERRACOTTA",
+                 "PINK_SHULKER_BOX",
+                 "PINK_STAINED_GLASS", "PINK_STAINED_GLASS_PANE", "PINK_WALL_BANNER", "PINK_HARNESS", "PINK_TULIP",
+                 "PEONY",
+                 "PINK_PETALS" -> DyeColor.PINK;
 
-            case GRAY_BANNER, GRAY_BED, GRAY_BUNDLE, GRAY_CANDLE, GRAY_CANDLE_CAKE, GRAY_CARPET, GRAY_CONCRETE,
-                 GRAY_CONCRETE_POWDER, GRAY_DYE, GRAY_WOOL, GRAY_GLAZED_TERRACOTTA, GRAY_TERRACOTTA, GRAY_SHULKER_BOX,
-                 GRAY_STAINED_GLASS, GRAY_STAINED_GLASS_PANE, GRAY_WALL_BANNER, GRAY_HARNESS, CLOSED_EYEBLOSSOM ->
-                    DyeColor.GRAY;
+            case "GRAY_BANNER", "GRAY_BED", "GRAY_BUNDLE", "GRAY_CANDLE", "GRAY_CANDLE_CAKE", "GRAY_CARPET",
+                 "GRAY_CONCRETE",
+                 "GRAY_CONCRETE_POWDER", "GRAY_DYE", "GRAY_WOOL", "GRAY_GLAZED_TERRACOTTA", "GRAY_TERRACOTTA",
+                 "GRAY_SHULKER_BOX",
+                 "GRAY_STAINED_GLASS", "GRAY_STAINED_GLASS_PANE", "GRAY_WALL_BANNER", "GRAY_HARNESS",
+                 "CLOSED_EYEBLOSSOM" -> DyeColor.GRAY;
 
-            case LIGHT_GRAY_BANNER, LIGHT_GRAY_BED, LIGHT_GRAY_BUNDLE, LIGHT_GRAY_CANDLE, LIGHT_GRAY_CANDLE_CAKE,
-                 LIGHT_GRAY_CARPET, LIGHT_GRAY_CONCRETE, LIGHT_GRAY_CONCRETE_POWDER, LIGHT_GRAY_DYE, LIGHT_GRAY_WOOL,
-                 LIGHT_GRAY_GLAZED_TERRACOTTA, LIGHT_GRAY_TERRACOTTA, LIGHT_GRAY_SHULKER_BOX, LIGHT_GRAY_STAINED_GLASS,
-                 LIGHT_GRAY_STAINED_GLASS_PANE, LIGHT_GRAY_WALL_BANNER, LIGHT_GRAY_HARNESS, AZURE_BLUET, OXEYE_DAISY,
-                 WHITE_TULIP -> DyeColor.LIGHT_GRAY;
+            case "LIGHT_GRAY_BANNER", "LIGHT_GRAY_BED", "LIGHT_GRAY_BUNDLE", "LIGHT_GRAY_CANDLE",
+                 "LIGHT_GRAY_CANDLE_CAKE",
+                 "LIGHT_GRAY_CARPET", "LIGHT_GRAY_CONCRETE", "LIGHT_GRAY_CONCRETE_POWDER", "LIGHT_GRAY_DYE",
+                 "LIGHT_GRAY_WOOL",
+                 "LIGHT_GRAY_GLAZED_TERRACOTTA", "LIGHT_GRAY_TERRACOTTA", "LIGHT_GRAY_SHULKER_BOX",
+                 "LIGHT_GRAY_STAINED_GLASS",
+                 "LIGHT_GRAY_STAINED_GLASS_PANE", "LIGHT_GRAY_WALL_BANNER", "LIGHT_GRAY_HARNESS", "AZURE_BLUET",
+                 "OXEYE_DAISY",
+                 "WHITE_TULIP" -> DyeColor.LIGHT_GRAY;
 
-            case CYAN_BANNER, CYAN_BED, CYAN_BUNDLE, CYAN_CANDLE, CYAN_CANDLE_CAKE, CYAN_CARPET, CYAN_CONCRETE,
-                 CYAN_CONCRETE_POWDER, CYAN_DYE, CYAN_WOOL, CYAN_GLAZED_TERRACOTTA, CYAN_TERRACOTTA, CYAN_SHULKER_BOX,
-                 CYAN_STAINED_GLASS, CYAN_STAINED_GLASS_PANE, CYAN_WALL_BANNER, CYAN_HARNESS, PITCHER_PLANT ->
+            case "CYAN_BANNER", "CYAN_BED", "CYAN_BUNDLE", "CYAN_CANDLE", "CYAN_CANDLE_CAKE", "CYAN_CARPET",
+                 "CYAN_CONCRETE",
+                 "CYAN_CONCRETE_POWDER", "CYAN_DYE", "CYAN_WOOL", "CYAN_GLAZED_TERRACOTTA", "CYAN_TERRACOTTA",
+                 "CYAN_SHULKER_BOX",
+                 "CYAN_STAINED_GLASS", "CYAN_STAINED_GLASS_PANE", "CYAN_WALL_BANNER", "CYAN_HARNESS", "PITCHER_PLANT" ->
                     DyeColor.CYAN;
 
-            case PURPLE_BANNER, PURPLE_BED, PURPLE_BUNDLE, PURPLE_CANDLE, PURPLE_CANDLE_CAKE, PURPLE_CARPET,
-                 PURPLE_CONCRETE, PURPLE_CONCRETE_POWDER, PURPLE_DYE, PURPLE_WOOL, PURPLE_GLAZED_TERRACOTTA,
-                 PURPLE_TERRACOTTA, PURPLE_SHULKER_BOX, PURPLE_STAINED_GLASS, PURPLE_STAINED_GLASS_PANE,
-                 PURPLE_WALL_BANNER, PURPLE_HARNESS -> DyeColor.PURPLE;
+            case "PURPLE_BANNER", "PURPLE_BED", "PURPLE_BUNDLE", "PURPLE_CANDLE", "PURPLE_CANDLE_CAKE", "PURPLE_CARPET",
+                 "PURPLE_CONCRETE", "PURPLE_CONCRETE_POWDER", "PURPLE_DYE", "PURPLE_WOOL", "PURPLE_GLAZED_TERRACOTTA",
+                 "PURPLE_TERRACOTTA", "PURPLE_SHULKER_BOX", "PURPLE_STAINED_GLASS", "PURPLE_STAINED_GLASS_PANE",
+                 "PURPLE_WALL_BANNER", "PURPLE_HARNESS" -> DyeColor.PURPLE;
 
-            case BLUE_BANNER, BLUE_BED, BLUE_BUNDLE, BLUE_CANDLE, BLUE_CANDLE_CAKE, BLUE_CARPET, BLUE_CONCRETE,
-                 BLUE_CONCRETE_POWDER, BLUE_DYE, BLUE_WOOL, BLUE_GLAZED_TERRACOTTA, BLUE_TERRACOTTA, BLUE_SHULKER_BOX,
-                 BLUE_STAINED_GLASS, BLUE_STAINED_GLASS_PANE, BLUE_WALL_BANNER, BLUE_HARNESS, CORNFLOWER, BLUE_ORCHID ->
-                    DyeColor.BLUE;
+            case "BLUE_BANNER", "BLUE_BED", "BLUE_BUNDLE", "BLUE_CANDLE", "BLUE_CANDLE_CAKE", "BLUE_CARPET",
+                 "BLUE_CONCRETE",
+                 "BLUE_CONCRETE_POWDER", "BLUE_DYE", "BLUE_WOOL", "BLUE_GLAZED_TERRACOTTA", "BLUE_TERRACOTTA",
+                 "BLUE_SHULKER_BOX",
+                 "BLUE_STAINED_GLASS", "BLUE_STAINED_GLASS_PANE", "BLUE_WALL_BANNER", "BLUE_HARNESS", "CORNFLOWER",
+                 "BLUE_ORCHID" -> DyeColor.BLUE;
 
-            case BROWN_BANNER, BROWN_BED, BROWN_BUNDLE, BROWN_CANDLE, BROWN_CANDLE_CAKE, BROWN_CARPET, BROWN_CONCRETE,
-                 BROWN_CONCRETE_POWDER, BROWN_DYE, BROWN_WOOL, BROWN_GLAZED_TERRACOTTA, BROWN_TERRACOTTA,
-                 BROWN_SHULKER_BOX, BROWN_STAINED_GLASS, BROWN_STAINED_GLASS_PANE, BROWN_WALL_BANNER, BROWN_HARNESS,
-                 COCOA_BEANS -> DyeColor.BROWN;
+            case "BROWN_BANNER", "BROWN_BED", "BROWN_BUNDLE", "BROWN_CANDLE", "BROWN_CANDLE_CAKE", "BROWN_CARPET",
+                 "BROWN_CONCRETE",
+                 "BROWN_CONCRETE_POWDER", "BROWN_DYE", "BROWN_WOOL", "BROWN_GLAZED_TERRACOTTA", "BROWN_TERRACOTTA",
+                 "BROWN_SHULKER_BOX", "BROWN_STAINED_GLASS", "BROWN_STAINED_GLASS_PANE", "BROWN_WALL_BANNER",
+                 "BROWN_HARNESS",
+                 "COCOA_BEANS" -> DyeColor.BROWN;
 
-            case GREEN_BANNER, GREEN_BED, GREEN_BUNDLE, GREEN_CANDLE, GREEN_CANDLE_CAKE, GREEN_CARPET, GREEN_CONCRETE,
-                 GREEN_CONCRETE_POWDER, GREEN_DYE, GREEN_WOOL, GREEN_GLAZED_TERRACOTTA, GREEN_TERRACOTTA,
-                 GREEN_SHULKER_BOX, GREEN_STAINED_GLASS, GREEN_STAINED_GLASS_PANE, GREEN_WALL_BANNER, GREEN_HARNESS,
-                 CACTUS -> DyeColor.GREEN;
+            case "GREEN_BANNER", "GREEN_BED", "GREEN_BUNDLE", "GREEN_CANDLE", "GREEN_CANDLE_CAKE", "GREEN_CARPET",
+                 "GREEN_CONCRETE",
+                 "GREEN_CONCRETE_POWDER", "GREEN_DYE", "GREEN_WOOL", "GREEN_GLAZED_TERRACOTTA", "GREEN_TERRACOTTA",
+                 "GREEN_SHULKER_BOX", "GREEN_STAINED_GLASS", "GREEN_STAINED_GLASS_PANE", "GREEN_WALL_BANNER",
+                 "GREEN_HARNESS",
+                 "CACTUS" -> DyeColor.GREEN;
 
-            case RED_BANNER, RED_BED, RED_BUNDLE, RED_CANDLE, RED_CANDLE_CAKE, RED_CARPET, RED_CONCRETE,
-                 RED_CONCRETE_POWDER, RED_DYE, RED_WOOL, RED_GLAZED_TERRACOTTA, RED_TERRACOTTA, RED_SHULKER_BOX,
-                 RED_STAINED_GLASS, RED_STAINED_GLASS_PANE, RED_WALL_BANNER, RED_HARNESS, POPPY, RED_TULIP, ROSE_BUSH,
-                 BEETROOT -> DyeColor.RED;
+            case "RED_BANNER", "RED_BED", "RED_BUNDLE", "RED_CANDLE", "RED_CANDLE_CAKE", "RED_CARPET", "RED_CONCRETE",
+                 "RED_CONCRETE_POWDER", "RED_DYE", "RED_WOOL", "RED_GLAZED_TERRACOTTA", "RED_TERRACOTTA",
+                 "RED_SHULKER_BOX",
+                 "RED_STAINED_GLASS", "RED_STAINED_GLASS_PANE", "RED_WALL_BANNER", "RED_HARNESS", "POPPY", "RED_TULIP",
+                 "ROSE_BUSH",
+                 "BEETROOT" -> DyeColor.RED;
 
-            case BLACK_BANNER, BLACK_BED, BLACK_BUNDLE, BLACK_CANDLE, BLACK_CANDLE_CAKE, BLACK_CARPET, BLACK_CONCRETE,
-                 BLACK_CONCRETE_POWDER, BLACK_DYE, BLACK_WOOL, BLACK_GLAZED_TERRACOTTA, BLACK_TERRACOTTA,
-                 BLACK_SHULKER_BOX, BLACK_STAINED_GLASS, BLACK_STAINED_GLASS_PANE, BLACK_WALL_BANNER, BLACK_HARNESS,
-                 INK_SAC, WITHER_ROSE -> DyeColor.BLACK;
+            case "BLACK_BANNER", "BLACK_BED", "BLACK_BUNDLE", "BLACK_CANDLE", "BLACK_CANDLE_CAKE", "BLACK_CARPET",
+                 "BLACK_CONCRETE",
+                 "BLACK_CONCRETE_POWDER", "BLACK_DYE", "BLACK_WOOL", "BLACK_GLAZED_TERRACOTTA", "BLACK_TERRACOTTA",
+                 "BLACK_SHULKER_BOX", "BLACK_STAINED_GLASS", "BLACK_STAINED_GLASS_PANE", "BLACK_WALL_BANNER",
+                 "BLACK_HARNESS",
+                 "INK_SAC", "WITHER_ROSE" -> DyeColor.BLACK;
 
             default -> DyeColor.WHITE;
         };

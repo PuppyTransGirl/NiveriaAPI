@@ -19,6 +19,7 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+import toutouchien.niveriaapi.utils.BackwardUtils;
 import toutouchien.niveriaapi.utils.Task;
 
 import java.util.List;
@@ -599,7 +600,7 @@ public class Button extends MenuComponent {
 
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
-                Sound.Source.UI,
+                BackwardUtils.UI_SOUND_SOURCE,
                 1F,
                 1F
         );
