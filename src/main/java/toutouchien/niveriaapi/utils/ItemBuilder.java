@@ -644,7 +644,7 @@ public class ItemBuilder {
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder unbreakable(boolean unbreakable) {
         if (unbreakable) {
-            itemStack.editMeta(meta -> meta.setUnbreakable(true)); // Not with components to be compatible with 1.21.4
+            itemStack.editMeta(meta -> meta.setUnbreakable(unbreakable)); // Not with components to be compatible with 1.21.4
         } else
             itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
 
