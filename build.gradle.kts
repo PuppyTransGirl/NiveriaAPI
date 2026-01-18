@@ -126,7 +126,7 @@ tasks {
 
         val props = mapOf(
             "version" to version,
-            "minecraftVersion" to minecraftVersion
+            "minMinecraftVersion" to minecraftVersion
         )
 
         inputs.properties(props)
