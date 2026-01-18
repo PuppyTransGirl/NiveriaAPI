@@ -7,5 +7,5 @@ public class BackwardUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final Sound.Source UI_SOUND_SOURCE = VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_6) ? Sound.Source.UI : Sound.Source.MASTER;
+    public static final Sound.Source UI_SOUND_SOURCE = VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_6) ? Sound.Source.UI : Sound.Source.MASTER;
 }

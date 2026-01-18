@@ -5,13 +5,13 @@ import org.bukkit.Bukkit;
 @SuppressWarnings("java:S115")
 public enum VersionUtils {
     UNKNOWN(Integer.MAX_VALUE),
-    v1_12_11(774),
-    v1_12_10(773),
-    v1_12_9(773),
-    v1_12_8(772),
-    v1_12_7(772),
-    v1_12_6(771),
-    v1_12_5(770),
+    v1_21_11(774),
+    v1_21_10(773),
+    v1_21_9(773),
+    v1_21_8(772),
+    v1_21_7(772),
+    v1_21_6(771),
+    v1_21_5(770),
     v1_21_4(769);
 
     private static VersionUtils serverVersion;

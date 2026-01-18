@@ -644,12 +644,12 @@ public class ItemBuilder {
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder unbreakable(boolean unbreakable) {
         if (unbreakable) {
-            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
                 itemStack.setData(DataComponentTypes.UNBREAKABLE);
             else
                 itemStack.editMeta(meta -> meta.setUnbreakable(true)); // Not with components to be compatible with 1.21.4
         } else {
-            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+            if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
                 itemStack.unsetData(DataComponentTypes.UNBREAKABLE);
             else
                 itemStack.editMeta(meta -> meta.setUnbreakable(false));
@@ -664,7 +664,7 @@ public class ItemBuilder {
      * @return true if unbreakable
      */
     public boolean unbreakable() {
-        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5))
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5))
             return itemStack.hasData(DataComponentTypes.UNBREAKABLE);
         else
             return itemStack.getItemMeta().isUnbreakable();
@@ -1355,7 +1355,7 @@ public class ItemBuilder {
     public ItemBuilder hide(@NotNull DataComponentType @NotNull ... typesToHide) {
         Preconditions.checkNotNull(typesToHide, "typesToHide cannot be null");
 
-        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5)) {
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
             if (itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY) && itemStack.getData(DataComponentTypes.TOOLTIP_DISPLAY).hideTooltip())
                 return this;
 
@@ -1377,7 +1377,7 @@ public class ItemBuilder {
      */
     @NotNull
     public Set<DataComponentType> hiddenComponents() {
-        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5)) {
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
             if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
                 return Collections.emptySet();
 
@@ -1395,7 +1395,7 @@ public class ItemBuilder {
     @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder hideTooltip(boolean hideTooltip) {
-        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5)) {
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
             TooltipDisplay tooltipDisplay = TooltipDisplay.tooltipDisplay()
                     .hideTooltip(hideTooltip)
                     .build();
@@ -1413,7 +1413,7 @@ public class ItemBuilder {
      * @return true if tooltip is hidden
      */
     public boolean hideTooltip() {
-        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_12_5)) {
+        if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
             if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
                 return false;
 
