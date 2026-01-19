@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.io.File;
-import java.util.Locale;
+import java.util.*;
 
 
 /**
@@ -35,6 +35,7 @@ import java.util.Locale;
  * <ul>
  *     <li>Load and cache per-locale message files from {@code /lang/*.yml}.</li>
  *     <li>Resolve messages by key to raw strings or {@link Component}s.</li>
+ *     <li>Support multi-line messages for lore (split by newlines into lists).</li>
  *     <li>Optionally use per-player locales (via {@link Player#locale()}) or a
  *         server-wide default locale configured in {@code config.yml}.</li>
  *     <li>Support MiniMessage-based formatting with custom per-locale tags
@@ -48,6 +49,7 @@ import java.util.Locale;
  *     <li>Call {@link #load(JavaPlugin)} once during plugin startup.</li>
  *     <li>Use {@link #get(String)} / {@link #get(Audience, String)} for
  *         components or {@link #getString(String)} for raw strings.</li>
+ *     <li>Use {@link #getList(String)} for multi-line messages (lore).</li>
  *     <li>Use {@link #sendMessage(Audience, String, Object...)} to send
  *         localized messages directly.</li>
  * </ol>
@@ -124,6 +126,8 @@ public class Lang {
      * directory, flattens any nested sections into dot-separated keys, and
      * stores the resulting key-value pairs in the `MESSAGES` map. It also
      * loads any special tag patterns defined in the file.
+     * <p>
+     * Multi-line strings (containing newlines) are preserved as-is.
      *
      * @param plugin The main plugin instance.
      * @param locale The locale to load messages for.
@@ -170,6 +174,8 @@ public class Lang {
      *     key: value
      * </pre>
      * would result in a key-value pair of `parent.child.key` → `value`.
+     * <p>
+     * Multi-line strings are preserved with their newline characters.
      *
      * @param section  The configuration section to flatten.
      * @param prefix   The current key prefix for nested sections.
@@ -233,9 +239,9 @@ public class Lang {
         }
 
         Object2ObjectMap<String, Object2ObjectMap<String, String>> existing = LOCALE_SPECIAL_TAGS.get(locale);
-        for (String category : byCategory.keySet()) {
-            Object2ObjectMap<String, String> entries = byCategory.get(category);
-            existing.computeIfAbsent(category, k -> new Object2ObjectOpenHashMap<>()).putAll(entries);
+        for (Map.Entry<String, Object2ObjectMap<String, String>> category : byCategory.entrySet()) {
+            Object2ObjectMap<String, String> entries = category.getValue();
+            existing.computeIfAbsent(category.getKey(), k -> new Object2ObjectOpenHashMap<>()).putAll(entries);
         }
     }
 
@@ -486,6 +492,99 @@ public class Lang {
     }
 
     /**
+     * Gets a list of localized {@link Component}s for the given key using the server's
+     * default locale. Multi-line strings (separated by \n) are split into individual
+     * components, making this method ideal for item lore.
+     *
+     * @param key The key of the message to retrieve.
+     * @return A list of localized components, one per line.
+     */
+    @NotNull
+    public static List<Component> getList(@NotNull String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        String raw = getStringInternal(null, key);
+        return splitAndParseComponents(null, raw, key);
+    }
+
+    /**
+     * Gets a list of formatted, localized {@link Component}s for the given key using
+     * the server's default locale. Multi-line strings are split into individual
+     * components.
+     *
+     * @param key  The key of the message to retrieve.
+     * @param args The arguments to format into the message.
+     * @return A list of formatted, localized components, one per line.
+     */
+    @NotNull
+    public static List<Component> getList(@NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
+        String raw = getStringInternal(null, key, args);
+        return splitAndParseComponents(null, raw, key);
+    }
+
+    /**
+     * Gets a list of localized {@link Component}s for the given key, using the
+     * audience's locale if enabled. Multi-line strings are split into individual
+     * components.
+     *
+     * @param audience The recipient of the message, used for locale detection.
+     * @param key      The key of the message to retrieve.
+     * @return A list of localized components, one per line.
+     */
+    @NotNull
+    public static List<Component> getList(@NotNull Audience audience, @NotNull String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        String raw = getStringInternal(audience, key);
+        return splitAndParseComponents(audience, raw, key);
+    }
+
+    /**
+     * Gets a list of formatted, localized {@link Component}s for the given key,
+     * using the audience's locale if enabled. Multi-line strings are split into
+     * individual components.
+     *
+     * @param audience The recipient of the message, used for locale detection.
+     * @param key      The key of the message to retrieve.
+     * @param args     The arguments to format into the message.
+     * @return A list of formatted, localized components, one per line.
+     */
+    @NotNull
+    public static List<Component> getList(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(args, "args cannot be null");
+
+        String raw = getStringInternal(audience, key, args);
+        return splitAndParseComponents(audience, raw, key);
+    }
+
+    /**
+     * Splits a multi-line string by newlines and parses each line into a {@link Component}.
+     * <p>
+     * This is primarily used for item lore, where each line needs to be a separate
+     * component in a list. Empty lines are preserved as empty components.
+     *
+     * @param audience The entity, used for locale detection (may be {@code null}).
+     * @param raw      The raw message string to split and parse.
+     * @param key      The key of the message, used for logging on parse failure.
+     * @return A list of components, one per line.
+     */
+    @NotNull
+    private static List<Component> splitAndParseComponents(@Nullable Audience audience, @NotNull String raw, @NotNull String key) {
+        if (raw.isEmpty())
+            return Collections.emptyList();
+
+        return Arrays.stream(raw.split("\\R", -1))
+                .map(line -> getComponentInternal(audience, line, key))
+                .toList();
+    }
+
+    /**
      * Gets a localized message and sends it directly to an
      * {@link Audience}.
      *
@@ -547,6 +646,7 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
+    @SuppressWarnings("PatternValidation")
     public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @NotNull Object @Nullable ... args) {
         Preconditions.checkNotNull(audience, "audience cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");

@@ -47,15 +47,15 @@ homeplugin:
     previous: "<ncolor:secondary>Page Précédente</ncolor>"
     home:
       name: "<ncolor:primary>%s</ncolor>"
-      lore:
-        0: "<ncolor:default>Clique gauche pour vous téléporter à ce home.</ncolor>"
-        1: "<ncolor:default>Clique droit pour modifier l'icône de ce home.</ncolor>"
-        2: "<ncolor:default>Jettez cet item pour supprimer ce home.</ncolor>"
+      lore: |-
+        <ncolor:default>Clique gauche pour vous téléporter à ce home.</ncolor>
+        <ncolor:default>Clique droit pour modifier l'icône de ce home.</ncolor>
+        <ncolor:default>Jettez cet item pour supprimer ce home.</ncolor>
     home_dropped:
       name: "<ncolor:error>%s</ncolor>"
-      lore:
-        0: "<ncolor:error>Êtes-vous sûr de vouloir supprimer ce home ?</ncolor>"
-        1: "<ncolor:default>Jettez cet item à nouveau pour confirmer.</ncolor>"
+      lore: |-
+        <ncolor:error>Êtes-vous sûr de vouloir supprimer ce home ?</ncolor>
+        <ncolor:default>Jettez cet item à nouveau pour confirmer.</ncolor>
 
   menu_item_selector:
     title: "<ncolor:primary>Sélection de l'icône</ncolor>"

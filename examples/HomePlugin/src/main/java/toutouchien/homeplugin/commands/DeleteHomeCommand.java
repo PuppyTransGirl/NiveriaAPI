@@ -47,7 +47,8 @@ public class DeleteHomeCommand {
                             homeManager.deleteHome(uuid, homeName);
                             Lang.sendMessage(player, "homeplugin.deletehome.deleted", homeName);
                             return Command.SINGLE_SUCCESS;
-                        }))
+                        })
+                )
                 .build();
     }
 }

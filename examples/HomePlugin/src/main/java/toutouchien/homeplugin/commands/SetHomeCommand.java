@@ -46,7 +46,8 @@ public class SetHomeCommand {
                             homeManager.createHome(player, homeName);
                             Lang.sendMessage(player, "homeplugin.sethome.created", homeName);
                             return Command.SINGLE_SUCCESS;
-                        }))
+                        })
+                )
                 .build();
     }
 }

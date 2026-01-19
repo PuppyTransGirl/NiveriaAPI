@@ -47,7 +47,8 @@ public class HomeCommand {
 
                             homeManager.teleportHome(player, home);
                             return Command.SINGLE_SUCCESS;
-                        }))
+                        })
+                )
                 .build();
     }
 }

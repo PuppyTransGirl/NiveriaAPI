@@ -63,19 +63,12 @@ public class HomesMenu extends Menu {
             DoubleDropButton button = DoubleDropButton.create()
                     .item(ItemBuilder.of(home.icon())
                             .name(Lang.get("homeplugin.menu.home.name", home.name()))
-                            .lore(
-                                    Lang.get("homeplugin.menu.home.lore.0"),
-                                    Lang.get("homeplugin.menu.home.lore.1"),
-                                    Lang.get("homeplugin.menu.home.lore.2")
-                            )
+                            .lore(Lang.getList("homeplugin.menu.home.lore"))
                             .build()
                     )
                     .dropItem(ItemBuilder.of(Material.BARRIER)
                             .name(Lang.get("homeplugin.menu.home_dropped.name", home.name()))
-                            .lore(
-                                    Lang.get("homeplugin.menu.home_dropped.lore.0"),
-                                    Lang.get("homeplugin.menu.home_dropped.lore.1")
-                            )
+                            .lore(Lang.getList("homeplugin.menu.home_dropped.lore"))
                             .build()
                     )
                     .onLeftClick(event -> {
