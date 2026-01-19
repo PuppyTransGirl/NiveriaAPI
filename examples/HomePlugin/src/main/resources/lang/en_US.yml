@@ -54,7 +54,7 @@ homeplugin:
     home_dropped:
       name: "<ncolor:error>%s</ncolor>"
       lore: |-
-        <ncolor:error>Are you sure you want to delete this home?</ncolor>"
+        <ncolor:error>Are you sure you want to delete this home?</ncolor>
         <ncolor:default>Drop this item again to confirm.</ncolor>
 
   menu_item_selector:

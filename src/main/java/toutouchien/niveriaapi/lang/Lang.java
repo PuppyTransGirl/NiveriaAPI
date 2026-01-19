@@ -576,10 +576,10 @@ public class Lang {
      */
     @NotNull
     private static List<Component> splitAndParseComponents(@Nullable Audience audience, @NotNull String raw, @NotNull String key) {
-        if (raw.isEmpty() || raw.equals(key))
+        if (raw.isEmpty())
             return Collections.emptyList();
 
-        return Arrays.stream(raw.split("\n"))
+        return Arrays.stream(raw.split("\\R", -1))
                 .map(line -> getComponentInternal(audience, line, key))
                 .toList();
     }
