@@ -56,7 +56,6 @@ import java.util.*;
  * <p>
  * This is a static utility class and cannot be instantiated.
  */
-@SuppressWarnings("PatternValidation")
 public class Lang {
     private static final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> MESSAGES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
     // Locale → ( Category → ( Key → Pattern ) )
@@ -647,6 +646,7 @@ public class Lang {
      * @param key      The key of the message to send.
      * @param args     The arguments to format into the message.
      */
+    @SuppressWarnings("PatternValidation")
     public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @NotNull Object @Nullable ... args) {
         Preconditions.checkNotNull(audience, "audience cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
