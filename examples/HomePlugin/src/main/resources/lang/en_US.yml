@@ -47,15 +47,15 @@ homeplugin:
     previous: "<ncolor:secondary>Previous Page</ncolor>"
     home:
       name: "<ncolor:primary>%s</ncolor>"
-      lore:
-        0: "<ncolor:default>Left click to teleport to this home.</ncolor>"
-        1: "<ncolor:default>Right click to change this home's icon.</ncolor>"
-        2: "<ncolor:default>Drop this item to delete this home.</ncolor>"
+      lore: |-
+        <ncolor:default>Left click to teleport to this home.</ncolor>
+        <ncolor:default>Right click to change this home's icon.</ncolor>
+        <ncolor:default>Drop this item to delete this home.</ncolor>
     home_dropped:
       name: "<ncolor:error>%s</ncolor>"
-      lore:
-        0: "<ncolor:error>Are you sure you want to delete this home?</ncolor>"
-        1: "<ncolor:default>Drop this item again to confirm.</ncolor>"
+      lore: |-
+        <ncolor:error>Are you sure you want to delete this home?</ncolor>"
+        <ncolor:default>Drop this item again to confirm.</ncolor>
 
   menu_item_selector:
     title: "<ncolor:primary>Icon Selection</ncolor>"
