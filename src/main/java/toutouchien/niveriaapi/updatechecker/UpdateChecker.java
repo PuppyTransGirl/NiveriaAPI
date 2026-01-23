@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.updatechecker;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,15 +25,21 @@ public class UpdateChecker {
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
-    private final URI uri;
     private final JavaPlugin plugin;
+    private final URI uri;
     private final String currentVersion;
     private final String langKey;
 
     private String latestVersion;
     private boolean newestVersion;
 
-    public UpdateChecker(@NotNull String modrinthID, @NotNull JavaPlugin plugin, @NotNull String langKey) {
+    public UpdateChecker(@NotNull JavaPlugin plugin, @NotNull String modrinthID, @NotNull String langKey) {
+        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+        Preconditions.checkNotNull(modrinthID, "modrinthID cannot be null");
+        Preconditions.checkNotNull(langKey, "langKey cannot be null");
+
+        this.plugin = plugin;
+
         try {
             this.uri = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=[\"%s\"]".formatted(
                     modrinthID,
@@ -44,7 +51,6 @@ public class UpdateChecker {
         }
 
         this.currentVersion = plugin.getPluginMeta().getVersion();
-        this.plugin = plugin;
         this.langKey = langKey;
 
         this.startTask();
@@ -58,7 +64,7 @@ public class UpdateChecker {
             if (this.newestVersion)
                 return;
 
-            Lang.sendMessage(Bukkit.getConsoleSender(), this.langKey);
+            Lang.sendMessage(Bukkit.getConsoleSender(), this.langKey, this.currentVersion, this.latestVersion);
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
                     this.newestVersion,
                     this.plugin,

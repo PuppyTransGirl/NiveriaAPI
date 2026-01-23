@@ -17,6 +17,7 @@ import toutouchien.niveriaapi.hook.HookManager;
 import toutouchien.niveriaapi.input.ChatInputManager;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.menu.MenuListener;
+import toutouchien.niveriaapi.updatechecker.UpdateChecker;
 
 import java.util.Arrays;
 
@@ -94,6 +95,9 @@ public class NiveriaAPI extends JavaPlugin {
         this.hookManager = new HookManager(this);
 
         registerListeners();
+
+        if (this.getConfig().getBoolean("update-checker.enabled", true))
+            new UpdateChecker(this, "ll0lc5oW", "niveriaapi.new_update");
     }
 
     private void preLoadUtilsClasses() {
