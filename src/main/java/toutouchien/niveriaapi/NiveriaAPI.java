@@ -91,7 +91,7 @@ public class NiveriaAPI extends JavaPlugin {
             this.cooldownManager = new CooldownManager(this, database);
         }
         (this.delayManager = new DelayManager(this)).initialize();
-        (this.hookManager = new HookManager(this)).onEnable();
+        this.hookManager = new HookManager(this);
 
         registerListeners();
     }

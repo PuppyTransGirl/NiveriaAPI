@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,6 +23,11 @@ public class HookListener implements Listener {
         Preconditions.checkNotNull(hookManager, "hookManager cannot be null");
 
         this.hookManager = hookManager;
+    }
+
+    @EventHandler
+    public void onServerLoad(ServerLoadEvent event) {
+        this.hookManager.onEnable();
     }
 
     @EventHandler
