@@ -5,7 +5,6 @@
   ],
   "assignees": ["PuppyTransGirl"],
   "dependencyDashboard": false,
-  "labels": ["dependencies"],
-  "milestone": 1,
+  "labels": ["dependencies"]
   "prHourlyLimit": 1
 }
