@@ -37,7 +37,7 @@ niveriaapi:
 
   new_update: |-
     <prefix:niveria/> <separator> <ncolor:default>There is a new version of <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error>%s</ncolor> → <ncolor:success>%s</ncolor></ncolor>
-    <ncolor:default>Download link: <ncolor:primary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
+    <ncolor:default>Download link: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
 
 
 delay:
