@@ -35,6 +35,7 @@ public class UpdateChecker {
     private String latestVersion;
     private boolean noNewVersion;
 
+    @SuppressWarnings("java:S112")
     public UpdateChecker(@NotNull JavaPlugin plugin, @NotNull String modrinthID, @NotNull String langKey) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(modrinthID, "modrinthID cannot be null");
@@ -79,7 +80,6 @@ public class UpdateChecker {
         }, this.plugin, 0L, 24L, TimeUnit.HOURS);
     }
 
-    @SuppressWarnings("java:S2142")
     @Nullable
     private String latestVersion() {
         try {
