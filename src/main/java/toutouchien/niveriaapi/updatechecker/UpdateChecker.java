@@ -15,9 +15,11 @@ import toutouchien.niveriaapi.utils.Task;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +33,7 @@ public class UpdateChecker {
     private final String langKey;
 
     private String latestVersion;
-    private boolean newestVersion;
+    private boolean noNewVersion;
 
     public UpdateChecker(@NotNull JavaPlugin plugin, @NotNull String modrinthID, @NotNull String langKey) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
@@ -41,9 +43,10 @@ public class UpdateChecker {
         this.plugin = plugin;
 
         try {
-            this.uri = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=[\"%s\"]".formatted(
+            String gameVersionsArray = "[\"%s\"]".formatted(Bukkit.getMinecraftVersion());
+            this.uri = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=%s".formatted(
                     modrinthID,
-                    Bukkit.getMinecraftVersion()
+                    URLEncoder.encode(gameVersionsArray, StandardCharsets.UTF_8)
             ));
         } catch (URISyntaxException e) {
             // should not happen
@@ -59,19 +62,20 @@ public class UpdateChecker {
     private void startTask() {
         Task.asyncRepeat(task -> {
             this.latestVersion = this.latestVersion();
-            this.newestVersion = this.latestVersion != null && StringUtils.compareSemVer(this.currentVersion, this.latestVersion) < 0;
+            this.noNewVersion = this.latestVersion != null && StringUtils.compareSemVer(this.currentVersion, this.latestVersion) >= 0;
 
-            if (this.newestVersion)
+            if (this.noNewVersion)
                 return;
 
             Lang.sendMessage(Bukkit.getConsoleSender(), this.langKey, this.currentVersion, this.latestVersion);
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
-                    this.newestVersion,
+                    this.noNewVersion,
                     this.plugin,
                     this.langKey,
                     this.currentVersion,
                     this.latestVersion
             ), this.plugin);
+
             task.cancel();
         }, this.plugin, 0L, 24L, TimeUnit.HOURS);
     }
@@ -92,6 +96,11 @@ public class UpdateChecker {
 
             JsonElement root = gson.fromJson(resp.body(), JsonElement.class);
             JsonArray array = root.getAsJsonArray();
+
+            // Can happen when the newest versions don't support the server version anymore
+            if (array.isEmpty())
+                return null;
+
             JsonObject latestObject = array.get(0).getAsJsonObject();
 
             return latestObject.get("version_number").getAsString();
