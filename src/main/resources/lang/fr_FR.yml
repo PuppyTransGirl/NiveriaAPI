@@ -35,6 +35,10 @@ niveriaapi:
   reload:
     done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI a été rechargé. (%s ms)</ncolor>"
 
+  new_update: |-
+    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error>%s</ncolor> → <ncolor:success>%s</ncolor></ncolor>
+    <ncolor:default>Lien de téléchargement: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
+
 
 delay:
   start: "<prefix:niveria/> <separator> <ncolor:default>Téléportation dans <ncolor:secondary>%s</ncolor> secondes</ncolor>"
