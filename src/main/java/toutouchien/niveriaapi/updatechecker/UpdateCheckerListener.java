@@ -11,14 +11,12 @@ import toutouchien.niveriaapi.lang.Lang;
 import java.util.Locale;
 
 public class UpdateCheckerListener implements Listener {
-    private final boolean noNewVersion;
     private final JavaPlugin plugin;
     private final String langKey;
     private final String currentVersion;
     private final String latestVersion;
 
-    public UpdateCheckerListener(boolean noNewVersion, JavaPlugin plugin, String langKey, String currentVersion, String latestVersion) {
-        this.noNewVersion = noNewVersion;
+    public UpdateCheckerListener(JavaPlugin plugin, String langKey, String currentVersion, String latestVersion) {
         this.plugin = plugin;
         this.langKey = langKey;
         this.currentVersion = currentVersion;
@@ -27,9 +25,6 @@ public class UpdateCheckerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (this.noNewVersion)
-            return;
-
         if (!this.plugin.getConfig().getBoolean("update-checker.on-join", true))
             return;
 

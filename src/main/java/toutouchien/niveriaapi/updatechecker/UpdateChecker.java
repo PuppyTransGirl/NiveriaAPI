@@ -62,14 +62,13 @@ public class UpdateChecker {
     private void startTask() {
         Task.asyncRepeat(task -> {
             this.latestVersion = this.latestVersion();
-            this.noNewVersion = this.latestVersion != null && StringUtils.compareSemVer(this.currentVersion, this.latestVersion) >= 0;
+            this.noNewVersion = this.latestVersion == null || StringUtils.compareSemVer(this.currentVersion, this.latestVersion) >= 0;
 
             if (this.noNewVersion)
                 return;
 
             Lang.sendMessage(Bukkit.getConsoleSender(), this.langKey, this.currentVersion, this.latestVersion);
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
-                    this.noNewVersion,
                     this.plugin,
                     this.langKey,
                     this.currentVersion,
@@ -104,6 +103,9 @@ public class UpdateChecker {
             JsonObject latestObject = array.get(0).getAsJsonObject();
 
             return latestObject.get("version_number").getAsString();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         } catch (Exception e) {
             return null;
         }

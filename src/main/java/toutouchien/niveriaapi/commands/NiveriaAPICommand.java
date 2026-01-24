@@ -29,7 +29,7 @@ public class NiveriaAPICommand {
                 .then(fixCommandsCommand())
                 .then(pingCommand())
                 .then(reloadCommand())
-                .then(sendTestMessage())
+                .then(sendTestMessageCommand())
                 .then(NiveriaAPITestCommand.get())
                 .build();
     }
@@ -90,9 +90,9 @@ public class NiveriaAPICommand {
                 });
     }
 
-    private static LiteralArgumentBuilder<CommandSourceStack> sendTestMessage() {
-        return Commands.literal("sendTestMessage")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.sendTestMessage"))
+    private static LiteralArgumentBuilder<CommandSourceStack> sendTestMessageCommand() {
+        return Commands.literal("sendtestmessage")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.sendtestmessage"))
                 .then(Commands.argument("key", StringArgumentType.word())
                         .executes(ctx -> {
                             CommandSender sender = CommandUtils.sender(ctx);
