@@ -112,7 +112,7 @@ public abstract class Menu implements InventoryHolder {
         // Only render if the context is still pointing to this menu
         // If onClick triggered the opening/closing of another menu we shouldn't render this menu
         // It was causing ArrayIndexOutOfBoundsException and ghost items
-        if (this.context.menu().equals(this))
+        if (this.context.menu() == this)
             this.root.render(this.context);
     }
 
