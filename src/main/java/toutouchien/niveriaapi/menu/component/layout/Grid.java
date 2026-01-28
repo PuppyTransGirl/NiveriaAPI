@@ -166,20 +166,13 @@ public class Grid extends MenuComponent {
     public IntSet slots(@NotNull MenuContext context) {
         IntSet slots = new IntOpenHashSet();
 
-        for (MenuComponent slotComponent : this.slotComponents)
-            slots.addAll(slotComponent.slots(context));
-
-        if (this.border == null && this.fill == null)
-            return slots;
+        int startX = this.x();
+        int startY = this.y();
 
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                int slot = toSlot(x + this.x(), y + this.y());
-                if (slots.contains(slot))
-                    continue;
-
-                if ((this.border != null && border(x + this.x(), y + this.y())) || this.fill != null)
-                    slots.add(slot);
+                int slot = toSlot(startX + x, startY + y);
+                slots.add(slot);
             }
         }
 
