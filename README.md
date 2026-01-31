@@ -1,9 +1,15 @@
 # NiveriaAPI
 
+<div align="center">
+
+[![Modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/available/modrinth_vector.svg)](https://modrinth.com/plugin/niveriaapi)
+![Unsupported spigot](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/unsupported/spigot_vector.svg)
+
 [![CodeFactor](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi/badge)](https://www.codefactor.io/repository/github/puppytransgirl/niveriaapi) [![GitHub Release](https://img.shields.io/github/v/release/PuppyTransGirl/NiveriaAPI?label=version)](https://github.com/PuppyTransGirl/NiveriaAPI/releases/latest)
 
-NiveriaAPI is a lightweight helper library for Paper plugins that speeds up development with reusable menus, localization, cooldowns, MongoDB persistence, and utilities. Always maintained for 1.21.4-1.21.11 Minecraft releases.\
-!!! This plugin only supports Paper servers or forks !!!
+</div>
+
+NiveriaAPI is a lightweight helper library for Paper plugins that speeds up development with reusable menus, localization, cooldowns, MongoDB persistence, and utilities.
 
 ## Table of Contents
 - [Features](#features)
