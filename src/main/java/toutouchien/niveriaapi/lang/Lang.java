@@ -1,14 +1,15 @@
 package toutouchien.niveriaapi.lang;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import com.google.common.base.Preconditions;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.ParsingException;
@@ -20,678 +21,944 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.io.File;
-import java.util.*;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
- * Central language and localization utility for NiveriaAPI.
+ * Advanced, plugin-independent language and localization system with Caffeine caching and MiniMessage placeholders.
  * <p>
- * Responsibilities:
+ * <b>Key Features:</b>
  * <ul>
- *     <li>Load and cache per-locale message files from {@code /lang/*.yml}.</li>
- *     <li>Resolve messages by key to raw strings or {@link Component}s.</li>
- *     <li>Support multi-line messages for lore (split by newlines into lists).</li>
- *     <li>Optionally use per-player locales (via {@link Player#locale()}) or a
- *         server-wide default locale configured in {@code config.yml}.</li>
- *     <li>Support MiniMessage-based formatting with custom per-locale tags
- *         (e.g. prefixes, named colors, separators).</li>
- *     <li>Provide convenience methods to send localized messages (optionally
- *         with sounds) directly to an {@link Audience}.</li>
+ *     <li><b>Instance-based:</b> Each plugin has its own Lang instance</li>
+ *     <li><b>Caffeine cache:</b> High-performance, auto-evicting component cache</li>
+ *     <li><b>MiniMessage placeholders:</b> Named placeholders instead of positional arguments</li>
+ *     <li><b>Lazy loading:</b> Locales loaded on-demand</li>
+ *     <li><b>Centralized config:</b> Reads locale settings from NiveriaAPI config.yml</li>
+ *     <li><b>Flexible configuration:</b> Builder pattern with sensible defaults</li>
+ *     <li><b>Custom tag resolvers:</b> Extensible tag system per plugin</li>
+ *     <li><b>Better error handling:</b> Graceful degradation with detailed logging</li>
  * </ul>
  * <p>
- * Usage:
- * <ol>
- *     <li>Call {@link #load(JavaPlugin)} once during plugin startup.</li>
- *     <li>Use {@link #get(String)} / {@link #get(Audience, String)} for
- *         components or {@link #getString(String)} for raw strings.</li>
- *     <li>Use {@link #getList(String)} for multi-line messages (lore).</li>
- *     <li>Use {@link #sendMessage(Audience, String, Object...)} to send
- *         localized messages directly.</li>
- * </ol>
+ * <b>NiveriaAPI config.yml settings:</b>
+ * <pre>
+ * lang: en_US              # Default server locale
+ * use_player_locale: true  # Use player's client locale
+ * </pre>
  * <p>
- * This is a static utility class and cannot be instantiated.
+ * <b>Usage Example:</b>
+ * <pre>{@code
+ * // In your plugin's onEnable():
+ * this.lang = Lang.builder(this)
+ *     .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+ *     .build();
+ *
+ * // Language file (en_US.yml):
+ * welcome:
+ *   message: "<green>Welcome <niveriaapi:player_name>! There are <niveriaapi:player_count> players online."
+ *   join: "<gray>[<green>+<gray>] <niveriaapi:player_name>"
+ *
+ * // Send messages with named placeholders:
+ * lang.sendMessage(player, "welcome.message",
+ *     Placeholder.parsed("niveriaapi:player_name", player.getName()),
+ *     Placeholder.parsed("niveriaapi:player_count", String.valueOf(Bukkit.getOnlinePlayers().size()))
+ * );
+ *
+ * // Or use helper methods:
+ * lang.sendMessage(player, "welcome.join",
+ *     Lang.placeholder("niveriaapi:player_name", player.getName())
+ * );
+ *
+ * // Get a component:
+ * Component msg = lang.get(player, "error.not_found",
+ *     Lang.placeholder("niveriaapi:item", "Diamond Sword")
+ * );
+ * }</pre>
  */
+@NullMarked
 public class Lang {
-    private static final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> MESSAGES = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    // Locale → ( Category → ( Key → Pattern ) )
-    private static final Object2ObjectMap<Locale, Object2ObjectMap<String, Object2ObjectMap<String, String>>> LOCALE_SPECIAL_TAGS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final MiniMessage MM = MiniMessage.builder().strict(true).build();
-    private static final String DEFAULT_LANG = "en_US";
+    private final JavaPlugin plugin;
+    private final Logger logger;
+    private final MiniMessage miniMessage;
 
-    private static final String[] DEFAULT_MESSAGES_FILES = {
-            "en_US.yml",
-            "fr_FR.yml"
-    };
+    private Locale defaultLocale;
+    private boolean usePlayerLocale;
 
-    private static Locale defaultLocale = Locale.US;
-    private static boolean usePlayerLocale;
+    private final boolean cacheComponents;
+    private final MissingKeyBehavior missingKeyBehavior;
+    private final ObjectSet<String> defaultLanguageFiles;
+    private final String langDirectory;
 
-    private Lang() {
-        throw new IllegalStateException("Utility class");
-    }
+    private final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> messages;
+    private final Object2ObjectMap<Locale, Object2ObjectMap<String, Object2ObjectMap<String, String>>> specialTags;
+    @Nullable
+    private final Cache<LangCacheKey, Component> componentCache;
+    private final ObjectSet<Locale> loadedLocales;
+    private final Object2ObjectMap<String, TagResolver> customTagResolvers;
 
     /**
-     * Initializes the language system by loading configuration and message files.
-     *
-     * @param plugin The main plugin instance.
+     * Private constructor - use {@link LangBuilder} instead.
      */
-    public static void load(@NotNull JavaPlugin plugin) {
-        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+    Lang(LangBuilder builder) {
+        this.plugin = builder.plugin;
+        this.logger = builder.logger != null ? builder.logger : plugin.getSLF4JLogger();
+        this.miniMessage = MiniMessage.miniMessage();
 
-        saveDefaultMessages(plugin);
-        loadConfig();
-        loadMessages(plugin);
+        this.cacheComponents = builder.cacheComponents;
+        this.missingKeyBehavior = builder.missingKeyBehavior;
+        this.defaultLanguageFiles = new ObjectOpenHashSet<>(builder.defaultLanguageFiles);
+        this.langDirectory = builder.langDirectory;
+
+        this.messages = new Object2ObjectOpenHashMap<>();
+        this.specialTags = new Object2ObjectOpenHashMap<>();
+        this.componentCache = this.cacheComponents ? buildCaffeineCache(builder) : null;
+        this.loadedLocales = new ObjectOpenHashSet<>();
+        this.customTagResolvers = new Object2ObjectOpenHashMap<>(builder.customTagResolvers);
+
+        this.initialize();
     }
 
     /**
-     * Loads language settings from NiveriaAPI's `config.yml`.
-     * <p>
-     * This method reads the `lang` key to set the server's default locale and
-     * the `use_player_locale` key to determine if player-specific locales
-     * should be used.
-     */
-    private static void loadConfig() {
-        FileConfiguration config = NiveriaAPI.instance().getConfig();
-        String langCode = config.getString("lang", DEFAULT_LANG);
-        defaultLocale = Locale.forLanguageTag(langCode.replace('_', '-'));
-        usePlayerLocale = config.getBoolean("use_player_locale", false);
-    }
-
-    /**
-     * Loads the message files from the `lang` directory into the cache.
-     * <p>
-     * If `usePlayerLocale` is enabled in the config, this method will attempt to
-     * load a file for every available system locale. Otherwise, it will only
-     * load the file corresponding to the server's default locale.
+     * Builds a Caffeine cache with the specified configuration.
      *
-     * @param plugin The main plugin instance.
+     * @param builder The builder containing cache configuration
+     * @return Configured Caffeine cache
      */
-    private static void loadMessages(@NotNull JavaPlugin plugin) {
-        if (!usePlayerLocale)
-            loadLocaleFile(plugin, defaultLocale);
-        else
-            for (Locale locale : Locale.getAvailableLocales())
-                loadLocaleFile(plugin, locale);
+    private static Cache<LangCacheKey, Component> buildCaffeineCache(LangBuilder builder) {
+        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
+                .maximumSize(builder.maxCacheSize);
+
+        if (builder.cacheExpireAfterAccess != null)
+            cacheBuilder.expireAfterAccess(builder.cacheExpireAfterAccess);
+
+        if (builder.cacheExpireAfterWrite != null)
+            cacheBuilder.expireAfterWrite(builder.cacheExpireAfterWrite);
+
+        if (builder.recordStats)
+            cacheBuilder.recordStats();
+
+        return cacheBuilder.build();
     }
 
     /**
-     * Loads a single locale file and stores its messages in the cache.
-     * <p>
-     * This method reads the specified locale's YAML file from the `lang`
-     * directory, flattens any nested sections into dot-separated keys, and
-     * stores the resulting key-value pairs in the `MESSAGES` map. It also
-     * loads any special tag patterns defined in the file.
-     * <p>
-     * Multi-line strings (containing newlines) are preserved as-is.
+     * Creates a new builder for configuring a Lang instance.
      *
-     * @param plugin The main plugin instance.
-     * @param locale The locale to load messages for.
+     * @param plugin The plugin that owns this Lang instance
+     * @return A new builder
      */
-    private static void loadLocaleFile(@NotNull JavaPlugin plugin, @NotNull Locale locale) {
-        String fileName = "lang/%s.yml".formatted(locale.toLanguageTag().replace('-', '_'));
-        File langFile = new File(plugin.getDataFolder(), fileName);
-        if (!langFile.exists())
-            return;
-
-        Object2ObjectMap<String, String> messages = new Object2ObjectOpenHashMap<>();
-        FileConfiguration langConfig = YamlConfiguration.loadConfiguration(langFile);
-
-        // Flatten nested sections into dot-separated keys (e.g. niveriaapi.fixcommands.single)
-        for (String key : langConfig.getKeys(false)) {
-            if (langConfig.isString(key)) {
-                String value = langConfig.getString(key);
-                if (value != null)
-                    messages.put(key, value);
-
-                continue;
-            }
-
-            ConfigurationSection section = langConfig.getConfigurationSection(key);
-            if (section != null)
-                flattenSection(section, key, messages);
-        }
-
-        if (!messages.isEmpty())
-            MESSAGES.computeIfAbsent(locale, k -> new Object2ObjectOpenHashMap<>()).putAll(messages);
-
-        loadSpecialTags(locale, langConfig);
+    public static LangBuilder builder(JavaPlugin plugin) {
+        return new LangBuilder(plugin);
     }
 
-    /**
-     * Recursively flattens a configuration section into dot-separated keys.
-     * <p>
-     * This helper method traverses the provided configuration section,
-     * converting nested keys into a flat structure with dot notation. For
-     * example, a section like:
-     * <pre>
-     * parent:
-     *   child:
-     *     key: value
-     * </pre>
-     * would result in a key-value pair of `parent.child.key` → `value`.
-     * <p>
-     * Multi-line strings are preserved with their newline characters.
-     *
-     * @param section  The configuration section to flatten.
-     * @param prefix   The current key prefix for nested sections.
-     * @param messages The map to store the flattened key-value pairs.
-     */
-    private static void flattenSection(@NotNull ConfigurationSection section, @NotNull String prefix, @NotNull Object2ObjectMap<String, String> messages) {
-        for (String k : section.getKeys(false)) {
-            String fullKey = prefix.isEmpty() ? k : prefix + "." + k;
-            if (section.isString(k)) {
-                String v = section.getString(k);
-                if (v != null)
-                    messages.put(fullKey, v);
-
-                continue;
-            }
-
-            ConfigurationSection child = section.getConfigurationSection(k);
-            if (child != null)
-                flattenSection(child, fullKey, messages);
-        }
-    }
+    // ========== Placeholder Helper Methods ==========
 
     /**
-     * Loads special tag patterns for a given locale from the language configuration.
-     * <p>
-     * This method reads the `special-tags` section from the provided language configuration,
-     * organizing tag patterns by category (e.g., prefix, ncolor, other). Each category contains
-     * key-pattern pairs, which are stored in a nested map structure for fast lookup during
-     * message formatting.
+     * Creates a parsed placeholder (value will be parsed for MiniMessage tags).
      *
-     * @param locale     The locale for which to load special tags.
-     * @param langConfig The language file configuration section.
-     */
-    private static void loadSpecialTags(@NotNull Locale locale, FileConfiguration langConfig) {
-        ConfigurationSection special = langConfig.getConfigurationSection("special-tags");
-        if (special == null)
-            return;
-
-        Object2ObjectMap<String, Object2ObjectMap<String, String>> byCategory = new Object2ObjectOpenHashMap<>();
-        for (String category : special.getKeys(false)) {
-            ConfigurationSection section = special.getConfigurationSection(category);
-            if (section == null)
-                continue;
-
-            Object2ObjectMap<String, String> entries = new Object2ObjectOpenHashMap<>();
-            for (String tagKey : section.getKeys(false)) {
-                String pattern = section.getString(tagKey);
-                if (pattern != null)
-                    entries.put(tagKey, pattern);
-            }
-
-            byCategory.put(category, entries);
-        }
-
-        if (byCategory.isEmpty())
-            return;
-
-        if (!LOCALE_SPECIAL_TAGS.containsKey(locale)) {
-            LOCALE_SPECIAL_TAGS.put(locale, byCategory);
-            return;
-        }
-
-        Object2ObjectMap<String, Object2ObjectMap<String, String>> existing = LOCALE_SPECIAL_TAGS.get(locale);
-        for (Map.Entry<String, Object2ObjectMap<String, String>> category : byCategory.entrySet()) {
-            Object2ObjectMap<String, String> entries = category.getValue();
-            existing.computeIfAbsent(category.getKey(), k -> new Object2ObjectOpenHashMap<>()).putAll(entries);
-        }
-    }
-
-    /**
-     * Saves the default language files bundled within the plugin's JAR to the
-     * `plugins/PluginName/lang/` directory.
-     * <p>
-     * This operation only copies files that are not already present, preventing
-     * user-modified translations from being overwritten on startup.
-     *
-     * @param plugin The main plugin instance.
-     */
-    private static void saveDefaultMessages(@NotNull JavaPlugin plugin) {
-        File langFolder = new File(plugin.getDataFolder(), "lang");
-        if (!langFolder.exists() && !langFolder.mkdirs()) {
-            NiveriaAPI.instance().getSLF4JLogger().warn("Could not create lang folder for plugin {}", plugin.getName());
-            return;
-        }
-
-        for (String lang : DEFAULT_MESSAGES_FILES) {
-            File langFile = new File(langFolder, lang);
-            if (!langFile.exists())
-                plugin.saveResource("lang/%s".formatted(lang), false);
-        }
-    }
-
-    /**
-     * The core internal method for retrieving and formatting a localized string.
-     * <p>
-     * It determines the appropriate locale based on the {@link Audience}
-     * and the `usePlayerLocale` setting. It then fetches the message, falling
-     * back to the default locale's message or the key itself if a translation is
-     * not found. Finally, it formats the string with the provided arguments.
-     *
-     * @param audience The entity, used to determine the locale. Can be
-     *                 {@code null} to force the default server locale.
-     * @param key      The key of the message to retrieve.
-     * @param args     Optional arguments to format into the message string.
-     * @return The final, formatted message string.
-     */
-    @NotNull
-    private static String getStringInternal(@Nullable Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
-        Locale locale = defaultLocale;
-        if (usePlayerLocale && audience instanceof Player player)
-            locale = player.locale();
-
-        Object2ObjectMap<String, String> messagesOrEmptyMap = MESSAGES.getOrDefault(defaultLocale, Object2ObjectMaps.emptyMap());
-        String message = MESSAGES.getOrDefault(locale, messagesOrEmptyMap).getOrDefault(key, key);
-        return args.length > 0 ? message.formatted(args) : message;
-    }
-
-    /**
-     * Gets a raw localized string for the given key using the server's default
-     * locale.
-     *
-     * @param key The key of the message to retrieve.
-     * @return The localized string, or the key itself if not found.
-     */
-    @NotNull
-    public static String getString(@NotNull String key) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        return getStringInternal(null, key);
-    }
-
-    /**
-     * Gets a formatted raw localized string for the given key using the server's
-     * default locale.
-     *
-     * @param key  The key of the message to retrieve.
-     * @param args The arguments to format into the message string.
-     * @return The formatted localized string, or the key itself if not found.
-     */
-    @NotNull
-    public static String getString(@NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        return getStringInternal(null, key, args);
-    }
-
-    /**
-     * Gets a raw localized string for the given key, using the audience's locale
-     * if enabled.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @return The localized string, or the key itself if not found.
-     */
-    @NotNull
-    public static String getString(@NotNull Audience audience, @NotNull String key) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        return getStringInternal(audience, key);
-    }
-
-    /**
-     * Gets a formatted raw localized string for the given key, using the
-     * audience's locale if enabled.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @param args     The arguments to format into the message string.
-     * @return The formatted localized string, or the key itself if not found.
-     */
-    @NotNull
-    public static String getString(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        return getStringInternal(audience, key, args);
-    }
-
-    /**
-     * Parses a localized message string into a {@link Component} using MiniMessage,
-     * applying custom tag resolvers for prefixes, named colors, and separators.
-     * <p>
-     * The method determines the locale to use (player's or default), retrieves
-     * the special tag patterns for that locale, and sets up tag resolvers:
-     * <ul>
-     *     <li><b>prefix</b>: Inserts a component for a named prefix.</li>
-     *     <li><b>ncolor</b>: Applies a color style from a named color or falls back to black.</li>
-     *     <li><b>separator</b>: Inserts a separator component if defined.</li>
-     * </ul>
-     * The input string is then deserialized with these resolvers.
-     *
-     * @param audience The entity, used for locale detection (may be {@code null}).
-     * @param input    The message string to parse.
-     * @param key      The key of the message, used for logging on parse failure.
-     * @return The parsed {@link Component} with all custom tags resolved.
-     */
-    @NotNull
-    private static Component getComponentInternal(@Nullable Audience audience, @NotNull String input, @NotNull String key) {
-        Locale loc = defaultLocale;
-        if (usePlayerLocale && audience instanceof Player p)
-            loc = p.locale();
-
-        Object2ObjectMap<String, Object2ObjectMap<String, String>> tagsByCat = LOCALE_SPECIAL_TAGS.getOrDefault(loc, Object2ObjectMaps.emptyMap());
-
-        Object2ObjectMap<String, String> prefixMap = tagsByCat.getOrDefault("prefix", Object2ObjectMaps.emptyMap());
-        Object2ObjectMap<String, String> colorMap = tagsByCat.getOrDefault("ncolor", Object2ObjectMaps.emptyMap());
-        Object2ObjectMap<String, String> otherMap = tagsByCat.getOrDefault("other", Object2ObjectMaps.emptyMap());
-
-        TagResolver prefixResolver = TagResolver.resolver("prefix",
-                (args, ctx) -> {
-                    String id = args.popOr("prefix expected").value();
-                    String pat = prefixMap.getOrDefault(id, "");
-
-                    return Tag.inserting(MM.deserialize(pat));
-                });
-
-        TagResolver colorResolver = TagResolver.resolver("ncolor",
-                (args, ctx) -> {
-                    String id = args.popOr("color expected").value();
-                    String hex = colorMap.get(id);
-                    TextColor c = hex != null ? TextColor.fromHexString(hex) : NamedTextColor.BLACK;
-
-                    return Tag.styling(b -> b.color(c));
-                });
-
-        TagResolver.Single separatorResolver = Placeholder.component("separator", MM.deserialize(otherMap.getOrDefault("separator", "")));
-
-        Component deserializedText;
-
-        try {
-            deserializedText = MM.deserialize(
-                    input,
-                    prefixResolver,
-                    colorResolver,
-                    separatorResolver
-            );
-        } catch (ParsingException e) {
-            NiveriaAPI.instance().getSLF4JLogger().error("Failed to parse MiniMessage string: {} (language key: {})", input, key, e);
-            deserializedText = Component.text(key);
-        }
-
-        return deserializedText;
-    }
-
-    /**
-     * Gets a localized {@link Component} for the given key using the server's
-     * default locale. The string is parsed using MiniMessage.
-     *
-     * @param key The key of the message to retrieve.
-     * @return The localized component.
-     */
-    @NotNull
-    public static Component get(@NotNull String key) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        String raw = getStringInternal(null, key);
-        return getComponentInternal(null, raw, key);
-    }
-
-    /**
-     * Gets a formatted, localized {@link Component} for the given key using the
-     * server's default locale. The string is parsed using MiniMessage.
-     *
-     * @param key  The key of the message to retrieve.
-     * @param args The arguments to format into the message.
-     * @return The formatted, localized component.
-     */
-    @NotNull
-    public static Component get(@NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        String raw = getStringInternal(null, key, args);
-        return getComponentInternal(null, raw, key);
-    }
-
-    /**
-     * Gets a localized {@link Component} for the given key, using the audience's
-     * locale if enabled. The string is parsed using MiniMessage.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @return The localized component.
-     */
-    @NotNull
-    public static Component get(@NotNull Audience audience, @NotNull String key) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        String raw = getStringInternal(audience, key);
-        return getComponentInternal(audience, raw, key);
-    }
-
-    /**
-     * Gets a formatted, localized {@link Component} for the given key, using the
-     * audience's locale if enabled. The string is parsed using MiniMessage.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @param args     The arguments to format into the message.
-     * @return The formatted, localized component.
-     */
-    @NotNull
-    public static Component get(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        String raw = getStringInternal(audience, key, args);
-        return getComponentInternal(audience, raw, key);
-    }
-
-    /**
-     * Gets a list of localized {@link Component}s for the given key using the server's
-     * default locale. Multi-line strings (separated by \n) are split into individual
-     * components, making this method ideal for item lore.
-     *
-     * @param key The key of the message to retrieve.
-     * @return A list of localized components, one per line.
-     */
-    @NotNull
-    public static List<Component> getList(@NotNull String key) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        String raw = getStringInternal(null, key);
-        return splitAndParseComponents(null, raw, key);
-    }
-
-    /**
-     * Gets a list of formatted, localized {@link Component}s for the given key using
-     * the server's default locale. Multi-line strings are split into individual
-     * components.
-     *
-     * @param key  The key of the message to retrieve.
-     * @param args The arguments to format into the message.
-     * @return A list of formatted, localized components, one per line.
-     */
-    @NotNull
-    public static List<Component> getList(@NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        String raw = getStringInternal(null, key, args);
-        return splitAndParseComponents(null, raw, key);
-    }
-
-    /**
-     * Gets a list of localized {@link Component}s for the given key, using the
-     * audience's locale if enabled. Multi-line strings are split into individual
-     * components.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @return A list of localized components, one per line.
-     */
-    @NotNull
-    public static List<Component> getList(@NotNull Audience audience, @NotNull String key) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        String raw = getStringInternal(audience, key);
-        return splitAndParseComponents(audience, raw, key);
-    }
-
-    /**
-     * Gets a list of formatted, localized {@link Component}s for the given key,
-     * using the audience's locale if enabled. Multi-line strings are split into
-     * individual components.
-     *
-     * @param audience The recipient of the message, used for locale detection.
-     * @param key      The key of the message to retrieve.
-     * @param args     The arguments to format into the message.
-     * @return A list of formatted, localized components, one per line.
-     */
-    @NotNull
-    public static List<Component> getList(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        String raw = getStringInternal(audience, key, args);
-        return splitAndParseComponents(audience, raw, key);
-    }
-
-    /**
-     * Splits a multi-line string by newlines and parses each line into a {@link Component}.
-     * <p>
-     * This is primarily used for item lore, where each line needs to be a separate
-     * component in a list. Empty lines are preserved as empty components.
-     *
-     * @param audience The entity, used for locale detection (may be {@code null}).
-     * @param raw      The raw message string to split and parse.
-     * @param key      The key of the message, used for logging on parse failure.
-     * @return A list of components, one per line.
-     */
-    @NotNull
-    private static List<Component> splitAndParseComponents(@Nullable Audience audience, @NotNull String raw, @NotNull String key) {
-        if (raw.isEmpty())
-            return Collections.emptyList();
-
-        return Arrays.stream(raw.split("\\R", -1))
-                .map(line -> getComponentInternal(audience, line, key))
-                .toList();
-    }
-
-    /**
-     * Gets a localized message and sends it directly to an
-     * {@link Audience}.
-     *
-     * @param audience The recipient of the message.
-     * @param key      The key of the message to send.
-     */
-    public static void sendMessage(@NotNull Audience audience, @NotNull String key) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        sendMessage(audience, null, key, (Object[]) null);
-    }
-
-    /**
-     * Gets a formatted, localized message and sends it directly to an
-     * {@link Audience}.
-     *
-     * @param audience The recipient of the message.
-     * @param key      The key of the message to send.
-     * @param args     The arguments to format into the message.
-     */
-    public static void sendMessage(@NotNull Audience audience, @NotNull String key, @NotNull Object @NotNull ... args) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-        Preconditions.checkNotNull(args, "args cannot be null");
-
-        sendMessage(audience, null, key, args);
-    }
-
-    /**
-     * Gets a localized message, plays a sound, and sends it directly to an
-     * {@link Audience}.
-     *
-     * @param audience The recipient of the message.
-     * @param sound    The sound to play when sending the message.
-     * @param key      The key of the message to send.
-     */
-    public static void sendMessage(@NotNull Audience audience, @NotNull Sound sound, @NotNull String key) {
-        Preconditions.checkNotNull(audience, "audience cannot be null");
-        Preconditions.checkNotNull(sound, "sound cannot be null");
-        Preconditions.checkNotNull(key, "key cannot be null");
-
-        sendMessage(audience, sound, key, (Object[]) null);
-    }
-
-    /**
-     * Gets a formatted, localized message, plays a sound, and sends it directly
-     * to an {@link Audience}.
-     * <p>
-     * If the provided sound is {@code null}, the method will attempt to derive
-     * a sound from the language file by appending "_sound" to the message key.
-     * The sound string must follow the format: {@code <sound_key>;<source>;<volume>;<pitch>}
-     * (e.g., {@code "minecraft:entity.ender_dragon.death;MASTER;1.0;1.0"}).
-     * If the sound key is not found or the format is invalid, the sound will be
-     * skipped silently (with error logging).
-     *
-     * @param audience The recipient of the message.
-     * @param sound    The sound to play when sending the message, or {@code null} to derive from the language file using the "{@code key_sound}" convention.
-     * @param key      The key of the message to send.
-     * @param args     The arguments to format into the message.
+     * @param key   The placeholder key (e.g., "niveriaapi:player_name")
+     * @param value The value to replace with
+     * @return TagResolver for this placeholder
      */
     @SuppressWarnings("PatternValidation")
-    public static void sendMessage(@NotNull Audience audience, @Nullable Sound sound, @NotNull String key, @NotNull Object @Nullable ... args) {
+    public static TagResolver placeholder(String key, String value) {
+        return Placeholder.parsed(key, value);
+    }
+
+    /**
+     * Creates an unparsed placeholder (value will NOT be parsed for MiniMessage tags).
+     *
+     * @param key   The placeholder key (e.g., "niveriaapi:player_name")
+     * @param value The value to replace with
+     * @return TagResolver for this placeholder
+     */
+    @SuppressWarnings("PatternValidation")
+    public static TagResolver unparsedPlaceholder(String key, String value) {
+        return Placeholder.unparsed(key, value);
+    }
+
+    /**
+     * Creates a component placeholder.
+     *
+     * @param key       The placeholder key
+     * @param component The component to replace with
+     * @return TagResolver for this placeholder
+     */
+    @SuppressWarnings("PatternValidation")
+    public static TagResolver componentPlaceholder(String key, Component component) {
+        return Placeholder.component(key, component);
+    }
+
+    /**
+     * Creates a number placeholder (automatically formats numbers).
+     *
+     * @param key    The placeholder key
+     * @param number The number value
+     * @return TagResolver for this placeholder
+     */
+    @SuppressWarnings("PatternValidation")
+    public static TagResolver numberPlaceholder(String key, Number number) {
+        return Placeholder.unparsed(key, String.valueOf(number));
+    }
+
+    /**
+     * Initializes the language system by extracting default files and loading the default locale.
+     */
+    @SuppressWarnings("java:S2629")
+    private void initialize() {
+        FileConfiguration config = NiveriaAPI.instance().getConfig();
+        String langCode = config.getString("lang", LangUtils.DEFAULT_LANG_CODE);
+        this.defaultLocale = Locale.forLanguageTag(langCode.replace('_', '-'));
+        this.usePlayerLocale = config.getBoolean("use_player_locale", false);
+
+        saveDefaultLanguageFiles();
+        ensureLocaleLoaded(defaultLocale);
+
+        logger.info("Initialized Lang system for {} with default locale: {} (use_player_locale: {}, cache: {})",
+                plugin.getName(),
+                defaultLocale.toLanguageTag(),
+                usePlayerLocale,
+                cacheComponents ? "enabled" : "disabled");
+    }
+
+    /**
+     * Saves default language files from the plugin JAR to the lang directory.
+     */
+    private void saveDefaultLanguageFiles() {
+        if (defaultLanguageFiles.isEmpty())
+            return;
+
+        File langFolder = new File(plugin.getDataFolder(), langDirectory);
+
+        if (!langFolder.exists() && !langFolder.mkdirs()) {
+            logger.warn("Could not create lang directory: {}", langFolder.getAbsolutePath());
+            return;
+        }
+
+        for (String fileName : defaultLanguageFiles) {
+            File langFile = new File(langFolder, fileName);
+            if (langFile.exists())
+                continue;
+
+            try {
+                String resourcePath = langDirectory + File.separator + fileName;
+
+                // Check if resource exists before attempting to save
+                try (InputStream is = plugin.getResource(resourcePath)) {
+                    if (is == null) {
+                        logger.warn("Default language file not found in JAR: {}", resourcePath);
+                        return;
+                    }
+
+                    plugin.saveResource(resourcePath, false);
+                    logger.debug("Extracted default language file: {}", fileName);
+                }
+            } catch (IOException e) {
+                logger.error("Failed to check/extract language file: {}", fileName, e);
+            }
+        }
+    }
+
+    /**
+     * Ensures a locale is loaded. If not already loaded, loads it from disk.
+     * Thread-safe and idempotent.
+     *
+     * @param locale The locale to ensure is loaded
+     */
+    private void ensureLocaleLoaded(Locale locale) {
+        if (loadedLocales.contains(locale))
+            return;
+
+        synchronized (this) {
+            // Double-check after acquiring lock
+            if (loadedLocales.contains(locale))
+                return;
+
+            loadLocaleFile(locale);
+            loadedLocales.add(locale);
+        }
+    }
+
+    /**
+     * Loads a single locale file from disk.
+     *
+     * @param locale The locale to load
+     */
+    @SuppressWarnings("java:S2629")
+    private void loadLocaleFile(Locale locale) {
+        String fileName = normalizeLocaleToFileName(locale);
+        File langFile = new File(plugin.getDataFolder(), langDirectory + File.separator + fileName);
+
+        if (!langFile.exists()) {
+            logger.debug("Language file not found for locale {}: {}", locale.toLanguageTag(), fileName);
+            return;
+        }
+
+        try {
+            FileConfiguration config = YamlConfiguration.loadConfiguration(langFile);
+
+            // Load messages
+            Object2ObjectMap<String, String> localeMessages = new Object2ObjectOpenHashMap<>();
+            flattenConfiguration(config, "", localeMessages);
+
+            if (!localeMessages.isEmpty()) {
+                messages.put(locale, localeMessages);
+                logger.info("Loaded {} messages for locale {} from {}",
+                        localeMessages.size(), locale.toLanguageTag(), fileName);
+            }
+
+            // Load special tags
+            loadSpecialTags(locale, config);
+
+        } catch (Exception e) {
+            logger.error("Failed to load language file: {}", langFile.getName(), e);
+        }
+    }
+
+    /**
+     * Normalizes a Locale to a filename (e.g., en-US -> en_US.yml).
+     * Handles region and script subtags.
+     *
+     * @param locale The locale
+     * @return The filename
+     */
+    private String normalizeLocaleToFileName(Locale locale) {
+        return locale.toLanguageTag().replace('-', '_') + ".yml";
+    }
+
+    /**
+     * Recursively flattens a YAML configuration into dot-separated keys.
+     *
+     * @param section The configuration section to flatten
+     * @param prefix  Current key prefix
+     * @param output  Map to store flattened keys
+     */
+    private void flattenConfiguration(ConfigurationSection section,
+                                      String prefix,
+                                      Object2ObjectMap<String, String> output) {
+        for (String key : section.getKeys(false)) {
+            String fullKey = prefix.isEmpty() ? key : prefix + "." + key;
+
+            if (section.isString(key)) {
+                String value = section.getString(key);
+                if (value != null)
+                    output.put(fullKey, value);
+            } else if (section.isConfigurationSection(key)) {
+                ConfigurationSection child = section.getConfigurationSection(key);
+                if (child != null)
+                    flattenConfiguration(child, fullKey, output);
+            }
+        }
+    }
+
+    /**
+     * Loads special tag definitions for a locale.
+     *
+     * @param locale The locale
+     * @param config The configuration file
+     */
+    @SuppressWarnings("java:S2629")
+    private void loadSpecialTags(Locale locale, FileConfiguration config) {
+        ConfigurationSection specialSection = config.getConfigurationSection("special-tags");
+        if (specialSection == null)
+            return;
+
+        Object2ObjectMap<String, Object2ObjectMap<String, String>> tagsByCategory = new Object2ObjectOpenHashMap<>();
+
+        for (String category : specialSection.getKeys(false)) {
+            ConfigurationSection categorySection = specialSection.getConfigurationSection(category);
+            if (categorySection == null)
+                continue;
+
+            Object2ObjectMap<String, String> categoryTags = new Object2ObjectOpenHashMap<>();
+            for (String tagKey : categorySection.getKeys(false)) {
+                String pattern = categorySection.getString(tagKey);
+                if (pattern != null)
+                    categoryTags.put(tagKey, pattern);
+            }
+
+            if (!categoryTags.isEmpty())
+                tagsByCategory.put(category, categoryTags);
+        }
+
+        if (!tagsByCategory.isEmpty()) {
+            specialTags.put(locale, tagsByCategory);
+            logger.debug("Loaded {} special tag categories for locale {}",
+                    tagsByCategory.size(), locale.toLanguageTag());
+        }
+    }
+
+    /**
+     * Resolves the appropriate locale for an audience.
+     *
+     * @param audience The audience (may be null)
+     * @return The resolved locale
+     */
+    private Locale resolveLocale(@Nullable Audience audience) {
+        if (usePlayerLocale && audience instanceof Player player) {
+            Locale playerLocale = player.locale();
+            ensureLocaleLoaded(playerLocale);
+            return playerLocale;
+        }
+
+        return defaultLocale;
+    }
+
+    /**
+     * Gets a raw message string for a key.
+     *
+     * @param locale The locale
+     * @param key    The message key
+     * @return The raw message or fallback based on missingKeyBehavior
+     */
+    private String getRawMessage(Locale locale, String key) {
+        // Try requested locale
+        Object2ObjectMap<String, String> localeMessages = messages.get(locale);
+        if (localeMessages.containsKey(key))
+            return localeMessages.get(key);
+
+        // Fallback to default locale
+        if (!locale.equals(defaultLocale)) {
+            localeMessages = messages.get(defaultLocale);
+            if (localeMessages.containsKey(key))
+                return localeMessages.get(key);
+        }
+
+        // Key not found - apply missing key behavior
+        return handleMissingKey(key, locale);
+    }
+
+    /**
+     * Handles missing key based on configured behavior.
+     *
+     * @param key    The missing key
+     * @param locale The locale
+     * @return The fallback string
+     */
+    @SuppressWarnings("java:S2629")
+    private String handleMissingKey(String key, Locale locale) {
+        String result = switch (missingKeyBehavior) {
+            case RETURN_KEY -> key;
+            case RETURN_PLACEHOLDER -> "!" + key;
+            case RETURN_EMPTY -> "";
+            case LOG_WARNING -> {
+                logger.warn("Missing translation key '{}' for locale {}", key, locale.toLanguageTag());
+                yield key;
+            }
+        };
+
+        logger.debug("Message key not found: {} (locale: {})", key, locale.toLanguageTag());
+        return result;
+    }
+
+    /**
+     * Creates tag resolvers for a locale, including special tags and custom placeholders.
+     *
+     * @param locale       The locale
+     * @param placeholders Additional placeholders to include
+     * @return Array of tag resolvers
+     */
+    private TagResolver[] createTagResolvers(Locale locale, TagResolver... placeholders) {
+        Object2ObjectMap<String, Object2ObjectMap<String, String>> localeTags =
+                specialTags.getOrDefault(locale, Object2ObjectMaps.emptyMap());
+
+        ObjectList<TagResolver> resolvers = new ObjectArrayList<>();
+
+        // Prefix resolver
+        Object2ObjectMap<String, String> prefixMap = localeTags.getOrDefault("prefix", Object2ObjectMaps.emptyMap());
+        if (!prefixMap.isEmpty()) {
+            resolvers.add(TagResolver.resolver("prefix", (args, ctx) -> {
+                String id = args.popOr("prefix id required").value();
+                String pattern = prefixMap.getOrDefault(id, "");
+                return Tag.inserting(miniMessage.deserialize(pattern));
+            }));
+        }
+
+        // Color resolver
+        Object2ObjectMap<String, String> colorMap = localeTags.getOrDefault("ncolor", Object2ObjectMaps.emptyMap());
+        if (!colorMap.isEmpty()) {
+            resolvers.add(TagResolver.resolver("ncolor", (args, ctx) -> {
+                String id = args.popOr("color id required").value();
+                String hex = colorMap.get(id);
+                TextColor color = TextColor.fromHexString(hex);
+                return Tag.styling(builder -> builder.color(color));
+            }));
+        }
+
+        // Other tags (separator, etc.)
+        Object2ObjectMap<String, String> otherMap = localeTags.getOrDefault("other", Object2ObjectMaps.emptyMap());
+        if (otherMap.containsKey("separator")) {
+            Component separator = miniMessage.deserialize(otherMap.get("separator"));
+            resolvers.add(Placeholder.component("separator", separator));
+        }
+
+        // Custom tag resolvers from the builder
+        resolvers.addAll(customTagResolvers.values());
+
+        // User-provided placeholders
+        if (placeholders.length > 0)
+            resolvers.addAll(ObjectArrayList.wrap(placeholders));
+
+        return resolvers.toArray(new TagResolver[0]);
+    }
+
+    /**
+     * Parses a message string into a Component with placeholders.
+     *
+     * @param locale       The locale
+     * @param message      The message string
+     * @param key          The message key (for error logging)
+     * @param placeholders Placeholder resolvers
+     * @return The parsed component
+     */
+    private Component parseComponent(Locale locale, String message,
+                                     String key, TagResolver... placeholders) {
+        try {
+            TagResolver[] resolvers = createTagResolvers(locale, placeholders);
+            return miniMessage.deserialize(message, resolvers);
+        } catch (ParsingException e) {
+            logger.error("Failed to parse MiniMessage for key '{}' (locale: {}): {}",
+                    key, locale.toLanguageTag(), message, e);
+            // Return the raw message as text rather than the key to show actual content
+            return Component.text(message);
+        }
+    }
+
+    /**
+     * Gets or creates a cached component using Caffeine cache.
+     *
+     * @param cacheKey The cache key
+     * @param supplier The component supplier if not cached
+     * @return The component
+     */
+    private Component getOrCacheComponent(LangCacheKey cacheKey, Supplier<Component> supplier) {
+        if (componentCache == null)
+            return supplier.get();
+
+        return componentCache.get(cacheKey, k -> supplier.get());
+    }
+
+    // ========== Public API ==========
+
+    /**
+     * Gets a raw message string (without MiniMessage parsing).
+     *
+     * @param key The message key
+     * @return The raw message string
+     */
+    public String getString(String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        return getRawMessage(defaultLocale, key);
+    }
+
+    /**
+     * Gets a raw message string for an audience (without MiniMessage parsing).
+     *
+     * @param audience The audience
+     * @param key      The message key
+     * @return The raw message string
+     */
+    public String getString(Audience audience, String key) {
         Preconditions.checkNotNull(audience, "audience cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
-        Component message = args == null ? get(audience, key) : get(audience, key, args);
-        if (message.equals(Component.empty()))
+        Locale locale = resolveLocale(audience);
+        return getRawMessage(locale, key);
+    }
+
+    /**
+     * Gets a message as a Component.
+     *
+     * @param key The message key
+     * @return The component
+     */
+    public Component get(String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        LangCacheKey cacheKey = new LangCacheKey(defaultLocale, key, ObjectLists.emptyList());
+        return getOrCacheComponent(cacheKey, () -> {
+            String raw = getRawMessage(defaultLocale, key);
+            return parseComponent(defaultLocale, raw, key);
+        });
+    }
+
+    /**
+     * Gets a message as a Component with placeholders.
+     * <p>
+     * Example:
+     * <pre>{@code
+     * Component msg = lang.get("welcome.message",
+     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     * );
+     * }</pre>
+     *
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     * @return The component
+     */
+    public Component get(String key, TagResolver... placeholders) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
+
+        // Don't cache with placeholders as they can vary
+        String raw = getRawMessage(defaultLocale, key);
+        return parseComponent(defaultLocale, raw, key, placeholders);
+    }
+
+    /**
+     * Gets a message as a Component for an audience.
+     *
+     * @param audience The audience
+     * @param key      The message key
+     * @return The component
+     */
+    public Component get(Audience audience, String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        Locale locale = resolveLocale(audience);
+        LangCacheKey cacheKey = new LangCacheKey(locale, key, ObjectLists.emptyList());
+
+        return getOrCacheComponent(cacheKey, () -> {
+            String raw = getRawMessage(locale, key);
+            return parseComponent(locale, raw, key);
+        });
+    }
+
+    /**
+     * Gets a message as a Component for an audience with placeholders.
+     * <p>
+     * Example:
+     * <pre>{@code
+     * Component msg = lang.get(player, "welcome.message",
+     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     * );
+     * }</pre>
+     *
+     * @param audience     The audience
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     * @return The component
+     */
+    public Component get(Audience audience, String key, TagResolver... placeholders) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
+
+        Locale locale = resolveLocale(audience);
+        String raw = getRawMessage(locale, key);
+        return parseComponent(locale, raw, key, placeholders);
+    }
+
+    /**
+     * Gets a message as a list of Components (for multi-line messages like lore).
+     *
+     * @param key The message key
+     * @return List of components
+     */
+    public ObjectList<Component> getList(String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        String raw = getRawMessage(defaultLocale, key);
+        return splitAndParse(defaultLocale, raw, key);
+    }
+
+    /**
+     * Gets a message as a list of Components with placeholders.
+     *
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     * @return List of components
+     */
+    public ObjectList<Component> getList(String key, TagResolver... placeholders) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
+
+        String raw = getRawMessage(defaultLocale, key);
+        return splitAndParse(defaultLocale, raw, key, placeholders);
+    }
+
+    /**
+     * Gets a message as a list of Components for an audience.
+     *
+     * @param audience The audience
+     * @param key      The message key
+     * @return List of components
+     */
+    public ObjectList<Component> getList(Audience audience, String key) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        Locale locale = resolveLocale(audience);
+        String raw = getRawMessage(locale, key);
+        return splitAndParse(locale, raw, key);
+    }
+
+    /**
+     * Gets a message as a list of Components for an audience with placeholders.
+     *
+     * @param audience     The audience
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     * @return List of components
+     */
+    public ObjectList<Component> getList(Audience audience, String key, TagResolver... placeholders) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+        Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
+
+        Locale locale = resolveLocale(audience);
+        String raw = getRawMessage(locale, key);
+        return splitAndParse(locale, raw, key, placeholders);
+    }
+
+    /**
+     * Splits a multi-line message and parses each line.
+     *
+     * @param locale       The locale
+     * @param message      The message
+     * @param key          The message key
+     * @param placeholders Placeholder resolvers
+     * @return List of components
+     */
+    private ObjectList<Component> splitAndParse(Locale locale, String message,
+                                                String key, TagResolver... placeholders) {
+        if (message.isEmpty()) {
+            return ObjectLists.emptyList();
+        }
+
+        String[] lines = LangUtils.NEWLINE_PATTERN.split(message, -1);
+        ObjectList<Component> components = new ObjectArrayList<>(lines.length);
+
+        for (String line : lines) {
+            components.add(parseComponent(locale, line, key, placeholders));
+        }
+
+        return components;
+    }
+
+    /**
+     * Sends a message to an audience.
+     *
+     * @param audience The audience
+     * @param key      The message key
+     */
+    public void sendMessage(Audience audience, String key) {
+        sendMessage(audience, null, key);
+    }
+
+    /**
+     * Sends a message with placeholders to an audience.
+     *
+     * @param audience     The audience
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     */
+    public void sendMessage(Audience audience, String key, TagResolver... placeholders) {
+        sendMessage(audience, null, key, placeholders);
+    }
+
+    /**
+     * Sends a message with sound to an audience.
+     *
+     * @param audience The audience
+     * @param sound    The sound (nullable)
+     * @param key      The message key
+     */
+    public void sendMessage(Audience audience, @Nullable Sound sound, String key) {
+        sendMessage(audience, sound, key, new TagResolver[0]);
+    }
+
+    /**
+     * Sends a message with sound and placeholders to an audience.
+     * <p>
+     * Sound Format: {@code <sound_key>;<source>;<volume>;<pitch>}
+     * <br>Example: {@code minecraft:entity.ender_dragon.death;MASTER;1.0;1.0}
+     * <br>Lenient parsing: Accepts 1-4 parts with defaults (MASTER, 1.0, 1.0)
+     * <p>
+     * Example usage:
+     * <pre>{@code
+     * lang.sendMessage(player, "welcome.message",
+     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     * );
+     * }</pre>
+     *
+     * @param audience     The audience
+     * @param sound        The sound (nullable - will try to load from key_sound if null)
+     * @param key          The message key
+     * @param placeholders TagResolvers for placeholders
+     */
+    public void sendMessage(Audience audience, @Nullable Sound sound,
+                            String key, TagResolver... placeholders) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        Component message = placeholders.length == 0 ? get(audience, key) : get(audience, key, placeholders);
+
+        // Check if message is empty
+        if (message instanceof TextComponent tc && tc.content().isEmpty() && tc.children().isEmpty())
             return;
 
         audience.sendMessage(message);
+
+        // Handle sound
         if (sound != null) {
             audience.playSound(sound, Sound.Emitter.self());
             return;
         }
 
-        String soundString = args == null ? getString(audience, key + "_sound") : getString(audience, key + "_sound", args);
-        if (soundString.equals(key + "_sound"))
-            return;
+        // Try to load sound from language file
+        String soundKey = key + LangUtils.SOUND_SUFFIX;
+        String soundString = getString(audience, soundKey);
 
+        if (soundString.equals(soundKey))
+            return; // No sound defined
+
+        sendSound(audience, soundString, soundKey);
+    }
+
+    @SuppressWarnings("PatternValidation")
+    private void sendSound(Audience audience, String soundString, String soundKey) {
         try {
-            String[] split = soundString.split(";");
-            if (split.length != 4) {
-                NiveriaAPI.instance().getSLF4JLogger().error("Invalid sound string format for key: {} (sound string: {})", key, soundString);
-                NiveriaAPI.instance().getSLF4JLogger().error("Expected format: <sound_key>;<source>;<volume>;<pitch>");
-                return;
+            String[] parts = soundString.split(";");
+
+            // Lenient parsing: accept 1-4 parts with defaults
+            String soundKeyStr = parts[0].trim();
+            Sound.Source source = Sound.Source.MASTER;
+            float volume = 1.0f;
+            float pitch = 1.0f;
+
+            if (parts.length >= 2) {
+                try {
+                    source = Sound.Source.valueOf(parts[1].trim().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid sound source '{}' for key '{}', using MASTER", parts[1].trim(), soundKey);
+                }
             }
 
-            Key soundKey = Key.key(split[0].trim());
-            Sound.Source source = Sound.Source.valueOf(split[1].trim());
-            float volume = Float.parseFloat(split[2].trim());
-            float pitch = Float.parseFloat(split[3].trim());
+            if (parts.length >= 3) {
+                try {
+                    volume = Float.parseFloat(parts[2].trim());
+                } catch (NumberFormatException e) {
+                    logger.warn("Invalid volume '{}' for key '{}', using 1.0", parts[2].trim(), soundKey);
+                }
+            }
 
-            audience.playSound(Sound.sound(soundKey, source, volume, pitch), Sound.Emitter.self());
+            if (parts.length >= 4) {
+                try {
+                    pitch = Float.parseFloat(parts[3].trim());
+                } catch (NumberFormatException e) {
+                    logger.warn("Invalid pitch '{}' for key '{}', using 1.0", parts[3].trim(), soundKey);
+                }
+            }
+
+            Key soundKeyParsed = Key.key(soundKeyStr);
+            Sound parsedSound = Sound.sound(soundKeyParsed, source, volume, pitch);
+            audience.playSound(parsedSound, Sound.Emitter.self());
+
         } catch (Exception e) {
-            NiveriaAPI.instance().getSLF4JLogger().error("Failed to play sound for key: {} (sound string: {})", key, soundString, e);
+            logger.error("Failed to parse sound for key '{}': {}", soundKey, soundString, e);
         }
     }
 
     /**
-     * Reloads the language files and configuration from disk.
+     * Checks if a key exists in any loaded locale.
      *
-     * @param plugin The plugin instance to reload languages for.
+     * @param key The message key
+     * @return True if the key exists
      */
-    public static void reload(@NotNull JavaPlugin plugin) {
-        Preconditions.checkNotNull(plugin, "plugin cannot be null");
+    public boolean hasKey(String key) {
+        Preconditions.checkNotNull(key, "key cannot be null");
 
-        load(plugin);
+        for (Object2ObjectMap<String, String> localeMessages : messages.values())
+            if (localeMessages.containsKey(key))
+                return true;
+
+        return false;
+    }
+
+    /**
+     * Reloads all language files and configuration from disk.
+     * Clears all caches and re-reads NiveriaAPI config.
+     */
+    public void reload() {
+        logger.info("Reloading language files for {}", plugin.getName());
+
+        messages.clear();
+        specialTags.clear();
+        loadedLocales.clear();
+
+        if (componentCache != null)
+            componentCache.invalidateAll();
+
+        initialize();
+    }
+
+    /**
+     * Gets cache statistics.
+     *
+     * @return Cache statistics string
+     */
+    public String cacheStats() {
+        int totalMessages = messages.values().stream()
+                .mapToInt(Object2ObjectMap::size)
+                .sum();
+
+        if (componentCache == null)
+            return String.format(
+                    "Lang Stats [%s] - Locales: %d, Messages: %d, Component Cache: disabled",
+                    plugin.getName(),
+                    loadedLocales.size(),
+                    totalMessages
+            );
+
+        CacheStats stats = componentCache.stats();
+
+        return String.format(
+                "Lang Stats [%s] - Locales: %d, Messages: %d, Cache: size=%d, hits=%d, misses=%d, hitRate=%.2f%%",
+                plugin.getName(),
+                loadedLocales.size(),
+                totalMessages,
+                componentCache.estimatedSize(),
+                stats.hitCount(),
+                stats.missCount(),
+                stats.hitRate() * 100.0
+        );
+    }
+
+    /**
+     * Gets the current default locale (from NiveriaAPI config).
+     *
+     * @return The default locale
+     */
+    public Locale defaultLocale() {
+        return defaultLocale;
+    }
+
+    /**
+     * Gets whether player locales are used (from NiveriaAPI config).
+     *
+     * @return True if player locales are used
+     */
+    public boolean usePlayerLocale() {
+        return usePlayerLocale;
+    }
+
+    /**
+     * Gets all currently loaded locales.
+     *
+     * @return Unmodifiable set of loaded locales
+     */
+    public ObjectSet<Locale> loadedLocales() {
+        return ObjectSets.unmodifiable(loadedLocales);
     }
 }

@@ -25,18 +25,18 @@ special-tags:
 
 niveriaapi:
   fixcommands:
-    single: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de %d joueur.</ncolor>"
-    multiple: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de %d joueurs.</ncolor>"
+    single: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de <niveriaapi_player_amount> joueur.</ncolor>"
+    multiple: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de <niveriaapi_player_amount> joueurs.</ncolor>"
 
   ping:
     header: "<prefix:niveria/> <separator> <ncolor:default>Ping des bases de données</ncolor>"
-    line: "<ncolor:primary>%s</ncolor> <ncolor:default>-</ncolor> %.2f ms"
+    line: "<ncolor:primary><niveriaapi_database_name></ncolor> <ncolor:default>-</ncolor> <niveriaapi_ping_ms> ms"
 
   reload:
-    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI a été rechargé. (%s ms)</ncolor>"
+    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI a été rechargé. (<niveriaapi_time_ms> ms)</ncolor>"
 
   new_update: |-
-    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error>%s</ncolor> → <ncolor:success>%s</ncolor></ncolor>
+    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><niveriaapi:current_version></ncolor> → <ncolor:success><niveriaapi:latest_version></ncolor></ncolor>
     <ncolor:default>Lien de téléchargement: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
 
 

@@ -16,6 +16,7 @@ val bluemapVersion: String by project
 val squaremapVersion: String by project
 val dynmapVersion: String by project
 val mongoDBVersion: String by project
+val caffeineVersion: String by project
 val bStatsVersion: String by project
 val junitVersion: String by project
 val mockbukkitVersion: String by project
@@ -58,6 +59,7 @@ dependencies {
 
     // Dependencies
     compileOnly("org.mongodb:mongodb-driver-sync:${mongoDBVersion}")
+    compileOnly("com.github.ben-manes.caffeine:caffeine:${caffeineVersion}")
     implementation("org.bstats:bstats-bukkit:${bStatsVersion}")
 
     // Test Dependencies

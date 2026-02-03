@@ -2,10 +2,11 @@ package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.lang.Lang;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+
+import static toutouchien.niveriaapi.NiveriaAPI.LANG;
 
 /**
  * Utility class for time conversions and formatting.
@@ -79,6 +80,6 @@ public class TimeUtils {
         if (value > 1)
             finalUnit += "s";
 
-        result.append(Lang.getString(finalUnit)).append(" ");
+        result.append(LANG.getString(finalUnit)).append(" ");
     }
 }
