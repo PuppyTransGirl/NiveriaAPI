@@ -909,13 +909,15 @@ public class Lang {
      * @return Cache statistics string
      */
     public String cacheStats() {
-        int totalMessages = messages.values().stream()
-                .mapToInt(Object2ObjectMap::size)
-                .sum();
+        int totalMessages;
+        synchronized (messages) {
+            totalMessages = messages.values().stream()
+                    .mapToInt(Object2ObjectMap::size)
+                    .sum();
+        }
 
         if (componentCache == null)
-            return String.format(
-                    "Lang Stats [%s] - Locales: %d, Messages: %d, Component Cache: disabled",
+            return "Lang Stats [%s] - Locales: %d, Messages: %d, Component Cache: disabled".formatted(
                     plugin.getName(),
                     loadedLocales.size(),
                     totalMessages
@@ -923,15 +925,14 @@ public class Lang {
 
         CacheStats stats = componentCache.stats();
 
-        return String.format(
-                "Lang Stats [%s] - Locales: %d, Messages: %d, Cache: size=%d, hits=%d, misses=%d, hitRate=%.2f%%",
+        return "Lang Stats [%s] - Locales: %d, Messages: %d, Cache: size=%d, hits=%d, misses=%d, hitRate=%.2f%%".formatted(
                 plugin.getName(),
                 loadedLocales.size(),
                 totalMessages,
                 componentCache.estimatedSize(),
                 stats.hitCount(),
                 stats.missCount(),
-                stats.hitRate() * 100.0
+                stats.hitRate() * 100D
         );
     }
 
