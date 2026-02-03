@@ -62,23 +62,23 @@ import java.util.function.Supplier;
  *
  * // Language file (en_US.yml):
  * welcome:
- *   message: "<green>Welcome <niveriaapi:player_name>! There are <niveriaapi:player_count> players online."
- *   join: "<gray>[<green>+<gray>] <niveriaapi:player_name>"
+ *   message: "<green>Welcome <niveriaapi_player_name>! There are <niveriaapi_player_count> players online."
+ *   join: "<gray>[<green>+<gray>] <niveriaapi_player_name>"
  *
  * // Send messages with named placeholders:
  * lang.sendMessage(player, "welcome.message",
- *     Placeholder.parsed("niveriaapi:player_name", player.getName()),
- *     Placeholder.parsed("niveriaapi:player_count", String.valueOf(Bukkit.getOnlinePlayers().size()))
+ *     Placeholder.parsed("niveriaapi_player_name", player.getName()),
+ *     Placeholder.parsed("niveriaapi_player_count", String.valueOf(Bukkit.getOnlinePlayers().size()))
  * );
  *
  * // Or use helper methods:
  * lang.sendMessage(player, "welcome.join",
- *     Lang.placeholder("niveriaapi:player_name", player.getName())
+ *     Lang.placeholder("niveriaapi_player_name", player.getName())
  * );
  *
  * // Get a component:
  * Component msg = lang.get(player, "error.not_found",
- *     Lang.placeholder("niveriaapi:item", "Diamond Sword")
+ *     Lang.placeholder("niveriaapi_item", "Diamond Sword")
  * );
  * }</pre>
  */
@@ -88,8 +88,8 @@ public class Lang {
     private final Logger logger;
     private final MiniMessage miniMessage;
 
-    private Locale defaultLocale;
-    private boolean usePlayerLocale;
+    private Locale defaultLocale = Locale.US;
+    private boolean usePlayerLocale = false;
 
     private final boolean cacheComponents;
     private final MissingKeyBehavior missingKeyBehavior;
@@ -162,7 +162,7 @@ public class Lang {
     /**
      * Creates a parsed placeholder (value will be parsed for MiniMessage tags).
      *
-     * @param key   The placeholder key (e.g., "niveriaapi:player_name")
+     * @param key   The placeholder key (e.g., "niveriaapi_player_name")
      * @param value The value to replace with
      * @return TagResolver for this placeholder
      */
@@ -174,7 +174,7 @@ public class Lang {
     /**
      * Creates an unparsed placeholder (value will NOT be parsed for MiniMessage tags).
      *
-     * @param key   The placeholder key (e.g., "niveriaapi:player_name")
+     * @param key   The placeholder key (e.g., "niveriaapi_player_name")
      * @param value The value to replace with
      * @return TagResolver for this placeholder
      */
@@ -594,8 +594,8 @@ public class Lang {
      * Example:
      * <pre>{@code
      * Component msg = lang.get("welcome.message",
-     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
      * );
      * }</pre>
      *
@@ -638,8 +638,8 @@ public class Lang {
      * Example:
      * <pre>{@code
      * Component msg = lang.get(player, "welcome.message",
-     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
      * );
      * }</pre>
      *
@@ -787,8 +787,8 @@ public class Lang {
      * Example usage:
      * <pre>{@code
      * lang.sendMessage(player, "welcome.message",
-     *     Lang.placeholder("niveriaapi:player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi:player_count", playerCount)
+     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
+     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
      * );
      * }</pre>
      *
