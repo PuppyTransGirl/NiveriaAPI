@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static toutouchien.niveriaapi.NiveriaAPI.LANG;
+
 public class UpdateChecker {
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
@@ -68,7 +70,11 @@ public class UpdateChecker {
             if (this.noNewVersion)
                 return;
 
-            Lang.sendMessage(Bukkit.getConsoleSender(), this.langKey, this.currentVersion, this.latestVersion);
+            LANG.sendMessage(Bukkit.getConsoleSender(), this.langKey,
+                    Lang.unparsedPlaceholder("niveriaapi_current_version", this.currentVersion),
+                    Lang.unparsedPlaceholder("niveriaapi_latest_version", this.latestVersion)
+            );
+
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
                     this.plugin,
                     this.langKey,

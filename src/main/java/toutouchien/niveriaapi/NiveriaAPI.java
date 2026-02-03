@@ -27,6 +27,8 @@ public class NiveriaAPI extends JavaPlugin {
 
     private static NiveriaAPI instance;
 
+    public static Lang LANG;
+
     private ChatInputManager chatInputManager;
     private CooldownManager cooldownManager;
     private DelayManager delayManager;
@@ -52,7 +54,9 @@ public class NiveriaAPI extends JavaPlugin {
         if (!isUnitTestVersion())
             this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
-        Lang.load(this);
+        LANG = Lang.builder(this)
+                .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+                .build();
 
         if (!isUnitTestVersion()) {
             try {
@@ -143,16 +147,15 @@ public class NiveriaAPI extends JavaPlugin {
                 new MenuListener()
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
 
-        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null) {
+        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null)
             pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
-        }
     }
 
     public void reload() {
         this.getSLF4JLogger().info("Reloading NiveriaAPI...");
 
         this.reloadConfig();
-        Lang.reload(this);
+        LANG.reload();
 
         this.getSLF4JLogger().info("NiveriaAPI reloaded.");
     }

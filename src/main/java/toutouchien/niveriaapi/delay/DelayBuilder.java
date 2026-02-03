@@ -10,6 +10,8 @@ import toutouchien.niveriaapi.lang.Lang;
 
 import java.util.function.Consumer;
 
+import static toutouchien.niveriaapi.NiveriaAPI.LANG;
+
 /**
  * Builder for creating {@link Delay} instances for a specific player.
  * <p>
@@ -53,9 +55,9 @@ public class DelayBuilder {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
-        this.text = Lang.get("delay.start");
-        this.movedText = Lang.get("delay.moved");
-        this.alreadyHasDelayText = Lang.get("delay.already");
+        this.text = LANG.get("delay.start");
+        this.movedText = LANG.get("delay.moved");
+        this.alreadyHasDelayText = LANG.get("delay.already");
     }
 
     /**

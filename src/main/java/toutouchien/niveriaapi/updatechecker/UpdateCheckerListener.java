@@ -10,6 +10,8 @@ import toutouchien.niveriaapi.lang.Lang;
 
 import java.util.Locale;
 
+import static toutouchien.niveriaapi.NiveriaAPI.LANG;
+
 public class UpdateCheckerListener implements Listener {
     private final JavaPlugin plugin;
     private final String langKey;
@@ -33,6 +35,9 @@ public class UpdateCheckerListener implements Listener {
         if (!player.hasPermission(smallPluginName + ".update-checker"))
             return;
 
-        Lang.sendMessage(player, this.langKey, this.currentVersion, this.latestVersion);
+        LANG.sendMessage(player, this.langKey,
+                Lang.unparsedPlaceholder("niveriaapi_current_version", this.currentVersion),
+                Lang.unparsedPlaceholder("niveriaapi_latest_version", this.latestVersion)
+        );
     }
 }

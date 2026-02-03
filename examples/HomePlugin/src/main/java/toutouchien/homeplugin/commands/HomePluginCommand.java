@@ -10,6 +10,8 @@ import toutouchien.homeplugin.HomePlugin;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
 
+import static toutouchien.homeplugin.HomePlugin.LANG;
+
 public class HomePluginCommand {
     private HomePluginCommand() {
         throw new IllegalStateException("Command class");
@@ -31,7 +33,9 @@ public class HomePluginCommand {
                     long startMillis = System.currentTimeMillis();
                     HomePlugin.instance().reload();
                     long timeTaken = System.currentTimeMillis() - startMillis;
-                    Lang.sendMessage(sender, "homeplugin.reload.done", timeTaken);
+                    LANG.sendMessage(sender, "homeplugin.reload.done",
+                            Lang.numberPlaceholder("homeplugin_time_ms", timeTaken)
+                    );
 
                     return Command.SINGLE_SUCCESS;
                 });

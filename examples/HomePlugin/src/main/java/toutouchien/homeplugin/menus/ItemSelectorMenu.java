@@ -7,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -18,6 +17,8 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
+
+import static toutouchien.homeplugin.HomePlugin.LANG;
 
 public class ItemSelectorMenu extends Menu {
     private final Consumer<Material> materialConsumer;
@@ -37,7 +38,7 @@ public class ItemSelectorMenu extends Menu {
     @NotNull
     @Override
     protected Component title() {
-        return Lang.get("homeplugin.menu_item_selector.title");
+        return LANG.get("homeplugin.menu_item_selector.title");
     }
 
     @NotNull
@@ -46,10 +47,10 @@ public class ItemSelectorMenu extends Menu {
         World world = this.player().getWorld();
         Paginator paginator = Paginator.create()
                 .size(7, 3)
-                .nextItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu_item_selector.next")).build())
-                .backItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu_item_selector.previous")).build())
-                .firstPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.first_page")).build())
-                .lastPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(Lang.get("homeplugin.menu_item_selector.last_page")).build())
+                .nextItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu_item_selector.next")).build())
+                .backItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu_item_selector.previous")).build())
+                .firstPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(LANG.get("homeplugin.menu_item_selector.first_page")).build())
+                .lastPageItem(ItemBuilder.of(Material.SPECTRAL_ARROW).name(LANG.get("homeplugin.menu_item_selector.last_page")).build())
                 .addAll(context,
                         Arrays.stream(Material.values())
                                 .filter(material -> !material.isLegacy())

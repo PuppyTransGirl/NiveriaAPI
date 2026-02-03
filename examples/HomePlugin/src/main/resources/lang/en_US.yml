@@ -26,7 +26,7 @@ special-tags:
 homeplugin:
   deletehome:
     doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
-    deleted: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"%s\" deleted successfully.</ncolor>"
+    deleted: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" deleted successfully.</ncolor>"
 
   home:
     doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
@@ -35,7 +35,7 @@ homeplugin:
   sethome:
     too_long: "<prefix:home/> <separator> <ncolor:hperror>The home name is too long.</ncolor>"
     already_exists: "<prefix:home/> <separator> <ncolor:hperror>This home name already exists.</ncolor>"
-    created: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"%s\" created successfully.</ncolor>"
+    created: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" created successfully.</ncolor>"
     invalid_character: "<prefix:home/> <separator> <ncolor:hperror>The home name contains invalid characters.</ncolor>"
 
   homes:
@@ -46,13 +46,13 @@ homeplugin:
     next: "<ncolor:hpsecondary>Next Page</ncolor>"
     previous: "<ncolor:hpsecondary>Previous Page</ncolor>"
     home:
-      name: "<ncolor:hpprimary>%s</ncolor>"
+      name: "<ncolor:hpprimary><homeplugin_home_name></ncolor>"
       lore: |-
         <ncolor:hpdefault>Left click to teleport to this home.</ncolor>
         <ncolor:hpdefault>Right click to change this home's icon.</ncolor>
         <ncolor:hpdefault>Drop this item to delete this home.</ncolor>
     home_dropped:
-      name: "<ncolor:hperror>%s</ncolor>"
+      name: "<ncolor:hperror><homeplugin_home_name></ncolor>"
       lore: |-
         <ncolor:hperror>Are you sure you want to delete this home?</ncolor>
         <ncolor:hpdefault>Drop this item again to confirm.</ncolor>
@@ -65,4 +65,4 @@ homeplugin:
     last_page: "<ncolor:hpsecondary>Last Page</ncolor>"
 
   reload:
-    done: "<prefix:home/> <separator> <ncolor:hpsuccess>HomePlugin has been reloaded. (%s ms)</ncolor>"
+    done: "<prefix:home/> <separator> <ncolor:hpsuccess>HomePlugin has been reloaded. (<homeplugin_time_ms> ms)</ncolor>"

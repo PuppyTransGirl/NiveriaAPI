@@ -26,7 +26,7 @@ special-tags:
 homeplugin:
   deletehome:
     doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>Ce home n'existe pas.</ncolor>"
-    deleted: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"%s\" supprimé avec succès.</ncolor>"
+    deleted: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" supprimé avec succès.</ncolor>"
 
   home:
     doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>Ce home n'existe pas.</ncolor>"
@@ -35,7 +35,7 @@ homeplugin:
   sethome:
     too_long: "<prefix:home/> <separator> <ncolor:hperror>Le nom du home est trop long.</ncolor>"
     already_exists: "<prefix:home/> <separator> <ncolor:hperror>Ce nom de home existe déjà.</ncolor>"
-    created: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"%s\" créé avec succès.</ncolor>"
+    created: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" créé avec succès.</ncolor>"
     invalid_character: "<prefix:home/> <separator> <ncolor:hperror>Le nom du home contient des caractères invalides.</ncolor>"
 
   homes:
@@ -46,13 +46,13 @@ homeplugin:
     next: "<ncolor:hpsecondary>Page Suivante</ncolor>"
     previous: "<ncolor:hpsecondary>Page Précédente</ncolor>"
     home:
-      name: "<ncolor:hpprimary>%s</ncolor>"
+      name: "<ncolor:hpprimary><homeplugin_home_name></ncolor>"
       lore: |-
         <ncolor:hpdefault>Clique gauche pour vous téléporter à ce home.</ncolor>
         <ncolor:hpdefault>Clique droit pour modifier l'icône de ce home.</ncolor>
         <ncolor:hpdefault>Jettez cet item pour supprimer ce home.</ncolor>
     home_dropped:
-      name: "<ncolor:hperror>%s</ncolor>"
+      name: "<ncolor:hperror><homeplugin_home_name></ncolor>"
       lore: |-
         <ncolor:hperror>Êtes-vous sûr de vouloir supprimer ce home ?</ncolor>
         <ncolor:hpdefault>Jettez cet item à nouveau pour confirmer.</ncolor>
@@ -65,4 +65,4 @@ homeplugin:
     last_page: "<ncolor:hpsecondary>Dernière Page</ncolor>"
 
   reload:
-    done: "<prefix:home/> <separator> <ncolor:hpsuccess>HomePlugin a été rechargé. (%s ms)</ncolor>"
+    done: "<prefix:home/> <separator> <ncolor:hpsuccess>HomePlugin a été rechargé. (<homeplugin_time_ms> ms)</ncolor>"

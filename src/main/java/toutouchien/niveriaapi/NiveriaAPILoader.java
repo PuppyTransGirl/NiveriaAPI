@@ -13,6 +13,7 @@ public class NiveriaAPILoader implements PluginLoader {
     public void classloader(PluginClasspathBuilder classpathBuilder) {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
         resolver.addDependency(new Dependency(new DefaultArtifact("org.mongodb:mongodb-driver-sync:5.4.0"), null));
+        resolver.addDependency(new Dependency(new DefaultArtifact("com.github.ben-manes.caffeine:caffeine:3.2.3"), null));
         resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://maven-central.storage-download.googleapis.com/maven2" /*MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR*/).build());
 
         classpathBuilder.addLibrary(resolver);

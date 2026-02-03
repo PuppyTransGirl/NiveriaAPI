@@ -18,6 +18,8 @@ import toutouchien.niveriaapi.utils.StringUtils;
 import java.util.List;
 import java.util.Map;
 
+import static toutouchien.niveriaapi.NiveriaAPI.LANG;
+
 public class NiveriaAPICommand {
     private NiveriaAPICommand() {
         throw new IllegalStateException("Command class");
@@ -49,7 +51,9 @@ public class NiveriaAPICommand {
                             int playersNumber = targets.size();
                             String messageKey = "niveriaapi.fixcommands.";
                             String finalMessageKey = StringUtils.pluralize(messageKey + "single", messageKey + "multiple", playersNumber);
-                            Lang.sendMessage(sender, finalMessageKey, playersNumber);
+                            LANG.sendMessage(sender, finalMessageKey,
+                                    Lang.numberPlaceholder("niveriaapi_player_amount", playersNumber)
+                            );
 
                             return Command.SINGLE_SUCCESS;
                         })
@@ -63,12 +67,15 @@ public class NiveriaAPICommand {
                     CommandSender sender = CommandUtils.sender(ctx);
                     Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();
 
-                    Lang.sendMessage(sender, "niveriaapi.ping.header");
+                    LANG.sendMessage(sender, "niveriaapi.ping.header");
 
                     for (Map.Entry<String, Long> pingEntry : pings.entrySet()) {
                         String databaseName = pingEntry.getKey();
                         double pingInMilliseconds = pingEntry.getValue() / 1_000_000D;
-                        Lang.sendMessage(sender, "niveriaapi.ping.line", databaseName, pingInMilliseconds);
+                        LANG.sendMessage(sender, "niveriaapi.ping.line",
+                                Lang.unparsedPlaceholder("niveriaapi_database_name", databaseName),
+                                Lang.numberPlaceholder("niveriaapi_ping_ms", pingInMilliseconds)
+                        );
                     }
 
                     return Command.SINGLE_SUCCESS;
@@ -84,7 +91,9 @@ public class NiveriaAPICommand {
                     long startMillis = System.currentTimeMillis();
                     NiveriaAPI.instance().reload();
                     long timeTaken = System.currentTimeMillis() - startMillis;
-                    Lang.sendMessage(sender, "niveriaapi.reload.done", timeTaken);
+                    LANG.sendMessage(sender, "niveriaapi.reload.done",
+                            Lang.numberPlaceholder("niveriaapi_time_ms", timeTaken)
+                    );
 
                     return Command.SINGLE_SUCCESS;
                 });
@@ -98,7 +107,7 @@ public class NiveriaAPICommand {
                             CommandSender sender = CommandUtils.sender(ctx);
                             String key = ctx.getArgument("key", String.class);
 
-                            Lang.sendMessage(sender, key);
+                            LANG.sendMessage(sender, key);
 
                             return Command.SINGLE_SUCCESS;
                         })

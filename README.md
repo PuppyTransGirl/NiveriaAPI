@@ -147,15 +147,22 @@ public class MenuTest extends Menu {
 
 ```java
 // Load language files (usually done in your plugin's onEnable method)
-Lang.load(yourPluginInstance);
+public static Lang LANG;
+
+@Override
+public void onEnable() {
+    LANG = Lang.builder(this)
+            .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+            .build();
+}
 
 // Get a localized message as a Component or as a String
-Component message = Lang.get("welcome_message");
-String stringMessage = Lang.getString("welcome_message");
+Component message = LANG.get("welcome_message");
+String stringMessage = LANG.getString("welcome_message");
 
 // Send a localized message to a player
 Player player = ...; // Get the player instance
-Lang.send(player, "welcome_message");
+LANG.send(player, "welcome_message");
 ```
 </details>
 
