@@ -88,7 +88,7 @@ public abstract class Menu implements InventoryHolder {
      * existing inventory to refresh the displayed contents.</p>
      */
     public void reopen() {
-        if (context.menu() != this) {
+        if (context.menu() != this || this.root == null || this.inventory == null) {
             this.open();
             return;
         }

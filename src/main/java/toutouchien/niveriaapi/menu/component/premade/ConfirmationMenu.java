@@ -141,4 +141,9 @@ public class ConfirmationMenu extends Menu {
                 .item(this.explanationItem)
                 .build();
     }
+
+    @Override
+    protected boolean canGoBackToThisMenu() {
+        return false;
+    }
 }
