@@ -147,7 +147,9 @@ public class MenuTest extends Menu {
 
 ```java
 // Load language files (usually done in your plugin's onEnable method)
-Lang.load(yourPluginInstance);
+Lang.builder(this)
+    .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+    .build();
 
 // Get a localized message as a Component or as a String
 Component message = Lang.get("welcome_message");
