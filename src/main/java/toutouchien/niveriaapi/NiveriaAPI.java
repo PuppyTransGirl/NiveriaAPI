@@ -16,7 +16,7 @@ import toutouchien.niveriaapi.hook.HookListener;
 import toutouchien.niveriaapi.hook.HookManager;
 import toutouchien.niveriaapi.input.ChatInputManager;
 import toutouchien.niveriaapi.lang.Lang;
-import toutouchien.niveriaapi.menu.MenuListener;
+import toutouchien.niveriaapi.menu.listeners.MenuListener;
 import toutouchien.niveriaapi.updatechecker.UpdateChecker;
 
 import java.util.Arrays;

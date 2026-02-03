@@ -65,6 +65,7 @@ public abstract class Menu implements InventoryHolder {
      * renders the menu contents, and opens it for the player.
      */
     public void open() {
+        this.componentIDs.clear();
 		context.menu(this);
 
         Component title = this.title();
@@ -72,6 +73,26 @@ public abstract class Menu implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, this.root.height() * 9, title);
 
         this.root.onAdd(this.context);
+        this.root.render(this.context);
+
+        this.player.openInventory(this.inventory);
+        this.onOpen();
+    }
+
+    /**
+     * Reopens or refreshes this menu for the player.
+     *
+     * <p>If this menu is not the current menu in the context, this method calls
+     * {@link #open()} to (re)initialize and open the menu. If this menu is
+     * already the current menu, it re-renders the root component and opens the
+     * existing inventory to refresh the displayed contents.</p>
+     */
+    public void reopen() {
+        if (context.menu() != this || this.root == null || this.inventory == null) {
+            this.open();
+            return;
+        }
+
         this.root.render(this.context);
 
         this.player.openInventory(this.inventory);
