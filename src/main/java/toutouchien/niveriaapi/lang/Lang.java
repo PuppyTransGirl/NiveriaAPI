@@ -9,7 +9,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.ParsingException;
@@ -116,10 +115,10 @@ public class Lang {
         this.defaultLanguageFiles = new ObjectOpenHashSet<>(builder.defaultLanguageFiles);
         this.langDirectory = builder.langDirectory;
 
-        this.messages = new Object2ObjectOpenHashMap<>();
-        this.specialTags = new Object2ObjectOpenHashMap<>();
+        this.messages = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+        this.specialTags = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
         this.componentCache = this.cacheComponents ? buildCaffeineCache(builder) : null;
-        this.loadedLocales = new ObjectOpenHashSet<>();
+        this.loadedLocales = ObjectSets.synchronize(new ObjectOpenHashSet<>());
         this.customTagResolvers = new Object2ObjectOpenHashMap<>(builder.customTagResolvers);
 
         this.initialize();
@@ -196,7 +195,7 @@ public class Lang {
     }
 
     /**
-     * Creates a number placeholder (automatically formats numbers).
+     * Creates a number placeholder from a numeric value.
      *
      * @param key    The placeholder key
      * @param number The number value
@@ -247,13 +246,13 @@ public class Lang {
                 continue;
 
             try {
-                String resourcePath = langDirectory + File.separator + fileName;
+                String resourcePath = langDirectory + "/" + fileName;
 
                 // Check if resource exists before attempting to save
                 try (InputStream is = plugin.getResource(resourcePath)) {
                     if (is == null) {
                         logger.warn("Default language file not found in JAR: {}", resourcePath);
-                        return;
+                        continue;
                     }
 
                     plugin.saveResource(resourcePath, false);
@@ -293,7 +292,7 @@ public class Lang {
     @SuppressWarnings("java:S2629")
     private void loadLocaleFile(Locale locale) {
         String fileName = normalizeLocaleToFileName(locale);
-        File langFile = new File(plugin.getDataFolder(), langDirectory + File.separator + fileName);
+        File langFile = new File(plugin.getDataFolder(), langDirectory + "/" + fileName);
 
         if (!langFile.exists()) {
             logger.debug("Language file not found for locale {}: {}", locale.toLanguageTag(), fileName);
@@ -417,16 +416,16 @@ public class Lang {
      * @param key    The message key
      * @return The raw message or fallback based on missingKeyBehavior
      */
-    private String getRawMessage(Locale locale, String key) {
+    private String rawMessage(Locale locale, String key) {
         // Try requested locale
         Object2ObjectMap<String, String> localeMessages = messages.get(locale);
-        if (localeMessages.containsKey(key))
+        if (localeMessages != null && localeMessages.containsKey(key))
             return localeMessages.get(key);
 
         // Fallback to default locale
         if (!locale.equals(defaultLocale)) {
             localeMessages = messages.get(defaultLocale);
-            if (localeMessages.containsKey(key))
+            if (localeMessages != null && localeMessages.containsKey(key))
                 return localeMessages.get(key);
         }
 
@@ -503,7 +502,7 @@ public class Lang {
 
         // User-provided placeholders
         if (placeholders.length > 0)
-            resolvers.addAll(ObjectArrayList.wrap(placeholders));
+            resolvers.addAll(ObjectArrayList.of(placeholders));
 
         return resolvers.toArray(new TagResolver[0]);
     }
@@ -554,7 +553,7 @@ public class Lang {
      */
     public String getString(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
-        return getRawMessage(defaultLocale, key);
+        return rawMessage(defaultLocale, key);
     }
 
     /**
@@ -569,7 +568,7 @@ public class Lang {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         Locale locale = resolveLocale(audience);
-        return getRawMessage(locale, key);
+        return rawMessage(locale, key);
     }
 
     /**
@@ -583,7 +582,7 @@ public class Lang {
 
         LangCacheKey cacheKey = new LangCacheKey(defaultLocale, key, ObjectLists.emptyList());
         return getOrCacheComponent(cacheKey, () -> {
-            String raw = getRawMessage(defaultLocale, key);
+            String raw = rawMessage(defaultLocale, key);
             return parseComponent(defaultLocale, raw, key);
         });
     }
@@ -608,7 +607,7 @@ public class Lang {
         Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
 
         // Don't cache with placeholders as they can vary
-        String raw = getRawMessage(defaultLocale, key);
+        String raw = rawMessage(defaultLocale, key);
         return parseComponent(defaultLocale, raw, key, placeholders);
     }
 
@@ -627,7 +626,7 @@ public class Lang {
         LangCacheKey cacheKey = new LangCacheKey(locale, key, ObjectLists.emptyList());
 
         return getOrCacheComponent(cacheKey, () -> {
-            String raw = getRawMessage(locale, key);
+            String raw = rawMessage(locale, key);
             return parseComponent(locale, raw, key);
         });
     }
@@ -654,7 +653,7 @@ public class Lang {
         Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
 
         Locale locale = resolveLocale(audience);
-        String raw = getRawMessage(locale, key);
+        String raw = rawMessage(locale, key);
         return parseComponent(locale, raw, key, placeholders);
     }
 
@@ -667,7 +666,7 @@ public class Lang {
     public ObjectList<Component> getList(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
-        String raw = getRawMessage(defaultLocale, key);
+        String raw = rawMessage(defaultLocale, key);
         return splitAndParse(defaultLocale, raw, key);
     }
 
@@ -682,7 +681,7 @@ public class Lang {
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
 
-        String raw = getRawMessage(defaultLocale, key);
+        String raw = rawMessage(defaultLocale, key);
         return splitAndParse(defaultLocale, raw, key, placeholders);
     }
 
@@ -698,7 +697,7 @@ public class Lang {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         Locale locale = resolveLocale(audience);
-        String raw = getRawMessage(locale, key);
+        String raw = rawMessage(locale, key);
         return splitAndParse(locale, raw, key);
     }
 
@@ -716,7 +715,7 @@ public class Lang {
         Preconditions.checkNotNull(placeholders, "placeholders cannot be null");
 
         Locale locale = resolveLocale(audience);
-        String raw = getRawMessage(locale, key);
+        String raw = rawMessage(locale, key);
         return splitAndParse(locale, raw, key, placeholders);
     }
 
@@ -731,9 +730,8 @@ public class Lang {
      */
     private ObjectList<Component> splitAndParse(Locale locale, String message,
                                                 String key, TagResolver... placeholders) {
-        if (message.isEmpty()) {
+        if (message.isEmpty())
             return ObjectLists.emptyList();
-        }
 
         String[] lines = LangUtils.NEWLINE_PATTERN.split(message, -1);
         ObjectList<Component> components = new ObjectArrayList<>(lines.length);
@@ -805,7 +803,7 @@ public class Lang {
         Component message = placeholders.length == 0 ? get(audience, key) : get(audience, key, placeholders);
 
         // Check if message is empty
-        if (message instanceof TextComponent tc && tc.content().isEmpty() && tc.children().isEmpty())
+        if (message == Component.empty())
             return;
 
         audience.sendMessage(message);
@@ -818,10 +816,13 @@ public class Lang {
 
         // Try to load sound from language file
         String soundKey = key + LangUtils.SOUND_SUFFIX;
-        String soundString = getString(audience, soundKey);
 
-        if (soundString.equals(soundKey))
+        if (!hasKey(soundKey))
             return; // No sound defined
+
+        String soundString = getString(audience, soundKey);
+        if (soundString.isEmpty())
+            return;
 
         sendSound(audience, soundString, soundKey);
     }

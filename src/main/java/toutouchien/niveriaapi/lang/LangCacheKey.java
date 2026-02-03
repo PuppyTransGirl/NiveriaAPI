@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.lang;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +17,7 @@ public class LangCacheKey {
     LangCacheKey(Locale locale, String key, ObjectList<?> placeholders) {
         this.locale = locale;
         this.key = key;
-        this.placeholders = placeholders;
+        this.placeholders = new ObjectArrayList<>(placeholders);
     }
 
     public Locale locale() {

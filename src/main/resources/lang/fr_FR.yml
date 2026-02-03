@@ -36,7 +36,7 @@ niveriaapi:
     done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI a été rechargé. (<niveriaapi_time_ms> ms)</ncolor>"
 
   new_update: |-
-    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><niveriaapi:current_version></ncolor> → <ncolor:success><niveriaapi:latest_version></ncolor></ncolor>
+    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><niveriaapi_current_version></ncolor> → <ncolor:success><niveriaapi_latest_version></ncolor></ncolor>
     <ncolor:default>Lien de téléchargement: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
 
 
