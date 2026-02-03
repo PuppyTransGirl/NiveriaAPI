@@ -148,9 +148,8 @@ public class NiveriaAPI extends JavaPlugin {
                 new MenuListener()
         ).forEach(listener -> pluginManager.registerEvents(listener, this));
 
-        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null) {
+        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null)
             pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
-        }
     }
 
     public void reload() {
