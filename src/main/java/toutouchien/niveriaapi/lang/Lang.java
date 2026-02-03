@@ -416,6 +416,7 @@ public class Lang {
      * @param key    The message key
      * @return The raw message or fallback based on missingKeyBehavior
      */
+    @SuppressWarnings("ConstantValue")
     private String rawMessage(Locale locale, String key) {
         // Try requested locale
         Object2ObjectMap<String, String> localeMessages = messages.get(locale);

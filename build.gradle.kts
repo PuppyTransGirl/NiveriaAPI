@@ -67,6 +67,7 @@ dependencies {
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v1.21:${mockbukkitVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.mongodb:mongodb-driver-sync:${mongoDBVersion}")
+    testImplementation("com.github.ben-manes.caffeine:caffeine:${caffeineVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

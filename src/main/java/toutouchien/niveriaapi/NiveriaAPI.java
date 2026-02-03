@@ -54,10 +54,9 @@ public class NiveriaAPI extends JavaPlugin {
         if (!isUnitTestVersion())
             this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
-        if (!isUnitTestVersion())
-            LANG = Lang.builder(this)
-                    .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
-                    .build();
+        LANG = Lang.builder(this)
+                .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+                .build();
 
         if (!isUnitTestVersion()) {
             try {
