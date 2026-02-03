@@ -78,6 +78,18 @@ public abstract class Menu implements InventoryHolder {
         this.onOpen();
     }
 
+    public void reopen() {
+        if (context.menu() != this) {
+            this.open();
+            return;
+        }
+
+        this.root.render(this.context);
+
+        this.player.openInventory(this.inventory);
+        this.onOpen();
+    }
+
     /**
      * Closes the menu and performs cleanup.
      *
@@ -127,9 +139,6 @@ public abstract class Menu implements InventoryHolder {
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkArgument(!id.isEmpty(), "id cannot be empty");
         Preconditions.checkNotNull(component, "component cannot be null");
-
-        if (this.componentIDs.containsKey(id))
-            throw new IllegalStateException("A component with id '" + id + "' is already registered.");
 
         this.componentIDs.put(id, component);
     }
