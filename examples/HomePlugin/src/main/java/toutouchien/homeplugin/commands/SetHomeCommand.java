@@ -13,6 +13,8 @@ import toutouchien.niveriaapi.utils.CommandUtils;
 
 import java.util.UUID;
 
+import static toutouchien.homeplugin.HomePlugin.LANG;
+
 public class SetHomeCommand {
     private SetHomeCommand() {
         throw new IllegalStateException("Command class");
@@ -29,22 +31,24 @@ public class SetHomeCommand {
 
                             String homeName = ctx.getArgument("name", String.class);
                             if (homeName.contains(".") || homeName.contains("+")) {
-                                Lang.sendMessage(player, "homeplugin.sethome.invalid_character");
+                                LANG.sendMessage(player, "homeplugin.sethome.invalid_character");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             if (homeName.length() > 20) {
-                                Lang.sendMessage(player, "homeplugin.sethome.too_long");
+                                LANG.sendMessage(player, "homeplugin.sethome.too_long");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             if (homeManager.homeExists(uuid, homeName)) {
-                                Lang.sendMessage(player, "homeplugin.sethome.already_exists");
+                                LANG.sendMessage(player, "homeplugin.sethome.already_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             homeManager.createHome(player, homeName);
-                            Lang.sendMessage(player, "homeplugin.sethome.created", homeName);
+                            LANG.sendMessage(player, "homeplugin.sethome.created",
+                                    Lang.unparsedPlaceholder("homeplugin_home_name", homeName)
+                            );
                             return Command.SINGLE_SUCCESS;
                         })
                 )

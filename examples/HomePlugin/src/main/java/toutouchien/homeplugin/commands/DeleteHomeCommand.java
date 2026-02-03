@@ -14,6 +14,8 @@ import toutouchien.niveriaapi.utils.CommandUtils;
 
 import java.util.UUID;
 
+import static toutouchien.homeplugin.HomePlugin.LANG;
+
 public class DeleteHomeCommand {
     private DeleteHomeCommand() {
         throw new IllegalStateException("Command class");
@@ -40,12 +42,14 @@ public class DeleteHomeCommand {
 
                             String homeName = ctx.getArgument("name", String.class);
                             if (!homeManager.homeExists(uuid, homeName)) {
-                                Lang.sendMessage(player, "homeplugin.deletehome.doesnt_exists");
+                                LANG.sendMessage(player, "homeplugin.deletehome.doesnt_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 
                             homeManager.deleteHome(uuid, homeName);
-                            Lang.sendMessage(player, "homeplugin.deletehome.deleted", homeName);
+                            LANG.sendMessage(player, "homeplugin.deletehome.deleted",
+                                    Lang.unparsedPlaceholder("homeplugin_home_name", homeName)
+                            );
                             return Command.SINGLE_SUCCESS;
                         })
                 )

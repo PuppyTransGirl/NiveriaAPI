@@ -9,10 +9,11 @@ import org.bukkit.entity.Player;
 import toutouchien.homeplugin.HomePlugin;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.homeplugin.models.Home;
-import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
 
 import java.util.UUID;
+
+import static toutouchien.homeplugin.HomePlugin.LANG;
 
 public class HomeCommand {
     private HomeCommand() {
@@ -41,7 +42,7 @@ public class HomeCommand {
                             String homeName = ctx.getArgument("name", String.class);
                             Home home = homeManager.home(uuid, homeName);
                             if (home == null) {
-                                Lang.sendMessage(player, "homeplugin.home.doesnt_exists");
+                                LANG.sendMessage(player, "homeplugin.home.doesnt_exists");
                                 return Command.SINGLE_SUCCESS;
                             }
 

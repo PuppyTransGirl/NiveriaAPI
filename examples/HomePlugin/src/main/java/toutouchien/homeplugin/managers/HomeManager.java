@@ -17,13 +17,14 @@ import toutouchien.niveriaapi.delay.Delay;
 import toutouchien.niveriaapi.delay.DelayBuilder;
 import toutouchien.niveriaapi.hook.HookType;
 import toutouchien.niveriaapi.hook.impl.LuckPermsHook;
-import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static toutouchien.homeplugin.HomePlugin.LANG;
 
 public class HomeManager {
     private final File homesFolder;
@@ -87,7 +88,7 @@ public class HomeManager {
     public void teleportHome(Player player, Home home) {
         Consumer<Player> teleportationConsumer = p -> {
             p.teleportAsync(home.location()).thenAcceptAsync(result -> {
-                Lang.sendMessage(p, "homeplugin.home.teleported");
+                LANG.sendMessage(p, "homeplugin.home.teleported");
             });
         };
 

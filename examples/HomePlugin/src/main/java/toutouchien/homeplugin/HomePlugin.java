@@ -12,6 +12,8 @@ import java.util.Arrays;
 public class HomePlugin extends JavaPlugin {
     private static HomePlugin instance;
 
+    public static Lang LANG;
+
     private HomeManager homeManager;
 
     @Override
@@ -33,13 +35,15 @@ public class HomePlugin extends JavaPlugin {
             ).forEach(registrar::register);
         });
 
-        Lang.load(this);
+        LANG = Lang.builder(this)
+                .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
+                .build();
 
         (this.homeManager = new HomeManager(this.getDataFolder())).start();
     }
 
     public void reload() {
-        Lang.reload(this);
+        LANG.reload();
     }
 
     @Override

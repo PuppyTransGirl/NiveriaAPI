@@ -8,10 +8,11 @@ import org.bukkit.entity.Player;
 import toutouchien.homeplugin.HomePlugin;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.homeplugin.menus.HomesMenu;
-import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
 
 import java.util.UUID;
+
+import static toutouchien.homeplugin.HomePlugin.LANG;
 
 public class HomesCommand {
     private HomesCommand() {
@@ -27,7 +28,7 @@ public class HomesCommand {
                     UUID uuid = player.getUniqueId();
 
                     if (homeManager.homes(uuid).isEmpty()) {
-                        player.sendMessage(Lang.get("homeplugin.homes.no_homes"));
+                        player.sendMessage(LANG.get("homeplugin.homes.no_homes"));
                         return Command.SINGLE_SUCCESS;
                     }
 

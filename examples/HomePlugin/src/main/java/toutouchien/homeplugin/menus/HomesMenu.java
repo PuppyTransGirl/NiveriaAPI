@@ -15,6 +15,8 @@ import toutouchien.niveriaapi.menu.component.interactive.DoubleDropButton;
 import toutouchien.niveriaapi.menu.component.layout.Grid;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
+import static toutouchien.homeplugin.HomePlugin.LANG;
+
 public class HomesMenu extends Menu {
     private final HomeManager homeManager;
 
@@ -39,7 +41,7 @@ public class HomesMenu extends Menu {
      */
     @Override
     protected @NotNull Component title() {
-        return Lang.get("homeplugin.menu.title");
+        return LANG.get("homeplugin.menu.title");
     }
 
     /**
@@ -55,20 +57,24 @@ public class HomesMenu extends Menu {
     protected @NotNull MenuComponent root(@NotNull MenuContext context) {
         Paginator paginator = Paginator.create()
                 .size(5, 2)
-                .nextItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu.next")).build())
-                .backItem(ItemBuilder.of(Material.ARROW).name(Lang.get("homeplugin.menu.previous")).build())
+                .nextItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu.next")).build())
+                .backItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu.previous")).build())
                 .build();
 
         for (Home home : this.homeManager.homes(context.player().getUniqueId())) {
             DoubleDropButton button = DoubleDropButton.create()
                     .item(ItemBuilder.of(home.icon())
-                            .name(Lang.get("homeplugin.menu.home.name", home.name()))
-                            .lore(Lang.getList("homeplugin.menu.home.lore"))
+                            .name(LANG.get("homeplugin.menu.home.name",
+                                    Lang.unparsedPlaceholder("homeplugin_home_name", home.name())
+                            ))
+                            .lore(LANG.getList("homeplugin.menu.home.lore"))
                             .build()
                     )
                     .dropItem(ItemBuilder.of(Material.BARRIER)
-                            .name(Lang.get("homeplugin.menu.home_dropped.name", home.name()))
-                            .lore(Lang.getList("homeplugin.menu.home_dropped.lore"))
+                            .name(LANG.get("homeplugin.menu.home_dropped.name",
+                                    Lang.unparsedPlaceholder("homeplugin_home_name", home.name())
+                            ))
+                            .lore(LANG.getList("homeplugin.menu.home_dropped.lore"))
                             .build()
                     )
                     .onLeftClick(event -> {
