@@ -78,6 +78,14 @@ public abstract class Menu implements InventoryHolder {
         this.onOpen();
     }
 
+    /**
+     * Reopens or refreshes this menu for the player.
+     *
+     * <p>If this menu is not the current menu in the context, this method calls
+     * {@link #open()} to (re)initialize and open the menu. If this menu is
+     * already the current menu, it re-renders the root component and opens the
+     * existing inventory to refresh the displayed contents.</p>
+     */
     public void reopen() {
         if (context.menu() != this) {
             this.open();
