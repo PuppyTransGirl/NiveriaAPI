@@ -270,18 +270,12 @@ public class Lang {
      *
      * @param locale The locale to ensure is loaded
      */
-    private void ensureLocaleLoaded(Locale locale) {
+    private synchronized void ensureLocaleLoaded(Locale locale) {
         if (loadedLocales.contains(locale))
             return;
 
-        synchronized (this) {
-            // Double-check after acquiring lock
-            if (loadedLocales.contains(locale))
-                return;
-
-            loadLocaleFile(locale);
-            loadedLocales.add(locale);
-        }
+        loadLocaleFile(locale);
+        loadedLocales.add(locale);
     }
 
     /**
@@ -881,11 +875,13 @@ public class Lang {
     public boolean hasKey(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
-        for (Object2ObjectMap<String, String> localeMessages : messages.values())
-            if (localeMessages.containsKey(key))
-                return true;
+        synchronized (messages) {
+            for (Object2ObjectMap<String, String> localeMessages : messages.values())
+                if (localeMessages.containsKey(key))
+                    return true;
 
-        return false;
+            return false;
+        }
     }
 
     /**
@@ -895,14 +891,16 @@ public class Lang {
     public void reload() {
         logger.info("Reloading language files for {}", plugin.getName());
 
-        messages.clear();
-        specialTags.clear();
-        loadedLocales.clear();
+        synchronized (this) {
+            messages.clear();
+            specialTags.clear();
+            loadedLocales.clear();
 
-        if (componentCache != null)
-            componentCache.invalidateAll();
+            if (componentCache != null)
+                componentCache.invalidateAll();
 
-        initialize();
+            initialize();
+        }
     }
 
     /**
