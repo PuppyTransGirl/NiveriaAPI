@@ -1,4 +1,4 @@
-package toutouchien.niveriaapi.menu;
+package toutouchien.niveriaapi.menu.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
 public class MenuListener implements Listener {
