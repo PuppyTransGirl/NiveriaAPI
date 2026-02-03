@@ -41,7 +41,7 @@ niveriaapi:
 
 
 delay:
-  start: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary>%s</ncolor> seconds</ncolor>"
+  start: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary><niveriaapi_delay_seconds></ncolor> seconds</ncolor>"
   moved: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
   already: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
 
