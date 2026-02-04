@@ -1,6 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,6 +9,7 @@ import java.util.Set;
 /**
  * Utility class for file-related operations, including validation of file names.
  */
+@NullMarked
 public class FileUtils {
     private static String[] invalidCharacters;
     private static String[] invalidWords;
@@ -23,7 +24,6 @@ public class FileUtils {
      *
      * @return An array of invalid characters.
      */
-    @NotNull
     public static String[] invalidCharacters() {
         if (invalidCharacters != null)
             return invalidCharacters;
@@ -46,7 +46,6 @@ public class FileUtils {
      *
      * @return An array of invalid words.
      */
-    @NotNull
     public static String[] invalidWords() {
         if (invalidWords != null)
             return invalidWords;
@@ -60,7 +59,6 @@ public class FileUtils {
         return invalidWords = new String[]{"con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "com0", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "lpt0"};
     }
 
-    @NotNull
     private static String operatingSystem() {
         String os = System.getProperty("os.name");
 

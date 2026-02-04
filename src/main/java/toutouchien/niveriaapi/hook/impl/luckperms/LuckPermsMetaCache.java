@@ -6,8 +6,8 @@ import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.platform.PlayerAdapter;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * MetaCache implementation using LuckPerms as the backend.
  */
+@NullMarked
 public class LuckPermsMetaCache implements MetaCache {
     private final NiveriaAPI plugin;
     private final LuckPerms luckPerms;
@@ -29,7 +30,7 @@ public class LuckPermsMetaCache implements MetaCache {
      * @param plugin    The NiveriaAPI plugin instance.
      * @param luckPerms The LuckPerms instance.
      */
-    public LuckPermsMetaCache(@NotNull NiveriaAPI plugin, @NotNull LuckPerms luckPerms) {
+    public LuckPermsMetaCache(NiveriaAPI plugin, LuckPerms luckPerms) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(luckPerms, "luckPerms cannot be null");
 
@@ -46,7 +47,7 @@ public class LuckPermsMetaCache implements MetaCache {
     }
 
     @Override
-    public boolean booleanMeta(@NotNull Player player, @NotNull String metaKey, boolean defaultValue) {
+    public boolean booleanMeta(Player player, String metaKey, boolean defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
 
@@ -66,7 +67,7 @@ public class LuckPermsMetaCache implements MetaCache {
     }
 
     @Override
-    public double doubleMeta(@NotNull Player player, @NotNull String metaKey, double defaultValue) {
+    public double doubleMeta(Player player, String metaKey, double defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
 
@@ -95,7 +96,7 @@ public class LuckPermsMetaCache implements MetaCache {
 
     @Nullable
     @Override
-    public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull T defaultValue) {
+    public <T extends Enum<T>> T enumMeta(Player player, String metaKey, T defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
         Preconditions.checkNotNull(defaultValue, "defaultValue cannot be null");
@@ -107,7 +108,7 @@ public class LuckPermsMetaCache implements MetaCache {
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
+    public <T extends Enum<T>> T enumMeta(Player player, String metaKey, Class<T> enumClass, @Nullable T defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
         Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
@@ -135,7 +136,7 @@ public class LuckPermsMetaCache implements MetaCache {
     }
 
     @Override
-    public int integerMeta(@NotNull Player player, @NotNull String metaKey, int defaultValue) {
+    public int integerMeta(Player player, String metaKey, int defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
 
@@ -164,7 +165,7 @@ public class LuckPermsMetaCache implements MetaCache {
 
     @Nullable
     @Override
-    public String stringMeta(@NotNull Player player, @NotNull String metaKey, @Nullable String defaultValue) {
+    public String stringMeta(Player player, String metaKey, @Nullable String defaultValue) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
 
@@ -184,7 +185,7 @@ public class LuckPermsMetaCache implements MetaCache {
     }
 
     @Override
-    public void invalidateCache(@NotNull Player player, @NotNull String metaKey) {
+    public void invalidateCache(Player player, String metaKey) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(metaKey, "metaKey cannot be null");
 
@@ -192,7 +193,7 @@ public class LuckPermsMetaCache implements MetaCache {
     }
 
     @Override
-    public void invalidateCache(@NotNull Player player) {
+    public void invalidateCache(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         cache.remove(player.getName().toLowerCase(Locale.ROOT));

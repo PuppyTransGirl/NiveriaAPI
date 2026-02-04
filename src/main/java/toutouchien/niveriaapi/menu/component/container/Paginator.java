@@ -10,7 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.component.interactive.Button;
@@ -28,16 +29,19 @@ import java.util.function.Function;
  * and optional first/last page buttons. Navigation buttons can have different appearances
  * when disabled (at first/last page).
  */
+@NullMarked
 public class Paginator extends MenuComponent {
     private final ObjectList<MenuComponent> components;
 
-    private Function<MenuContext, ItemStack> backItem, nextItem, offBackItem, offNextItem;
-    private Function<MenuContext, ItemStack> firstPageItem, lastPageItem, offFirstPageItem, offLastPageItem;
+    private Function<MenuContext, ItemStack> firstPageItem, lastPageItem, backItem, nextItem;
+    @Nullable
+    private Function<MenuContext, ItemStack> offBackItem, offNextItem, offFirstPageItem, offLastPageItem;
 
     private final int width, height;
     private final IntList layoutSlots;
 
     private int page;
+    @Nullable
     private ObjectList<MenuComponent> cachedPageComponents;
 
     /**
@@ -94,7 +98,7 @@ public class Paginator extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onAdd(@NotNull MenuContext context) {
+    public void onAdd(MenuContext context) {
         this.components.forEach(component -> {
             component.onAdd(context);
 
@@ -112,7 +116,7 @@ public class Paginator extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onRemove(@NotNull MenuContext context) {
+    public void onRemove(MenuContext context) {
         this.components.forEach(component -> {
             component.onRemove(context);
 
@@ -155,7 +159,7 @@ public class Paginator extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -181,9 +185,8 @@ public class Paginator extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks for the current page
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
         ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
 
@@ -209,15 +212,14 @@ public class Paginator extends MenuComponent {
      * @param context the menu context
      * @return a set of all possible slot indices for this paginator
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         // Return all slots controlled by the paginator grid
         return new IntOpenHashSet(this.layoutSlots);
     }
 
     @Override
-    public void render(@NotNull MenuContext context) {
+    public void render(MenuContext context) {
         this.invalidateCache();
         super.render(context);
     }
@@ -231,7 +233,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a list of components for the current page
      */
-    @NotNull
     private ObjectList<MenuComponent> currentPageComponents() {
         if (this.cachedPageComponents != null)
             return this.cachedPageComponents;
@@ -260,7 +261,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the previous page
      */
-    @NotNull
     public Button backButton() {
         return Button.create()
                 .item(context -> {
@@ -290,7 +290,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the next page
      */
-    @NotNull
     public Button nextButton() {
         return Button.create()
                 .item(context -> {
@@ -320,7 +319,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the first page
      */
-    @NotNull
     public Button firstPageButton() {
         return Button.create()
                 .item(context -> {
@@ -350,7 +348,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the last page
      */
-    @NotNull
     public Button lastPageButton() {
         return Button.create()
                 .item(context -> {
@@ -392,9 +389,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator add(@NotNull MenuContext context, @NotNull MenuComponent component) {
+    public Paginator add(MenuContext context, MenuComponent component) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
@@ -414,9 +410,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+    public Paginator addAll(MenuContext context, ObjectList<MenuComponent> components) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(components, "components cannot be null");
 
@@ -433,9 +428,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if context is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator remove(@NotNull MenuContext context, @NonNegative int slot) {
+    public Paginator remove(MenuContext context, @NonNegative int slot) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkArgument(slot >= 0, "slot cannot be less than 0: %s", slot);
 
@@ -471,9 +465,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if component is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator remove(@NotNull MenuContext context, @NotNull MenuComponent component) {
+    public Paginator remove(MenuContext context, MenuComponent component) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(component, "component cannot be null");
 
@@ -492,9 +485,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if indexes is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator removeAll(@NotNull MenuContext context, @NotNull IntSet indexes) {
+    public Paginator removeAll(MenuContext context, IntSet indexes) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(indexes, "indexes cannot be null");
 
@@ -520,9 +512,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if components is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Paginator removeAll(@NotNull MenuContext context, @NotNull ObjectSet<MenuComponent> components) {
+    public Paginator removeAll(MenuContext context, ObjectSet<MenuComponent> components) {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkNotNull(components, "components cannot be null");
 
@@ -536,7 +527,6 @@ public class Paginator extends MenuComponent {
      *
      * @return this paginator for method chaining
      */
-    @NotNull
     @Contract(value = "-> this", mutates = "this")
     public Paginator clear() {
         this.components.clear();
@@ -550,9 +540,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if backItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator backItem(@NotNull ItemStack backItem) {
+    public Paginator backItem(ItemStack backItem) {
         Preconditions.checkNotNull(backItem, "backItem cannot be null");
 
         this.backItem = context -> backItem;
@@ -566,9 +555,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if nextItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator nextItem(@NotNull ItemStack nextItem) {
+    public Paginator nextItem(ItemStack nextItem) {
         Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
 
         this.nextItem = context -> nextItem;
@@ -582,9 +570,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offBackItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offBackItem(@NotNull ItemStack offBackItem) {
+    public Paginator offBackItem(ItemStack offBackItem) {
         Preconditions.checkNotNull(offBackItem, "offBackItem cannot be null");
 
         this.offBackItem = context -> offBackItem;
@@ -598,9 +585,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offNextItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offNextItem(@NotNull ItemStack offNextItem) {
+    public Paginator offNextItem(ItemStack offNextItem) {
         Preconditions.checkNotNull(offNextItem, "offNextItem cannot be null");
 
         this.offNextItem = context -> offNextItem;
@@ -614,9 +600,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if firstPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator firstPageItem(@NotNull ItemStack firstPageItem) {
+    public Paginator firstPageItem(ItemStack firstPageItem) {
         Preconditions.checkNotNull(firstPageItem, "firstPageItem cannot be null");
 
         this.firstPageItem = context -> firstPageItem;
@@ -630,9 +615,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if lastPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator lastPageItem(@NotNull ItemStack lastPageItem) {
+    public Paginator lastPageItem(ItemStack lastPageItem) {
         Preconditions.checkNotNull(lastPageItem, "lastPageItem cannot be null");
 
         this.lastPageItem = context -> lastPageItem;
@@ -646,9 +630,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offFirstPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offFirstPageItem(@NotNull ItemStack offFirstPageItem) {
+    public Paginator offFirstPageItem(ItemStack offFirstPageItem) {
         Preconditions.checkNotNull(offFirstPageItem, "offFirstPageItem cannot be null");
 
         this.offFirstPageItem = context -> offFirstPageItem;
@@ -662,9 +645,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offLastPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offLastPageItem(@NotNull ItemStack offLastPageItem) {
+    public Paginator offLastPageItem(ItemStack offLastPageItem) {
         Preconditions.checkNotNull(offLastPageItem, "offLastPageItem cannot be null");
 
         this.offLastPageItem = context -> offLastPageItem;
@@ -678,9 +660,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if backItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator backItem(@NotNull Function<MenuContext, ItemStack> backItem) {
+    public Paginator backItem(Function<MenuContext, ItemStack> backItem) {
         Preconditions.checkNotNull(backItem, "backItem cannot be null");
 
         this.backItem = backItem;
@@ -694,9 +675,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if nextItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator nextItem(@NotNull Function<MenuContext, ItemStack> nextItem) {
+    public Paginator nextItem(Function<MenuContext, ItemStack> nextItem) {
         Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
 
         this.nextItem = nextItem;
@@ -710,9 +690,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offBackItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offBackItem(@NotNull Function<MenuContext, ItemStack> offBackItem) {
+    public Paginator offBackItem(Function<MenuContext, ItemStack> offBackItem) {
         Preconditions.checkNotNull(offBackItem, "offBackItem cannot be null");
 
         this.offBackItem = offBackItem;
@@ -726,9 +705,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offNextItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offNextItem(@NotNull Function<MenuContext, ItemStack> offNextItem) {
+    public Paginator offNextItem(Function<MenuContext, ItemStack> offNextItem) {
         Preconditions.checkNotNull(offNextItem, "offNextItem cannot be null");
 
         this.offNextItem = offNextItem;
@@ -742,9 +720,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if firstPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator firstPageItem(@NotNull Function<MenuContext, ItemStack> firstPageItem) {
+    public Paginator firstPageItem(Function<MenuContext, ItemStack> firstPageItem) {
         Preconditions.checkNotNull(firstPageItem, "firstPageItem cannot be null");
 
         this.firstPageItem = firstPageItem;
@@ -758,9 +735,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if lastPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator lastPageItem(@NotNull Function<MenuContext, ItemStack> lastPageItem) {
+    public Paginator lastPageItem(Function<MenuContext, ItemStack> lastPageItem) {
         Preconditions.checkNotNull(lastPageItem, "lastPageItem cannot be null");
 
         this.lastPageItem = lastPageItem;
@@ -774,9 +750,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offFirstPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offFirstPageItem(@NotNull Function<MenuContext, ItemStack> offFirstPageItem) {
+    public Paginator offFirstPageItem(Function<MenuContext, ItemStack> offFirstPageItem) {
         Preconditions.checkNotNull(offFirstPageItem, "offFirstPageItem cannot be null");
 
         this.offFirstPageItem = offFirstPageItem;
@@ -790,9 +765,8 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws NullPointerException if offLastPageItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Paginator offLastPageItem(@NotNull Function<MenuContext, ItemStack> offLastPageItem) {
+    public Paginator offLastPageItem(Function<MenuContext, ItemStack> offLastPageItem) {
         Preconditions.checkNotNull(offLastPageItem, "offLastPageItem cannot be null");
 
         this.offLastPageItem = offLastPageItem;
@@ -806,7 +780,6 @@ public class Paginator extends MenuComponent {
      * @return this paginator for method chaining
      * @throws IllegalArgumentException if page is negative
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Paginator page(@NonNegative int page) {
         Preconditions.checkArgument(page >= 0, "page cannot be less than 0: %s", page);
@@ -842,7 +815,6 @@ public class Paginator extends MenuComponent {
      *
      * @return a new Paginator.Builder for constructing paginators
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -856,10 +828,11 @@ public class Paginator extends MenuComponent {
 
         private Function<MenuContext, ItemStack> backItem = context -> new ItemStack(Material.ARROW);
         private Function<MenuContext, ItemStack> nextItem = context -> new ItemStack(Material.ARROW);
-        private Function<MenuContext, ItemStack> offBackItem, offNextItem;
 
+        @Nullable
         private Function<MenuContext, ItemStack> firstPageItem, lastPageItem;
-        private Function<MenuContext, ItemStack> offFirstPageItem, offLastPageItem;
+        @Nullable
+        private Function<MenuContext, ItemStack> offBackItem, offNextItem, offFirstPageItem, offLastPageItem;
 
         private int page;
 
@@ -874,9 +847,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if component is null
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder add(@NotNull MenuContext context, @NotNull MenuComponent component) {
+        public Builder add(MenuContext context, MenuComponent component) {
             Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(component, "component cannot be null");
 
@@ -892,9 +864,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if components is null
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder addAll(@NotNull MenuContext context, @NotNull ObjectList<MenuComponent> components) {
+        public Builder addAll(MenuContext context, ObjectList<MenuComponent> components) {
             Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkNotNull(components, "components cannot be null");
 
@@ -910,9 +881,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if backItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder backItem(@NotNull ItemStack backItem) {
+        public Builder backItem(ItemStack backItem) {
             Preconditions.checkNotNull(backItem, "backItem cannot be null");
 
             this.backItem = context -> backItem;
@@ -926,9 +896,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if nextItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder nextItem(@NotNull ItemStack nextItem) {
+        public Builder nextItem(ItemStack nextItem) {
             Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
 
             this.nextItem = context -> nextItem;
@@ -942,9 +911,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offBackItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offBackItem(@NotNull ItemStack offBackItem) {
+        public Builder offBackItem(ItemStack offBackItem) {
             Preconditions.checkNotNull(offBackItem, "offBackItem cannot be null");
 
             this.offBackItem = context -> offBackItem;
@@ -958,9 +926,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offNextItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offNextItem(@NotNull ItemStack offNextItem) {
+        public Builder offNextItem(ItemStack offNextItem) {
             Preconditions.checkNotNull(offNextItem, "offNextItem cannot be null");
 
             this.offNextItem = context -> offNextItem;
@@ -974,9 +941,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if firstPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder firstPageItem(@NotNull ItemStack firstPageItem) {
+        public Builder firstPageItem(ItemStack firstPageItem) {
             Preconditions.checkNotNull(firstPageItem, "firstPageItem cannot be null");
 
             this.firstPageItem = context -> firstPageItem;
@@ -990,9 +956,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if lastPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder lastPageItem(@NotNull ItemStack lastPageItem) {
+        public Builder lastPageItem(ItemStack lastPageItem) {
             Preconditions.checkNotNull(lastPageItem, "lastPageItem cannot be null");
 
             this.lastPageItem = context -> lastPageItem;
@@ -1006,9 +971,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offFirstPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offFirstPageItem(@NotNull ItemStack offFirstPageItem) {
+        public Builder offFirstPageItem(ItemStack offFirstPageItem) {
             Preconditions.checkNotNull(offFirstPageItem, "offFirstPageItem cannot be null");
 
             this.offFirstPageItem = context -> offFirstPageItem;
@@ -1022,9 +986,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offLastPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offLastPageItem(@NotNull ItemStack offLastPageItem) {
+        public Builder offLastPageItem(ItemStack offLastPageItem) {
             Preconditions.checkNotNull(offLastPageItem, "offLastPageItem cannot be null");
 
             this.offLastPageItem = context -> offLastPageItem;
@@ -1038,9 +1001,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if backItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder backItem(@NotNull Function<MenuContext, ItemStack> backItem) {
+        public Builder backItem(Function<MenuContext, ItemStack> backItem) {
             Preconditions.checkNotNull(backItem, "backItem cannot be null");
 
             this.backItem = backItem;
@@ -1054,9 +1016,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if nextItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder nextItem(@NotNull Function<MenuContext, ItemStack> nextItem) {
+        public Builder nextItem(Function<MenuContext, ItemStack> nextItem) {
             Preconditions.checkNotNull(nextItem, "nextItem cannot be null");
 
             this.nextItem = nextItem;
@@ -1070,9 +1031,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offBackItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offBackItem(@NotNull Function<MenuContext, ItemStack> offBackItem) {
+        public Builder offBackItem(Function<MenuContext, ItemStack> offBackItem) {
             Preconditions.checkNotNull(offBackItem, "offBackItem cannot be null");
 
             this.offBackItem = offBackItem;
@@ -1086,9 +1046,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offNextItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offNextItem(@NotNull Function<MenuContext, ItemStack> offNextItem) {
+        public Builder offNextItem(Function<MenuContext, ItemStack> offNextItem) {
             Preconditions.checkNotNull(offNextItem, "offNextItem cannot be null");
 
             this.offNextItem = offNextItem;
@@ -1102,9 +1061,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if firstPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder firstPageItem(@NotNull Function<MenuContext, ItemStack> firstPageItem) {
+        public Builder firstPageItem(Function<MenuContext, ItemStack> firstPageItem) {
             Preconditions.checkNotNull(firstPageItem, "firstPageItem cannot be null");
 
             this.firstPageItem = firstPageItem;
@@ -1118,9 +1076,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if lastPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder lastPageItem(@NotNull Function<MenuContext, ItemStack> lastPageItem) {
+        public Builder lastPageItem(Function<MenuContext, ItemStack> lastPageItem) {
             Preconditions.checkNotNull(lastPageItem, "lastPageItem cannot be null");
 
             this.lastPageItem = lastPageItem;
@@ -1134,9 +1091,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offFirstPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offFirstPageItem(@NotNull Function<MenuContext, ItemStack> offFirstPageItem) {
+        public Builder offFirstPageItem(Function<MenuContext, ItemStack> offFirstPageItem) {
             Preconditions.checkNotNull(offFirstPageItem, "offFirstPageItem cannot be null");
 
             this.offFirstPageItem = offFirstPageItem;
@@ -1150,9 +1106,8 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if offLastPageItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder offLastPageItem(@NotNull Function<MenuContext, ItemStack> offLastPageItem) {
+        public Builder offLastPageItem(Function<MenuContext, ItemStack> offLastPageItem) {
             Preconditions.checkNotNull(offLastPageItem, "offLastPageItem cannot be null");
 
             this.offLastPageItem = offLastPageItem;
@@ -1166,7 +1121,6 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if page is negative
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder page(@NonNegative int page) {
             Preconditions.checkArgument(page >= 0, "page cannot be less than 0: %s", page);
@@ -1182,7 +1136,6 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -1198,7 +1151,6 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -1215,7 +1167,6 @@ public class Paginator extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -1231,7 +1182,6 @@ public class Paginator extends MenuComponent {
          *
          * @return a new Paginator with the specified configuration
          */
-        @NotNull
         public Paginator build() {
             return new Paginator(
                     this.id,

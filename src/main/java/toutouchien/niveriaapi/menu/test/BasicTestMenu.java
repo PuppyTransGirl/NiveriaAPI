@@ -6,7 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -28,6 +28,7 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
  * in the menu system, including buttons, toggles, selectors, progress bars, and more.
  * It demonstrates both static and dynamic content, animations, and various interaction types.
  */
+@NullMarked
 public class BasicTestMenu extends Menu {
 
     /**
@@ -44,7 +45,6 @@ public class BasicTestMenu extends Menu {
      *
      * @return a colorized title component
      */
-    @NotNull
     @Override
     protected Component title() {
         return Component.text("Test Menu Hehe :3", ColorUtils.primaryColor());
@@ -68,9 +68,8 @@ public class BasicTestMenu extends Menu {
      * @param context the menu context
      * @return the root grid component containing all test components
      */
-    @NotNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(MenuContext context) {
         return Grid.create()
                 .size(9, 6)
                 .add(context, 0, simpleButton())

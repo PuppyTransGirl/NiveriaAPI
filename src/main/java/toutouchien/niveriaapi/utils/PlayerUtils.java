@@ -5,8 +5,8 @@ import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -14,6 +14,7 @@ import java.util.*;
  * Utility class for player-related operations.
  */
 @SuppressWarnings("deprecation")
+@NullMarked
 public class PlayerUtils {
     private PlayerUtils() {
         throw new IllegalStateException("Utility class");
@@ -25,7 +26,7 @@ public class PlayerUtils {
      * @param player The player to check.
      * @return True if the player is vanished, false otherwise.
      */
-    public static boolean isVanished(@NotNull Player player) {
+    public static boolean isVanished(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         List<MetadataValue> metadata = player.getMetadata("vanished");
@@ -44,7 +45,6 @@ public class PlayerUtils {
      *
      * @return A collection of non-vanished players.
      */
-    @NotNull
     public static Collection<? extends Player> nonVanishedPlayers() {
         Set<Player> list = new HashSet<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -62,7 +62,7 @@ public class PlayerUtils {
      * @return The non-vanished player, or null if not found or vanished.
      */
     @Nullable
-    public static Player nonVanishedPlayer(@NotNull String name) {
+    public static Player nonVanishedPlayer(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         Player player = Bukkit.getPlayer(name);
@@ -79,7 +79,7 @@ public class PlayerUtils {
      * @return The non-vanished player, or null if not found or vanished.
      */
     @Nullable
-    public static Player nonVanishedPlayerExact(@NotNull String name) {
+    public static Player nonVanishedPlayerExact(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         Player player = Bukkit.getPlayerExact(name);
@@ -96,7 +96,7 @@ public class PlayerUtils {
      * @return The non-vanished player, or null if not found or vanished.
      */
     @Nullable
-    public static Player nonVanishedPlayer(@NotNull UUID uuid) {
+    public static Player nonVanishedPlayer(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         Player player = Bukkit.getPlayer(uuid);
@@ -114,7 +114,7 @@ public class PlayerUtils {
      * @param name The player name to validate.
      * @return True if the name is valid, false otherwise.
      */
-    public static boolean isValidPlayerName(@NotNull String name) {
+    public static boolean isValidPlayerName(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         if (name.length() < 3 || name.length() > 16)

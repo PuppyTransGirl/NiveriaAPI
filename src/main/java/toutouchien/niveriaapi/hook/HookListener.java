@@ -6,11 +6,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.ServerLoadEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Listener for player join and leave events to notify the HookManager.
  */
+@NullMarked
 public class HookListener implements Listener {
     private final HookManager hookManager;
 
@@ -19,7 +20,7 @@ public class HookListener implements Listener {
      *
      * @param hookManager The HookManager instance.
      */
-    public HookListener(@NotNull HookManager hookManager) {
+    public HookListener(HookManager hookManager) {
         Preconditions.checkNotNull(hookManager, "hookManager cannot be null");
 
         this.hookManager = hookManager;

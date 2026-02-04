@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.NonNegative;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 /**
  * Utility class for scheduling synchronous and asynchronous tasks in a server.
  */
+@NullMarked
 public class Task {
     private Task() {
         throw new IllegalStateException("Utility class");
@@ -26,8 +27,7 @@ public class Task {
      * @param plugin   The plugin scheduling the task.
      * @return The scheduled BukkitTask.
      */
-    @NotNull
-    public static BukkitTask sync(@NotNull Runnable runnable, @NotNull Plugin plugin) {
+    public static BukkitTask sync(Runnable runnable, Plugin plugin) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
@@ -43,8 +43,7 @@ public class Task {
      * @param timeUnit The time unit of the delay.
      * @return The scheduled BukkitTask.
      */
-    @NotNull
-    public static BukkitTask syncLater(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NotNull TimeUnit timeUnit) {
+    public static BukkitTask syncLater(Runnable runnable, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
@@ -63,8 +62,7 @@ public class Task {
      * @param timeUnit The time unit of the delay and interval.
      * @return The scheduled BukkitTask.
      */
-    @NotNull
-    public static BukkitTask syncRepeat(@NotNull Runnable runnable, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval, @NotNull TimeUnit timeUnit) {
+    public static BukkitTask syncRepeat(Runnable runnable, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
         Preconditions.checkNotNull(runnable, "runnable cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
@@ -81,8 +79,7 @@ public class Task {
      * @param plugin   The plugin scheduling the task.
      * @return The scheduled ScheduledTask.
      */
-    @NotNull
-    public static ScheduledTask async(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin) {
+    public static ScheduledTask async(Consumer<ScheduledTask> consumer, Plugin plugin) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
@@ -98,8 +95,7 @@ public class Task {
      * @param timeUnit The time unit of the delay.
      * @return The scheduled ScheduledTask.
      */
-    @NotNull
-    public static ScheduledTask asyncLater(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NotNull TimeUnit timeUnit) {
+    public static ScheduledTask asyncLater(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
@@ -118,8 +114,7 @@ public class Task {
      * @param timeUnit The time unit of the delay and interval.
      * @return The scheduled ScheduledTask.
      */
-    @NotNull
-    public static ScheduledTask asyncRepeat(@NotNull Consumer<ScheduledTask> consumer, @NotNull Plugin plugin, @NonNegative long delay, @NonNegative long interval, @NotNull TimeUnit timeUnit) {
+    public static ScheduledTask asyncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);

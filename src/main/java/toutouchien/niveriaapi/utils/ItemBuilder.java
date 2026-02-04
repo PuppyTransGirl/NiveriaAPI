@@ -21,8 +21,7 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.checkerframework.common.value.qual.IntRange;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URL;
 import java.util.*;
@@ -67,9 +66,8 @@ public class ItemBuilder {
      * @throws IllegalArgumentException if the material is air (air doesn't
      *                                  have an {@link ItemMeta})
      */
-    @NotNull
     @Contract(value = "_ -> new", pure = true)
-    public static ItemBuilder of(@NotNull Material material) {
+    public static ItemBuilder of(Material material) {
         Preconditions.checkNotNull(material, "material cannot be null");
         Preconditions.checkArgument(!material.isAir(), "material cannot be air");
 
@@ -84,9 +82,8 @@ public class ItemBuilder {
      * @throws IllegalArgumentException if the item's material is air (air
      *                                  doesn't have an {@link ItemMeta})
      */
-    @NotNull
     @Contract(value = "_ -> new", pure = true)
-    public static ItemBuilder of(@NotNull ItemStack itemStack) {
+    public static ItemBuilder of(ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
         Preconditions.checkArgument(!itemStack.getType().isAir(), "itemStack cannot be air");
         Preconditions.checkArgument(itemStack.getAmount() >= 1, "itemStack amount cannot be less than 1: %s", itemStack.getAmount());
@@ -103,9 +100,8 @@ public class ItemBuilder {
      * @throws IllegalArgumentException if the material is air (air doesn't
      *                                  have an {@link ItemMeta})
      */
-    @NotNull
     @Contract(value = "_, _ -> new", pure = true)
-    public static ItemBuilder of(@NotNull Material material, @Positive int amount) {
+    public static ItemBuilder of(Material material, @Positive int amount) {
         Preconditions.checkNotNull(material, "material cannot be null");
         Preconditions.checkArgument(!material.isAir(), "material cannot be air");
         Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %s", amount);
@@ -118,7 +114,6 @@ public class ItemBuilder {
      *
      * @return the ItemStack instance (not a defensive copy)
      */
-    @NotNull
     public ItemStack build() {
         return itemStack;
     }
@@ -128,7 +123,6 @@ public class ItemBuilder {
      *
      * @return a cloned ItemStack
      */
-    @NotNull
     public ItemStack buildCopy() {
         return itemStack.clone();
     }
@@ -138,7 +132,6 @@ public class ItemBuilder {
      *
      * @return a new ItemBuilder with a cloned ItemStack
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public ItemBuilder copy() {
         return new ItemBuilder(itemStack.clone());
@@ -151,7 +144,6 @@ public class ItemBuilder {
      * @return this builder
      * @throws IllegalArgumentException if amount is out of range
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder amount(@Positive int amount) {
         Preconditions.checkArgument(amount >= 1, "amount cannot be less than 1: %s", amount);
@@ -177,9 +169,8 @@ public class ItemBuilder {
      * @param name the component to set as the name
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder name(@NotNull Component name) {
+    public ItemBuilder name(Component name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         itemStack.setData(DataComponentTypes.ITEM_NAME, name);
@@ -215,7 +206,6 @@ public class ItemBuilder {
      * @param name the custom name component
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder renamableName(Component name) {
         Preconditions.checkNotNull(name, "name cannot be null");
@@ -240,9 +230,8 @@ public class ItemBuilder {
      * @param itemModelKey the model key to assign
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder itemModel(@NotNull Key itemModelKey) {
+    public ItemBuilder itemModel(Key itemModelKey) {
         Preconditions.checkNotNull(itemModelKey, "itemModelKey cannot be null");
 
         itemStack.setData(DataComponentTypes.ITEM_MODEL, itemModelKey);
@@ -254,7 +243,6 @@ public class ItemBuilder {
      *
      * @return the model key
      */
-    @NotNull
     public Key itemModel() {
         return itemStack.getData(DataComponentTypes.ITEM_MODEL);
     }
@@ -266,7 +254,6 @@ public class ItemBuilder {
      * @param durability durability value (remaining), will be converted to DAMAGE
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder durability(@NonNegative int durability) {
         Preconditions.checkArgument(durability >= 0, "durability cannot be negative: %s", durability);
@@ -292,7 +279,6 @@ public class ItemBuilder {
      * @param damage the damage value
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder damage(@NonNegative int damage) {
         Preconditions.checkArgument(damage >= 0, "damage cannot be negative: %s", damage);
@@ -319,7 +305,6 @@ public class ItemBuilder {
      * @param maxDamage the maximum durability value
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder maxDamage(@Positive int maxDamage) {
         Preconditions.checkArgument(maxDamage >= 1, "maxDamage must be positive: %s", maxDamage);
@@ -347,9 +332,8 @@ public class ItemBuilder {
      * @param level       the level for that enchantment
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public ItemBuilder addEnchantment(@NotNull Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
+    public ItemBuilder addEnchantment(Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
         Preconditions.checkNotNull(enchantment, "enchantment cannot be null");
         Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %s", level);
 
@@ -371,9 +355,8 @@ public class ItemBuilder {
      * @param level       the level
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public ItemBuilder enchantment(@NotNull Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
+    public ItemBuilder enchantment(Enchantment enchantment, @IntRange(from = 1, to = 255) int level) {
         Preconditions.checkNotNull(enchantment, "enchantment cannot be null");
         Preconditions.checkArgument(level >= 1 && level <= 255, "level must be between 1 and 255: %s", level);
 
@@ -391,9 +374,8 @@ public class ItemBuilder {
      * @param enchantments a map of enchantments to levels
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder addEnchantments(@NotNull Map<Enchantment, Integer> enchantments) {
+    public ItemBuilder addEnchantments(Map<Enchantment, Integer> enchantments) {
         Preconditions.checkNotNull(enchantments, "enchantments cannot be null");
 
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
@@ -413,9 +395,8 @@ public class ItemBuilder {
      * @param enchantments map of enchantments to levels
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder enchantments(@NotNull Map<Enchantment, Integer> enchantments) {
+    public ItemBuilder enchantments(Map<Enchantment, Integer> enchantments) {
         Preconditions.checkNotNull(enchantments, "enchantments cannot be null");
 
         ItemEnchantments itemEnchantments = ItemEnchantments.itemEnchantments()
@@ -432,9 +413,8 @@ public class ItemBuilder {
      * @param enchantment the enchantment to remove
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder removeEnchantment(@NotNull Enchantment enchantment) {
+    public ItemBuilder removeEnchantment(Enchantment enchantment) {
         Preconditions.checkNotNull(enchantment, "enchantment cannot be null");
 
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
@@ -458,9 +438,8 @@ public class ItemBuilder {
      * @param enchantments the enchantments to remove
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder removeEnchantments(@NotNull Enchantment @NotNull ... enchantments) {
+    public ItemBuilder removeEnchantments(Enchantment... enchantments) {
         Preconditions.checkNotNull(enchantments, "enchantments cannot be null");
 
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
@@ -483,7 +462,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     public ItemBuilder removeEnchantments() {
         itemStack.setData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments().build());
         return this;
@@ -504,7 +482,6 @@ public class ItemBuilder {
      *
      * @return a map of Enchantment -> level (empty map if none)
      */
-    @NotNull
     public Map<Enchantment, Integer> enchantmentsMap() {
         ItemEnchantments data = itemStack.getData(DataComponentTypes.ENCHANTMENTS);
         return data == null ? Collections.emptyMap() : data.enchantments();
@@ -517,7 +494,6 @@ public class ItemBuilder {
      * @param glowing true to force glint, false to unset
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder forceGlowing(boolean glowing) {
         itemStack.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, glowing);
@@ -529,7 +505,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     public ItemBuilder resetGlowing() {
         itemStack.unsetData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE);
         return this;
@@ -551,9 +526,8 @@ public class ItemBuilder {
      * @param player the offline player whose UUID will be used
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder headTexture(@NotNull OfflinePlayer player) {
+    public ItemBuilder headTexture(OfflinePlayer player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         ResolvableProfile resolvableProfile = ResolvableProfile.resolvableProfile()
@@ -572,9 +546,8 @@ public class ItemBuilder {
      * @param textureURL the full URL to the skin texture
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder headTexture(@NotNull String textureURL) {
+    public ItemBuilder headTexture(String textureURL) {
         Preconditions.checkNotNull(textureURL, "textureURL cannot be null");
 
         byte[] texturesPropertyBytes = Base64.getEncoder().encode("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}".formatted(textureURL).getBytes());
@@ -594,9 +567,8 @@ public class ItemBuilder {
      * @param textureURL the texture URL
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder headTexture(@NotNull URL textureURL) {
+    public ItemBuilder headTexture(URL textureURL) {
         Preconditions.checkNotNull(textureURL, "textureURL cannot be null");
 
         return headTexture(textureURL.toString());
@@ -640,7 +612,6 @@ public class ItemBuilder {
      * @param unbreakable true to set unbreakable, false to unset
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder unbreakable(boolean unbreakable) {
         if (unbreakable) {
@@ -680,9 +651,8 @@ public class ItemBuilder {
      * @param lore the lore components
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder lore(@NotNull Component @NotNull ... lore) {
+    public ItemBuilder lore(Component... lore) {
         Preconditions.checkNotNull(lore, "lore cannot be null");
 
         List<Component> loreLines = new ArrayList<>();
@@ -698,9 +668,8 @@ public class ItemBuilder {
      * @param lore the list of lore components
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder lore(@NotNull List<Component> lore) {
+    public ItemBuilder lore(List<Component> lore) {
         Preconditions.checkNotNull(lore, "lore cannot be null");
 
         List<Component> loreLines = new ArrayList<>();
@@ -715,7 +684,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     public ItemBuilder removeLore() {
         itemStack.unsetData(DataComponentTypes.LORE);
         return this;
@@ -748,9 +716,8 @@ public class ItemBuilder {
      * @param line the lore line to add
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder addLoreLine(@NotNull Component line) {
+    public ItemBuilder addLoreLine(Component line) {
         Preconditions.checkNotNull(line, "line cannot be null");
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
@@ -770,9 +737,8 @@ public class ItemBuilder {
      * @param index the index to set
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public ItemBuilder setLoreLine(@NotNull Component line, @NonNegative int index) {
+    public ItemBuilder setLoreLine(Component line, @NonNegative int index) {
         Preconditions.checkNotNull(line, "line cannot be null");
         Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
@@ -793,9 +759,8 @@ public class ItemBuilder {
      * @param line the component to remove
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder removeLoreLine(@NotNull Component line) {
+    public ItemBuilder removeLoreLine(Component line) {
         Preconditions.checkNotNull(line, "line cannot be null");
 
         List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).lines());
@@ -811,7 +776,6 @@ public class ItemBuilder {
      * @param index the line index to remove
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder removeLoreLine(@NonNegative int index) {
         Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
@@ -840,9 +804,8 @@ public class ItemBuilder {
      * @param key the tooltip style key
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder tooltipStyle(@NotNull Key key) {
+    public ItemBuilder tooltipStyle(Key key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, key);
@@ -867,9 +830,8 @@ public class ItemBuilder {
      * @param modifier  the modifier to add
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public ItemBuilder addAttributeModifier(@NotNull Attribute attribute, @NotNull AttributeModifier modifier) {
+    public ItemBuilder addAttributeModifier(Attribute attribute, AttributeModifier modifier) {
         Preconditions.checkNotNull(attribute, "attribute cannot be null");
         Preconditions.checkNotNull(modifier, "modifier cannot be null");
 
@@ -890,9 +852,8 @@ public class ItemBuilder {
      * @param attributeModifiers map of Attribute -> AttributeModifier
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder addAttributeModifiers(@NotNull Map<Attribute, AttributeModifier> attributeModifiers) {
+    public ItemBuilder addAttributeModifiers(Map<Attribute, AttributeModifier> attributeModifiers) {
         Preconditions.checkNotNull(attributeModifiers, "attributeModifiers cannot be null");
 
         ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
@@ -912,9 +873,8 @@ public class ItemBuilder {
      * @param modifier  the modifier
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public ItemBuilder attributeModifiers(@NotNull Attribute attribute, @NotNull AttributeModifier modifier) {
+    public ItemBuilder attributeModifiers(Attribute attribute, AttributeModifier modifier) {
         Preconditions.checkNotNull(attribute, "attribute cannot be null");
         Preconditions.checkNotNull(modifier, "modifier cannot be null");
 
@@ -932,9 +892,8 @@ public class ItemBuilder {
      * @param attributeModifiers map of Attribute -> AttributeModifier
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder attributeModifiers(@NotNull Map<Attribute, AttributeModifier> attributeModifiers) {
+    public ItemBuilder attributeModifiers(Map<Attribute, AttributeModifier> attributeModifiers) {
         Preconditions.checkNotNull(attributeModifiers, "attributeModifiers cannot be null");
 
         ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
@@ -950,9 +909,8 @@ public class ItemBuilder {
      * @param attribute the attribute to remove modifiers for
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder removeAttributeModifier(@NotNull Attribute attribute) {
+    public ItemBuilder removeAttributeModifier(Attribute attribute) {
         Preconditions.checkNotNull(attribute, "attribute cannot be null");
 
         ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
@@ -973,9 +931,8 @@ public class ItemBuilder {
      * @param attributes the attributes to remove
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder removeAttributeModifiers(@NotNull Attribute @NotNull ... attributes) {
+    public ItemBuilder removeAttributeModifiers(Attribute... attributes) {
         Preconditions.checkNotNull(attributes, "attributes cannot be null");
 
         List<Attribute> list = Arrays.asList(attributes);
@@ -996,7 +953,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     public ItemBuilder removeAttributeModifiers() {
         itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build());
         return this;
@@ -1007,7 +963,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     public ItemBuilder resetAttributesModifiers() {
         itemStack.unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         return this;
@@ -1018,7 +973,6 @@ public class ItemBuilder {
      *
      * @return a map of Attribute -> AttributeModifier (empty if none)
      */
-    @NotNull
     public Map<Attribute, AttributeModifier> attributeModifiers() {
         ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         return data == null
@@ -1036,9 +990,8 @@ public class ItemBuilder {
      * @param customModelData the CustomModelData object
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder customModelData(@NotNull CustomModelData customModelData) {
+    public ItemBuilder customModelData(CustomModelData customModelData) {
         Preconditions.checkNotNull(customModelData, "customModelData cannot be null");
 
         itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, customModelData);
@@ -1051,7 +1004,6 @@ public class ItemBuilder {
      * @param customModelData float value to add
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder customModelData(float customModelData) {
         itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addFloat(customModelData).build());
@@ -1063,7 +1015,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     @Contract(value = "-> this", mutates = "this")
     public ItemBuilder resetCustomModelData() {
         itemStack.unsetData(DataComponentTypes.CUSTOM_MODEL_DATA);
@@ -1086,7 +1037,6 @@ public class ItemBuilder {
      * @param maxStackSize value in range [1,99]
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder maxStackSize(@IntRange(from = 1, to = 99) int maxStackSize) {
         Preconditions.checkArgument(maxStackSize >= 1 && maxStackSize <= 99, "maxStackSize must be between 1 and 99: %s", maxStackSize);
@@ -1100,7 +1050,6 @@ public class ItemBuilder {
      *
      * @return the integer max stack size or null
      */
-    @NotNull
     public Integer maxStackSize() {
         return itemStack.getData(DataComponentTypes.MAX_STACK_SIZE);
     }
@@ -1112,9 +1061,8 @@ public class ItemBuilder {
      * @param pattern the pattern to add
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder addBannerPattern(@NotNull Pattern pattern) {
+    public ItemBuilder addBannerPattern(Pattern pattern) {
         Preconditions.checkNotNull(pattern, "pattern cannot be null");
 
         BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
@@ -1133,9 +1081,8 @@ public class ItemBuilder {
      * @param patterns patterns to add
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder addBannerPatterns(@NotNull Pattern @NotNull ... patterns) {
+    public ItemBuilder addBannerPatterns(Pattern... patterns) {
         Preconditions.checkNotNull(patterns, "patterns cannot be null");
 
         BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
@@ -1154,9 +1101,8 @@ public class ItemBuilder {
      * @param patterns banner patterns
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder bannerPatterns(@NotNull Pattern... patterns) {
+    public ItemBuilder bannerPatterns(Pattern... patterns) {
         Preconditions.checkNotNull(patterns, "patterns cannot be null");
 
         BannerPatternLayers bannerPatternLayers = BannerPatternLayers.bannerPatternLayers()
@@ -1173,9 +1119,8 @@ public class ItemBuilder {
      * @param patterns list of patterns
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder bannerPatterns(@NotNull List<Pattern> patterns) {
+    public ItemBuilder bannerPatterns(List<Pattern> patterns) {
         Preconditions.checkNotNull(patterns, "patterns cannot be null");
 
         BannerPatternLayers bannerPatternLayers = BannerPatternLayers.bannerPatternLayers()
@@ -1191,7 +1136,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     @Contract(value = "-> this", mutates = "this")
     public ItemBuilder resetBannerPatterns() {
         itemStack.unsetData(DataComponentTypes.BANNER_PATTERNS);
@@ -1203,7 +1147,6 @@ public class ItemBuilder {
      *
      * @return list of patterns (empty if none)
      */
-    @NotNull
     public List<Pattern> bannerPatterns() {
         BannerPatternLayers data = itemStack.getData(DataComponentTypes.BANNER_PATTERNS);
         return data == null ? Collections.emptyList() : data.patterns();
@@ -1215,9 +1158,8 @@ public class ItemBuilder {
      * @param color the java.awt-like Color (Bukkit Color)
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder dyeColor(@NotNull Color color) {
+    public ItemBuilder dyeColor(Color color) {
         Preconditions.checkNotNull(color, "color cannot be null");
 
         itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(color));
@@ -1240,7 +1182,6 @@ public class ItemBuilder {
      *
      * @return this builder
      */
-    @NotNull
     @Contract(value = "-> this", mutates = "this")
     public ItemBuilder resetDyeColor() {
         itemStack.unsetData(DataComponentTypes.DYED_COLOR);
@@ -1254,7 +1195,6 @@ public class ItemBuilder {
      *
      * @return the DyeColor for the current item type
      */
-    @NotNull
     public DyeColor itemColor() {
         return dyeColor(itemStack.getType());
     }
@@ -1267,9 +1207,8 @@ public class ItemBuilder {
      * @param <T>   type parameter for the component value
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public <T> ItemBuilder component(@NotNull DataComponentType.Valued<@NotNull T> type, T value) {
+    public <T> ItemBuilder component(DataComponentType.Valued<T> type, T value) {
         Preconditions.checkNotNull(type, "type cannot be null");
         Preconditions.checkNotNull(value, "value cannot be null");
 
@@ -1283,9 +1222,8 @@ public class ItemBuilder {
      * @param type the non-valued DataComponentType
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder component(@NotNull DataComponentType.NonValued type) {
+    public ItemBuilder component(DataComponentType.NonValued type) {
         Preconditions.checkNotNull(type, "type cannot be null");
         itemStack.setData(type);
         return this;
@@ -1299,7 +1237,7 @@ public class ItemBuilder {
      * @return the component's value or null if not present
      */
     @Nullable
-    public <T> T component(@NotNull DataComponentType.Valued<@NotNull T> type) {
+    public <T> T component(DataComponentType.Valued<T> type) {
         Preconditions.checkNotNull(type, "type cannot be null");
 
         return itemStack.getData(type);
@@ -1311,9 +1249,8 @@ public class ItemBuilder {
      * @param type the component type to unset
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder resetComponent(@NotNull DataComponentType type) {
+    public ItemBuilder resetComponent(DataComponentType type) {
         Preconditions.checkNotNull(type, "type cannot be null");
 
         itemStack.unsetData(type);
@@ -1331,9 +1268,8 @@ public class ItemBuilder {
      * @param <C>   complex type parameter
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_, _, _ -> this", mutates = "this")
-    public <P, C> ItemBuilder persistentData(@NotNull Key key, @NotNull PersistentDataType<P, C> type, @NotNull C value) {
+    public <P, C> ItemBuilder persistentData(Key key, PersistentDataType<P, C> type, C value) {
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(type, "type cannot be null");
         Preconditions.checkNotNull(value, "value cannot be null");
@@ -1350,9 +1286,8 @@ public class ItemBuilder {
      * @return this builder
      */
     @SuppressWarnings({"deprecation", "java:S1874"})
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ItemBuilder hide(@NotNull DataComponentType @NotNull ... typesToHide) {
+    public ItemBuilder hide(DataComponentType... typesToHide) {
         Preconditions.checkNotNull(typesToHide, "typesToHide cannot be null");
 
         if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
@@ -1375,7 +1310,6 @@ public class ItemBuilder {
      *
      * @return set of hidden DataComponentType (empty if none)
      */
-    @NotNull
     public Set<DataComponentType> hiddenComponents() {
         if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
             if (!itemStack.hasData(DataComponentTypes.TOOLTIP_DISPLAY))
@@ -1392,7 +1326,6 @@ public class ItemBuilder {
      * @param hideTooltip true to hide tooltip, false to show
      * @return this builder
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ItemBuilder hideTooltip(boolean hideTooltip) {
         if (VersionUtils.isHigherThanOrEquals(VersionUtils.v1_21_5)) {
@@ -1426,7 +1359,7 @@ public class ItemBuilder {
      * Internal helper: map a Material to its DyeColor. This covers many
      * material constants and returns WHITE by default.
      */
-    private DyeColor dyeColor(@NotNull Material material) {
+    private DyeColor dyeColor(Material material) {
         return switch (material.name()) {
             case "ORANGE_BANNER", "ORANGE_BED", "ORANGE_BUNDLE", "ORANGE_CANDLE", "ORANGE_CANDLE_CAKE", "ORANGE_CARPET",
                  "ORANGE_CONCRETE", "ORANGE_CONCRETE_POWDER", "ORANGE_DYE", "ORANGE_WOOL", "ORANGE_GLAZED_TERRACOTTA",

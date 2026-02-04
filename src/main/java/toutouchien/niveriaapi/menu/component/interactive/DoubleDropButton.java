@@ -13,8 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -34,16 +34,20 @@ import java.util.function.Function;
  * occurs within 3 seconds (60 ticks), it triggers a double-drop callback.
  * The button supports various click handlers for different interaction types.
  */
+@NullMarked
 public class DoubleDropButton extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
     private Function<MenuContext, ItemStack> dropItem;
 
+    @Nullable
     private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
+    @Nullable
     private Sound sound;
 
     private final int width, height;
 
+    @Nullable
     private BukkitTask dropTask;
 
     /**
@@ -99,7 +103,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onRemove(@NotNull MenuContext context) {
+    public void onRemove(MenuContext context) {
         if (this.dropTask != null)
             this.dropTask.cancel();
     }
@@ -116,7 +120,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -159,7 +163,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param event   the inventory click event
      * @param context the menu context
      */
-    private void handleDropClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    private void handleDropClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (this.dropTask != null) {
             this.dropTask.cancel();
             this.dropTask = null;
@@ -186,9 +190,8 @@ public class DoubleDropButton extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
         if (!this.visible())
             return items;
@@ -216,9 +219,8 @@ public class DoubleDropButton extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;
@@ -243,9 +245,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton item(@NotNull ItemStack item) {
+    public DoubleDropButton item(ItemStack item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = context -> item;
@@ -259,9 +260,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if dropItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton dropItem(@NotNull ItemStack dropItem) {
+    public DoubleDropButton dropItem(ItemStack dropItem) {
         Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
 
         this.dropItem = context -> dropItem;
@@ -275,9 +275,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton item(@NotNull Function<MenuContext, ItemStack> item) {
+    public DoubleDropButton item(Function<MenuContext, ItemStack> item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = item;
@@ -291,9 +290,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if dropItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
+    public DoubleDropButton dropItem(Function<MenuContext, ItemStack> dropItem) {
         Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
 
         this.dropItem = dropItem;
@@ -307,9 +305,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+    public DoubleDropButton onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
         Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
         this.onClick = onClick;
@@ -323,9 +320,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onLeftClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+    public DoubleDropButton onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
         Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
         this.onLeftClick = onLeftClick;
@@ -339,9 +335,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onRightClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+    public DoubleDropButton onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
         Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
         this.onRightClick = onRightClick;
@@ -355,9 +350,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onShiftLeftClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+    public DoubleDropButton onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
         Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
 
         this.onShiftLeftClick = onShiftLeftClick;
@@ -371,9 +365,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onShiftRightClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+    public DoubleDropButton onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
         Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
 
         this.onShiftRightClick = onShiftRightClick;
@@ -387,9 +380,8 @@ public class DoubleDropButton extends MenuComponent {
      * @return this double drop button for method chaining
      * @throws NullPointerException if onDoubleDrop is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
+    public DoubleDropButton onDoubleDrop(Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
         Preconditions.checkNotNull(onDoubleDrop, "onDoubleDrop cannot be null");
 
         this.onDoubleDrop = onDoubleDrop;
@@ -402,7 +394,6 @@ public class DoubleDropButton extends MenuComponent {
      * @param sound the sound to play, or null for no sound
      * @return this double drop button for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public DoubleDropButton sound(@Nullable Sound sound) {
         this.sound = sound;
@@ -437,7 +428,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param context the menu context
      * @return the normal item if no drop task is active, otherwise the drop item
      */
-    private ItemStack currentItem(@NotNull MenuContext context) {
+    private ItemStack currentItem(MenuContext context) {
         return this.dropTask == null ? this.item.apply(context) : this.dropItem.apply(context);
     }
 
@@ -446,7 +437,6 @@ public class DoubleDropButton extends MenuComponent {
      *
      * @return a new DoubleDropButton.Builder for constructing buttons
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -459,8 +449,10 @@ public class DoubleDropButton extends MenuComponent {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 
+        @Nullable
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
 
+        @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
                 BackwardUtils.UI_SOUND_SOURCE,
@@ -478,9 +470,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull ItemStack item) {
+        public Builder item(ItemStack item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = context -> item;
@@ -494,9 +485,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if dropItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder dropItem(@NotNull ItemStack dropItem) {
+        public Builder dropItem(ItemStack dropItem) {
             Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
 
             this.dropItem = context -> dropItem;
@@ -510,9 +500,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+        public Builder item(Function<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
@@ -526,9 +515,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if dropItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder dropItem(@NotNull Function<MenuContext, ItemStack> dropItem) {
+        public Builder dropItem(Function<MenuContext, ItemStack> dropItem) {
             Preconditions.checkNotNull(dropItem, "dropItem cannot be null");
 
             this.dropItem = dropItem;
@@ -542,9 +530,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        public Builder onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
             Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
             this.onClick = onClick;
@@ -558,9 +545,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onLeftClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        public Builder onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
             Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
             this.onLeftClick = onLeftClick;
@@ -574,9 +560,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onRightClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        public Builder onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
             Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
             this.onRightClick = onRightClick;
@@ -590,9 +575,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onShiftLeftClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        public Builder onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
             Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
 
             this.onShiftLeftClick = onShiftLeftClick;
@@ -606,9 +590,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onShiftRightClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        public Builder onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
             Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
 
             this.onShiftRightClick = onShiftRightClick;
@@ -622,9 +605,8 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onDoubleDrop is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onDoubleDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
+        public Builder onDoubleDrop(Consumer<NiveriaInventoryClickEvent> onDoubleDrop) {
             Preconditions.checkNotNull(onDoubleDrop, "onDoubleDrop cannot be null");
 
             this.onDoubleDrop = onDoubleDrop;
@@ -637,7 +619,6 @@ public class DoubleDropButton extends MenuComponent {
          * @param sound the sound to play, or null for no sound
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
@@ -651,7 +632,6 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -667,7 +647,6 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -684,7 +663,6 @@ public class DoubleDropButton extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -700,7 +678,6 @@ public class DoubleDropButton extends MenuComponent {
          *
          * @return a new DoubleDropButton with the specified configuration
          */
-        @NotNull
         public DoubleDropButton build() {
             return new DoubleDropButton(
                     this.id,

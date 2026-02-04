@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class LangBuilder {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin cannot be null");
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder logger(Logger logger) {
         Preconditions.checkNotNull(logger, "logger cannot be null");
 
@@ -43,11 +45,13 @@ public class LangBuilder {
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder cacheComponents(boolean cache) {
         this.cacheComponents = cache;
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder maxCacheSize(int size) {
         Preconditions.checkArgument(size > 0, "size must be positive");
 
@@ -55,21 +59,25 @@ public class LangBuilder {
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder cacheExpireAfterAccess(@Nullable Duration duration) {
         this.cacheExpireAfterAccess = duration;
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder cacheExpireAfterWrite(@Nullable Duration duration) {
         this.cacheExpireAfterWrite = duration;
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder recordStats(boolean recordStats) {
         this.recordStats = recordStats;
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder missingKeyBehavior(MissingKeyBehavior behavior) {
         Preconditions.checkNotNull(behavior, "behavior cannot be null");
 
@@ -77,6 +85,7 @@ public class LangBuilder {
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder langDirectory(String directory) {
         Preconditions.checkNotNull(directory, "directory cannot be null");
 
@@ -84,6 +93,7 @@ public class LangBuilder {
         return this;
     }
 
+    @Contract(value = "_ -> this", mutates = "this")
     public LangBuilder addDefaultLanguageFiles(String... files) {
         Preconditions.checkNotNull(files, "files cannot be null");
 
@@ -91,6 +101,7 @@ public class LangBuilder {
         return this;
     }
 
+    @Contract(value = "_, _ -> this", mutates = "this")
     public LangBuilder addTagResolver(String name, TagResolver resolver) {
         Preconditions.checkNotNull(name, "name cannot be null");
         Preconditions.checkNotNull(resolver, "resolver cannot be null");

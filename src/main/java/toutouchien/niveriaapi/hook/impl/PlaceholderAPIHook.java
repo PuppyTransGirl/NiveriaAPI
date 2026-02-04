@@ -3,17 +3,18 @@ package toutouchien.niveriaapi.hook.impl;
 import com.google.common.base.Preconditions;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 
 /**
  * Hook for integrating with PlaceholderAPI to replace placeholders in strings.
  */
+@NullMarked
 public class PlaceholderAPIHook extends Hook {
     private boolean enabled;
 
-    public PlaceholderAPIHook(@NotNull NiveriaAPI plugin) {
+    public PlaceholderAPIHook(NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -35,7 +36,7 @@ public class PlaceholderAPIHook extends Hook {
      * @param text The text containing placeholders.
      * @return The text with placeholders replaced.
      */
-    public String replacePlaceholders(@NotNull String text) {
+    public String replacePlaceholders(String text) {
         Preconditions.checkNotNull(text, "text cannot be null");
 
         if (!this.enabled)

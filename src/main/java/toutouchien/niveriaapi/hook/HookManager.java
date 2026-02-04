@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.util.Arrays;
@@ -21,6 +21,7 @@ import java.util.Map;
  * <p>
  * The manager also forwards lifecycle and player events to all active hooks.
  */
+@NullMarked
 public class HookManager {
     private final Map<String, Hook> hooks;
     private final NiveriaAPI plugin;
@@ -31,7 +32,7 @@ public class HookManager {
      *
      * @param plugin owning {@link NiveriaAPI} instance
      */
-    public HookManager(@NotNull NiveriaAPI plugin) {
+    public HookManager(NiveriaAPI plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
         this.plugin = plugin;
@@ -54,7 +55,7 @@ public class HookManager {
      *
      * @param type hook type to register
      */
-    public void registerHook(@NotNull HookType type) {
+    public void registerHook(HookType type) {
         Preconditions.checkNotNull(type, "type cannot be null");
 
         try {
@@ -81,7 +82,7 @@ public class HookManager {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T extends Hook> T hook(@NotNull HookType hookType) {
+    public <T extends Hook> T hook(HookType hookType) {
         Preconditions.checkNotNull(hookType, "hookType cannot be null");
 
         Hook hook = this.hooks.get(hookType.name());

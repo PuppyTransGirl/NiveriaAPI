@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.annotations.Overexcited;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -19,13 +19,16 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * This class provides a framework for building interactive inventory-based menus
  * with component-based rendering and event handling.
  */
+@NullMarked
 public abstract class Menu implements InventoryHolder {
+    @Nullable
     private Inventory inventory;
     private final Player player;
     protected final MenuContext context;
 
     private final Object2ObjectOpenHashMap<String, MenuComponent> componentIDs;
 
+    @Nullable
     private MenuComponent root;
 
     /**
@@ -34,7 +37,7 @@ public abstract class Menu implements InventoryHolder {
      * @param player the player who will interact with this menu
      * @throws NullPointerException if player is null
      */
-    protected Menu(@NotNull Player player) {
+    protected Menu(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
@@ -49,7 +52,7 @@ public abstract class Menu implements InventoryHolder {
 	 * @param context the menu context for component interaction
 	 * @throws NullPointerException if player or context is null
 	 */
-	protected Menu(@NotNull Player player, @NotNull MenuContext context) {
+    protected Menu(Player player, MenuContext context) {
 		Preconditions.checkNotNull(player, "player cannot be null");
 		Preconditions.checkNotNull(context, "context cannot be null");
 
@@ -125,7 +128,7 @@ public abstract class Menu implements InventoryHolder {
      * @throws NullPointerException if event is null
      */
     @Overexcited(reason = "Calls render on each click")
-    public void handleClick(@NotNull NiveriaInventoryClickEvent event) {
+    public void handleClick(NiveriaInventoryClickEvent event) {
         Preconditions.checkNotNull(event, "event cannot be null");
 
         this.root.onClick(event, this.context);
@@ -144,7 +147,7 @@ public abstract class Menu implements InventoryHolder {
      * @param component the menu component to register
      * @throws NullPointerException if id or component is null
      */
-    public void registerComponentID(@NotNull String id, @NotNull MenuComponent component) {
+    public void registerComponentID(String id, MenuComponent component) {
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkArgument(!id.isEmpty(), "id cannot be empty");
         Preconditions.checkNotNull(component, "component cannot be null");
@@ -161,7 +164,7 @@ public abstract class Menu implements InventoryHolder {
      * @param id the unique identifier of the component to unregister
      * @throws NullPointerException if id is null
      */
-    public void unregisterComponentID(@NotNull String id) {
+    public void unregisterComponentID(String id) {
         Preconditions.checkNotNull(id, "id cannot be null");
 
         this.componentIDs.remove(id);
@@ -174,7 +177,6 @@ public abstract class Menu implements InventoryHolder {
      *
      * @return the title component displayed at the top of the inventory
      */
-    @NotNull
     protected abstract Component title();
 
     /**
@@ -198,8 +200,7 @@ public abstract class Menu implements InventoryHolder {
      * @param context the menu context for component interaction
      * @return the root component that defines the menu's structure
      */
-    @NotNull
-    protected abstract MenuComponent root(@NotNull MenuContext context);
+    protected abstract MenuComponent root(MenuContext context);
 
     /**
      * Called when the menu is opened.
@@ -226,7 +227,6 @@ public abstract class Menu implements InventoryHolder {
      *
      * @return the player who owns this menu
      */
-    @NotNull
     public Player player() {
         return player;
     }
@@ -236,7 +236,6 @@ public abstract class Menu implements InventoryHolder {
      *
      * @return the menu context used for component interaction
      */
-    @NotNull
     public MenuContext context() {
         return context;
     }
@@ -249,7 +248,7 @@ public abstract class Menu implements InventoryHolder {
      * @throws NullPointerException if id is null
      */
     @Nullable
-    public MenuComponent componentByID(@NotNull String id) {
+    public MenuComponent componentByID(String id) {
         Preconditions.checkNotNull(id, "id cannot be null");
 
         return this.componentIDs.get(id);
@@ -262,7 +261,6 @@ public abstract class Menu implements InventoryHolder {
      *
      * @return the inventory instance for this menu
      */
-    @NotNull
     @Override
     public Inventory getInventory() {
         if (this.inventory == null)

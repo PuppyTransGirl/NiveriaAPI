@@ -10,7 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +22,7 @@ import java.util.function.Consumer;
  * When a player has an active input request, their next chat message will be
  * intercepted and processed by the registered consumer.
  */
+@NullMarked
 public class ChatInputManager implements Listener {
     private final Map<UUID, Consumer<String>> inputRequests = new ConcurrentHashMap<>();
 
@@ -64,7 +65,7 @@ public class ChatInputManager implements Listener {
      * @param player The player to request input from
      * @param action The consumer to process the player's input
      */
-    public void requestInput(@NotNull Player player, @NotNull Consumer<String> action) {
+    public void requestInput(Player player, Consumer<String> action) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(action, "action cannot be null");
 
@@ -77,7 +78,7 @@ public class ChatInputManager implements Listener {
      * @param player The player whose input request should be canceled
      * @return true if a request was canceled, false otherwise
      */
-    public boolean cancelRequest(@NotNull Player player) {
+    public boolean cancelRequest(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         return inputRequests.remove(player.getUniqueId()) != null;
@@ -89,7 +90,7 @@ public class ChatInputManager implements Listener {
      * @param player The player to check
      * @return true if the player has an active input request, false otherwise
      */
-    public boolean hasActiveRequest(@NotNull Player player) {
+    public boolean hasActiveRequest(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         return inputRequests.containsKey(player.getUniqueId());
@@ -100,7 +101,7 @@ public class ChatInputManager implements Listener {
      *
      * @param player The player whose input request should be removed
      */
-    private void cleanupRequest(@NotNull Player player) {
+    private void cleanupRequest(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         inputRequests.remove(player.getUniqueId());

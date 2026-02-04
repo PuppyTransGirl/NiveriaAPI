@@ -5,8 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -25,6 +25,7 @@ import java.util.function.Consumer;
  * </ul>
  * Instances are typically created and managed by a dedicated delay manager.
  */
+@NullMarked
 public class Delay {
     private final Player player;
 
@@ -32,7 +33,9 @@ public class Delay {
     private final Component movedText;
     private final Component alreadyHasDelayText;
 
+    @Nullable
     private final Consumer<Player> successConsumer;
+    @Nullable
     private final Consumer<Player> failConsumer;
     private final Location originalLocation;
     private final boolean cancelOnMove;
@@ -57,10 +60,10 @@ public class Delay {
      * @param title               whether the main delay text should be sent as a title
      */
     Delay(
-            @NotNull Player player,
-            @NotNull Component text,
-            @NotNull Component movedText,
-            @NotNull Component alreadyHasDelayText,
+            Player player,
+            Component text,
+            Component movedText,
+            Component alreadyHasDelayText,
             @Nullable Consumer<Player> successConsumer,
             @Nullable Consumer<Player> failConsumer,
             @Positive int delay,
@@ -102,7 +105,6 @@ public class Delay {
      *
      * @return non-null player
      */
-    @NotNull
     public Player player() {
         return player;
     }
@@ -113,7 +115,6 @@ public class Delay {
      *
      * @return non-null main delay message
      */
-    @NotNull
     public Component text() {
         return text;
     }
@@ -124,7 +125,6 @@ public class Delay {
      *
      * @return non-null movement cancellation message
      */
-    @NotNull
     public Component movedText() {
         return movedText;
     }
@@ -135,7 +135,6 @@ public class Delay {
      *
      * @return non-null "already has delay" message
      */
-    @NotNull
     public Component alreadyHasDelayText() {
         return alreadyHasDelayText;
     }
@@ -170,7 +169,6 @@ public class Delay {
      *
      * @return non-null original location
      */
-    @NotNull
     public Location originalLocation() {
         return originalLocation;
     }

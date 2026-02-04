@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -29,21 +29,21 @@ public class ItemSelectorMenu extends Menu {
         this.materialConsumer = materialConsumer;
     }
 
-    public ItemSelectorMenu(@NotNull Player player, @NotNull MenuContext context, Consumer<Material> materialConsumer) {
+    public ItemSelectorMenu(@NonNull Player player, @NonNull MenuContext context, Consumer<Material> materialConsumer) {
         super(player, context);
 
         this.materialConsumer = materialConsumer;
     }
 
-    @NotNull
+    @NonNull
     @Override
     protected Component title() {
         return LANG.get("homeplugin.menu_item_selector.title");
     }
 
-    @NotNull
+    @NonNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(@NonNull MenuContext context) {
         World world = this.player().getWorld();
         Paginator paginator = Paginator.create()
                 .size(7, 3)

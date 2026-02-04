@@ -1,6 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -78,7 +78,7 @@ public class Pair<K, V> {
      * @return The Pair with swapped key and value.
      */
     @SuppressWarnings("unchecked")
-    @NotNull
+    @NonNull
     public Pair<K, V> swap() {
         K tempKey = this.key;
         this.key = (K) this.value;
@@ -125,7 +125,7 @@ public class Pair<K, V> {
      *
      * @return A new Pair with the same key and value.
      */
-    @NotNull
+    @NonNull
     public Pair<K, V> copy() {
         return new Pair<>(key, value);
     }

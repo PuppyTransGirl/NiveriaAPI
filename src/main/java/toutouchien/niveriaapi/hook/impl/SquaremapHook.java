@@ -2,7 +2,8 @@ package toutouchien.niveriaapi.hook.impl;
 
 import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import xyz.jpenilla.squaremap.api.Squaremap;
@@ -10,11 +11,13 @@ import xyz.jpenilla.squaremap.api.SquaremapProvider;
 
 import java.util.UUID;
 
+@NullMarked
 public class SquaremapHook extends Hook {
     private boolean enabled;
+    @Nullable
     private Squaremap squaremap;
 
-    public SquaremapHook(@NotNull NiveriaAPI plugin) {
+    public SquaremapHook(NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -31,7 +34,7 @@ public class SquaremapHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from Squaremap");
     }
 
-    public void setHidden(@NotNull UUID uuid, boolean hidden, boolean persistent) {
+    public void setHidden(UUID uuid, boolean hidden, boolean persistent) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         if (!this.enabled)
@@ -40,7 +43,7 @@ public class SquaremapHook extends Hook {
         this.squaremap.playerManager().hidden(uuid, hidden, persistent);
     }
 
-    public void setHidden(@NotNull Player player, boolean hidden, boolean persistent) {
+    public void setHidden(Player player, boolean hidden, boolean persistent) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.setHidden(player.getUniqueId(), hidden, persistent);

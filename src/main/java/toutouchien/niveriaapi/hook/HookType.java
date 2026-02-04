@@ -1,13 +1,14 @@
 package toutouchien.niveriaapi.hook;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.hook.impl.*;
 
 /**
  * Enum representing different types of hooks into external plugins or systems.
  */
 @SuppressWarnings("java:S115")
+@NullMarked
 public enum HookType {
     BlueMapHook(BlueMapHook.class, "BlueMap"),
     DynmapHook(DynmapHook.class, "dynmap"),
@@ -21,7 +22,7 @@ public enum HookType {
     private final Class<? extends Hook> hookClazz;
     private final String pluginName;
 
-    HookType(@NotNull Class<? extends Hook> hookClazz, @NotNull String pluginName) {
+    HookType(Class<? extends Hook> hookClazz, String pluginName) {
         Preconditions.checkNotNull(hookClazz, "hookClazz cannot be null");
         Preconditions.checkNotNull(pluginName, "pluginName cannot be null");
 
@@ -34,7 +35,6 @@ public enum HookType {
      *
      * @return The hook class.
      */
-    @NotNull
     public Class<? extends Hook> hookClass() {
         return hookClazz;
     }
@@ -44,7 +44,6 @@ public enum HookType {
      *
      * @return The plugin name.
      */
-    @NotNull
     public String pluginName() {
         return pluginName;
     }

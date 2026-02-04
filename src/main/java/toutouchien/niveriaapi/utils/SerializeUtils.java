@@ -6,8 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.io.*;
@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * Utility class for serializing and deserializing various objects.
  */
+@NullMarked
 public class SerializeUtils {
     private SerializeUtils() {
         throw new IllegalStateException("Utility class");
@@ -27,7 +28,7 @@ public class SerializeUtils {
      * @param itemStack The ItemStack to serialize.
      * @return The serialized byte array.
      */
-    public static byte @NotNull [] serializeItemStack(@NotNull ItemStack itemStack) {
+    public static byte[] serializeItemStack(ItemStack itemStack) {
         Preconditions.checkNotNull(itemStack, "itemStack cannot be null");
 
         return itemStack.serializeAsBytes();
@@ -40,7 +41,7 @@ public class SerializeUtils {
      * @return The deserialized ItemStack, or null if deserialization fails.
      */
     @Nullable
-    public static ItemStack deserializeItemStack(byte @NotNull [] serializedItemStack) {
+    public static ItemStack deserializeItemStack(byte[] serializedItemStack) {
         Preconditions.checkNotNull(serializedItemStack, "serializedItemStack cannot be null");
 
         return ItemStack.deserializeBytes(serializedItemStack);
@@ -52,7 +53,7 @@ public class SerializeUtils {
      * @param itemStacks The array of ItemStacks to serialize.
      * @return The serialized byte array.
      */
-    public static byte @NotNull [] serializeItemStacks(@NotNull ItemStack[] itemStacks) {
+    public static byte[] serializeItemStacks(ItemStack[] itemStacks) {
         Preconditions.checkNotNull(itemStacks, "itemStacks cannot be null");
 
         return ItemStack.serializeItemsAsBytes(itemStacks);
@@ -64,8 +65,7 @@ public class SerializeUtils {
      * @param serializedItemStacks The byte array to deserialize.
      * @return The deserialized array of ItemStacks.
      */
-    @NotNull
-    public static ItemStack[] deserializeItemStacks(byte @NotNull [] serializedItemStacks) {
+    public static ItemStack[] deserializeItemStacks(byte[] serializedItemStacks) {
         Preconditions.checkNotNull(serializedItemStacks, "serializedItemStacks cannot be null");
 
         return ItemStack.deserializeItemsFromBytes(serializedItemStacks);
@@ -77,7 +77,7 @@ public class SerializeUtils {
      * @param location The Location to serialize.
      * @return The serialized byte array.
      */
-    public static byte @NotNull [] serializeLocation(@NotNull Location location) {
+    public static byte[] serializeLocation(Location location) {
         Preconditions.checkNotNull(location, "location cannot be null");
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream out = new DataOutputStream(baos)) {
@@ -111,8 +111,7 @@ public class SerializeUtils {
      * @param serializedLocation The byte array to deserialize.
      * @return The deserialized Location.
      */
-    @NotNull
-    public static Location deserializeLocation(byte @NotNull [] serializedLocation) {
+    public static Location deserializeLocation(byte[] serializedLocation) {
         Preconditions.checkNotNull(serializedLocation, "serializedLocation cannot be null");
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedLocation); DataInputStream in = new DataInputStream(bais)) {
@@ -144,7 +143,7 @@ public class SerializeUtils {
      * @param vector The Vector to serialize.
      * @return The serialized byte array.
      */
-    public static byte @NotNull [] serializeVector(@NotNull Vector vector) {
+    public static byte[] serializeVector(Vector vector) {
         Preconditions.checkNotNull(vector, "vector cannot be null");
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream out = new DataOutputStream(baos)) {
@@ -165,8 +164,7 @@ public class SerializeUtils {
      * @param serializedVector The byte array to deserialize.
      * @return The deserialized Vector.
      */
-    @NotNull
-    public static Vector deserializeVector(byte @NotNull [] serializedVector) {
+    public static Vector deserializeVector(byte[] serializedVector) {
         Preconditions.checkNotNull(serializedVector, "serializedVector cannot be null");
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedVector); DataInputStream in = new DataInputStream(bais)) {

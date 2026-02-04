@@ -1,6 +1,6 @@
 package toutouchien.niveriaapi.mock;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.command.CommandMapMock;
 
@@ -14,7 +14,8 @@ public class ServerMock extends org.mockbukkit.mockbukkit.ServerMock {
     }
 
     @Override
-    public @NotNull CommandMapMock getCommandMap() {
+    @NonNull
+    public CommandMapMock getCommandMap() {
         return this.commandMap;
     }
 

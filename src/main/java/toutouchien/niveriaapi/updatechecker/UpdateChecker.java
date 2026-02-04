@@ -7,8 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 import toutouchien.niveriaapi.utils.Task;
@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static toutouchien.niveriaapi.NiveriaAPI.LANG;
 
+@NullMarked
 public class UpdateChecker {
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
@@ -38,7 +39,7 @@ public class UpdateChecker {
     private boolean noNewVersion;
 
     @SuppressWarnings("java:S112")
-    public UpdateChecker(@NotNull JavaPlugin plugin, @NotNull String modrinthID, @NotNull String langKey) {
+    public UpdateChecker(JavaPlugin plugin, String modrinthID, String langKey) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(modrinthID, "modrinthID cannot be null");
         Preconditions.checkNotNull(langKey, "langKey cannot be null");

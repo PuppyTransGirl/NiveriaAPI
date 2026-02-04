@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -24,9 +24,11 @@ import java.util.function.Consumer;
  * The layout positions the no button on the left (slot 11), yes button on the right (slot 15),
  * and the optional explanation item in the center (slot 13).
  */
+@NullMarked
 public class ConfirmationMenu extends Menu {
     private final Component title;
     private final ItemStack yesItem, noItem;
+    @Nullable
     private final ItemStack explanationItem;
     private final Consumer<NiveriaInventoryClickEvent> yesConsumer, noConsumer;
 
@@ -43,11 +45,11 @@ public class ConfirmationMenu extends Menu {
      * @throws NullPointerException if any required parameter is null
      */
     public ConfirmationMenu(
-            @NotNull Player player,
-            @NotNull Component title,
-            @NotNull ItemStack yesItem, @NotNull ItemStack noItem,
+            Player player,
+            Component title,
+            ItemStack yesItem, ItemStack noItem,
             @Nullable ItemStack explanationItem,
-            @NotNull Consumer<NiveriaInventoryClickEvent> yesConsumer, @NotNull Consumer<NiveriaInventoryClickEvent> noConsumer
+            Consumer<NiveriaInventoryClickEvent> yesConsumer, Consumer<NiveriaInventoryClickEvent> noConsumer
     ) {
         super(player);
 
@@ -73,7 +75,6 @@ public class ConfirmationMenu extends Menu {
      *
      * @return the title component
      */
-    @NotNull
     @Override
     protected Component title() {
         return this.title;
@@ -90,9 +91,8 @@ public class ConfirmationMenu extends Menu {
      * @param context the menu context
      * @return the root grid component containing all menu elements
      */
-    @NotNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(MenuContext context) {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
                 .add(context, 11, noButton())
@@ -109,7 +109,6 @@ public class ConfirmationMenu extends Menu {
      *
      * @return a button component configured with the yes item and click handler
      */
-    @NotNull
     private Button yesButton() {
         return Button.create()
                 .item(this.yesItem)
@@ -122,7 +121,6 @@ public class ConfirmationMenu extends Menu {
      *
      * @return a button component configured with the no item and click handler
      */
-    @NotNull
     private Button noButton() {
         return Button.create()
                 .item(this.noItem)
@@ -135,7 +133,6 @@ public class ConfirmationMenu extends Menu {
      *
      * @return an icon component displaying the explanation item
      */
-    @NotNull
     private Icon explanationIcon() {
         return Icon.create()
                 .item(this.explanationItem)

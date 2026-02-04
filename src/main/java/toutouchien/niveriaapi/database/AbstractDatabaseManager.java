@@ -10,8 +10,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import toutouchien.niveriaapi.database.exception.DefaultDocumentGenerationException;
 
@@ -28,6 +28,7 @@ import java.util.function.Supplier;
  * on documents within specified collections, with support for default
  * document creation and dot-notation key access.
  */
+@NullMarked
 public class AbstractDatabaseManager {
     private final Plugin plugin;
     private final Logger logger;
@@ -42,7 +43,7 @@ public class AbstractDatabaseManager {
      * @param plugin        plugin used for scheduler and logging
      * @param mongoDatabase MongoDB database instance
      */
-    public AbstractDatabaseManager(@NotNull Plugin plugin, @NotNull MongoDatabase mongoDatabase) {
+    public AbstractDatabaseManager(Plugin plugin, MongoDatabase mongoDatabase) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(mongoDatabase, "mongoDatabase cannot be null");
 
@@ -64,7 +65,7 @@ public class AbstractDatabaseManager {
      * @param collection              collection name
      * @param defaultDocumentSupplier supplier creating a new default document
      */
-    public void registerDefault(@NotNull String collection, @NotNull Supplier<Document> defaultDocumentSupplier) {
+    public void registerDefault(String collection, Supplier<Document> defaultDocumentSupplier) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(defaultDocumentSupplier, "defaultDocumentSupplier cannot be null");
 
@@ -89,7 +90,7 @@ public class AbstractDatabaseManager {
      * @return the value, or {@code null} if not found or type mismatch
      */
     @Nullable
-    public <T> T get(@NotNull String collection, @NotNull String id, @NotNull String key) {
+    public <T> T get(String collection, String id, String key) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -106,7 +107,7 @@ public class AbstractDatabaseManager {
      * @return the value, or {@code null} if not found or type mismatch
      */
     @Nullable
-    public <T> T get(@NotNull Document document, @NotNull String key) {
+    public <T> T get(Document document, String key) {
         Preconditions.checkNotNull(document, "document cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -124,7 +125,7 @@ public class AbstractDatabaseManager {
      * @return found value or {@code defaultValue}
      */
     @Nullable
-    public <T> T getOrDefault(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T defaultValue) {
+    public <T> T getOrDefault(String collection, String id, String key, @Nullable T defaultValue) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -147,7 +148,7 @@ public class AbstractDatabaseManager {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T getOrDefault(@NotNull Document document, @NotNull String key, @Nullable T defaultValue) {
+    public <T> T getOrDefault(Document document, String key, @Nullable T defaultValue) {
         Preconditions.checkNotNull(document, "document cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -194,7 +195,7 @@ public class AbstractDatabaseManager {
      * @param value      value to set (may be {@code null})
      * @param <T>        value type
      */
-    public <T> void set(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T value) {
+    public <T> void set(String collection, String id, String key, @Nullable T value) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -219,7 +220,7 @@ public class AbstractDatabaseManager {
      * @param value      value to set
      * @param <T>        value type
      */
-    public <T> void set(@NotNull String collection, @NotNull String id, @NotNull Document document, @NotNull String key, @Nullable T value) {
+    public <T> void set(String collection, String id, Document document, String key, @Nullable T value) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(document, "document cannot be null");
@@ -238,7 +239,7 @@ public class AbstractDatabaseManager {
      * @param id         document id
      * @param key        dot-separated key path
      */
-    public void remove(@NotNull String collection, @NotNull String id, @NotNull String key) {
+    public void remove(String collection, String id, String key) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -269,7 +270,7 @@ public class AbstractDatabaseManager {
      * @param collection collection name
      * @param id         document id
      */
-    public void remove(@NotNull String collection, @NotNull String id) {
+    public void remove(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -288,7 +289,7 @@ public class AbstractDatabaseManager {
      * @param id         document id
      * @param document   new document to store
      */
-    public void document(@NotNull String collection, @NotNull String id, @NotNull Document document) {
+    public void document(String collection, String id, Document document) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(document, "document cannot be null");
@@ -326,7 +327,7 @@ public class AbstractDatabaseManager {
      * @return document or {@code null} if it does not exist
      */
     @Nullable
-    public Document document(@NotNull String collection, @NotNull String id) {
+    public Document document(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -343,8 +344,7 @@ public class AbstractDatabaseManager {
      * @return existing or newly created default document
      * @throws IllegalStateException if no default supplier is registered
      */
-    @NotNull
-    public Document documentOrDefault(@NotNull String collection, @NotNull String id) {
+    public Document documentOrDefault(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -364,8 +364,7 @@ public class AbstractDatabaseManager {
      * @return inserted document
      * @throws IllegalStateException if no default supplier exists for the collection
      */
-    @NotNull
-    public Document createDefaultDocument(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> consumer) {
+    public Document createDefaultDocument(String collection, String id, @Nullable Consumer<Document> consumer) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -395,7 +394,7 @@ public class AbstractDatabaseManager {
      * @param id         document id
      * @return {@code true} if the document exists, {@code false} otherwise
      */
-    public boolean documentExists(@NotNull String collection, @NotNull String id) {
+    public boolean documentExists(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -415,8 +414,8 @@ public class AbstractDatabaseManager {
      * @param <T>        expected type
      * @return future completed with the value or {@code null}
      */
-    @NotNull
-    public <T> CompletableFuture<T> getAsync(@NotNull String collection, @NotNull String id, @NotNull String key) {
+    @Nullable
+    public <T> CompletableFuture<T> getAsync(String collection, String id, String key) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -433,8 +432,7 @@ public class AbstractDatabaseManager {
      * @param <T>      expected type
      * @return completed future with the value or {@code null}
      */
-    @NotNull
-    public <T> CompletableFuture<T> getAsync(@NotNull Document document, @NotNull String key) {
+    public <T> CompletableFuture<T> getAsync(Document document, String key) {
         Preconditions.checkNotNull(document, "document cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -452,8 +450,8 @@ public class AbstractDatabaseManager {
      * @param <T>          expected type
      * @return future with value or {@code defaultValue}
      */
-    @NotNull
-    public <T> CompletableFuture<T> getOrDefaultAsync(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T defaultValue) {
+    @Nullable
+    public <T> CompletableFuture<T> getOrDefaultAsync(String collection, String id, String key, @Nullable T defaultValue) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -477,8 +475,7 @@ public class AbstractDatabaseManager {
      * @return future completed with {@code true} on success, {@code false}
      * if the document does not exist or key is invalid
      */
-    @NotNull
-    public <T> CompletableFuture<Boolean> setAsync(@NotNull String collection, @NotNull String id, @NotNull String key, @Nullable T value) {
+    public <T> CompletableFuture<Boolean> setAsync(String collection, String id, String key, @Nullable T value) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -506,8 +503,7 @@ public class AbstractDatabaseManager {
      * @return future completed with {@code true} if successfully updated,
      * {@code false} on validation error or missing document
      */
-    @NotNull
-    public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id, @NotNull String key) {
+    public CompletableFuture<Boolean> removeAsync(String collection, String id, String key) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
@@ -540,8 +536,7 @@ public class AbstractDatabaseManager {
      * @return future completed with {@code true} if the delete was attempted
      * successfully, or exceptionally on Mongo errors
      */
-    @NotNull
-    public CompletableFuture<Boolean> removeAsync(@NotNull String collection, @NotNull String id) {
+    public CompletableFuture<Boolean> removeAsync(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -571,8 +566,7 @@ public class AbstractDatabaseManager {
      * @return future completed with {@code true} if the replace was acknowledged
      * and a document was matched, {@code false} otherwise
      */
-    @NotNull
-    public CompletableFuture<Boolean> documentAsync(@NotNull String collection, @NotNull String id, @NotNull Document document) {
+    public CompletableFuture<Boolean> documentAsync(String collection, String id, Document document) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(document, "document cannot be null");
@@ -622,8 +616,7 @@ public class AbstractDatabaseManager {
      * @return future completed with the document or {@code null} on not found;
      * future may complete exceptionally on unexpected errors
      */
-    @NotNull
-    public CompletableFuture<Document> documentAsync(@NotNull String collection, @NotNull String id) {
+    public CompletableFuture<@Nullable Document> documentAsync(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -657,8 +650,7 @@ public class AbstractDatabaseManager {
      * @param id         document id
      * @return future completed with existing or newly created document
      */
-    @NotNull
-    public CompletableFuture<Document> documentOrDefaultAsync(@NotNull String collection, @NotNull String id) {
+    public CompletableFuture<Document> documentOrDefaultAsync(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -679,8 +671,7 @@ public class AbstractDatabaseManager {
      * @param modifier   optional modifier run before insertion
      * @return future completed with the inserted or existing document
      */
-    @NotNull
-    public CompletableFuture<Document> createDefaultDocumentAsync(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> modifier) {
+    public CompletableFuture<Document> createDefaultDocumentAsync(String collection, String id, @Nullable Consumer<Document> modifier) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -709,8 +700,7 @@ public class AbstractDatabaseManager {
      * {@code false} on not found or Mongo error; may complete exceptionally
      * on unexpected errors
      */
-    @NotNull
-    public CompletableFuture<Boolean> documentExistsAsync(@NotNull String collection, @NotNull String id) {
+    public CompletableFuture<Boolean> documentExistsAsync(String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -742,7 +732,7 @@ public class AbstractDatabaseManager {
      * @return cached or newly resolved collection
      */
     @Nullable
-    public MongoCollection<Document> collection(@NotNull String collection) {
+    public MongoCollection<Document> collection(String collection) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
 
         return this.collectionCache.computeIfAbsent(collection, name -> {
@@ -766,7 +756,7 @@ public class AbstractDatabaseManager {
      * @return {@code true} if the value structure was updated, {@code false}
      * on validation or type errors
      */
-    private <T> boolean setValueInDocument(@NotNull Document document, @NotNull String key, @Nullable T value, @NotNull String collection, @NotNull String id) {
+    private <T> boolean setValueInDocument(Document document, String key, @Nullable T value, String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(document, "document cannot be null");
@@ -814,8 +804,7 @@ public class AbstractDatabaseManager {
      * @return generated document with {@code _id} set
      * @throws DefaultDocumentGenerationException if supplier is missing or fails
      */
-    @NotNull
-    private Document generateDefaultDocumentStructure(@NotNull String collection, @NotNull String id, @Nullable Consumer<Document> modifier) throws DefaultDocumentGenerationException {
+    private Document generateDefaultDocumentStructure(String collection, String id, @Nullable Consumer<Document> modifier) throws DefaultDocumentGenerationException {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
 
@@ -853,7 +842,7 @@ public class AbstractDatabaseManager {
      * @param collection       collection name
      * @param id               document id
      */
-    private void insertDocumentAndCompleteFuture(@NotNull CompletableFuture<Document> future, @NotNull Document documentToInsert, @NotNull String collection, @NotNull String id) {
+    private void insertDocumentAndCompleteFuture(CompletableFuture<Document> future, Document documentToInsert, String collection, String id) {
         Preconditions.checkNotNull(future, "future cannot be null");
         Preconditions.checkNotNull(documentToInsert, "documentToInsert cannot be null");
         Preconditions.checkNotNull(collection, "collection cannot be null");
@@ -890,7 +879,7 @@ public class AbstractDatabaseManager {
      * @param id                    document id
      * @param duplicateKeyException the original Mongo duplicate key exception
      */
-    private void handleDuplicateKeyCompletion(@NotNull CompletableFuture<Document> future, @NotNull String collection, @NotNull String id, @NotNull MongoException duplicateKeyException) {
+    private void handleDuplicateKeyCompletion(CompletableFuture<Document> future, String collection, String id, MongoException duplicateKeyException) {
         Preconditions.checkNotNull(future, "future cannot be null");
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
@@ -924,7 +913,7 @@ public class AbstractDatabaseManager {
      * @param id         document id (for logging)
      * @return {@code true} if the value was removed, {@code false} on errors
      */
-    private boolean removeValueInDocument(@NotNull Document document, @NotNull String key, @NotNull String collection, @NotNull String id) {
+    private boolean removeValueInDocument(Document document, String key, String collection, String id) {
         Preconditions.checkNotNull(collection, "collection cannot be null");
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkNotNull(document, "document cannot be null");

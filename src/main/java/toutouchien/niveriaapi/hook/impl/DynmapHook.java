@@ -3,15 +3,18 @@ package toutouchien.niveriaapi.hook.impl;
 import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 import org.dynmap.DynmapAPI;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 
 /**
  * Hook for integrating with the Dynmap plugin to manage player visibility on the map.
  */
+@NullMarked
 public class DynmapHook extends Hook {
     private boolean enabled;
+    @Nullable
     private DynmapAPI dynmap;
 
     /**
@@ -19,7 +22,7 @@ public class DynmapHook extends Hook {
      *
      * @param plugin The NiveriaAPI plugin instance.
      */
-    public DynmapHook(@NotNull NiveriaAPI plugin) {
+    public DynmapHook(NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -42,7 +45,7 @@ public class DynmapHook extends Hook {
      * @param player The player whose visibility is to be set.
      * @param hidden True to hide the player, false to show them.
      */
-    public void hidden(@NotNull Player player, boolean hidden) {
+    public void hidden(Player player, boolean hidden) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         if (!this.enabled)

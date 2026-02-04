@@ -3,7 +3,7 @@ package toutouchien.homeplugin.menus;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import toutouchien.homeplugin.managers.HomeManager;
 import toutouchien.homeplugin.models.Home;
 import toutouchien.niveriaapi.lang.Lang;
@@ -26,7 +26,7 @@ public class HomesMenu extends Menu {
      * @param player the player who will interact with this menu
      * @throws NullPointerException if player is null
      */
-    public HomesMenu(@NotNull Player player, @NotNull HomeManager homeManager) {
+    public HomesMenu(@NonNull Player player, @NonNull HomeManager homeManager) {
         super(player);
 
         this.homeManager = homeManager;
@@ -39,8 +39,9 @@ public class HomesMenu extends Menu {
      *
      * @return the title component displayed at the top of the inventory
      */
+    @NonNull
     @Override
-    protected @NotNull Component title() {
+    protected Component title() {
         return LANG.get("homeplugin.menu.title");
     }
 
@@ -54,7 +55,7 @@ public class HomesMenu extends Menu {
      * @return the root component that defines the menu's structure
      */
     @Override
-    protected @NotNull MenuComponent root(@NotNull MenuContext context) {
+    protected @NonNull MenuComponent root(@NonNull MenuContext context) {
         Paginator paginator = Paginator.create()
                 .size(5, 2)
                 .nextItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu.next")).build())
