@@ -21,6 +21,7 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  */
 @NullMarked
 public abstract class MenuComponent {
+    @Nullable
     private final String id;
 
     private boolean visible = true;
