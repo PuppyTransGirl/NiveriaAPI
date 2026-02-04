@@ -110,17 +110,17 @@ Minimal snippets to get you started with NiveriaAPI features.
 
 ```java
 public class MenuTest extends Menu {
-    public MenuTest(@NotNull Player player) {
+    public MenuTest(@NonNull Player player) {
         super(player);
     }
 
     @Override
-    protected @NotNull Component title() {
+    protected @NonNull Component title() {
         return Component.text("My menu :3");
     }
 
     @Override
-    protected @NotNull MenuComponent root(@NotNull MenuContext context) {
+    protected @NonNull MenuComponent root(@NonNull MenuContext context) {
         // Create a button that sends a message when clicked
         Button button = Button.create()
                 .item(ItemBuilder.of(Material.DIAMOND_BLOCK)

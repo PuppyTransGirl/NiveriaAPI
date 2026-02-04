@@ -55,7 +55,7 @@ public class HomesMenu extends Menu {
      * @return the root component that defines the menu's structure
      */
     @Override
-    protected @NotNull MenuComponent root(@NotNull MenuContext context) {
+    protected @NonNull MenuComponent root(@NonNull MenuContext context) {
         Paginator paginator = Paginator.create()
                 .size(5, 2)
                 .nextItem(ItemBuilder.of(Material.ARROW).name(LANG.get("homeplugin.menu.next")).build())

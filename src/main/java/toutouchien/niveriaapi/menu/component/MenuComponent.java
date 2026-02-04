@@ -249,7 +249,6 @@ public abstract class MenuComponent {
          * @throws NullPointerException if id is null
          */
         @SuppressWarnings("unchecked")
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public T id(String id) {
             Preconditions.checkNotNull(id, "id cannot be null");

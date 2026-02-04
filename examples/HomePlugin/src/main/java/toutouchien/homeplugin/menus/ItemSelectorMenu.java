@@ -29,7 +29,7 @@ public class ItemSelectorMenu extends Menu {
         this.materialConsumer = materialConsumer;
     }
 
-    public ItemSelectorMenu(@NonNullPlayer player, @NonNull MenuContext context, Consumer<Material> materialConsumer) {
+    public ItemSelectorMenu(@NonNull Player player, @NonNull MenuContext context, Consumer<Material> materialConsumer) {
         super(player, context);
 
         this.materialConsumer = materialConsumer;
@@ -43,7 +43,7 @@ public class ItemSelectorMenu extends Menu {
 
     @NonNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(@NonNull MenuContext context) {
         World world = this.player().getWorld();
         Paginator paginator = Paginator.create()
                 .size(7, 3)

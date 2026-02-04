@@ -75,7 +75,6 @@ public enum NaturalFlags {
      *
      * @return the original NaturalFlag object
      */
-    @NotNull
     public NaturalFlag flag() {
         return flag;
     }
