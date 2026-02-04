@@ -3,7 +3,7 @@ package toutouchien.niveriaapi.hook.impl;
 import net.luckperms.api.LuckPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.luckperms.LuckPermsMetaCache;
@@ -13,6 +13,7 @@ import toutouchien.niveriaapi.hook.impl.luckperms.SimpleMetaCache;
 /**
  * Hook for integrating with the LuckPerms plugin to manage metadata caching.
  */
+@NullMarked
 public class LuckPermsHook extends Hook {
     private boolean enabled;
     private MetaCache metaCache;
@@ -22,7 +23,7 @@ public class LuckPermsHook extends Hook {
      *
      * @param plugin The NiveriaAPI plugin instance.
      */
-    public LuckPermsHook(@NotNull NiveriaAPI plugin) {
+    public LuckPermsHook(NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -53,7 +54,6 @@ public class LuckPermsHook extends Hook {
      *
      * @return The {@link MetaCache} instance.
      */
-    @NotNull
     public MetaCache metaCache() {
         return metaCache;
     }

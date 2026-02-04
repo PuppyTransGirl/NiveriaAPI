@@ -13,8 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -37,22 +37,29 @@ import java.util.function.Function;
  * - Customizable click sounds
  * - Multi-slot rendering with configurable dimensions
  */
+@NullMarked
 public class Button extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
 
+    @Nullable
     private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
+    @Nullable
     private Sound sound;
 
+    @Nullable
     private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
     private int animationInterval;
     private boolean stopAnimationOnHide;
+    @Nullable
     private BukkitTask animationTask;
     private int currentFrame;
 
+    @Nullable
     private Function<MenuContext, ItemStack> dynamicItem;
     private int updateInterval;
     private boolean stopUpdatesOnHide;
+    @Nullable
     private BukkitTask updateTask;
 
     private final int width, height;
@@ -122,7 +129,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onAdd(@NotNull MenuContext context) {
+    public void onAdd(MenuContext context) {
         if (this.animationFrames != null && this.animationInterval > 0)
             this.startAnimation(context);
 
@@ -138,7 +145,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onRemove(@NotNull MenuContext context) {
+    public void onRemove(MenuContext context) {
         this.stopAnimation();
         this.stopUpdates();
     }
@@ -154,7 +161,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -192,9 +199,8 @@ public class Button extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
         if (!this.visible())
             return items;
@@ -222,9 +228,8 @@ public class Button extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;
@@ -247,7 +252,7 @@ public class Button extends MenuComponent {
      *
      * @param context the menu context
      */
-    private void startAnimation(@NotNull MenuContext context) {
+    private void startAnimation(MenuContext context) {
         this.animationTask = Task.syncRepeat(() -> {
             if (!enabled() || (this.stopAnimationOnHide && !visible())) {
                 stopAnimation();
@@ -281,7 +286,7 @@ public class Button extends MenuComponent {
      *
      * @param context the menu context
      */
-    private void startUpdates(@NotNull MenuContext context) {
+    private void startUpdates(MenuContext context) {
         this.updateTask = Task.syncRepeat(() -> {
             if (!enabled() || (this.stopUpdatesOnHide && !visible())) {
                 stopUpdates();
@@ -311,7 +316,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      * @return the appropriate ItemStack for the current state
      */
-    private ItemStack currentItem(@NotNull MenuContext context) {
+    private ItemStack currentItem(MenuContext context) {
         if (this.dynamicItem != null)
             return this.dynamicItem.apply(context);
 
@@ -333,9 +338,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button item(@NotNull ItemStack item) {
+    public Button item(ItemStack item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = context -> item;
@@ -349,9 +353,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button item(@NotNull Function<MenuContext, ItemStack> item) {
+    public Button item(Function<MenuContext, ItemStack> item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = item;
@@ -365,9 +368,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+    public Button onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
         Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
         this.onClick = onClick;
@@ -381,9 +383,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onLeftClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+    public Button onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
         Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
         this.onLeftClick = onLeftClick;
@@ -397,9 +398,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onRightClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+    public Button onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
         Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
         this.onRightClick = onRightClick;
@@ -413,9 +413,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onShiftLeftClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+    public Button onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
         Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
 
         this.onShiftLeftClick = onShiftLeftClick;
@@ -429,9 +428,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onShiftRightClick is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+    public Button onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
         Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
 
         this.onShiftRightClick = onShiftRightClick;
@@ -445,9 +443,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if onDrop is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
+    public Button onDrop(Consumer<NiveriaInventoryClickEvent> onDrop) {
         Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
 
         this.onDrop = onDrop;
@@ -460,7 +457,6 @@ public class Button extends MenuComponent {
      * @param sound the sound to play, or null for no sound
      * @return this button for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Button sound(@Nullable Sound sound) {
         this.sound = sound;
@@ -474,9 +470,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if animationFrames is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+    public Button animationFrames(Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
         Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
 
         this.animationFrames = animationFrames;
@@ -490,7 +485,6 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws IllegalArgumentException if animationInterval is less than 1
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Button animationInterval(@Positive int animationInterval) {
         Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %s", animationInterval);
@@ -505,7 +499,6 @@ public class Button extends MenuComponent {
      * @param stopAnimationOnHide true to stop animation when hidden
      * @return this button for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Button stopAnimationOnHide(boolean stopAnimationOnHide) {
         this.stopAnimationOnHide = stopAnimationOnHide;
@@ -519,9 +512,8 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws NullPointerException if dynamicItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Button dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+    public Button dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
         Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
 
         this.dynamicItem = dynamicItem;
@@ -535,7 +527,6 @@ public class Button extends MenuComponent {
      * @return this button for method chaining
      * @throws IllegalArgumentException if updateInterval is less than 1
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Button updateInterval(@Positive int updateInterval) {
         Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %s", updateInterval);
@@ -550,7 +541,6 @@ public class Button extends MenuComponent {
      * @param stopUpdatesOnHide true to stop updates when hidden
      * @return this button for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Button stopUpdatesOnHide(boolean stopUpdatesOnHide) {
         this.stopUpdatesOnHide = stopUpdatesOnHide;
@@ -584,7 +574,6 @@ public class Button extends MenuComponent {
      *
      * @return a new Button.Builder for constructing buttons
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -596,8 +585,10 @@ public class Button extends MenuComponent {
     public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
+        @Nullable
         private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
 
+        @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
                 BackwardUtils.UI_SOUND_SOURCE,
@@ -605,10 +596,12 @@ public class Button extends MenuComponent {
                 1F
         );
 
+        @Nullable
         private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
         private int animationInterval = 20;
         private boolean stopAnimationOnHide = true;
 
+        @Nullable
         private Function<MenuContext, ItemStack> dynamicItem;
         private int updateInterval = 20;
         private boolean stopUpdatesOnHide = false;
@@ -623,9 +616,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull ItemStack item) {
+        public Builder item(ItemStack item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = context -> item;
@@ -639,9 +631,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+        public Builder item(Function<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
@@ -655,9 +646,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onClick(@NotNull Consumer<NiveriaInventoryClickEvent> onClick) {
+        public Builder onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
             Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
             this.onClick = onClick;
@@ -671,9 +661,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onLeftClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onLeftClick) {
+        public Builder onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
             Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
             this.onLeftClick = onLeftClick;
@@ -687,9 +676,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onRightClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onRightClick) {
+        public Builder onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
             Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
             this.onRightClick = onRightClick;
@@ -703,9 +691,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onShiftLeftClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftLeftClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
+        public Builder onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
             Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
 
             this.onShiftLeftClick = onShiftLeftClick;
@@ -719,9 +706,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onShiftRightClick is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftRightClick(@NotNull Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
+        public Builder onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
             Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
 
             this.onShiftRightClick = onShiftRightClick;
@@ -735,9 +721,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if onDrop is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder onDrop(@NotNull Consumer<NiveriaInventoryClickEvent> onDrop) {
+        public Builder onDrop(Consumer<NiveriaInventoryClickEvent> onDrop) {
             Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
 
             this.onDrop = onDrop;
@@ -750,7 +735,6 @@ public class Button extends MenuComponent {
          * @param sound the sound to play, or null for no sound
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
@@ -764,9 +748,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if animationFrames is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder animationFrames(@NotNull Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
+        public Builder animationFrames(Function<MenuContext, ObjectList<ItemStack>> animationFrames) {
             Preconditions.checkNotNull(animationFrames, "animationFrames cannot be null");
 
             this.animationFrames = animationFrames;
@@ -780,7 +763,6 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if animationInterval is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder animationInterval(@Positive int animationInterval) {
             Preconditions.checkArgument(animationInterval >= 1, "animationInterval cannot be less than 1: %s", animationInterval);
@@ -795,7 +777,6 @@ public class Button extends MenuComponent {
          * @param stopAnimationOnHide true to stop animation when hidden
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder stopAnimationOnHide(boolean stopAnimationOnHide) {
             this.stopAnimationOnHide = stopAnimationOnHide;
@@ -809,9 +790,8 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if dynamicItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder dynamicItem(@NotNull Function<MenuContext, ItemStack> dynamicItem) {
+        public Builder dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
             Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
 
             this.dynamicItem = dynamicItem;
@@ -825,7 +805,6 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if updateInterval is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder updateInterval(@Positive int updateInterval) {
             Preconditions.checkArgument(updateInterval >= 1, "updateInterval cannot be less than 1: %s", updateInterval);
@@ -840,7 +819,6 @@ public class Button extends MenuComponent {
          * @param stopUpdatesOnHide true to stop updates when hidden
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder stopUpdatesOnHide(boolean stopUpdatesOnHide) {
             this.stopUpdatesOnHide = stopUpdatesOnHide;
@@ -854,7 +832,6 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -870,7 +847,6 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -887,7 +863,6 @@ public class Button extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -903,7 +878,6 @@ public class Button extends MenuComponent {
          *
          * @return a new Button with the specified configuration
          */
-        @NotNull
         public Button build() {
             return new Button(
                     this.id,

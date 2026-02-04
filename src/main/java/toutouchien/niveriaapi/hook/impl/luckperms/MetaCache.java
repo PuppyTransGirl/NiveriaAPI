@@ -1,14 +1,15 @@
 package toutouchien.niveriaapi.hook.impl.luckperms;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface for managing and caching metadata values associated with players.
  * This allows efficient retrieval of metadata values such as integers, strings,
  * booleans, and enums while also providing cache invalidation mechanisms.
  */
+@NullMarked
 public interface MetaCache {
 
     /**
@@ -19,7 +20,7 @@ public interface MetaCache {
      * @param defaultValue The default value to return if the metadata is not found.
      * @return The boolean metadata value, or the default value if not found.
      */
-    boolean booleanMeta(@NotNull Player player, @NotNull String metaKey, boolean defaultValue);
+    boolean booleanMeta(Player player, String metaKey, boolean defaultValue);
 
     /**
      * Retrieves a double metadata value for the specified player.
@@ -29,7 +30,7 @@ public interface MetaCache {
      * @param defaultValue The default value to return if the metadata is not found.
      * @return The double metadata value, or the default value if not found.
      */
-    double doubleMeta(@NotNull Player player, @NotNull String metaKey, double defaultValue);
+    double doubleMeta(Player player, String metaKey, double defaultValue);
 
     /**
      * Retrieves an enum metadata value for the specified player.
@@ -41,7 +42,7 @@ public interface MetaCache {
      * @return The enum metadata value, or the default value if not found or invalid.
      */
     @Nullable
-    <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull T defaultValue);
+    <T extends Enum<T>> T enumMeta(Player player, String metaKey, T defaultValue);
 
     /**
      * Retrieves an enum metadata value for the specified player.
@@ -55,7 +56,7 @@ public interface MetaCache {
      * @return The enum metadata value, or the default value if not found or invalid.
      */
     @Nullable
-    <T extends Enum<T>> T enumMeta(@NotNull Player player, @NotNull String metaKey, @NotNull Class<T> enumClass, @Nullable T defaultValue);
+    <T extends Enum<T>> T enumMeta(Player player, String metaKey, Class<T> enumClass, @Nullable T defaultValue);
 
     /**
      * Retrieves an integer metadata value for the specified player.
@@ -65,7 +66,7 @@ public interface MetaCache {
      * @param defaultValue The default value to return if the metadata is not found.
      * @return The integer metadata value, or the default value if not found.
      */
-    int integerMeta(@NotNull Player player, @NotNull String metaKey, int defaultValue);
+    int integerMeta(Player player, String metaKey, int defaultValue);
 
     /**
      * Retrieves a string metadata value for the specified player.
@@ -77,7 +78,7 @@ public interface MetaCache {
      * @return The string metadata value, or the default value (possibly null) if not found.
      */
     @Nullable
-    String stringMeta(@NotNull Player player, @NotNull String metaKey, @Nullable String defaultValue);
+    String stringMeta(Player player, String metaKey, @Nullable String defaultValue);
 
     /**
      * Invalidates the cached metadata value for a specific player and key.
@@ -86,7 +87,7 @@ public interface MetaCache {
      * @param player  The player whose metadata cache should be invalidated.
      * @param metaKey The specific metadata key to invalidate.
      */
-    void invalidateCache(@NotNull Player player, @NotNull String metaKey);
+    void invalidateCache(Player player, String metaKey);
 
     /**
      * Invalidates the entire cached metadata for a specific player.
@@ -94,5 +95,5 @@ public interface MetaCache {
      *
      * @param player The player whose entire metadata cache should be cleared.
      */
-    void invalidateCache(@NotNull Player player);
+    void invalidateCache(Player player);
 }

@@ -10,16 +10,17 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.World;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 
+@NullMarked
 public class WorldGuardHook extends Hook {
     private boolean enabled;
     private RegionContainer regionContainer;
     private FlagRegistry flagRegistry;
 
-    public WorldGuardHook(@NotNull NiveriaAPI plugin) {
+    public WorldGuardHook(NiveriaAPI plugin) {
         super(plugin);
     }
 
@@ -39,7 +40,7 @@ public class WorldGuardHook extends Hook {
         this.plugin.getSLF4JLogger().info("Unhooked from WorldGuard");
     }
 
-    public void registerCustomFlag(@NotNull String flagName, boolean defaultValue) {
+    public void registerCustomFlag(String flagName, boolean defaultValue) {
         Preconditions.checkNotNull(flagName, "flagName cannot be null");
 
         if (!this.enabled)
@@ -54,7 +55,7 @@ public class WorldGuardHook extends Hook {
         this.flagRegistry.register(flag);
     }
 
-    public boolean flagValue(@NotNull World world, @NotNull String regionName, @NotNull String flagName) {
+    public boolean flagValue(World world, String regionName, String flagName) {
         Preconditions.checkNotNull(world, "world cannot be null");
         Preconditions.checkNotNull(regionName, "regionName cannot be null");
         Preconditions.checkNotNull(flagName, "flagName cannot be null");

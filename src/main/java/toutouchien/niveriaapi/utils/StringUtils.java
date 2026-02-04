@@ -1,8 +1,8 @@
 package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -10,6 +10,7 @@ import java.util.Optional;
 /**
  * Utility class providing static methods for string manipulations.
  */
+@NullMarked
 public class StringUtils {
     private StringUtils() {
         throw new IllegalStateException("Utility class");
@@ -21,8 +22,7 @@ public class StringUtils {
      * @param string The string to capitalize
      * @return The capitalized string, or the original string if null or blank
      */
-    @NotNull
-    public static String capitalize(@NotNull String string) {
+    public static String capitalize(String string) {
         Preconditions.checkNotNull(string, "string cannot be null");
 
         if (string.isBlank())
@@ -39,8 +39,7 @@ public class StringUtils {
      * @param <T>       The type of the enum
      * @return An Optional containing the matched enum constant, or empty if no match is found
      */
-    @NotNull
-    public static <T extends Enum<T>> Optional<T> match(@Nullable String key, @NotNull Class<T> enumClass) {
+    public static <T extends Enum<T>> Optional<T> match(@Nullable String key, Class<T> enumClass) {
         Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
         if (key == null)
             return Optional.empty();
@@ -62,7 +61,7 @@ public class StringUtils {
      * @return The matched enum constant, or the default value if no match is found
      */
     @Nullable
-    public static <T extends Enum<T>> T match(@Nullable String key, @NotNull Class<T> enumClass, @Nullable T defaultValue) {
+    public static <T extends Enum<T>> T match(@Nullable String key, Class<T> enumClass, @Nullable T defaultValue) {
         Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
         if (key == null)
             return defaultValue;
@@ -82,8 +81,7 @@ public class StringUtils {
      * @param count    The count to determine singular or plural
      * @return The appropriate singular or plural form
      */
-    @NotNull
-    public static String pluralize(@NotNull String singular, int count) {
+    public static String pluralize(String singular, int count) {
         Preconditions.checkNotNull(singular, "singular cannot be null");
 
         return pluralize(singular, singular + "s", count);
@@ -97,8 +95,7 @@ public class StringUtils {
      * @param count    The count to determine singular or plural
      * @return The appropriate singular or plural form
      */
-    @NotNull
-    public static String pluralize(@NotNull String singular, @NotNull String plural, int count) {
+    public static String pluralize(String singular, String plural, int count) {
         Preconditions.checkNotNull(singular, "singular cannot be null");
         Preconditions.checkNotNull(plural, "plural cannot be null");
 
@@ -127,7 +124,7 @@ public class StringUtils {
      * @throws NullPointerException  if a or b is null
      * @throws NumberFormatException if any numeric component cannot be parsed as an int
      */
-    public static int compareSemVer(@NotNull String a, @NotNull String b) {
+    public static int compareSemVer(String a, String b) {
         Preconditions.checkNotNull(a, "a cannot be null");
         Preconditions.checkNotNull(b, "b cannot be null");
 

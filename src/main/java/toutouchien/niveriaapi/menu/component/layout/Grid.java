@@ -11,7 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -24,12 +25,15 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * using slot indices or x/y coordinates. The grid handles rendering priority as:
  * slot components → border → fill.
  */
+@NullMarked
 public class Grid extends MenuComponent {
     private final int width, height;
 
     private final ObjectList<MenuComponent> slotComponents;
 
+    @Nullable
     private final ItemStack border;
+    @Nullable
     private final ItemStack fill;
 
     /**
@@ -64,7 +68,7 @@ public class Grid extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onAdd(@NotNull MenuContext context) {
+    public void onAdd(MenuContext context) {
         this.slotComponents.forEach(component -> {
             component.onAdd(context);
 
@@ -82,7 +86,7 @@ public class Grid extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onRemove(@NotNull MenuContext context) {
+    public void onRemove(MenuContext context) {
         this.slotComponents.forEach(component -> {
             component.onRemove(context);
 
@@ -103,7 +107,7 @@ public class Grid extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -125,9 +129,8 @@ public class Grid extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
 
         for (MenuComponent slotComponent : this.slotComponents)
@@ -161,9 +164,8 @@ public class Grid extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet();
 
         int startX = this.x();
@@ -220,7 +222,6 @@ public class Grid extends MenuComponent {
      *
      * @return a new Grid.Builder for constructing grids
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -234,7 +235,9 @@ public class Grid extends MenuComponent {
 
         private final ObjectList<MenuComponent> slotComponents = new ObjectArrayList<>();
 
+        @Nullable
         private ItemStack border;
+        @Nullable
         private ItemStack fill;
 
         /**
@@ -247,9 +250,8 @@ public class Grid extends MenuComponent {
          * @throws IllegalArgumentException if slot is negative, component is null,
          *                                  or component doesn't fit within grid bounds
          */
-        @NotNull
         @Contract(value = "_, _, _ -> this", mutates = "this")
-        public Builder add(@NotNull MenuContext context, @NonNegative int slot, @NotNull MenuComponent component) {
+        public Builder add(MenuContext context, @NonNegative int slot, MenuComponent component) {
             Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
@@ -287,9 +289,8 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if coordinates are negative or component is null
          */
-        @NotNull
         @Contract(value = "_, _, _, _ -> this", mutates = "this")
-        public Builder add(@NotNull MenuContext context, @NonNegative int x, @NonNegative int y, @NotNull MenuComponent component) {
+        public Builder add(MenuContext context, @NonNegative int x, @NonNegative int y, MenuComponent component) {
             Preconditions.checkNotNull(context, "context cannot be null");
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
@@ -305,9 +306,8 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if border is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder border(@NotNull ItemStack border) {
+        public Builder border(ItemStack border) {
             Preconditions.checkNotNull(border, "border cannot be null");
 
             this.border = border;
@@ -321,9 +321,8 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if fill is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder fill(@NotNull ItemStack fill) {
+        public Builder fill(ItemStack fill) {
             Preconditions.checkNotNull(fill, "fill cannot be null");
 
             this.fill = fill;
@@ -337,7 +336,6 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -353,7 +351,6 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -370,7 +367,6 @@ public class Grid extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -386,7 +382,6 @@ public class Grid extends MenuComponent {
          *
          * @return a new Grid with the specified configuration
          */
-        @NotNull
         public Grid build() {
             return new Grid(
                     this.id,

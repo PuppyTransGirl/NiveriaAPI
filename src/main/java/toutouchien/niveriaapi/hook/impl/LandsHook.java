@@ -6,7 +6,7 @@ import me.angeschossen.lands.api.land.Area;
 import me.angeschossen.lands.api.player.LandPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.hook.Hook;
 import toutouchien.niveriaapi.hook.impl.lands.NaturalFlags;
@@ -16,6 +16,7 @@ import toutouchien.niveriaapi.hook.impl.lands.RoleFlags;
 /**
  * Hook for integrating with the Lands plugin to check area and player flags.
  */
+@NullMarked
 public class LandsHook extends Hook {
     private boolean enabled;
     private LandsIntegration lands;
@@ -51,7 +52,7 @@ public class LandsHook extends Hook {
      * @param roleFlag The role flag to check for.
      * @return True if the player has the role flag, false otherwise.
      */
-    public boolean hasRoleFlag(@NotNull Player player, @NotNull Location location, @NotNull RoleFlags roleFlag) {
+    public boolean hasRoleFlag(Player player, Location location, RoleFlags roleFlag) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(roleFlag, "roleFlag cannot be null");
@@ -73,7 +74,7 @@ public class LandsHook extends Hook {
      * @param naturalFlag The natural flag to check for.
      * @return True if the area has the natural flag, false otherwise.
      */
-    public boolean hasNaturalFlag(@NotNull Location location, @NotNull NaturalFlags naturalFlag) {
+    public boolean hasNaturalFlag(Location location, NaturalFlags naturalFlag) {
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(naturalFlag, "naturalFlag cannot be null");
 
@@ -94,7 +95,7 @@ public class LandsHook extends Hook {
      * @param playerFlag The player flag to check for.
      * @return True if the player has the player flag, false otherwise.
      */
-    public boolean hasPlayerFlag(@NotNull Player player, @NotNull PlayerFlags playerFlag) {
+    public boolean hasPlayerFlag(Player player, PlayerFlags playerFlag) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(playerFlag, "playerFlag cannot be null");
 

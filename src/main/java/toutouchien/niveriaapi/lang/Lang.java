@@ -20,6 +20,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -152,6 +153,7 @@ public class Lang {
      * @param plugin The plugin that owns this Lang instance
      * @return A new builder
      */
+    @Contract(value = "_ -> new", pure = true)
     public static LangBuilder builder(JavaPlugin plugin) {
         return new LangBuilder(plugin);
     }

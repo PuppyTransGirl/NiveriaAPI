@@ -3,11 +3,12 @@ package toutouchien.niveriaapi.hook.impl.itemsadder;
 import com.google.common.base.Preconditions;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Wrapper class for ItemsAdder custom stacks.
  */
+@NullMarked
 public class ItemsAdderStack {
     private final CustomStack stack;
 
@@ -16,7 +17,7 @@ public class ItemsAdderStack {
      *
      * @param stack The CustomStack instance.
      */
-    public ItemsAdderStack(@NotNull CustomStack stack) {
+    public ItemsAdderStack(CustomStack stack) {
         Preconditions.checkNotNull(stack, "stack cannot be null");
 
         this.stack = stack;
@@ -27,7 +28,6 @@ public class ItemsAdderStack {
      *
      * @return The display name.
      */
-    @NotNull
     public String displayName() {
         return stack.getDisplayName();
     }
@@ -37,7 +37,6 @@ public class ItemsAdderStack {
      *
      * @return The ItemStack.
      */
-    @NotNull
     public ItemStack itemStack() {
         return stack.getItemStack();
     }

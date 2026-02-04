@@ -5,12 +5,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
 
 /**
  * Listener for player pre-login events to manage player data in the database.
  */
+@NullMarked
 public class PlayerListener implements Listener {
     private final NiveriaDatabaseManager niveriaDatabase;
 
@@ -19,7 +20,7 @@ public class PlayerListener implements Listener {
      *
      * @param niveriaDatabase The NiveriaDatabaseManager instance.
      */
-    public PlayerListener(@NotNull NiveriaDatabaseManager niveriaDatabase) {
+    public PlayerListener(NiveriaDatabaseManager niveriaDatabase) {
         Preconditions.checkNotNull(niveriaDatabase, "niveriaDatabase cannot be null");
         this.niveriaDatabase = niveriaDatabase;
     }

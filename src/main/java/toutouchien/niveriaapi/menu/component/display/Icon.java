@@ -10,8 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -26,8 +26,10 @@ import java.util.function.Function;
  * when clicked, though they can optionally play a sound for audio feedback.
  * Icons can span multiple slots with configurable width and height.
  */
+@NullMarked
 public class Icon extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
+    @Nullable
     private Sound sound;
 
     private final int width, height;
@@ -67,7 +69,7 @@ public class Icon extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -86,9 +88,8 @@ public class Icon extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
         if (!this.visible())
             return items;
@@ -116,9 +117,8 @@ public class Icon extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;
@@ -144,9 +144,8 @@ public class Icon extends MenuComponent {
      * @return this icon for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Icon item(@NotNull ItemStack item) {
+    public Icon item(ItemStack item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = context -> item;
@@ -160,9 +159,8 @@ public class Icon extends MenuComponent {
      * @return this icon for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Icon item(@NotNull Function<MenuContext, ItemStack> item) {
+    public Icon item(Function<MenuContext, ItemStack> item) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.item = item;
@@ -175,7 +173,6 @@ public class Icon extends MenuComponent {
      * @param sound the sound to play, or null for no sound
      * @return this icon for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Icon sound(@Nullable Sound sound) {
         this.sound = sound;
@@ -209,7 +206,6 @@ public class Icon extends MenuComponent {
      *
      * @return a new Icon.Builder for constructing icons
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -221,6 +217,7 @@ public class Icon extends MenuComponent {
     public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
+        @Nullable
         private Sound sound = null;
 
         private int width = 1;
@@ -233,9 +230,8 @@ public class Icon extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull ItemStack item) {
+        public Builder item(ItemStack item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = context -> item;
@@ -249,9 +245,8 @@ public class Icon extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder item(@NotNull Function<MenuContext, ItemStack> item) {
+        public Builder item(Function<MenuContext, ItemStack> item) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.item = item;
@@ -264,7 +259,6 @@ public class Icon extends MenuComponent {
          * @param sound the sound to play, or null for no sound
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
@@ -278,7 +272,6 @@ public class Icon extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -294,7 +287,6 @@ public class Icon extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -311,7 +303,6 @@ public class Icon extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -327,7 +318,6 @@ public class Icon extends MenuComponent {
          *
          * @return a new Icon with the specified configuration
          */
-        @NotNull
         public Icon build() {
             return new Icon(
                     this.id,

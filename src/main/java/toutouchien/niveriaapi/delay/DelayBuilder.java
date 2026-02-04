@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.index.qual.Positive;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.lang.Lang;
 
 import java.util.function.Consumer;
@@ -30,6 +30,7 @@ import static toutouchien.niveriaapi.NiveriaAPI.LANG;
  *     <li>{@code delay.already}</li>
  * </ul>
  */
+@NullMarked
 public class DelayBuilder {
     private final Player player;
 
@@ -37,7 +38,9 @@ public class DelayBuilder {
     private Component movedText;
     private Component alreadyHasDelayText;
 
+    @Nullable
     private Consumer<Player> successConsumer;
+    @Nullable
     private Consumer<Player> failConsumer;
     private int delay;
     private boolean cancelOnMove;
@@ -51,7 +54,7 @@ public class DelayBuilder {
      *
      * @param player target player for the delay
      */
-    private DelayBuilder(@NotNull Player player) {
+    private DelayBuilder(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         this.player = player;
@@ -66,8 +69,7 @@ public class DelayBuilder {
      * @param player target player
      * @return new builder instance
      */
-    @NotNull
-    public static DelayBuilder of(@NotNull Player player) {
+    public static DelayBuilder of(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         return new DelayBuilder(player);
@@ -79,8 +81,7 @@ public class DelayBuilder {
      * @param text non-null main delay text
      * @return this builder for chaining
      */
-    @NotNull
-    public DelayBuilder text(@NotNull Component text) {
+    public DelayBuilder text(Component text) {
         Preconditions.checkNotNull(text, "text cannot be null");
 
         this.text = text;
@@ -93,8 +94,7 @@ public class DelayBuilder {
      * @param movedText non-null movement cancellation text
      * @return this builder for chaining
      */
-    @NotNull
-    public DelayBuilder movedText(@NotNull Component movedText) {
+    public DelayBuilder movedText(Component movedText) {
         Preconditions.checkNotNull(movedText, "movedText cannot be null");
 
         this.movedText = movedText;
@@ -107,8 +107,7 @@ public class DelayBuilder {
      * @param alreadyHasDelayText non-null "already has delay" text
      * @return this builder for chaining
      */
-    @NotNull
-    public DelayBuilder alreadyHasDelayText(@NotNull Component alreadyHasDelayText) {
+    public DelayBuilder alreadyHasDelayText(Component alreadyHasDelayText) {
         Preconditions.checkNotNull(alreadyHasDelayText, "alreadyHasDelayText cannot be null");
 
         this.alreadyHasDelayText = alreadyHasDelayText;
@@ -123,8 +122,7 @@ public class DelayBuilder {
      * @param alreadyHasDelayText "already has delay" text
      * @return this builder for chaining
      */
-    @NotNull
-    public DelayBuilder texts(@NotNull Component text, @NotNull Component movedText, @NotNull Component alreadyHasDelayText) {
+    public DelayBuilder texts(Component text, Component movedText, Component alreadyHasDelayText) {
         Preconditions.checkNotNull(text, "text cannot be null");
         Preconditions.checkNotNull(movedText, "movedText cannot be null");
         Preconditions.checkNotNull(alreadyHasDelayText, "alreadyHasDelayText cannot be null");
@@ -141,7 +139,6 @@ public class DelayBuilder {
      * @param successConsumer callback or {@code null} to clear
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder successConsumer(@Nullable Consumer<Player> successConsumer) {
         this.successConsumer = successConsumer;
         return this;
@@ -153,7 +150,6 @@ public class DelayBuilder {
      * @param failConsumer callback or {@code null} to clear
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder failConsumer(@Nullable Consumer<Player> failConsumer) {
         this.failConsumer = failConsumer;
         return this;
@@ -166,7 +162,6 @@ public class DelayBuilder {
      * @return this builder for chaining
      * @throws IllegalArgumentException if {@code delay < 1}
      */
-    @NotNull
     public DelayBuilder delay(@Positive int delay) {
         Preconditions.checkArgument(delay >= 1, "delay cannot be less than 1: %s", delay);
 
@@ -181,7 +176,6 @@ public class DelayBuilder {
      * @param cancelOnMove {@code true} to cancel on movement
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder cancelOnMove(boolean cancelOnMove) {
         this.cancelOnMove = cancelOnMove;
         return this;
@@ -193,7 +187,6 @@ public class DelayBuilder {
      * @param actionbar {@code true} to use actionbar
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder actionbar(boolean actionbar) {
         this.actionbar = actionbar;
         return this;
@@ -205,7 +198,6 @@ public class DelayBuilder {
      * @param chat {@code true} to use chat
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder chat(boolean chat) {
         this.chat = chat;
         return this;
@@ -217,7 +209,6 @@ public class DelayBuilder {
      * @param title {@code true} to use title
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder title(boolean title) {
         this.title = title;
         return this;
@@ -231,7 +222,6 @@ public class DelayBuilder {
      * @param title     whether to use title
      * @return this builder for chaining
      */
-    @NotNull
     public DelayBuilder visuals(boolean actionbar, boolean chat, boolean title) {
         this.actionbar = actionbar;
         this.chat = chat;
@@ -247,7 +237,6 @@ public class DelayBuilder {
      *
      * @return new {@link Delay} instance
      */
-    @NotNull
     public Delay build() {
         return new Delay(
                 player,

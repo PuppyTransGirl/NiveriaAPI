@@ -3,12 +3,13 @@ package toutouchien.niveriaapi.hook;
 import com.google.common.base.Preconditions;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 
 /**
  * Abstract base class for hooks into external plugins or systems.
  */
+@NullMarked
 public abstract class Hook {
     protected final NiveriaAPI plugin;
 
@@ -17,7 +18,7 @@ public abstract class Hook {
      *
      * @param plugin The NiveriaAPI plugin instance.
      */
-    protected Hook(@NotNull NiveriaAPI plugin) {
+    protected Hook(NiveriaAPI plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
         this.plugin = plugin;

@@ -10,7 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.Task;
 
@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 /**
  * Manages delays for players, such as teleportation delays.
  */
+@NullMarked
 public class DelayManager implements Listener {
     private final NiveriaAPI plugin;
     private final Map<Player, Delay> teleportDelays;
@@ -31,7 +32,7 @@ public class DelayManager implements Listener {
      *
      * @param plugin The NiveriaAPI plugin instance.
      */
-    public DelayManager(@NotNull NiveriaAPI plugin) {
+    public DelayManager(NiveriaAPI plugin) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
         this.plugin = plugin;
@@ -75,7 +76,7 @@ public class DelayManager implements Listener {
      *
      * @param delay The Delay object containing delay information.
      */
-    public void start(@NotNull Delay delay) {
+    public void start(Delay delay) {
         Preconditions.checkNotNull(delay, "delay cannot be null");
 
         Player player = delay.player();
@@ -99,7 +100,7 @@ public class DelayManager implements Listener {
         }, plugin, 1L, 1L, TimeUnit.SECONDS);
     }
 
-    private void updateDisplays(@NotNull Delay delay) {
+    private void updateDisplays(Delay delay) {
         Preconditions.checkNotNull(delay, "delay cannot be null");
 
         if (delay.delayRemaining() == 0) {
@@ -127,7 +128,7 @@ public class DelayManager implements Listener {
         }
     }
 
-    private void endDelay(@NotNull Delay delay) {
+    private void endDelay(Delay delay) {
         Preconditions.checkNotNull(delay, "delay cannot be null");
 
         Player player = delay.player();
@@ -139,7 +140,7 @@ public class DelayManager implements Listener {
         successConsumer.accept(player);
     }
 
-    private void reset(@NotNull Delay delay, boolean fail) {
+    private void reset(Delay delay, boolean fail) {
         Preconditions.checkNotNull(delay, "delay cannot be null");
 
         Player player = delay.player();
@@ -161,7 +162,7 @@ public class DelayManager implements Listener {
      * @param player The player to check.
      * @return True if the player is in a delay, false otherwise.
      */
-    public boolean inDelay(@NotNull Player player) {
+    public boolean inDelay(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
         return teleportDelays.containsKey(player);
     }

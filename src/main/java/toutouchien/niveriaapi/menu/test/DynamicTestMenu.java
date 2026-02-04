@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -22,6 +22,7 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
  * This menu showcases the new ability to modify component properties
  * after creation and update them in real-time.
  */
+@NullMarked
 public class DynamicTestMenu extends Menu {
     private static final String PROGRESS_ID = "progress";
     private static final String STATUS_ID = "status";
@@ -41,7 +42,6 @@ public class DynamicTestMenu extends Menu {
      *
      * @return a colorized title component
      */
-    @NotNull
     @Override
     protected Component title() {
         return Component.text("Dynamic Component Test", ColorUtils.primaryColor());
@@ -56,9 +56,8 @@ public class DynamicTestMenu extends Menu {
      * @param context the menu context
      * @return the root component layout
      */
-    @NotNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(MenuContext context) {
         ProgressBar progressBar = ProgressBar.create()
                 .id(PROGRESS_ID)
                 .doneItem(ItemStack.of(Material.LIME_CONCRETE))

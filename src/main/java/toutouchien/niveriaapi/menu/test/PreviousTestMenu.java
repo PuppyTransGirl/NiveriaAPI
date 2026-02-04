@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -17,6 +17,7 @@ import toutouchien.niveriaapi.utils.ItemBuilder;
 /**
  * Example menu using the previousMenus system.
  */
+@NullMarked
 public class PreviousTestMenu extends Menu {
 
     public PreviousTestMenu(Player player) {
@@ -28,12 +29,12 @@ public class PreviousTestMenu extends Menu {
     }
 
     @Override
-    protected @NotNull Component title() {
+    protected Component title() {
         return Component.text("Menu ID: " + System.identityHashCode(this), ColorUtils.primaryColor());
     }
 
     @Override
-    protected @NotNull MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(MenuContext context) {
         return Grid.create()
                 .size(9, 3)
                 .add(context, 0, previousMenuButton())

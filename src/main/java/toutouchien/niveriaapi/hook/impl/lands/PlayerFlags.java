@@ -3,8 +3,8 @@ package toutouchien.niveriaapi.hook.impl.lands;
 import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.PlayerFlag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
@@ -12,6 +12,7 @@ import java.util.Optional;
 /**
  * Enum wrapper for Lands API PlayerFlags
  */
+@NullMarked
 public enum PlayerFlags {
     ENTER_MESSAGES(Flags.ENTER_MESSAGES),
     RECEIVE_INVITES(Flags.RECEIVE_INVITES),
@@ -19,7 +20,7 @@ public enum PlayerFlags {
 
     private final PlayerFlag flag;
 
-    PlayerFlags(@NotNull PlayerFlag flag) {
+    PlayerFlags(PlayerFlag flag) {
         Preconditions.checkNotNull(flag, "flag cannot be null");
 
         this.flag = flag;
@@ -31,8 +32,7 @@ public enum PlayerFlags {
      * @param name The name of the enum value
      * @return An Optional containing the matching enum value or empty if not found
      */
-    @NotNull
-    public static Optional<PlayerFlags> byName(@NotNull String name) {
+    public static Optional<PlayerFlags> byName(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         return StringUtils.match(name, PlayerFlags.class);
@@ -45,7 +45,7 @@ public enum PlayerFlags {
      * @return The matching enum value or null if not found
      */
     @Nullable
-    public static PlayerFlags fromPlayerFlag(@NotNull PlayerFlag playerFlag) {
+    public static PlayerFlags fromPlayerFlag(PlayerFlag playerFlag) {
         Preconditions.checkNotNull(playerFlag, "playerFlag cannot be null");
 
         for (PlayerFlags flag : values()) {
@@ -63,7 +63,6 @@ public enum PlayerFlags {
      *
      * @return the original PlayerFlag object
      */
-    @NotNull
     public PlayerFlag flag() {
         return flag;
     }

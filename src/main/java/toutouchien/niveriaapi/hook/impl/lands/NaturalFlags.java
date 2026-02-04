@@ -3,8 +3,8 @@ package toutouchien.niveriaapi.hook.impl.lands;
 import com.google.common.base.Preconditions;
 import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.NaturalFlag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.utils.StringUtils;
 
 import java.util.Optional;
@@ -12,6 +12,7 @@ import java.util.Optional;
 /**
  * Enum wrapper for Lands API NaturalFlags
  */
+@NullMarked
 public enum NaturalFlags {
     ENTITY_GRIEFING(Flags.ENTITY_GRIEFING),
     TNT_GRIEFING(Flags.TNT_GRIEFING),
@@ -31,7 +32,7 @@ public enum NaturalFlags {
 
     private final NaturalFlag flag;
 
-    NaturalFlags(@NotNull NaturalFlag flag) {
+    NaturalFlags(NaturalFlag flag) {
         Preconditions.checkNotNull(flag, "flag cannot be null");
 
         this.flag = flag;
@@ -43,8 +44,7 @@ public enum NaturalFlags {
      * @param name The name of the enum value
      * @return An Optional containing the matching enum value or empty if not found
      */
-    @NotNull
-    public static Optional<NaturalFlags> byName(@NotNull String name) {
+    public static Optional<NaturalFlags> byName(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
         return StringUtils.match(name, NaturalFlags.class);
@@ -57,7 +57,7 @@ public enum NaturalFlags {
      * @return The matching enum value or null if not found
      */
     @Nullable
-    public static NaturalFlags fromNaturalFlag(@NotNull NaturalFlag naturalFlag) {
+    public static NaturalFlags fromNaturalFlag(NaturalFlag naturalFlag) {
         Preconditions.checkNotNull(naturalFlag, "naturalFlag cannot be null");
 
         for (NaturalFlags flag : values()) {

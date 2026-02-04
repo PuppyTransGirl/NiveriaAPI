@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 
@@ -19,6 +19,7 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  * positioned, and interacted with. Each component has a position, size, visibility,
  * and enabled state, and can handle click events.
  */
+@NullMarked
 public abstract class MenuComponent {
     private final String id;
 
@@ -45,7 +46,7 @@ public abstract class MenuComponent {
      *
      * @param context the menu context
      */
-    public void onAdd(@NotNull MenuContext context) {
+    public void onAdd(MenuContext context) {
 
     }
 
@@ -57,7 +58,7 @@ public abstract class MenuComponent {
      *
      * @param context the menu context
      */
-    public void onRemove(@NotNull MenuContext context) {
+    public void onRemove(MenuContext context) {
 
     }
 
@@ -69,7 +70,7 @@ public abstract class MenuComponent {
      * @param event   the inventory click event
      * @param context the menu context
      */
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
 
     }
 
@@ -82,8 +83,7 @@ public abstract class MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
-    public abstract Int2ObjectMap<ItemStack> items(@NotNull MenuContext context);
+    public abstract Int2ObjectMap<ItemStack> items(MenuContext context);
 
     /**
      * Returns the set of inventory slot indices that this component occupies.
@@ -94,8 +94,7 @@ public abstract class MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
-    public abstract IntSet slots(@NotNull MenuContext context);
+    public abstract IntSet slots(MenuContext context);
 
     /**
      * Renders this component to the menu's inventory.
@@ -106,7 +105,7 @@ public abstract class MenuComponent {
      * @param context the menu context
      * @throws NullPointerException if context is null
      */
-    public void render(@NotNull MenuContext context) {
+    public void render(MenuContext context) {
         Preconditions.checkNotNull(context, "context cannot be null");
 
         if (!this.visible())
@@ -252,7 +251,7 @@ public abstract class MenuComponent {
         @SuppressWarnings("unchecked")
         @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public T id(@NotNull String id) {
+        public T id(String id) {
             Preconditions.checkNotNull(id, "id cannot be null");
 
             this.id = id;

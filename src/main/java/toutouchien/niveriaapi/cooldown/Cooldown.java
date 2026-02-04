@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -15,6 +15,7 @@ import java.util.UUID;
  * Represents a cooldown with associated player/UUID and expiration time.
  * This class is immutable and thread-safe.
  */
+@NullMarked
 public class Cooldown {
     private final UUID uuid;
     private final Key key;
@@ -29,7 +30,7 @@ public class Cooldown {
      * @param expirationTime The expiration time in milliseconds since epoch
      * @param persistent     Whether this cooldown is persistent
      */
-    public Cooldown(@NotNull UUID uuid, @NotNull Key key, long expirationTime, boolean persistent) {
+    public Cooldown(UUID uuid, Key key, long expirationTime, boolean persistent) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -47,7 +48,7 @@ public class Cooldown {
      * @param expirationTime The expiration time in milliseconds since epoch
      * @param persistent     Whether this cooldown is persistent
      */
-    public Cooldown(@NotNull Player player, @NotNull Key key, long expirationTime, boolean persistent) {
+    public Cooldown(Player player, Key key, long expirationTime, boolean persistent) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -65,7 +66,7 @@ public class Cooldown {
      * @param duration   The duration of the cooldown
      * @param persistent Whether this cooldown is persistent
      */
-    public Cooldown(@NotNull UUID uuid, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
+    public Cooldown(UUID uuid, Key key, Duration duration, boolean persistent) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -84,7 +85,7 @@ public class Cooldown {
      * @param duration   The duration of the cooldown
      * @param persistent Whether this cooldown is persistent
      */
-    public Cooldown(@NotNull Player player, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
+    public Cooldown(Player player, Key key, Duration duration, boolean persistent) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -100,7 +101,6 @@ public class Cooldown {
      *
      * @return The UUID
      */
-    @NotNull
     public UUID uuid() {
         return uuid;
     }
@@ -120,7 +120,6 @@ public class Cooldown {
      *
      * @return The key
      */
-    @NotNull
     public Key key() {
         return key;
     }
@@ -148,7 +147,6 @@ public class Cooldown {
      *
      * @return The remaining time, or Duration.ZERO if expired
      */
-    @NotNull
     public Duration remainingTime() {
         long remaining = expirationTime - System.currentTimeMillis();
         return remaining > 0 ? Duration.ofMillis(remaining) : Duration.ZERO;
@@ -159,7 +157,6 @@ public class Cooldown {
      *
      * @return The total duration
      */
-    @NotNull
     public Duration totalDuration() {
         return Duration.ofMillis(expirationTime - (System.currentTimeMillis() - remainingTime().toMillis()));
     }

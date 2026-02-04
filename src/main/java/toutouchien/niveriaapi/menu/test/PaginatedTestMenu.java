@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.Menu;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
@@ -26,6 +26,7 @@ import java.util.Arrays;
  * disabled experimental features, and air blocks. The pagination controls
  * are positioned at the bottom of the menu for easy navigation.
  */
+@NullMarked
 public class PaginatedTestMenu extends Menu {
 
     /**
@@ -42,7 +43,6 @@ public class PaginatedTestMenu extends Menu {
      *
      * @return a colorized title component
      */
-    @NotNull
     @Override
     protected Component title() {
         return Component.text("Paginated Test Menu Hehe :3", ColorUtils.primaryColor());
@@ -62,9 +62,8 @@ public class PaginatedTestMenu extends Menu {
      * @param context the menu context
      * @return the root grid component containing the paginator and navigation controls
      */
-    @NotNull
     @Override
-    protected MenuComponent root(@NotNull MenuContext context) {
+    protected MenuComponent root(MenuContext context) {
         Paginator paginator = Paginator.create()
                 .size(7, 3)
                 .firstPageItem(ItemStack.of(Material.SPECTRAL_ARROW))

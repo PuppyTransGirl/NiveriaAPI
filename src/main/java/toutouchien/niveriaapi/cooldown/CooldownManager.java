@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.utils.Task;
 
@@ -55,14 +55,18 @@ import java.util.concurrent.TimeUnit;
  * }
  * </pre>
  */
+@NullMarked
 public class CooldownManager {
     private static final long DEFAULT_CLEANUP_MINUTES = 3L;
     private static final long DATABASE_CLEANUP_MINUTES = 15L; // Less frequent DB cleanup
 
     private final NiveriaAPI plugin;
     private final Map<CompositeKey, Cooldown> cooldowns = new ConcurrentHashMap<>();
+    @Nullable
     private final ScheduledTask cleanupTask;
+    @Nullable
     private final ScheduledTask databaseCleanupTask;
+    @Nullable
     private final CooldownDatabase database;
 
     /**
@@ -71,7 +75,7 @@ public class CooldownManager {
      * @param plugin   The main plugin instance.
      * @param database The database implementation for persistent cooldowns. Must not be null.
      */
-    public CooldownManager(@NotNull NiveriaAPI plugin, @Nullable CooldownDatabase database) {
+    public CooldownManager(NiveriaAPI plugin, @Nullable CooldownDatabase database) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
         this.plugin = plugin;
@@ -118,7 +122,8 @@ public class CooldownManager {
      * @param persistent Whether this cooldown should be saved to the database (true by default).
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull UUID uuid, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
+    @Nullable
+    public Cooldown setCooldown(UUID uuid, Key key, Duration duration, boolean persistent) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -144,7 +149,8 @@ public class CooldownManager {
      * @param persistent Whether this cooldown should be saved to the database (true by default).
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull Player player, @NotNull Key key, @NotNull Duration duration, boolean persistent) {
+    @Nullable
+    public Cooldown setCooldown(Player player, Key key, Duration duration, boolean persistent) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -161,7 +167,8 @@ public class CooldownManager {
      * @param persistent     Whether this cooldown should be saved to the database (true by default).
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull UUID uuid, @NotNull Key key, long cooldownMillis, boolean persistent) {
+    @Nullable
+    public Cooldown setCooldown(UUID uuid, Key key, long cooldownMillis, boolean persistent) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -177,7 +184,8 @@ public class CooldownManager {
      * @param persistent     Whether this cooldown should be saved to the database (true by default).
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull Player player, @NotNull Key key, long cooldownMillis, boolean persistent) {
+    @Nullable
+    public Cooldown setCooldown(Player player, Key key, long cooldownMillis, boolean persistent) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -193,7 +201,8 @@ public class CooldownManager {
      * @param duration The cooldown duration
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull Player player, @NotNull Key key, @NotNull Duration duration) {
+    @Nullable
+    public Cooldown setCooldown(Player player, Key key, Duration duration) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -210,7 +219,8 @@ public class CooldownManager {
      * @param duration The cooldown duration
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull UUID uuid, @NotNull Key key, @NotNull Duration duration) {
+    @Nullable
+    public Cooldown setCooldown(UUID uuid, Key key, Duration duration) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
         Preconditions.checkNotNull(duration, "duration cannot be null");
@@ -227,7 +237,8 @@ public class CooldownManager {
      * @param cooldownMillis The cooldown in milliseconds
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull UUID uuid, @NotNull Key key, long cooldownMillis) {
+    @Nullable
+    public Cooldown setCooldown(UUID uuid, Key key, long cooldownMillis) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -243,7 +254,8 @@ public class CooldownManager {
      * @param cooldownMillis The cooldown in milliseconds
      * @return The created cooldown, or null if the duration is zero or negative.
      */
-    public Cooldown setCooldown(@NotNull Player player, @NotNull Key key, long cooldownMillis) {
+    @Nullable
+    public Cooldown setCooldown(Player player, Key key, long cooldownMillis) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -258,7 +270,7 @@ public class CooldownManager {
      * @param key  The cooldown identifier.
      * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
-    public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key) {
+    public boolean removeCooldown(UUID uuid, Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -273,7 +285,7 @@ public class CooldownManager {
      * @param key    The cooldown identifier.
      * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
-    public boolean removeCooldown(@NotNull Player player, @NotNull Key key) {
+    public boolean removeCooldown(Player player, Key key) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -290,7 +302,7 @@ public class CooldownManager {
      *                           Set to false to remove from memory only.
      * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
-    public boolean removeCooldown(@NotNull UUID uuid, @NotNull Key key, boolean removeFromDatabase) {
+    public boolean removeCooldown(UUID uuid, Key key, boolean removeFromDatabase) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -313,7 +325,7 @@ public class CooldownManager {
      *                           Set to false to remove from memory only.
      * @return {@code true} if a cooldown was found and removed from memory, {@code false} otherwise.
      */
-    public boolean removeCooldown(@NotNull Player player, @NotNull Key key, boolean removeFromDatabase) {
+    public boolean removeCooldown(Player player, Key key, boolean removeFromDatabase) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -330,7 +342,7 @@ public class CooldownManager {
      * @return The cooldown, or null if not found or expired.
      */
     @Nullable
-    public Cooldown getCooldown(@NotNull UUID uuid, @NotNull Key key) {
+    public Cooldown getCooldown(UUID uuid, Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -354,7 +366,7 @@ public class CooldownManager {
      * @return The cooldown, or null if not found or expired.
      */
     @Nullable
-    public Cooldown getCooldown(@NotNull Player player, @NotNull Key key) {
+    public Cooldown getCooldown(Player player, Key key) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -368,7 +380,7 @@ public class CooldownManager {
      * @param key  The cooldown identifier.
      * @return Whether the UUID is in cooldown.
      */
-    public boolean inCooldown(@NotNull UUID uuid, @NotNull Key key) {
+    public boolean inCooldown(UUID uuid, Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -382,7 +394,7 @@ public class CooldownManager {
      * @param key    The cooldown identifier.
      * @return Whether the player is in cooldown.
      */
-    public boolean inCooldown(@NotNull Player player, @NotNull Key key) {
+    public boolean inCooldown(Player player, Key key) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -396,8 +408,7 @@ public class CooldownManager {
      * @param key  The cooldown identifier.
      * @return The remaining time, or Duration.ZERO if not in cooldown.
      */
-    @NotNull
-    public Duration remainingTime(@NotNull UUID uuid, @NotNull Key key) {
+    public Duration remainingTime(UUID uuid, Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -415,8 +426,7 @@ public class CooldownManager {
      * @param key    The cooldown identifier.
      * @return The remaining time, or Duration.ZERO if not in cooldown.
      */
-    @NotNull
-    public Duration remainingTime(@NotNull Player player, @NotNull Key key) {
+    public Duration remainingTime(Player player, Key key) {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -440,7 +450,7 @@ public class CooldownManager {
      *
      * @param uuid The UUID.
      */
-    public void removeAllCooldowns(@NotNull UUID uuid) {
+    public void removeAllCooldowns(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         removeAllCooldowns(uuid, true);
@@ -452,7 +462,7 @@ public class CooldownManager {
      *
      * @param player The player.
      */
-    public void removeAllCooldowns(@NotNull Player player) {
+    public void removeAllCooldowns(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         removeAllCooldowns(player.getUniqueId(), true);
@@ -465,7 +475,7 @@ public class CooldownManager {
      * @param removeFromDatabase Whether to attempt to remove persistent cooldowns for this UUID from the database as well.
      *                           Set to false to remove from memory only.
      */
-    public void removeAllCooldowns(@NotNull UUID uuid, boolean removeFromDatabase) {
+    public void removeAllCooldowns(UUID uuid, boolean removeFromDatabase) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         cooldowns.entrySet().removeIf(entry -> entry.getKey().uuid() == uuid);
@@ -481,7 +491,7 @@ public class CooldownManager {
      * @param removeFromDatabase Whether to attempt to remove persistent cooldowns for this player from the database as well.
      *                           Set to false to remove from memory only.
      */
-    public void removeAllCooldowns(@NotNull Player player, boolean removeFromDatabase) {
+    public void removeAllCooldowns(Player player, boolean removeFromDatabase) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         removeAllCooldowns(player.getUniqueId(), removeFromDatabase);
@@ -494,7 +504,7 @@ public class CooldownManager {
      * @param key The cooldown identifier.
      * @return The number of cooldowns removed from memory.
      */
-    public int removeAllCooldownsByKey(@NotNull Key key) {
+    public int removeAllCooldownsByKey(Key key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         return removeAllCooldownsByKey(key, true);
@@ -508,7 +518,7 @@ public class CooldownManager {
      *                           Set to false to remove from memory only.
      * @return The number of cooldowns removed from memory.
      */
-    public int removeAllCooldownsByKey(@NotNull Key key, boolean removeFromDatabase) {
+    public int removeAllCooldownsByKey(Key key, boolean removeFromDatabase) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         int count = 0;
@@ -543,7 +553,7 @@ public class CooldownManager {
      * @param namespace The namespace.
      * @return The number of cooldowns removed from memory.
      */
-    public int removeAllCooldownsByNamespace(@NotNull String namespace) {
+    public int removeAllCooldownsByNamespace(String namespace) {
         Preconditions.checkNotNull(namespace, "namespace cannot be null");
 
         return removeAllCooldownsByNamespace(namespace, true);
@@ -557,7 +567,7 @@ public class CooldownManager {
      *                           Set to false to remove from memory only.
      * @return The number of cooldowns removed from memory.
      */
-    public int removeAllCooldownsByNamespace(@NotNull String namespace, boolean removeFromDatabase) {
+    public int removeAllCooldownsByNamespace(String namespace, boolean removeFromDatabase) {
         Preconditions.checkNotNull(namespace, "namespace cannot be null");
 
         int count = 0;

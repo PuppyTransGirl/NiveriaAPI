@@ -13,8 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
@@ -34,11 +34,15 @@ import java.util.function.Function;
  *
  * @param <T> the type of values associated with selector options
  */
+@NullMarked
 public class Selector<T> extends MenuComponent {
     private final ObjectList<Option<T>> options;
+    @Nullable
     private Function<MenuContext, T> defaultOption;
+    @Nullable
     private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
+    @Nullable
     private Sound sound;
 
     private final int width, height;
@@ -87,7 +91,7 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onAdd(@NotNull MenuContext context) {
+    public void onAdd(MenuContext context) {
         if (this.defaultOption == null)
             return;
 
@@ -106,7 +110,7 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      */
     @Override
-    public void onClick(@NotNull NiveriaInventoryClickEvent event, @NotNull MenuContext context) {
+    public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
 
@@ -150,9 +154,8 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
         if (!this.visible())
             return items;
@@ -180,9 +183,8 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;
@@ -229,7 +231,7 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      * @return the ItemStack for the current option
      */
-    private ItemStack currentItem(@NotNull MenuContext context) {
+    private ItemStack currentItem(MenuContext context) {
         return this.currentOption().item.apply(context);
     }
 
@@ -243,7 +245,7 @@ public class Selector<T> extends MenuComponent {
      * @param newIndex the new selection index
      * @param <T>      the type of values in the selector
      */
-    public record SelectionChangeEvent<T>(@NotNull MenuContext context, @Nullable T oldValue, @Nullable T newValue,
+    public record SelectionChangeEvent<T>(MenuContext context, @Nullable T oldValue, @Nullable T newValue,
                                           @NonNegative int oldIndex, @NonNegative int newIndex) {
 
     }
@@ -255,7 +257,7 @@ public class Selector<T> extends MenuComponent {
      * @param value the value associated with this option (may be null)
      * @param <T>   the type of the option value
      */
-    public record Option<T>(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+    public record Option<T>(Function<MenuContext, ItemStack> item, @Nullable T value) {
 
     }
 
@@ -267,9 +269,8 @@ public class Selector<T> extends MenuComponent {
      * @return this selector for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Selector<T> addOption(@NotNull ItemStack item, @Nullable T value) {
+    public Selector<T> addOption(ItemStack item, @Nullable T value) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.options.add(new Option<>(context -> item, value));
@@ -284,9 +285,8 @@ public class Selector<T> extends MenuComponent {
      * @return this selector for method chaining
      * @throws NullPointerException if item is null
      */
-    @NotNull
     @Contract(value = "_, _ -> this", mutates = "this")
-    public Selector<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+    public Selector<T> addOption(Function<MenuContext, ItemStack> item, @Nullable T value) {
         Preconditions.checkNotNull(item, "item cannot be null");
 
         this.options.add(new Option<>(item, value));
@@ -300,9 +300,8 @@ public class Selector<T> extends MenuComponent {
      * @return this selector for method chaining
      * @throws NullPointerException if value is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Selector<T> removeOption(@NotNull T value) {
+    public Selector<T> removeOption(T value) {
         Preconditions.checkNotNull(value, "value cannot be null");
 
         int removedIndex = -1;
@@ -330,9 +329,8 @@ public class Selector<T> extends MenuComponent {
      * @return this selector for method chaining
      * @throws NullPointerException if consumer is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Selector<T> onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> consumer) {
+    public Selector<T> onSelectionChange(Consumer<SelectionChangeEvent<T>> consumer) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
 
         this.onSelectionChange = consumer;
@@ -346,9 +344,8 @@ public class Selector<T> extends MenuComponent {
      * @return this selector for method chaining
      * @throws NullPointerException if defaultOption is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public Selector<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
+    public Selector<T> defaultOption(Function<MenuContext, T> defaultOption) {
         Preconditions.checkNotNull(defaultOption, "defaultOption cannot be null");
 
         this.defaultOption = defaultOption;
@@ -361,7 +358,6 @@ public class Selector<T> extends MenuComponent {
      * @param sound the sound to play, or null for no sound
      * @return this selector for method chaining
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public Selector<T> sound(@Nullable Sound sound) {
         this.sound = sound;
@@ -396,7 +392,6 @@ public class Selector<T> extends MenuComponent {
      * @param <T> the type of values for selector options
      * @return a new Selector.Builder for constructing selectors
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static <T> Builder<T> create() {
         return new Builder<>();
@@ -409,11 +404,14 @@ public class Selector<T> extends MenuComponent {
      */
     public static class Builder<T> extends MenuComponent.Builder<Builder<T>> {
         private final ObjectList<Option<T>> options = new ObjectArrayList<>();
+        @Nullable
         private Function<MenuContext, T> defaultOption;
+        @Nullable
         private Consumer<SelectionChangeEvent<T>> onSelectionChange;
 
         private int defaultIndex = 0;
 
+        @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
                 BackwardUtils.UI_SOUND_SOURCE,
@@ -432,9 +430,8 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder<T> addOption(@NotNull ItemStack item, @Nullable T value) {
+        public Builder<T> addOption(ItemStack item, @Nullable T value) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.options.add(new Option<>(context -> item, value));
@@ -449,9 +446,8 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if item is null
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder<T> addOption(@NotNull Function<MenuContext, ItemStack> item, @Nullable T value) {
+        public Builder<T> addOption(Function<MenuContext, ItemStack> item, @Nullable T value) {
             Preconditions.checkNotNull(item, "item cannot be null");
 
             this.options.add(new Option<>(item, value));
@@ -465,7 +461,6 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if index is negative
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> defaultIndex(@NonNegative int index) {
             Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
@@ -481,9 +476,8 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if consumer is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder<T> onSelectionChange(@NotNull Consumer<SelectionChangeEvent<T>> consumer) {
+        public Builder<T> onSelectionChange(Consumer<SelectionChangeEvent<T>> consumer) {
             Preconditions.checkNotNull(consumer, "consumer cannot be null");
 
             this.onSelectionChange = consumer;
@@ -497,9 +491,8 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if defaultOption is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder<T> defaultOption(@NotNull Function<MenuContext, T> defaultOption) {
+        public Builder<T> defaultOption(Function<MenuContext, T> defaultOption) {
             Preconditions.checkNotNull(defaultOption, "defaultOption cannot be null");
 
             this.defaultOption = defaultOption;
@@ -512,7 +505,6 @@ public class Selector<T> extends MenuComponent {
          * @param sound the sound to play, or null for no sound
          * @return this builder for method chaining
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> sound(@Nullable Sound sound) {
             this.sound = sound;
@@ -526,7 +518,6 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -542,7 +533,6 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder<T> height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -558,7 +548,6 @@ public class Selector<T> extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder<T> size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -574,7 +563,6 @@ public class Selector<T> extends MenuComponent {
          *
          * @return a new Selector with the specified configuration
          */
-        @NotNull
         public Selector<T> build() {
             Preconditions.checkArgument(
                     this.options.isEmpty() || this.defaultIndex < this.options.size(),

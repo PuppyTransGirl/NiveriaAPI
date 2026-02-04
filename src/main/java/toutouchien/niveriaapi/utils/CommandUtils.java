@@ -6,11 +6,12 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Utility class for command-related operations.
  */
+@NullMarked
 public class CommandUtils {
     private CommandUtils() {
         throw new IllegalStateException("Utility class");
@@ -23,7 +24,7 @@ public class CommandUtils {
      * @param permission The required permission.
      * @return True if the requirements are met, false otherwise.
      */
-    public static boolean defaultRequirements(@NotNull CommandSourceStack css, @NotNull String permission) {
+    public static boolean defaultRequirements(CommandSourceStack css, String permission) {
         return defaultRequirements(css, permission, false);
     }
 
@@ -38,7 +39,7 @@ public class CommandUtils {
      * @param requiresPlayer Whether the executor must be a player.
      * @return True if the requirements are met, false otherwise.
      */
-    public static boolean defaultRequirements(@NotNull CommandSourceStack css, @NotNull String permission, boolean requiresPlayer) {
+    public static boolean defaultRequirements(CommandSourceStack css, String permission, boolean requiresPlayer) {
         Preconditions.checkNotNull(css, "css cannot be null");
         Preconditions.checkNotNull(permission, "permission cannot be null");
 
@@ -59,7 +60,7 @@ public class CommandUtils {
      * @param ctx The command context.
      * @return The command sender.
      */
-    public static CommandSender sender(@NotNull CommandContext<CommandSourceStack> ctx) {
+    public static CommandSender sender(CommandContext<CommandSourceStack> ctx) {
         Preconditions.checkNotNull(ctx, "ctx cannot be null");
         CommandSourceStack css = ctx.getSource();
         return css.getExecutor() != null ? css.getExecutor() : css.getSender();

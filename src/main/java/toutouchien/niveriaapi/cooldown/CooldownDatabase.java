@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import org.bson.Document;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.database.impl.NiveriaDatabaseManager;
@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * Manages the storage and retrieval of player cooldowns in the database.
  */
+@NullMarked
 public class CooldownDatabase {
     private static final String PLAYERS = "players";
     private static final String EXPIRATION_TIME = "expirationTime";
@@ -29,7 +30,7 @@ public class CooldownDatabase {
      * @param database The NiveriaDatabaseManager instance for database operations.
      * @param logger   The Logger instance for logging.
      */
-    public CooldownDatabase(@NotNull NiveriaDatabaseManager database, @NotNull Logger logger) {
+    public CooldownDatabase(NiveriaDatabaseManager database, Logger logger) {
         Preconditions.checkNotNull(database, "database cannot be null");
         Preconditions.checkNotNull(logger, "logger cannot be null");
 
@@ -42,7 +43,7 @@ public class CooldownDatabase {
      *
      * @param cooldown The Cooldown to save.
      */
-    public void saveCooldown(@NotNull Cooldown cooldown) {
+    public void saveCooldown(Cooldown cooldown) {
         Preconditions.checkNotNull(cooldown, "cooldown cannot be null");
 
         this.database.documentOrDefaultAsync(PLAYERS, cooldown.uuid().toString()).thenComposeAsync(document -> {
@@ -66,7 +67,7 @@ public class CooldownDatabase {
      * @param uuid The UUID of the player.
      * @param key  The Key of the cooldown to delete.
      */
-    public void deleteCooldown(@NotNull UUID uuid, @NotNull Key key) {
+    public void deleteCooldown(UUID uuid, Key key) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
         Preconditions.checkNotNull(key, "key cannot be null");
 
@@ -85,7 +86,6 @@ public class CooldownDatabase {
      * @return A list of all active Cooldowns.
      */
     @SuppressWarnings("PatternValidation")
-    @NotNull
     public List<Cooldown> loadAllCooldowns() {
         if (NiveriaAPI.isUnitTestVersion())
             return new ArrayList<>();
@@ -152,7 +152,7 @@ public class CooldownDatabase {
      *
      * @param uuid The UUID of the player.
      */
-    public void deleteAllCooldowns(@NotNull UUID uuid) {
+    public void deleteAllCooldowns(UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid cannot be null");
 
         this.database.documentAsync(PLAYERS, uuid.toString()).thenComposeAsync(document -> {

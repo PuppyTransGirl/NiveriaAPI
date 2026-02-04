@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
@@ -18,6 +18,7 @@ import java.util.function.Consumer;
  * specific to menu components, including context access and convenient
  * item modification methods.
  */
+@NullMarked
 public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     private final MenuContext context;
 
@@ -29,7 +30,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      * @throws NullPointerException if context is null
      */
     @SuppressWarnings("UnstableApiUsage")
-    public NiveriaInventoryClickEvent(@NotNull InventoryClickEvent event, @NotNull MenuContext context) {
+    public NiveriaInventoryClickEvent(InventoryClickEvent event, MenuContext context) {
         super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
 
         Preconditions.checkNotNull(context, "context cannot be null");
@@ -56,7 +57,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      * @param modifier a function that modifies the ItemBuilder
      * @throws NullPointerException if modifier is null
      */
-    public void changeItem(@NotNull Consumer<ItemBuilder> modifier) {
+    public void changeItem(Consumer<ItemBuilder> modifier) {
         Preconditions.checkNotNull(modifier, "modifier cannot be null");
 
         ItemStack item = this.getCurrentItem();
@@ -73,7 +74,6 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      *
      * @return the player who performed the click action
      */
-    @NotNull
     public Player player() {
         return (Player) getWhoClicked();
     }
@@ -92,7 +92,6 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      *
      * @return the menu context
      */
-    @NotNull
     public MenuContext context() {
         return context;
     }

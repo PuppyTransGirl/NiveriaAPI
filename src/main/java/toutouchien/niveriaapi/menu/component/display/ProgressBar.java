@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.utils.Direction;
@@ -27,6 +27,7 @@ import java.util.function.Function;
  * The progress can be displayed in four directions: UP, DOWN, LEFT, or RIGHT.
  * The percentage value determines how much of the bar is filled.
  */
+@NullMarked
 public class ProgressBar extends MenuComponent {
     private Function<MenuContext, ItemStack> doneItem, currentItem, notDoneItem;
 
@@ -76,9 +77,8 @@ public class ProgressBar extends MenuComponent {
      * @param context the menu context
      * @return a map from slot indices to ItemStacks
      */
-    @NotNull
     @Override
-    public Int2ObjectMap<ItemStack> items(@NotNull MenuContext context) {
+    public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(this.width * this.height);
         if (!this.visible())
             return items;
@@ -168,7 +168,7 @@ public class ProgressBar extends MenuComponent {
      * @param cols     the range for column iteration
      * @param rowMajor whether to iterate rows first (true) or columns first (false)
      */
-    private record Traversal(@NotNull Range rows, @NotNull Range cols, boolean rowMajor) {
+    private record Traversal(Range rows, Range cols, boolean rowMajor) {
 
     }
 
@@ -181,9 +181,8 @@ public class ProgressBar extends MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    @NotNull
     @Override
-    public IntSet slots(@NotNull MenuContext context) {
+    public IntSet slots(MenuContext context) {
         IntSet slots = new IntOpenHashSet(this.width * this.height);
         if (!this.visible())
             return slots;
@@ -208,9 +207,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if doneItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar doneItem(@NotNull ItemStack doneItem) {
+    public ProgressBar doneItem(ItemStack doneItem) {
         Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
 
         this.doneItem = context -> doneItem;
@@ -224,9 +222,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if currentItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar currentItem(@NotNull ItemStack currentItem) {
+    public ProgressBar currentItem(ItemStack currentItem) {
         Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
 
         this.currentItem = context -> currentItem;
@@ -240,9 +237,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if notDoneItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar notDoneItem(@NotNull ItemStack notDoneItem) {
+    public ProgressBar notDoneItem(ItemStack notDoneItem) {
         Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
 
         this.notDoneItem = context -> notDoneItem;
@@ -256,9 +252,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if doneItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
+    public ProgressBar doneItem(Function<MenuContext, ItemStack> doneItem) {
         Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
 
         this.doneItem = doneItem;
@@ -272,9 +267,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if currentItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
+    public ProgressBar currentItem(Function<MenuContext, ItemStack> currentItem) {
         Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
 
         this.currentItem = currentItem;
@@ -288,9 +282,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if notDoneItem is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
+    public ProgressBar notDoneItem(Function<MenuContext, ItemStack> notDoneItem) {
         Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
 
         this.notDoneItem = notDoneItem;
@@ -304,7 +297,6 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws IllegalArgumentException if percentage is negative
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
     public ProgressBar percentage(@NonNegative double percentage) {
         Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %s", percentage);
@@ -320,9 +312,8 @@ public class ProgressBar extends MenuComponent {
      * @return this progress bar for method chaining
      * @throws NullPointerException if percentage is null
      */
-    @NotNull
     @Contract(value = "_ -> this", mutates = "this")
-    public ProgressBar percentage(@NotNull Object2DoubleFunction<MenuContext> percentage) {
+    public ProgressBar percentage(Object2DoubleFunction<MenuContext> percentage) {
         Preconditions.checkNotNull(percentage, "percentage cannot be null");
 
         this.percentage = percentage;
@@ -356,7 +347,6 @@ public class ProgressBar extends MenuComponent {
      *
      * @return a new ProgressBar.Builder for constructing progress bars
      */
-    @NotNull
     @Contract(value = "-> new", pure = true)
     public static Builder create() {
         return new Builder();
@@ -384,9 +374,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if doneItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder doneItem(@NotNull ItemStack doneItem) {
+        public Builder doneItem(ItemStack doneItem) {
             Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
 
             this.doneItem = context -> doneItem;
@@ -400,9 +389,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if doneItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder doneItem(@NotNull Function<MenuContext, ItemStack> doneItem) {
+        public Builder doneItem(Function<MenuContext, ItemStack> doneItem) {
             Preconditions.checkNotNull(doneItem, "doneItem cannot be null");
 
             this.doneItem = doneItem;
@@ -416,9 +404,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if currentItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder currentItem(@NotNull ItemStack currentItem) {
+        public Builder currentItem(ItemStack currentItem) {
             Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
 
             this.currentItem = context -> currentItem;
@@ -432,9 +419,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if currentItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder currentItem(@NotNull Function<MenuContext, ItemStack> currentItem) {
+        public Builder currentItem(Function<MenuContext, ItemStack> currentItem) {
             Preconditions.checkNotNull(currentItem, "currentItem cannot be null");
 
             this.currentItem = currentItem;
@@ -448,9 +434,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if notDoneItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder notDoneItem(@NotNull ItemStack notDoneItem) {
+        public Builder notDoneItem(ItemStack notDoneItem) {
             Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
 
             this.notDoneItem = context -> notDoneItem;
@@ -464,9 +449,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if notDoneItem is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder notDoneItem(@NotNull Function<MenuContext, ItemStack> notDoneItem) {
+        public Builder notDoneItem(Function<MenuContext, ItemStack> notDoneItem) {
             Preconditions.checkNotNull(notDoneItem, "notDoneItem cannot be null");
 
             this.notDoneItem = notDoneItem;
@@ -480,9 +464,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if direction is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder direction(@NotNull Direction.Default direction) {
+        public Builder direction(Direction.Default direction) {
             Preconditions.checkNotNull(direction, "direction cannot be null");
 
             this.direction = direction;
@@ -496,7 +479,6 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if percentage is negative
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder percentage(@NonNegative double percentage) {
             Preconditions.checkArgument(percentage >= 0, "percentage cannot be negative: %s", percentage);
@@ -512,9 +494,8 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if percentage is null
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
-        public Builder percentage(@NotNull Object2DoubleFunction<MenuContext> percentage) {
+        public Builder percentage(Object2DoubleFunction<MenuContext> percentage) {
             Preconditions.checkNotNull(percentage, "percentage cannot be null");
 
             this.percentage = percentage;
@@ -528,7 +509,6 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder width(@Positive int width) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -544,7 +524,6 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if height is less than 1
          */
-        @NotNull
         @Contract(value = "_ -> this", mutates = "this")
         public Builder height(@Positive int height) {
             Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
@@ -561,7 +540,6 @@ public class ProgressBar extends MenuComponent {
          * @return this builder for method chaining
          * @throws IllegalArgumentException if width or height is less than 1
          */
-        @NotNull
         @Contract(value = "_, _ -> this", mutates = "this")
         public Builder size(@Positive int width, @Positive int height) {
             Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
@@ -577,7 +555,6 @@ public class ProgressBar extends MenuComponent {
          *
          * @return a new ProgressBar with the specified configuration
          */
-        @NotNull
         public ProgressBar build() {
             return new ProgressBar(
                     this.id,

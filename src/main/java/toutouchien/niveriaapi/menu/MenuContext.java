@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -18,6 +18,7 @@ import java.util.Deque;
  * enabling users to navigate back through their menu history.
  * It also provides a key-value store for persisting data across menu interactions.
  */
+@NullMarked
 public class MenuContext {
     private static final int MAX_PREVIOUS_MENUS = 64;
 
@@ -34,7 +35,7 @@ public class MenuContext {
      * @param menu the menu associated with this context
      * @throws NullPointerException if menu is null
      */
-    public MenuContext(@NotNull Menu menu) {
+    public MenuContext(Menu menu) {
         this.previousMenus = new ArrayDeque<>();
         this.data = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
 
@@ -46,7 +47,6 @@ public class MenuContext {
      *
      * @return the menu instance
      */
-    @NotNull
     public Menu menu() {
         return menu;
     }
@@ -56,7 +56,6 @@ public class MenuContext {
      *
      * @return the player who owns the menu
      */
-    @NotNull
     public Player player() {
         return this.menu.player();
     }
@@ -90,7 +89,7 @@ public class MenuContext {
      * @param menu the new menu to set
      * @throws NullPointerException if menu is null
      */
-    void menu(@NotNull Menu menu) {
+    void menu(Menu menu) {
         Preconditions.checkNotNull(menu, "menu cannot be null");
         if (this.firstMenuSet) {
             this.firstMenuSet = false;
@@ -122,7 +121,7 @@ public class MenuContext {
      * @param value the value to store
      * @throws NullPointerException if key is null
      */
-    public void set(@NotNull String key, @Nullable Object value) {
+    public void set(String key, @Nullable Object value) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         this.data.put(key, value);
@@ -136,7 +135,7 @@ public class MenuContext {
      * @throws NullPointerException if key is null
      */
     @Nullable
-    public Object get(@NotNull String key) {
+    public Object get(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         return this.data.get(key);
@@ -149,7 +148,7 @@ public class MenuContext {
      * @return true if the key exists, false otherwise
      * @throws NullPointerException if key is null
      */
-    public boolean has(@NotNull String key) {
+    public boolean has(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         return this.data.containsKey(key);
@@ -161,7 +160,7 @@ public class MenuContext {
      * @param key the key to remove
      * @throws NullPointerException if key is null
      */
-    public void remove(@NotNull String key) {
+    public void remove(String key) {
         Preconditions.checkNotNull(key, "key cannot be null");
 
         this.data.remove(key);
