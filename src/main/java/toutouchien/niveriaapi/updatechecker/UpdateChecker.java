@@ -36,6 +36,7 @@ public class UpdateChecker {
     private final String currentVersion;
     private final String langKey;
 
+    @Nullable
     private String latestVersion;
     private boolean noNewVersion;
 
