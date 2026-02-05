@@ -72,9 +72,10 @@ public class UpdateChecker {
             if (this.noNewVersion)
                 return;
 
+            String pluginName = this.plugin.getName().toLowerCase(Locale.ROOT);
             LANG.sendMessage(Bukkit.getConsoleSender(), this.langKey,
-                    Lang.unparsedPlaceholder(this.plugin.getName().toLowerCase(Locale.ROOT) + "_current_version", this.currentVersion),
-                    Lang.unparsedPlaceholder(this.plugin.getName().toLowerCase(Locale.ROOT) + "_latest_version", this.latestVersion)
+                    Lang.unparsedPlaceholder(pluginName + "_current_version", this.currentVersion),
+                    Lang.unparsedPlaceholder(pluginName + "_latest_version", this.latestVersion)
             );
 
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(

@@ -36,8 +36,8 @@ public class UpdateCheckerListener implements Listener {
             return;
 
         LANG.sendMessage(player, this.langKey,
-                Lang.unparsedPlaceholder(this.plugin.getName().toLowerCase(Locale.ROOT) + "_current_version", this.currentVersion),
-                Lang.unparsedPlaceholder(this.plugin.getName().toLowerCase(Locale.ROOT) + "_latest_version", this.latestVersion)
+                Lang.unparsedPlaceholder(smallPluginName + "_current_version", this.currentVersion),
+                Lang.unparsedPlaceholder(smallPluginName + "_latest_version", this.latestVersion)
         );
     }
 }
