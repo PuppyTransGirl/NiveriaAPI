@@ -21,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static toutouchien.niveriaapi.NiveriaAPI.LANG;
@@ -35,6 +36,7 @@ public class UpdateChecker {
     private final String currentVersion;
     private final String langKey;
 
+    @Nullable
     private String latestVersion;
     private boolean noNewVersion;
 
@@ -71,9 +73,10 @@ public class UpdateChecker {
             if (this.noNewVersion)
                 return;
 
+            String pluginName = this.plugin.getName().toLowerCase(Locale.ROOT);
             LANG.sendMessage(Bukkit.getConsoleSender(), this.langKey,
-                    Lang.unparsedPlaceholder("niveriaapi_current_version", this.currentVersion),
-                    Lang.unparsedPlaceholder("niveriaapi_latest_version", this.latestVersion)
+                    Lang.unparsedPlaceholder(pluginName + "_current_version", this.currentVersion),
+                    Lang.unparsedPlaceholder(pluginName + "_latest_version", this.latestVersion)
             );
 
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
