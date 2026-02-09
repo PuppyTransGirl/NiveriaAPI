@@ -99,7 +99,7 @@ public class Lang {
     private final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> messages;
     private final Object2ObjectMap<Locale, Object2ObjectMap<String, Object2ObjectMap<String, String>>> specialTags;
     @Nullable
-    private final Cache<LangCacheKey, Component> componentCache;
+    private final Object componentCache;
     private final ObjectSet<Locale> loadedLocales;
     private final Object2ObjectMap<String, TagResolver> customTagResolvers;
 
@@ -537,7 +537,7 @@ public class Lang {
         if (componentCache == null)
             return supplier.get();
 
-        return componentCache.get(cacheKey, k -> supplier.get());
+        return ((Cache<LangCacheKey, Component>) componentCache).get(cacheKey, k -> supplier.get());
     }
 
     // ========== Public API ==========
@@ -899,7 +899,7 @@ public class Lang {
             loadedLocales.clear();
 
             if (componentCache != null)
-                componentCache.invalidateAll();
+                ((Cache<LangCacheKey, Component>) componentCache).invalidateAll();
 
             initialize();
         }
@@ -925,13 +925,13 @@ public class Lang {
                     totalMessages
             );
 
-        CacheStats stats = componentCache.stats();
+        CacheStats stats = ((Cache<LangCacheKey, Component>) componentCache).stats();
 
         return "Lang Stats [%s] - Locales: %d, Messages: %d, Cache: size=%d, hits=%d, misses=%d, hitRate=%.2f%%".formatted(
                 plugin.getName(),
                 loadedLocales.size(),
                 totalMessages,
-                componentCache.estimatedSize(),
+                ((Cache<LangCacheKey, Component>) componentCache).estimatedSize(),
                 stats.hitCount(),
                 stats.missCount(),
                 stats.hitRate() * 100D
