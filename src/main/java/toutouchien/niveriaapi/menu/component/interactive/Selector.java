@@ -50,36 +50,21 @@ public class Selector<T> extends MenuComponent {
     private int currentIndex;
 
     /**
-     * Constructs a new Selector with the specified parameters.
+     * Constructs a new Selector with the specified properties.
      *
-     * @param id                unique identifier for this selector
-     * @param options           list of selectable options
-     * @param defaultOption     function to determine default selection based on context
-     * @param onSelectionChange callback for when selection changes
-     * @param defaultIndex      initial selected index
-     * @param sound             sound to play when clicked (may be null)
-     * @param width             width of the selector in slots
-     * @param height            height of the selector in rows
+     * @param builder the builder containing the selector configuration
      */
-    private Selector(
-            String id,
-            ObjectList<Option<T>> options,
-            Function<MenuContext, T> defaultOption,
-            Consumer<SelectionChangeEvent<T>> onSelectionChange,
-            int defaultIndex,
-            Sound sound,
-            int width, int height
-    ) {
-        super(id);
-        this.options = options;
-        this.defaultOption = defaultOption;
-        this.onSelectionChange = onSelectionChange;
-        this.currentIndex = defaultIndex;
+    private Selector(Builder<T> builder) {
+        super(builder.id());
+        this.options = new ObjectArrayList<>(builder.options);
+        this.defaultOption = builder.defaultOption;
+        this.onSelectionChange = builder.onSelectionChange;
+        this.currentIndex = builder.defaultIndex;
 
-        this.sound = sound;
+        this.sound = builder.sound;
 
-        this.width = width;
-        this.height = height;
+        this.width = builder.width;
+        this.height = builder.height;
     }
 
     /**
@@ -570,16 +555,7 @@ public class Selector<T> extends MenuComponent {
                     this.defaultIndex, this.options.size()
             );
 
-            return new Selector<>(
-                    this.id,
-                    this.options,
-                    this.defaultOption,
-                    this.onSelectionChange,
-                    this.defaultIndex,
-                    this.sound,
-                    this.width,
-                    this.height
-            );
+            return new Selector<>(this);
         }
     }
 }
