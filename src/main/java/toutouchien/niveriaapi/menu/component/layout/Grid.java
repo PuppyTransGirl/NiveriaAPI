@@ -235,16 +235,14 @@ public class Grid extends MenuComponent {
         /**
          * Adds a component to the grid at the specified slot index.
          *
-         * @param context   the menu context
          * @param slot      the slot index where the component should be placed
          * @param component the component to add
          * @return this builder for method chaining
          * @throws IllegalArgumentException if slot is negative, component is null,
          *                                  or component doesn't fit within grid bounds
          */
-        @Contract(value = "_, _, _ -> this", mutates = "this")
-        public Builder add(MenuContext context, @NonNegative int slot, MenuComponent component) {
-            Preconditions.checkNotNull(context, "context cannot be null");
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder add(@NonNegative int slot, MenuComponent component) {
             Preconditions.checkArgument(slot >= 0, "slot cannot be negative: %s", slot);
             Preconditions.checkNotNull(component, "component cannot be null");
 
@@ -274,21 +272,19 @@ public class Grid extends MenuComponent {
         /**
          * Adds a component to the grid at the specified x/y coordinates.
          *
-         * @param context   the menu context
          * @param x         the x-coordinate (0-based)
          * @param y         the y-coordinate (0-based)
          * @param component the component to add
          * @return this builder for method chaining
          * @throws IllegalArgumentException if coordinates are negative or component is null
          */
-        @Contract(value = "_, _, _, _ -> this", mutates = "this")
-        public Builder add(MenuContext context, @NonNegative int x, @NonNegative int y, MenuComponent component) {
-            Preconditions.checkNotNull(context, "context cannot be null");
+        @Contract(value = "_, _, _ -> this", mutates = "this")
+        public Builder add(@NonNegative int x, @NonNegative int y, MenuComponent component) {
             Preconditions.checkArgument(x >= 0, "x cannot be negative: %s", x);
             Preconditions.checkArgument(y >= 0, "y cannot be negative: %s", y);
             Preconditions.checkNotNull(component, "component cannot be null");
 
-            return add(context, y * this.width + x, component);
+            return add(y * this.width + x, component);
         }
 
         /**
