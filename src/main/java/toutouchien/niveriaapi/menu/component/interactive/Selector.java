@@ -55,8 +55,8 @@ public class Selector<T> extends MenuComponent {
      * @param builder the builder containing the selector configuration
      */
     private Selector(Builder<T> builder) {
-        super(builder.id);
-        this.options = builder.options;
+        super(builder.id());
+        this.options = new ObjectArrayList<>(builder.options);
         this.defaultOption = builder.defaultOption;
         this.onSelectionChange = builder.onSelectionChange;
         this.currentIndex = builder.defaultIndex;

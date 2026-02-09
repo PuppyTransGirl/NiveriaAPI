@@ -42,11 +42,11 @@ public class Grid extends MenuComponent {
      * @param builder the builder containing the grid configuration
      */
     private Grid(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.width = builder.width;
         this.height = builder.height;
 
-        this.slotComponents = builder.slotComponents;
+        this.slotComponents = new ObjectArrayList<>(builder.slotComponents);
 
         this.border = builder.border;
         this.fill = builder.fill;

@@ -40,7 +40,7 @@ public class Icon extends MenuComponent {
      * @param builder the builder containing the icon configuration
      */
     private Icon(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.item = builder.item;
 
         this.sound = builder.sound;

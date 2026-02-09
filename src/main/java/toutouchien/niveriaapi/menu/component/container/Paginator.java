@@ -50,8 +50,8 @@ public class Paginator extends MenuComponent {
      * @param builder the builder containing the paginator configuration
      */
     private Paginator(Builder builder) {
-        super(builder.id);
-        this.components = builder.components;
+        super(builder.id());
+        this.components = new ObjectArrayList<>(builder.components);
 
         this.backItem = builder.backItem;
         this.nextItem = builder.nextItem;

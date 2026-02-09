@@ -43,7 +43,7 @@ public class ProgressBar extends MenuComponent {
      * @param builder the builder containing the progress bar configuration
      */
     private ProgressBar(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.doneItem = builder.doneItem;
         this.currentItem = builder.currentItem;
         this.notDoneItem = builder.notDoneItem;

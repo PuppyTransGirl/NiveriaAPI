@@ -46,7 +46,7 @@ public class Toggle extends MenuComponent {
      * @param builder the builder containing the toggle configuration
      */
     private Toggle(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.onItem = builder.onItem;
         this.offItem = builder.offItem;
 

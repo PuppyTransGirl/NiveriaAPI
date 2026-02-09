@@ -56,7 +56,7 @@ public class DoubleDropButton extends MenuComponent {
      * @param builder the builder containing the button configuration
      */
     private DoubleDropButton(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.item = builder.item;
         this.dropItem = builder.dropItem;
 

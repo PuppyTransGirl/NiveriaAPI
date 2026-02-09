@@ -70,7 +70,7 @@ public class Button extends MenuComponent {
      * @param builder the builder containing the button configuration
      */
     private Button(Builder builder) {
-        super(builder.id);
+        super(builder.id());
         this.item = builder.item;
 
         this.onClick = builder.onClick;
