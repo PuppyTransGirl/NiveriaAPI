@@ -38,32 +38,21 @@ public class ProgressBar extends MenuComponent {
     private final int width, height;
 
     /**
-     * Constructs a new ProgressBar with the specified parameters.
+     * Constructs a new ProgressBar with the specified properties.
      *
-     * @param id          unique identifier for this progress bar
-     * @param doneItem    function that provides the ItemStack for completed sections
-     * @param currentItem function that provides the ItemStack for the current progress position
-     * @param notDoneItem function that provides the ItemStack for incomplete sections
-     * @param direction   direction in which the progress bar fills
-     * @param percentage  function that returns the progress percentage (0.0 to 1.0)
-     * @param width       width of the progress bar in slots
-     * @param height      height of the progress bar in rows
+     * @param builder the builder containing the progress bar configuration
      */
-    private ProgressBar(
-            String id,
-            Function<MenuContext, ItemStack> doneItem, Function<MenuContext, ItemStack> currentItem, Function<MenuContext, ItemStack> notDoneItem,
-            Direction.Default direction,
-            Object2DoubleFunction<MenuContext> percentage,
-            int width, int height
-    ) {
-        super(id);
-        this.doneItem = doneItem;
-        this.currentItem = currentItem;
-        this.notDoneItem = notDoneItem;
-        this.direction = direction;
-        this.percentage = percentage;
-        this.width = width;
-        this.height = height;
+    private ProgressBar(Builder builder) {
+        super(builder.id);
+        this.doneItem = builder.doneItem;
+        this.currentItem = builder.currentItem;
+        this.notDoneItem = builder.notDoneItem;
+
+        this.direction = builder.direction;
+        this.percentage = builder.percentage;
+
+        this.width = builder.width;
+        this.height = builder.height;
     }
 
     /**
@@ -556,16 +545,7 @@ public class ProgressBar extends MenuComponent {
          * @return a new ProgressBar with the specified configuration
          */
         public ProgressBar build() {
-            return new ProgressBar(
-                    this.id,
-                    this.doneItem,
-                    this.currentItem,
-                    this.notDoneItem,
-                    this.direction,
-                    this.percentage,
-                    this.width,
-                    this.height
-            );
+            return new ProgressBar(this);
         }
     }
 }

@@ -41,32 +41,23 @@ public class Toggle extends MenuComponent {
     private boolean currentState;
 
     /**
-     * Constructs a new Toggle with the specified parameters.
+     * Constructs a new Toggle with the specified properties.
      *
-     * @param id           unique identifier for this toggle
-     * @param onItem       function that provides the ItemStack when toggle is on
-     * @param offItem      function that provides the ItemStack when toggle is off
-     * @param currentState initial state of the toggle
-     * @param sound        sound to play when clicked (may be null)
-     * @param width        width of the toggle in slots
-     * @param height       height of the toggle in rows
+     * @param builder the builder containing the toggle configuration
      */
-    private Toggle(
-            String id,
-            Function<MenuContext, ItemStack> onItem, Function<MenuContext, ItemStack> offItem,
-            Consumer<ToggleEvent> onToggle,
-            Sound sound,
-            boolean currentState,
-            int width, int height
-    ) {
-        super(id);
-        this.onItem = onItem;
-        this.offItem = offItem;
-        this.onToggle = onToggle;
-        this.sound = sound;
-        this.currentState = currentState;
-        this.width = width;
-        this.height = height;
+    private Toggle(Builder builder) {
+        super(builder.id);
+        this.onItem = builder.onItem;
+        this.offItem = builder.offItem;
+
+        this.onToggle = builder.onToggle;
+
+        this.sound = builder.sound;
+
+        this.currentState = builder.currentState;
+
+        this.width = builder.width;
+        this.height = builder.height;
     }
 
     /**
@@ -463,16 +454,7 @@ public class Toggle extends MenuComponent {
          * @return a new Toggle with the specified configuration
          */
         public Toggle build() {
-            return new Toggle(
-                    this.id,
-                    this.onItem,
-                    this.offItem,
-                    this.onToggle,
-                    this.sound,
-                    this.currentState,
-                    this.width,
-                    this.height
-            );
+            return new Toggle(this);
         }
     }
 }

@@ -240,7 +240,7 @@ public abstract class MenuComponent {
     }
 
     protected static class Builder<T> {
-        protected String id;
+        public String id;
 
         /**
          * Sets the ID for this component.

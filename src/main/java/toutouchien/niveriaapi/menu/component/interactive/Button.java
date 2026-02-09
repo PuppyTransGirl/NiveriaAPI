@@ -65,60 +65,33 @@ public class Button extends MenuComponent {
     private final int width, height;
 
     /**
-     * Constructs a new Button with the specified parameters.
+     * Constructs a new Button with the specified properties.
      *
-     * @param id                  unique identifier for the button
-     * @param item                function that provides the static ItemStack
-     * @param onClick             general click handler for mouse clicks
-     * @param onLeftClick         handler for left clicks
-     * @param onRightClick        handler for right clicks
-     * @param onShiftLeftClick    handler for shift+left clicks
-     * @param onShiftRightClick   handler for shift+right clicks
-     * @param onDrop              handler for drop actions
-     * @param sound               sound to play when clicked (may be null)
-     * @param animationFrames     function providing animation frames (may be null)
-     * @param animationInterval   ticks between animation frames
-     * @param stopAnimationOnHide whether to stop animation when button is hidden
-     * @param dynamicItem         function providing dynamic content (may be null)
-     * @param updateInterval      ticks between dynamic updates
-     * @param stopUpdatesOnHide   whether to stop updates when button is hidden
-     * @param width               width of the button in slots
-     * @param height              height of the button in rows
+     * @param builder the builder containing the button configuration
      */
-    private Button(
-            String id,
-            Function<MenuContext, ItemStack> item,
-            Consumer<NiveriaInventoryClickEvent> onClick,
-            Consumer<NiveriaInventoryClickEvent> onLeftClick, Consumer<NiveriaInventoryClickEvent> onRightClick,
-            Consumer<NiveriaInventoryClickEvent> onShiftLeftClick, Consumer<NiveriaInventoryClickEvent> onShiftRightClick,
-            Consumer<NiveriaInventoryClickEvent> onDrop,
-            Sound sound,
-            Function<MenuContext, ObjectList<ItemStack>> animationFrames, int animationInterval, boolean stopAnimationOnHide,
-            Function<MenuContext, ItemStack> dynamicItem, int updateInterval, boolean stopUpdatesOnHide,
-            int width, int height
-    ) {
-        super(id);
-        this.item = item;
+    private Button(Builder builder) {
+        super(builder.id);
+        this.item = builder.item;
 
-        this.onClick = onClick;
-        this.onLeftClick = onLeftClick;
-        this.onRightClick = onRightClick;
-        this.onShiftLeftClick = onShiftLeftClick;
-        this.onShiftRightClick = onShiftRightClick;
-        this.onDrop = onDrop;
+        this.onClick = builder.onClick;
+        this.onLeftClick = builder.onLeftClick;
+        this.onRightClick = builder.onRightClick;
+        this.onShiftLeftClick = builder.onShiftLeftClick;
+        this.onShiftRightClick = builder.onShiftRightClick;
+        this.onDrop = builder.onDrop;
 
-        this.sound = sound;
+        this.sound = builder.sound;
 
-        this.animationFrames = animationFrames;
-        this.animationInterval = animationInterval;
-        this.stopAnimationOnHide = stopAnimationOnHide;
+        this.animationFrames = builder.animationFrames;
+        this.animationInterval = builder.animationInterval;
+        this.stopAnimationOnHide = builder.stopAnimationOnHide;
 
-        this.dynamicItem = dynamicItem;
-        this.updateInterval = updateInterval;
-        this.stopUpdatesOnHide = stopUpdatesOnHide;
+        this.dynamicItem = builder.dynamicItem;
+        this.updateInterval = builder.updateInterval;
+        this.stopUpdatesOnHide = builder.stopUpdatesOnHide;
 
-        this.width = width;
-        this.height = height;
+        this.width = builder.width;
+        this.height = builder.height;
     }
 
     /**
@@ -879,25 +852,7 @@ public class Button extends MenuComponent {
          * @return a new Button with the specified configuration
          */
         public Button build() {
-            return new Button(
-                    this.id,
-                    this.item,
-                    this.onClick,
-                    this.onLeftClick,
-                    this.onRightClick,
-                    this.onShiftLeftClick,
-                    this.onShiftRightClick,
-                    this.onDrop,
-                    this.sound,
-                    this.animationFrames,
-                    this.animationInterval,
-                    this.stopAnimationOnHide,
-                    this.dynamicItem,
-                    this.updateInterval,
-                    this.stopUpdatesOnHide,
-                    this.width,
-                    this.height
-            );
+            return new Button(this);
         }
     }
 }

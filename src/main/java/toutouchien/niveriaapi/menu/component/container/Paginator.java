@@ -45,45 +45,29 @@ public class Paginator extends MenuComponent {
     private ObjectList<MenuComponent> cachedPageComponents;
 
     /**
-     * Constructs a new Paginator with the specified parameters.
+     * Constructs a new Paginator with the specified configuration.
      *
-     * @param id               the unique identifier for this paginator
-     * @param components       the list of components to paginate
-     * @param backItem         function providing the back button item when enabled
-     * @param nextItem         function providing the next button item when enabled
-     * @param offBackItem      function providing the back button item when disabled
-     * @param offNextItem      function providing the next button item when disabled
-     * @param firstPageItem    function providing the first page button item when enabled
-     * @param lastPageItem     function providing the last page button item when enabled
-     * @param offFirstPageItem function providing the first page button item when disabled
-     * @param offLastPageItem  function providing the last page button item when disabled
-     * @param width            the width of each page in slots
-     * @param height           the height of each page in rows
-     * @param page             the initial page index (0-based)
+     * @param builder the builder containing the paginator configuration
      */
-    private Paginator(
-            String id,
-            ObjectList<MenuComponent> components,
-            Function<MenuContext, ItemStack> backItem, Function<MenuContext, ItemStack> nextItem,
-            Function<MenuContext, ItemStack> offBackItem, Function<MenuContext, ItemStack> offNextItem,
-            Function<MenuContext, ItemStack> firstPageItem, Function<MenuContext, ItemStack> lastPageItem,
-            Function<MenuContext, ItemStack> offFirstPageItem, Function<MenuContext, ItemStack> offLastPageItem,
-            int width, int height,
-            int page
-    ) {
-        super(id);
-        this.components = components;
-        this.backItem = backItem;
-        this.nextItem = nextItem;
-        this.offBackItem = offBackItem;
-        this.offNextItem = offNextItem;
-        this.firstPageItem = firstPageItem;
-        this.lastPageItem = lastPageItem;
-        this.offFirstPageItem = offFirstPageItem;
-        this.offLastPageItem = offLastPageItem;
-        this.width = width;
-        this.height = height;
-        this.page = page;
+    private Paginator(Builder builder) {
+        super(builder.id);
+        this.components = builder.components;
+
+        this.backItem = builder.backItem;
+        this.nextItem = builder.nextItem;
+        this.offBackItem = builder.offBackItem;
+        this.offNextItem = builder.offNextItem;
+
+        this.firstPageItem = builder.firstPageItem;
+        this.lastPageItem = builder.lastPageItem;
+        this.offFirstPageItem = builder.offFirstPageItem;
+        this.offLastPageItem = builder.offLastPageItem;
+
+        this.width = builder.width;
+        this.height = builder.height;
+
+        this.page = builder.page;
+
         this.layoutSlots = new IntArrayList(width * height);
 
         // Initial calculation of layout slots
@@ -1183,21 +1167,7 @@ public class Paginator extends MenuComponent {
          * @return a new Paginator with the specified configuration
          */
         public Paginator build() {
-            return new Paginator(
-                    this.id,
-                    this.components,
-                    this.backItem,
-                    this.nextItem,
-                    this.offBackItem,
-                    this.offNextItem,
-                    this.firstPageItem,
-                    this.lastPageItem,
-                    this.offFirstPageItem,
-                    this.offLastPageItem,
-                    this.width,
-                    this.height,
-                    this.page
-            );
+            return new Paginator(this);
         }
     }
 }
