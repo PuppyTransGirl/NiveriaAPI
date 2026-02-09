@@ -95,11 +95,11 @@ public class ConfirmationMenu extends Menu {
     protected MenuComponent root(MenuContext context) {
         Grid.Builder builder = Grid.create()
                 .size(9, 3)
-                .add(context, 11, noButton())
-                .add(context, 15, yesButton());
+                .add(11, noButton())
+                .add(15, yesButton());
 
         if (this.explanationItem != null)
-            builder.add(context, 13, explanationIcon());
+            builder.add(13, explanationIcon());
 
         return builder.build();
     }
