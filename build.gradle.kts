@@ -22,7 +22,7 @@ val junitVersion: String by project
 val mockbukkitVersion: String by project
 
 group = "toutouchien.niveriaapi"
-version = "3.3.1"
+version = "3.4.0"
 
 repositories {
     mavenCentral()
