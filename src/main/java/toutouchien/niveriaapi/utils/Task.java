@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -234,10 +235,6 @@ public final class Task {
         );
     }
 
-    /*
-     * Entity scheduler convenience methods (use Entity#getScheduler)
-     */
-
     /**
      * Schedules a task to execute on the region which owns the given entity on the next tick.
      *
@@ -246,6 +243,7 @@ public final class Task {
      * @param entity   The entity whose scheduler should run the task.
      * @return The scheduled ScheduledTask, or null if the entity scheduler is retired/removed.
      */
+    @Nullable
     public static ScheduledTask run(Consumer<ScheduledTask> consumer, Plugin plugin, Entity entity) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
@@ -267,6 +265,7 @@ public final class Task {
      * @param timeUnit The time unit of the delay.
      * @return The scheduled ScheduledTask, or null if the entity scheduler is retired/removed.
      */
+    @Nullable
     public static ScheduledTask runDelayed(Consumer<ScheduledTask> consumer, Plugin plugin, Entity entity,
                                            long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
@@ -281,7 +280,7 @@ public final class Task {
 
     /**
      * Schedules a repeating task with the given initial delay and period on the region which owns the given entity.
-     * <p> <p>
+     * <p>
      * The delays are supplied together with a {@link TimeUnit} and will be converted to server ticks (1 tick = 50 ms)
      * by this helper (ceiling conversion, minimum 1 tick).
      *
@@ -293,6 +292,7 @@ public final class Task {
      * @param timeUnit     The time unit of the delays.
      * @return The scheduled ScheduledTask, or null if the entity scheduler is retired/removed.
      */
+    @Nullable
     public static ScheduledTask runRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, Entity entity,
                                           long initialDelay, long period, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
