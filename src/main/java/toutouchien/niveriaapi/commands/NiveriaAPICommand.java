@@ -1,7 +1,6 @@
 package toutouchien.niveriaapi.commands;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -22,7 +21,7 @@ import java.util.Map;
 
 import static toutouchien.niveriaapi.NiveriaAPI.LANG;
 
-public class NiveriaAPICommand {
+public final class NiveriaAPICommand {
     private NiveriaAPICommand() {
         throw new IllegalStateException("Command class");
     }
@@ -30,11 +29,10 @@ public class NiveriaAPICommand {
     public static LiteralCommandNode<CommandSourceStack> get() {
         return Commands.literal("niveriaapi")
                 .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi"))
+                .then(NiveriaAPIDebugCommand.get())
                 .then(fixCommandsCommand())
                 .then(pingCommand())
                 .then(reloadCommand())
-                .then(sendTestMessageCommand())
-                .then(NiveriaAPITestCommand.get())
                 .build();
     }
 
@@ -109,20 +107,5 @@ public class NiveriaAPICommand {
 
                     return Command.SINGLE_SUCCESS;
                 });
-    }
-
-    private static LiteralArgumentBuilder<CommandSourceStack> sendTestMessageCommand() {
-        return Commands.literal("sendtestmessage")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.sendtestmessage"))
-                .then(Commands.argument("key", StringArgumentType.word())
-                        .executes(ctx -> {
-                            CommandSender sender = CommandUtils.sender(ctx);
-                            String key = ctx.getArgument("key", String.class);
-
-                            LANG.sendMessage(sender, key);
-
-                            return Command.SINGLE_SUCCESS;
-                        })
-                );
     }
 }
