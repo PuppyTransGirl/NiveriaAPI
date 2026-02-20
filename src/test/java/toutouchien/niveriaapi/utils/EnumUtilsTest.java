@@ -22,7 +22,7 @@ class EnumUtilsTest {
     }
 
     @Test
-    @DisplayName("Test match with with case-insensitive with default falls back")
+    @DisplayName("Test match with case-insensitive returns matched value when key resolves, ignoring default")
     void matchWithDefaultReturnsMatchedValue() {
         assertEquals(TestEnum.VALUE_THREE, EnumUtils.match("value_three", TestEnum.class, TestEnum.VALUE_ONE));
     }

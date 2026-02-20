@@ -28,6 +28,7 @@ public class NiveriaAPI extends JavaPlugin {
 
     private static NiveriaAPI instance;
 
+    @SuppressWarnings({"java:S1104", "java:S1444", "java:S3008"})
     public static Lang LANG;
 
     private ChatInputManager chatInputManager;
@@ -52,9 +53,12 @@ public class NiveriaAPI extends JavaPlugin {
 
     private void preLoadUtilsClasses() {
         String[] classes = {
+                "BackwardUtils",
                 "ColorUtils",
                 "CommandUtils",
                 "ComponentUtils",
+                "Direction",
+                "EnumUtils",
                 "FileUtils",
                 "ItemBuilder",
                 "MathUtils",
@@ -62,19 +66,20 @@ public class NiveriaAPI extends JavaPlugin {
                 "SerializeUtils",
                 "StringUtils",
                 "Task",
-                "TimeUtils"
+                "TimeUtils",
+                "VersionUtils"
         };
 
         this.getSLF4JLogger().info("Starting to preload utility classes");
 
         int loadedCount = 0;
         String prefix = "toutouchien.niveriaapi.utils.";
-        for (int i = 0; i < classes.length; i++) {
+        for (String className : classes) {
             try {
-                Class.forName(prefix + classes[i]);
+                Class.forName(prefix + className);
                 loadedCount++;
             } catch (ClassNotFoundException e) {
-                this.getSLF4JLogger().error("Couldn't load {}", classes[i], e);
+                this.getSLF4JLogger().error("Couldn't load {}", className, e);
             }
         }
 

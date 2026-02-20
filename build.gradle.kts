@@ -138,6 +138,20 @@ tasks {
             expand(props)
         }
     }
+
+    processTestResources {
+        filteringCharset = "UTF-8"
+
+        val props = mapOf(
+            "version" to version,
+            "minMinecraftVersion" to minMinecraftVersion
+        )
+
+        inputs.properties(props)
+        filesMatching("paper-plugin.yml") {
+            expand(props)
+        }
+    }
 }
 
 artifacts {

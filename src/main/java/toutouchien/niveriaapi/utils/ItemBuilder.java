@@ -799,7 +799,7 @@ public final class ItemBuilder {
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
         if (data == null)
-            throw new IndexOutOfBoundsException("Cannot remove lore line: item has no lore");
+            throw new IndexOutOfBoundsException("Cannot remove lore line, item has no lore");
 
         List<Component> lore = new ArrayList<>(data.lines());
         lore.remove(index);
