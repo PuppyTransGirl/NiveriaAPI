@@ -76,6 +76,8 @@ paperweight {
     addServerDependencyTo = configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).map { setOf(it) }
 }
 
+runPaper.folia.registerTask()
+
 tasks {
     runServer {
         minecraftVersion(minecraftVersion)

@@ -1,12 +1,12 @@
 package toutouchien.niveriaapi.utils;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.CraftParticle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import toutouchien.niveriaapi.annotations.Shivery;
 
@@ -509,15 +509,15 @@ public final class ParticleUtils {
      * @param speed         particle speed
      * @param durationTicks total duration in ticks, or -1 to run indefinitely
      * @param interval      interval in ticks between spawns
-     * @return the scheduled {@link BukkitTask}
+     * @return the scheduled {@link ScheduledTask}
      */
-    public static BukkitTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
-        BukkitTask task = Task.syncRepeat(() -> {
+    public static ScheduledTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
+        ScheduledTask task = Task.runRepeat(ignored -> {
             if (!entity.isValid())
                 return;
 
             spawnParticle(entity.getLocation().add(0, 1, 0), particle, count, offsetX, offsetY, offsetZ, speed, null, false);
-        }, plugin, 0, interval * 50L, TimeUnit.MILLISECONDS);
+        }, plugin, entity, 0, interval * 50L, TimeUnit.MILLISECONDS);
 
         if (durationTicks == -1)
             return task;
@@ -567,15 +567,20 @@ public final class ParticleUtils {
     public static void animateParticles(Plugin plugin, List<Location> frames, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long ticksPerFrame, long durationTicks, boolean loop) {
         final int[] currentFrame = {0};
 
-        BukkitTask task = Task.syncRepeat(() -> {
+        ScheduledTask task = Task.runRepeat(t -> {
             if (currentFrame[0] >= frames.size() && loop)
                 currentFrame[0] = 0; // Loop animation (optional)
+
+            if (currentFrame[0] >= frames.size()) {
+                t.cancel();
+                return;
+            }
 
             Location location = frames.get(currentFrame[0]);
             spawnParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, null, false);
 
             currentFrame[0]++;
-        }, plugin, 0, ticksPerFrame * 50L, TimeUnit.MILLISECONDS);
+        }, plugin, frames.get(currentFrame[0]), 0, ticksPerFrame * 50L, TimeUnit.MILLISECONDS);
 
         if (durationTicks == -1)
             return;

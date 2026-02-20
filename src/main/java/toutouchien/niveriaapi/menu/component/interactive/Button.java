@@ -1,6 +1,7 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -48,12 +49,12 @@ public class Button extends MenuComponent {
     @Nullable private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
     private int animationInterval;
     private boolean stopAnimationOnHide;
-    @Nullable private BukkitTask animationTask;
+    @Nullable private ScheduledTask animationTask;
     private int currentFrame;
 
     private int updateInterval;
     private boolean stopUpdatesOnHide;
-    @Nullable private BukkitTask updateTask;
+    @Nullable private ScheduledTask updateTask;
 
     /**
      * Constructs a new Button with the specified configuration.
@@ -174,7 +175,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      */
     private void startAnimation(MenuContext context) {
-        this.animationTask = Task.syncRepeat(() -> {
+        this.animationTask = Task.syncRepeat(ignored -> {
             if (!enabled() || (this.stopAnimationOnHide && !visible())) {
                 stopAnimation();
                 return;
@@ -213,7 +214,7 @@ public class Button extends MenuComponent {
      * @param context the menu context
      */
     private void startUpdates(MenuContext context) {
-        this.updateTask = Task.syncRepeat(() -> {
+        this.updateTask = Task.syncRepeat(ignored -> {
             if (!enabled() || (this.stopUpdatesOnHide && !visible())) {
                 stopUpdates();
                 return;

@@ -1,6 +1,7 @@
 package toutouchien.niveriaapi.menu.component.interactive;
 
 import com.google.common.base.Preconditions;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
@@ -44,7 +45,7 @@ public class DoubleDropButton extends MenuComponent {
 
     @Nullable private Sound sound;
 
-    @Nullable private BukkitTask dropTask;
+    @Nullable private ScheduledTask dropTask;
 
     /**
      * Constructs a new DoubleDropButton with the specified configuration.
@@ -149,7 +150,7 @@ public class DoubleDropButton extends MenuComponent {
             if (this.onDoubleDrop != null)
                 this.onDoubleDrop.accept(event);
         } else {
-            this.dropTask = Task.syncLater(() -> {
+            this.dropTask = Task.syncLater(ignored -> {
                 this.dropTask = null;
                 render(context);
             }, NiveriaAPI.instance(), 3L, TimeUnit.SECONDS);

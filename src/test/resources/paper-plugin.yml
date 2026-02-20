@@ -7,3 +7,5 @@ api-version: '${minMinecraftVersion}'
 load: STARTUP
 authors: [ Toutouchien ]
 website: https://niveria.fr
+
+folia-supported: true
