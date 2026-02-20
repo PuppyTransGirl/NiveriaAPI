@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+    private static final String MOCKBUKKIT_VERSION_MARKER = "MockBukkit";
     private static final String MODRINTH_PROJECT_ID = "ll0lc5oW";
     private static final int BSTATS_PLUGIN_ID = 28754;
 
@@ -47,8 +48,9 @@ public class NiveriaAPI extends JavaPlugin {
         instance = this;
     }
 
+    @ApiStatus.Internal
     public static boolean isUnitTest() {
-        return Bukkit.getServer().getVersion().contains("MockBukkit");
+        return Bukkit.getServer().getVersion().contains(MOCKBUKKIT_VERSION_MARKER);
     }
 
     private void preLoadUtilsClasses() {
