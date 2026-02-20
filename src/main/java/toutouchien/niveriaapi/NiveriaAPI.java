@@ -81,14 +81,13 @@ public class NiveriaAPI extends JavaPlugin {
                 Class.forName(prefix + className);
                 loadedCount++;
             } catch (ClassNotFoundException e) {
-                this.getSLF4JLogger().error("Couldn't load {}", className, e);
+                this.getSLF4JLogger().error("Couldn't load {}. Please report this to the developer.", className, e);
             }
         }
 
         this.getSLF4JLogger().info(
                 "Finished preloading utility classes. Successfully loaded {}/{} classes.",
-                loadedCount,
-                classes.length
+                loadedCount, classes.length
         );
     }
 
