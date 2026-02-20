@@ -140,7 +140,7 @@ public final class ItemBuilder {
     /**
      * Set the amount (stack size) for this ItemStack.
      *
-     * @param amount the desired amount (must be &gt; 0)
+     * @param amount the desired amount (must be > 0)
      * @return this builder
      * @throws IllegalArgumentException if amount is out of range
      */

@@ -53,7 +53,7 @@ public class Delay {
      * @param alreadyHasDelayText text shown if the player already has a delay
      * @param successConsumer     optional callback invoked when the delay finishes successfully
      * @param failConsumer        optional callback invoked when the delay is cancelled or fails
-     * @param delay               total delay duration in ticks (must be &gt; 0)
+     * @param delay               total delay duration in ticks (must be > 0)
      * @param cancelOnMove        whether moving from the original location cancels the delay
      * @param actionbar           whether the main delay text should be sent via actionbar
      * @param chat                whether the main delay text should be sent in chat
@@ -94,7 +94,7 @@ public class Delay {
     /**
      * Updates the remaining delay time for this {@code Delay}.
      *
-     * @param delayRemaining new remaining delay in ticks (must be &gt;= 0)
+     * @param delayRemaining new remaining delay in ticks (must be >= 0)
      */
     public void delayRemaining(int delayRemaining) {
         this.delayRemaining = delayRemaining;
@@ -214,7 +214,7 @@ public class Delay {
     /**
      * Returns the total delay duration in ticks configured for this delay.
      *
-     * @return total delay duration (&gt; 0)
+     * @return total delay duration (> 0)
      */
     @Positive
     public int delay() {

@@ -158,7 +158,7 @@ public class DelayBuilder {
     /**
      * Sets the total delay duration in ticks.
      *
-     * @param delay delay duration (&gt;= 1)
+     * @param delay delay duration (>= 1)
      * @return this builder for chaining
      * @throws IllegalArgumentException if {@code delay < 1}
      */

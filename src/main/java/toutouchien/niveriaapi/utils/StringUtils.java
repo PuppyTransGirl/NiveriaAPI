@@ -76,7 +76,7 @@ public final class StringUtils {
      *
      * @param a first version string (non-null)
      * @param b second version string (non-null)
-     * @return a positive integer if a &gt; b, zero if equal, a negative integer if a &lt; b
+     * @return a positive integer if a > b, zero if equal, a negative integer if a < b
      * @throws NullPointerException  if a or b is null
      * @throws NumberFormatException if any numeric component cannot be parsed as an int
      */
