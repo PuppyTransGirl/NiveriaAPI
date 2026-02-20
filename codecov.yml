@@ -1,0 +1,4 @@
+github_checks: true
+
+comment:
+  layout: "header, diff, flags, components"
