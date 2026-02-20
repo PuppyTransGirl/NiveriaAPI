@@ -28,14 +28,14 @@ class TimeUtilsTest {
     @Test
     @DisplayName("Test parseMillis with various durations")
     void testParseMillis() {
-        assertEquals("0 seconde", TimeUtils.parseMillis(500));
-        assertEquals("1 seconde", TimeUtils.parseMillis(1000));
-        assertEquals("1 minute 1 seconde", TimeUtils.parseMillis(61000));
-        assertEquals("1 heure 1 minute 1 seconde", TimeUtils.parseMillis(3661000));
-        assertEquals("1 jour 1 heure 1 minute 1 seconde", TimeUtils.parseMillis(90061000));
-        assertEquals("1 semaine 1 jour 1 heure 1 minute 1 seconde", TimeUtils.parseMillis(694861000));
-        assertEquals("11 mois 2 jours 1 minute 1 seconde", TimeUtils.parseMillis(26784061000L));
-        assertEquals("1 an 1 mois 1 semaine 1 jour 1 minute 1 seconde", TimeUtils.parseMillis(32140861000L));
+        assertEquals("0 second", TimeUtils.parseMillis(500));
+        assertEquals("1 second", TimeUtils.parseMillis(1000));
+        assertEquals("1 minute 1 second", TimeUtils.parseMillis(61000));
+        assertEquals("1 hour 1 minute 1 second", TimeUtils.parseMillis(3661000));
+        assertEquals("1 day 1 hour 1 minute 1 second", TimeUtils.parseMillis(90061000));
+        assertEquals("1 week 1 day 1 hour 1 minute 1 second", TimeUtils.parseMillis(694861000));
+        assertEquals("11 months 2 days 1 minute 1 second", TimeUtils.parseMillis(26784061000L));
+        assertEquals("1 year 1 month 1 week 1 day 1 minute 1 second", TimeUtils.parseMillis(32140861000L));
     }
 
     @Test

@@ -38,7 +38,7 @@ public final class TimeUtils {
      */
     public static String parseMillis(long millis) {
         if (millis < 1000)
-            return "0 seconde";
+            return "0 " + LANG.getString("timeutils.second");
 
         long seconds = millis / 1000;
         long minutes = seconds / 60;
