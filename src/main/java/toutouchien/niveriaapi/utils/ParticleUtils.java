@@ -567,9 +567,14 @@ public final class ParticleUtils {
     public static void animateParticles(Plugin plugin, List<Location> frames, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long ticksPerFrame, long durationTicks, boolean loop) {
         final int[] currentFrame = {0};
 
-        ScheduledTask task = Task.runRepeat(ignored -> {
+        ScheduledTask task = Task.runRepeat(t -> {
             if (currentFrame[0] >= frames.size() && loop)
                 currentFrame[0] = 0; // Loop animation (optional)
+
+            if (currentFrame[0] >= frames.size()) {
+                t.cancel();
+                return;
+            }
 
             Location location = frames.get(currentFrame[0]);
             spawnParticle(location, particle, count, offsetX, offsetY, offsetZ, speed, null, false);

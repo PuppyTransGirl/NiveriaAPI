@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
-import org.checkerframework.checker.index.qual.NonNegative;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.TimeUnit;
@@ -56,12 +55,12 @@ public final class Task {
      * @param timeUnit The time unit of the delay.
      * @return The scheduled ScheduledTask.
      */
-    public static ScheduledTask syncLater(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
+    public static ScheduledTask syncLater(Consumer<ScheduledTask> consumer, Plugin plugin, long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long millis = timeUnit.toMillis(Math.max(1L, delay));
+        long millis = Math.max(1L, timeUnit.toMillis(delay));
         long ticks = millisToCeilTicks(millis);
         return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, consumer, ticks);
     }
@@ -79,13 +78,13 @@ public final class Task {
      * @param timeUnit The time unit of the delay and interval.
      * @return The scheduled ScheduledTask.
      */
-    public static ScheduledTask syncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
+    public static ScheduledTask syncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, long delay, long interval, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long delayMillis = timeUnit.toMillis(Math.max(1L, delay));
-        long intervalMillis = timeUnit.toMillis(Math.max(1L, interval));
+        long delayMillis = Math.max(1L, timeUnit.toMillis(delay));
+        long intervalMillis = Math.max(1L, timeUnit.toMillis(interval));
         long delayTicks = millisToCeilTicks(delayMillis);
         long intervalTicks = millisToCeilTicks(intervalMillis);
 
@@ -117,7 +116,7 @@ public final class Task {
      * @param timeUnit The time unit of the delay.
      * @return The scheduled ScheduledTask.
      */
-    public static ScheduledTask asyncLater(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
+    public static ScheduledTask asyncLater(Consumer<ScheduledTask> consumer, Plugin plugin, long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
@@ -138,7 +137,7 @@ public final class Task {
      * @param timeUnit The time unit of the delay and interval.
      * @return The scheduled ScheduledTask.
      */
-    public static ScheduledTask asyncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
+    public static ScheduledTask asyncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, long delay, long interval, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
@@ -183,13 +182,13 @@ public final class Task {
      * @return The scheduled ScheduledTask.
      */
     public static ScheduledTask runDelayed(Consumer<ScheduledTask> consumer, Plugin plugin, Location location,
-                                           @NonNegative long delay, TimeUnit timeUnit) {
+                                           long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long millis = timeUnit.toMillis(Math.max(1L, delay));
+        long millis = Math.max(1L, timeUnit.toMillis(delay));
         long ticks = millisToCeilTicks(millis);
         return Bukkit.getRegionScheduler().runDelayed(
                 plugin,
@@ -215,14 +214,14 @@ public final class Task {
      * @return The scheduled ScheduledTask.
      */
     public static ScheduledTask runRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, Location location,
-                                          @NonNegative long initialDelay, @NonNegative long period, TimeUnit timeUnit) {
+                                          long initialDelay, long period, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(location, "location cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long initialMillis = timeUnit.toMillis(Math.max(1L, initialDelay));
-        long periodMillis = timeUnit.toMillis(Math.max(1L, period));
+        long initialMillis = Math.max(1L, timeUnit.toMillis(initialDelay));
+        long periodMillis = Math.max(1L, timeUnit.toMillis(period));
         long initialTicks = millisToCeilTicks(initialMillis);
         long periodTicks = millisToCeilTicks(periodMillis);
 
@@ -269,13 +268,13 @@ public final class Task {
      * @return The scheduled ScheduledTask, or null if the entity scheduler is retired/removed.
      */
     public static ScheduledTask runDelayed(Consumer<ScheduledTask> consumer, Plugin plugin, Entity entity,
-                                           @NonNegative long delay, TimeUnit timeUnit) {
+                                           long delay, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(entity, "entity cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long millis = timeUnit.toMillis(Math.max(1L, delay));
+        long millis = Math.max(1L, timeUnit.toMillis(delay));
         long ticks = millisToCeilTicks(millis);
         return entity.getScheduler().runDelayed(plugin, consumer, null, ticks);
     }
@@ -295,14 +294,14 @@ public final class Task {
      * @return The scheduled ScheduledTask, or null if the entity scheduler is retired/removed.
      */
     public static ScheduledTask runRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, Entity entity,
-                                          @NonNegative long initialDelay, @NonNegative long period, TimeUnit timeUnit) {
+                                          long initialDelay, long period, TimeUnit timeUnit) {
         Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(entity, "entity cannot be null");
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        long initialMillis = timeUnit.toMillis(Math.max(1L, initialDelay));
-        long periodMillis = timeUnit.toMillis(Math.max(1L, period));
+        long initialMillis = Math.max(1L, timeUnit.toMillis(initialDelay));
+        long periodMillis = Math.max(1L, timeUnit.toMillis(period));
         long initialTicks = millisToCeilTicks(initialMillis);
         long periodTicks = millisToCeilTicks(periodMillis);
 
