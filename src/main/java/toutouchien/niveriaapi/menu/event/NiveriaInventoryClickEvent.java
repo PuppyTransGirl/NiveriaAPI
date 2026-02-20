@@ -31,7 +31,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      */
     @SuppressWarnings("UnstableApiUsage")
     public NiveriaInventoryClickEvent(InventoryClickEvent event, MenuContext context) {
-        super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
+        super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction(), event.getHotbarButton());
 
         Preconditions.checkNotNull(context, "context cannot be null");
 
@@ -93,6 +93,6 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      * @return the menu context
      */
     public MenuContext context() {
-        return context;
+        return this.context;
     }
 }

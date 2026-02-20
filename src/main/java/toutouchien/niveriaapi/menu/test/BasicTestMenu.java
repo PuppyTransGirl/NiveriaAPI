@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 import toutouchien.niveriaapi.menu.Menu;
@@ -41,51 +42,6 @@ public class BasicTestMenu extends Menu {
     }
 
     /**
-     * Returns the title component for this test menu.
-     *
-     * @return a colorized title component
-     */
-    @Override
-    protected Component title() {
-        return Component.text("Test Menu Hehe :3", ColorUtils.primaryColor());
-    }
-
-    /**
-     * Creates and returns the root component for this test menu.
-     * <p>
-     * The menu layout includes various component demonstrations:
-     * - Simple button with click and drop handlers (slot 0)
-     * - Animated button with color-changing frames (slot 2, 2x2 size)
-     * - Dynamic button showing current seconds (slot 8)
-     * - Coordinates display button (slot 13)
-     * - Toggle switch (slot 15)
-     * - Static icon (slot 16)
-     * - GameMode selector (slot 18)
-     * - Double-drop button (slot 20)
-     * - Horizontal progress bar (slot 21, 4x2 size)
-     * - Vertical progress bar (slot 17, 1x5 size)
-     *
-     * @param context the menu context
-     * @return the root grid component containing all test components
-     */
-    @Override
-    protected MenuComponent root(MenuContext context) {
-        return Grid.create()
-                .size(9, 6)
-                .add(0, simpleButton())
-                .add(2, animatedButton())
-                .add(8, dynamicButton())
-                .add(13, coordinatesDynamicButton())
-                .add(15, toggle())
-                .add(16, icon())
-                .add(18, selector())
-                .add(20, doubleDropButton())
-                .add(21, rightProgressBar())
-                .add(17, downProgressBar())
-                .build();
-    }
-
-    /**
      * Creates a simple button with basic click and drop functionality.
      *
      * @return a button component that responds to clicks and drops
@@ -100,6 +56,9 @@ public class BasicTestMenu extends Menu {
                     click.player().sendRichMessage("<red>Newton");
                     click.player().closeInventory();
                 })
+                .onClick(ClickType.SWAP_OFFHAND, click -> {
+                    click.player().sendRichMessage("<pride:trans>Secret Hehe :3");
+                })
                 .build();
     }
 
@@ -112,14 +71,14 @@ public class BasicTestMenu extends Menu {
         return Button.create()
                 .size(2, 2)
                 .animationFrames(context ->
-                        ObjectList.of(ItemStack.of(Material.RED_WOOL),
+                        ObjectList.of(ItemStack.of(Material.SKELETON_SKULL),
                                 ItemStack.of(Material.ORANGE_WOOL),
-                                ItemStack.of(Material.YELLOW_WOOL),
+                                ItemStack.of(Material.END_ROD),
                                 ItemStack.of(Material.LIME_WOOL),
                                 ItemStack.of(Material.BLUE_WOOL),
                                 ItemStack.of(Material.PURPLE_WOOL))
                 )
-                .animationInterval(5)
+                .animationInterval(1)
                 .onClick(click -> {
                     click.player().sendRichMessage("<rainbow>You clicked the animated button!");
                 })
@@ -133,7 +92,7 @@ public class BasicTestMenu extends Menu {
      */
     private static Button dynamicButton() {
         return Button.create()
-                .dynamicItem(context -> {
+                .item(context -> {
                     int seconds = (int) (System.currentTimeMillis() / 1000 % 60);
                     return ItemBuilder.of(Material.OAK_SIGN).name(
                             Component.text("Seconds: " + seconds)
@@ -153,8 +112,8 @@ public class BasicTestMenu extends Menu {
      */
     private static Button coordinatesDynamicButton() {
         return Button.create()
-                .dynamicItem(context -> {
-                    Player player = context.menu().player();
+                .item(context -> {
+                    Player player = context.player();
                     double x = player.getLocation().getX();
                     double y = player.getLocation().getY();
                     double z = player.getLocation().getZ();
@@ -257,6 +216,51 @@ public class BasicTestMenu extends Menu {
                 .direction(Direction.Default.DOWN)
                 .percentage(1)
                 .size(1, 5)
+                .build();
+    }
+
+    /**
+     * Returns the title component for this test menu.
+     *
+     * @return a colorized title component
+     */
+    @Override
+    protected Component title() {
+        return Component.text("Test Menu Hehe :3", ColorUtils.primaryColor());
+    }
+
+    /**
+     * Creates and returns the root component for this test menu.
+     * <p>
+     * The menu layout includes various component demonstrations:
+     * - Simple button with click and drop handlers (slot 0)
+     * - Animated button with color-changing frames (slot 2, 2x2 size)
+     * - Dynamic button showing current seconds (slot 8)
+     * - Coordinates display button (slot 13)
+     * - Toggle switch (slot 15)
+     * - Static icon (slot 16)
+     * - GameMode selector (slot 18)
+     * - Double-drop button (slot 20)
+     * - Horizontal progress bar (slot 21, 4x2 size)
+     * - Vertical progress bar (slot 17, 1x5 size)
+     *
+     * @param context the menu context
+     * @return the root grid component containing all test components
+     */
+    @Override
+    protected MenuComponent root(MenuContext context) {
+        return Grid.create()
+                .size(9, 6)
+                .add(0, simpleButton())
+                .add(2, animatedButton())
+                .add(8, dynamicButton())
+                .add(13, coordinatesDynamicButton())
+                .add(15, toggle())
+                .add(16, icon())
+                .add(18, selector())
+                .add(20, doubleDropButton())
+                .add(21, rightProgressBar())
+                .add(17, downProgressBar())
                 .build();
     }
 }

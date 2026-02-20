@@ -9,7 +9,6 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.mock.MockBukkitHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class StringUtilsTest {
     @BeforeEach
@@ -30,18 +29,6 @@ class StringUtilsTest {
         assertEquals("World", StringUtils.capitalize("WORLD"));
         assertEquals("Niveria", StringUtils.capitalize("nIvErIa"));
         assertEquals("", StringUtils.capitalize(""));
-    }
-
-    @Test
-    @DisplayName("Test match methods")
-    void testMatchMethods() {
-        enum TestEnum {VALUE_ONE, VALUE_TWO, VALUE_THREE}
-
-        assertEquals(TestEnum.VALUE_ONE, StringUtils.match("value_one", TestEnum.class).orElse(null));
-        assertEquals(TestEnum.VALUE_TWO, StringUtils.match("VALUE_TWO", TestEnum.class).orElse(null));
-        assertNull(StringUtils.match("invalid_value", TestEnum.class).orElse(null));
-        assertEquals(TestEnum.VALUE_THREE, StringUtils.match("value_three", TestEnum.class, TestEnum.VALUE_ONE));
-        assertEquals(TestEnum.VALUE_ONE, StringUtils.match("invalid_value", TestEnum.class, TestEnum.VALUE_ONE));
     }
 
     @Test

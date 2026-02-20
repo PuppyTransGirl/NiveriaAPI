@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.CommandUtils;
+import toutouchien.niveriaapi.utils.MathUtils;
 import toutouchien.niveriaapi.utils.StringUtils;
+import toutouchien.niveriaapi.utils.Task;
 
 import java.util.List;
 import java.util.Map;
@@ -49,10 +51,10 @@ public class NiveriaAPICommand {
                                 target.updateCommands();
 
                             int playersNumber = targets.size();
-                            String messageKey = "niveriaapi.fixcommands.";
+                            String messageKey = "command.fixcommands.";
                             String finalMessageKey = StringUtils.pluralize(messageKey + "single", messageKey + "multiple", playersNumber);
                             LANG.sendMessage(sender, finalMessageKey,
-                                    Lang.numberPlaceholder("niveriaapi_player_amount", playersNumber)
+                                    Lang.numberPlaceholder("player_amount", playersNumber)
                             );
 
                             return Command.SINGLE_SUCCESS;
@@ -67,14 +69,14 @@ public class NiveriaAPICommand {
                     CommandSender sender = CommandUtils.sender(ctx);
                     Map<String, Long> pings = NiveriaAPI.instance().mongoManager().ping();
 
-                    LANG.sendMessage(sender, "niveriaapi.ping.header");
+                    LANG.sendMessage(sender, "command.ping.header");
 
                     for (Map.Entry<String, Long> pingEntry : pings.entrySet()) {
                         String databaseName = pingEntry.getKey();
                         double pingInMilliseconds = pingEntry.getValue() / 1_000_000D;
-                        LANG.sendMessage(sender, "niveriaapi.ping.line",
-                                Lang.unparsedPlaceholder("niveriaapi_database_name", databaseName),
-                                Lang.numberPlaceholder("niveriaapi_ping_ms", pingInMilliseconds)
+                        LANG.sendMessage(sender, "command.ping.line",
+                                Lang.unparsedPlaceholder("database_name", databaseName),
+                                Lang.numberPlaceholder("ping_ms", pingInMilliseconds)
                         );
                     }
 
@@ -88,12 +90,22 @@ public class NiveriaAPICommand {
                 .executes(ctx -> {
                     CommandSender sender = CommandUtils.sender(ctx);
 
-                    long startMillis = System.currentTimeMillis();
-                    NiveriaAPI.instance().reload();
-                    long timeTaken = System.currentTimeMillis() - startMillis;
-                    LANG.sendMessage(sender, "niveriaapi.reload.done",
-                            Lang.numberPlaceholder("niveriaapi_time_ms", timeTaken)
-                    );
+                    LANG.sendMessage(sender, "command.reload.start");
+                    long startNanos = System.nanoTime();
+
+                    Task.async(task -> {
+                        try {
+                            NiveriaAPI.instance().reload();
+                            double timeTaken = (System.nanoTime() - startNanos) / 1_000_000D;
+
+                            LANG.sendMessage(sender, "command.reload.done",
+                                    Lang.numberPlaceholder("time_ms", MathUtils.decimalRound(timeTaken, 2))
+                            );
+                        } catch (Exception e) {
+                            NiveriaAPI.instance().getSLF4JLogger().error("Failed to reload NiveriaAPI", e);
+                            LANG.sendMessage(sender, "command.reload.error");
+                        }
+                    }, NiveriaAPI.instance());
 
                     return Command.SINGLE_SUCCESS;
                 });

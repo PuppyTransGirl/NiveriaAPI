@@ -36,9 +36,9 @@ public class ConfirmationMenu extends Menu {
      * Constructs a new ConfirmationMenu with the specified parameters.
      *
      * @param player          the player who will view this confirmation menu
+     * @param title           the title component displayed at the top of the menu
      * @param yesItem         the ItemStack to display for the "yes" button
      * @param noItem          the ItemStack to display for the "no" button
-     * @param title           the title component displayed at the top of the menu
      * @param explanationItem optional ItemStack to display as an explanation (can be null)
      * @param yesConsumer     the action to perform when the yes button is clicked
      * @param noConsumer      the action to perform when the no button is clicked
@@ -53,10 +53,9 @@ public class ConfirmationMenu extends Menu {
     ) {
         super(player);
 
-        Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(title, "title cannot be null");
-        Preconditions.checkNotNull(yesItem, "yesMaterial cannot be null");
-        Preconditions.checkNotNull(noItem, "noMaterial cannot be null");
+        Preconditions.checkNotNull(yesItem, "yesItem cannot be null");
+        Preconditions.checkNotNull(noItem, "noItem cannot be null");
         Preconditions.checkNotNull(yesConsumer, "yesConsumer cannot be null");
         Preconditions.checkNotNull(noConsumer, "noConsumer cannot be null");
 

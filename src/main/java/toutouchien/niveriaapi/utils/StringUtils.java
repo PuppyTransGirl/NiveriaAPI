@@ -2,16 +2,14 @@ package toutouchien.niveriaapi.utils;
 
 import com.google.common.base.Preconditions;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Optional;
 
 /**
  * Utility class providing static methods for string manipulations.
  */
 @NullMarked
-public class StringUtils {
+public final class StringUtils {
     private StringUtils() {
         throw new IllegalStateException("Utility class");
     }
@@ -29,48 +27,6 @@ public class StringUtils {
             return string;
 
         return string.toUpperCase().charAt(0) + string.toLowerCase(Locale.ROOT).substring(1);
-    }
-
-    /**
-     * Matches a string to an enum constant, ignoring case.
-     *
-     * @param key       The string to match
-     * @param enumClass The enum class to match against
-     * @param <T>       The type of the enum
-     * @return An Optional containing the matched enum constant, or empty if no match is found
-     */
-    public static <T extends Enum<T>> Optional<T> match(@Nullable String key, Class<T> enumClass) {
-        Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
-        if (key == null)
-            return Optional.empty();
-
-        try {
-            return Optional.of(Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT)));
-        } catch (IllegalArgumentException e) {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Matches a string to an enum constant, ignoring case.
-     *
-     * @param key          The string to match
-     * @param enumClass    The enum class to match against
-     * @param defaultValue The default value to return if no match is found
-     * @param <T>          The type of the enum
-     * @return The matched enum constant, or the default value if no match is found
-     */
-    @Nullable
-    public static <T extends Enum<T>> T match(@Nullable String key, Class<T> enumClass, @Nullable T defaultValue) {
-        Preconditions.checkNotNull(enumClass, "enumClass cannot be null");
-        if (key == null)
-            return defaultValue;
-
-        try {
-            return Enum.valueOf(enumClass, key.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            return defaultValue;
-        }
     }
 
     /**

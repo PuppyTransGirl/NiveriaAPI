@@ -17,7 +17,7 @@ import java.util.UUID;
  * Utility class for serializing and deserializing various objects.
  */
 @NullMarked
-public class SerializeUtils {
+public final class SerializeUtils {
     private SerializeUtils() {
         throw new IllegalStateException("Utility class");
     }

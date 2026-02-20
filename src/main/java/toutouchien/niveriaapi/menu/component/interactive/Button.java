@@ -2,13 +2,13 @@ package toutouchien.niveriaapi.menu.component.interactive;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
@@ -19,10 +19,11 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
-import toutouchien.niveriaapi.utils.BackwardUtils;
 import toutouchien.niveriaapi.utils.Task;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,45 +41,29 @@ import java.util.function.Function;
 @NullMarked
 public class Button extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
+    private final Object2ObjectMap<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> onClickMap;
+    @Nullable private Sound sound;
 
-    @Nullable
-    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
-
-    @Nullable
-    private Sound sound;
-
-    @Nullable
-    private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+    @Nullable private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
     private int animationInterval;
     private boolean stopAnimationOnHide;
-    @Nullable
-    private BukkitTask animationTask;
+    @Nullable private BukkitTask animationTask;
     private int currentFrame;
 
-    @Nullable
-    private Function<MenuContext, ItemStack> dynamicItem;
     private int updateInterval;
     private boolean stopUpdatesOnHide;
-    @Nullable
-    private BukkitTask updateTask;
-
-    private final int width, height;
+    @Nullable private BukkitTask updateTask;
 
     /**
-     * Constructs a new Button with the specified properties.
+     * Constructs a new Button with the specified configuration.
      *
      * @param builder the builder containing the button configuration
      */
     private Button(Builder builder) {
-        super(builder.id());
+        super(builder);
         this.item = builder.item;
 
-        this.onClick = builder.onClick;
-        this.onLeftClick = builder.onLeftClick;
-        this.onRightClick = builder.onRightClick;
-        this.onShiftLeftClick = builder.onShiftLeftClick;
-        this.onShiftRightClick = builder.onShiftRightClick;
-        this.onDrop = builder.onDrop;
+        this.onClickMap = new Object2ObjectLinkedOpenHashMap<>(builder.onClickMap);
 
         this.sound = builder.sound;
 
@@ -86,12 +71,18 @@ public class Button extends MenuComponent {
         this.animationInterval = builder.animationInterval;
         this.stopAnimationOnHide = builder.stopAnimationOnHide;
 
-        this.dynamicItem = builder.dynamicItem;
         this.updateInterval = builder.updateInterval;
         this.stopUpdatesOnHide = builder.stopUpdatesOnHide;
+    }
 
-        this.width = builder.width;
-        this.height = builder.height;
+    /**
+     * Creates a new Button builder instance.
+     *
+     * @return a new Button.Builder for constructing buttons
+     */
+    @Contract(value = "-> new", pure = true)
+    public static Builder create() {
+        return new Builder();
     }
 
     /**
@@ -103,11 +94,11 @@ public class Button extends MenuComponent {
      */
     @Override
     public void onAdd(MenuContext context) {
+        if (this.updateInterval > 0)
+            this.startUpdates(context);
+
         if (this.animationFrames != null && this.animationInterval > 0)
             this.startAnimation(context);
-
-        if (this.dynamicItem != null && this.updateInterval > 0)
-            this.startUpdates(context);
     }
 
     /**
@@ -138,29 +129,28 @@ public class Button extends MenuComponent {
         if (!this.interactable())
             return;
 
-        Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
-            case LEFT, DOUBLE_CLICK -> this.onLeftClick;
-            case RIGHT -> this.onRightClick;
-            case SHIFT_LEFT -> this.onShiftLeftClick;
-            case SHIFT_RIGHT -> this.onShiftRightClick;
-            case DROP, CONTROL_DROP -> this.onDrop;
-            default -> null;
-        };
+        Consumer<NiveriaInventoryClickEvent> handler = null;
+        for (Map.Entry<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> entry : this.onClickMap.entrySet()) {
+            EnumSet<ClickType> clickTypes = entry.getKey();
+            if (!clickTypes.contains(event.getClick()))
+                continue;
 
-        if (handler != null) {
-            handler.accept(event);
+            handler = entry.getValue();
 
-            if (this.sound != null)
-                context.player().playSound(this.sound, Sound.Emitter.self());
+            // Check for a onClick method usage
+            // We want to prioritize other more specific method used
+            // So we wait for another one to maybe overwrite the onClick
+            if (clickTypes.size() != ClickType.values().length)
+                break;
+        }
+
+        if (handler == null)
             return;
-        }
 
-        if (this.onClick != null && event.getClick().isMouseClick()) {
-            this.onClick.accept(event);
+        handler.accept(event);
 
-            if (this.sound != null)
-                context.player().playSound(this.sound, Sound.Emitter.self());
-        }
+        if (this.sound != null)
+            context.player().playSound(this.sound, Sound.Emitter.self());
     }
 
     /**
@@ -174,50 +164,7 @@ public class Button extends MenuComponent {
      */
     @Override
     public Int2ObjectMap<ItemStack> items(MenuContext context) {
-        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-        if (!this.visible())
-            return items;
-
-        ItemStack baseItem = this.currentItem(context);
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                items.put(slot, baseItem);
-            }
-        }
-
-        return items;
-    }
-
-    /**
-     * Returns the set of slots occupied by this button.
-     * <p>
-     * Includes all slots within the button's widthxheight area.
-     * Returns an empty set if not visible.
-     *
-     * @param context the menu context
-     * @return a set of slot indices
-     */
-    @Override
-    public IntSet slots(MenuContext context) {
-        IntSet slots = new IntOpenHashSet(this.width * this.height);
-        if (!this.visible())
-            return slots;
-
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                slots.add(slot);
-            }
-        }
-
-        return slots;
+        return this.items(context, this.getCurrentItem(context));
     }
 
     /**
@@ -228,6 +175,11 @@ public class Button extends MenuComponent {
     private void startAnimation(MenuContext context) {
         this.animationTask = Task.syncRepeat(() -> {
             if (!enabled() || (this.stopAnimationOnHide && !visible())) {
+                stopAnimation();
+                return;
+            }
+
+            if (this.animationFrames == null) {
                 stopAnimation();
                 return;
             }
@@ -284,15 +236,12 @@ public class Button extends MenuComponent {
     /**
      * Gets the ItemStack to display based on the current button configuration.
      * <p>
-     * Priority order: dynamic item → animation frame → static item
+     * Priority order: animation frame (if set and non-empty) → item function
      *
      * @param context the menu context
      * @return the appropriate ItemStack for the current state
      */
-    private ItemStack currentItem(MenuContext context) {
-        if (this.dynamicItem != null)
-            return this.dynamicItem.apply(context);
-
+    private ItemStack getCurrentItem(MenuContext context) {
         if (this.animationFrames != null) {
             ObjectList<ItemStack> frames = this.animationFrames.apply(context);
             if (frames.isEmpty())
@@ -345,7 +294,7 @@ public class Button extends MenuComponent {
     public Button onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
         Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-        this.onClick = onClick;
+        this.onClickMap.put(EnumSet.allOf(ClickType.class), onClick);
         return this;
     }
 
@@ -360,7 +309,7 @@ public class Button extends MenuComponent {
     public Button onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
         Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
-        this.onLeftClick = onLeftClick;
+        this.onClickMap.put(EnumSet.of(ClickType.LEFT), onLeftClick);
         return this;
     }
 
@@ -375,37 +324,7 @@ public class Button extends MenuComponent {
     public Button onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
         Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
-        this.onRightClick = onRightClick;
-        return this;
-    }
-
-    /**
-     * Sets the shift+left click handler.
-     *
-     * @param onShiftLeftClick the shift+left click handler
-     * @return this button for method chaining
-     * @throws NullPointerException if onShiftLeftClick is null
-     */
-    @Contract(value = "_ -> this", mutates = "this")
-    public Button onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
-        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
-
-        this.onShiftLeftClick = onShiftLeftClick;
-        return this;
-    }
-
-    /**
-     * Sets the shift+right click handler.
-     *
-     * @param onShiftRightClick the shift+right click handler
-     * @return this button for method chaining
-     * @throws NullPointerException if onShiftRightClick is null
-     */
-    @Contract(value = "_ -> this", mutates = "this")
-    public Button onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
-        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
-
-        this.onShiftRightClick = onShiftRightClick;
+        this.onClickMap.put(EnumSet.of(ClickType.RIGHT), onRightClick);
         return this;
     }
 
@@ -420,7 +339,7 @@ public class Button extends MenuComponent {
     public Button onDrop(Consumer<NiveriaInventoryClickEvent> onDrop) {
         Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
 
-        this.onDrop = onDrop;
+        this.onClickMap.put(EnumSet.of(ClickType.DROP, ClickType.CONTROL_DROP), onDrop);
         return this;
     }
 
@@ -479,21 +398,6 @@ public class Button extends MenuComponent {
     }
 
     /**
-     * Sets the function providing dynamic content for this button.
-     *
-     * @param dynamicItem function that returns dynamically updating ItemStack
-     * @return this button for method chaining
-     * @throws NullPointerException if dynamicItem is null
-     */
-    @Contract(value = "_ -> this", mutates = "this")
-    public Button dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
-        Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
-
-        this.dynamicItem = dynamicItem;
-        return this;
-    }
-
-    /**
      * Sets the interval between dynamic content updates in ticks.
      *
      * @param updateInterval ticks between updates (must be positive)
@@ -521,66 +425,27 @@ public class Button extends MenuComponent {
     }
 
     /**
-     * Returns the width of this button in slots.
-     *
-     * @return the button width
-     */
-    @Positive
-    @Override
-    public int width() {
-        return this.width;
-    }
-
-    /**
-     * Returns the height of this button in rows.
-     *
-     * @return the button height
-     */
-    @Positive
-    @Override
-    public int height() {
-        return this.height;
-    }
-
-    /**
-     * Creates a new Button builder instance.
-     *
-     * @return a new Button.Builder for constructing buttons
-     */
-    @Contract(value = "-> new", pure = true)
-    public static Builder create() {
-        return new Builder();
-    }
-
-    /**
      * Builder class for constructing Button instances with a fluent interface.
      */
     public static class Builder extends MenuComponent.Builder<Builder> {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
 
-        @Nullable
-        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDrop;
+        private final Object2ObjectMap<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> onClickMap = new Object2ObjectLinkedOpenHashMap<>();
 
         @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
-                BackwardUtils.UI_SOUND_SOURCE,
+                Sound.Source.UI,
                 1F,
                 1F
         );
 
-        @Nullable
-        private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
-        private int animationInterval = 20;
+        @Nullable private Function<MenuContext, ObjectList<ItemStack>> animationFrames;
+        private int animationInterval = -1;
         private boolean stopAnimationOnHide = true;
 
-        @Nullable
-        private Function<MenuContext, ItemStack> dynamicItem;
-        private int updateInterval = 20;
+        private int updateInterval = -1;
         private boolean stopUpdatesOnHide = false;
-
-        private int width = 1;
-        private int height = 1;
 
         /**
          * Sets the ItemStack to display for this button.
@@ -623,7 +488,7 @@ public class Button extends MenuComponent {
         public Builder onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
             Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-            this.onClick = onClick;
+            this.onClickMap.put(EnumSet.allOf(ClickType.class), onClick);
             return this;
         }
 
@@ -638,7 +503,7 @@ public class Button extends MenuComponent {
         public Builder onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
             Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
-            this.onLeftClick = onLeftClick;
+            this.onClickMap.put(EnumSet.of(ClickType.LEFT), onLeftClick);
             return this;
         }
 
@@ -653,37 +518,7 @@ public class Button extends MenuComponent {
         public Builder onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
             Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
-            this.onRightClick = onRightClick;
-            return this;
-        }
-
-        /**
-         * Sets the shift+left click handler.
-         *
-         * @param onShiftLeftClick the shift+left click handler
-         * @return this builder for method chaining
-         * @throws NullPointerException if onShiftLeftClick is null
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
-            Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
-
-            this.onShiftLeftClick = onShiftLeftClick;
-            return this;
-        }
-
-        /**
-         * Sets the shift+right click handler.
-         *
-         * @param onShiftRightClick the shift+right click handler
-         * @return this builder for method chaining
-         * @throws NullPointerException if onShiftRightClick is null
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
-            Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
-
-            this.onShiftRightClick = onShiftRightClick;
+            this.onClickMap.put(EnumSet.of(ClickType.RIGHT), onRightClick);
             return this;
         }
 
@@ -698,7 +533,41 @@ public class Button extends MenuComponent {
         public Builder onDrop(Consumer<NiveriaInventoryClickEvent> onDrop) {
             Preconditions.checkNotNull(onDrop, "onDrop cannot be null");
 
-            this.onDrop = onDrop;
+            this.onClickMap.put(EnumSet.of(ClickType.DROP, ClickType.CONTROL_DROP), onDrop);
+            return this;
+        }
+
+        /**
+         * Sets a click handler for specific click types.
+         *
+         * @param clickType the click type to handle
+         * @param onClick   the click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if clickType or onClick is null
+         */
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder onClick(ClickType clickType, Consumer<NiveriaInventoryClickEvent> onClick) {
+            Preconditions.checkNotNull(clickType, "clickType cannot be null");
+            Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+            this.onClickMap.put(EnumSet.of(clickType), onClick);
+            return this;
+        }
+
+        /**
+         * Sets a click handler for multiple click types.
+         *
+         * @param clickTypes the click types to handle
+         * @param onClick    the click handler
+         * @return this builder for method chaining
+         * @throws NullPointerException if clickTypes or onClick is null
+         */
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder onClick(EnumSet<ClickType> clickTypes, Consumer<NiveriaInventoryClickEvent> onClick) {
+            Preconditions.checkNotNull(clickTypes, "clickTypes cannot be null");
+            Preconditions.checkNotNull(onClick, "onClick cannot be null");
+
+            this.onClickMap.put(clickTypes, onClick);
             return this;
         }
 
@@ -757,21 +626,6 @@ public class Button extends MenuComponent {
         }
 
         /**
-         * Sets the function providing dynamic content for this button.
-         *
-         * @param dynamicItem function that returns dynamically updating ItemStack
-         * @return this builder for method chaining
-         * @throws NullPointerException if dynamicItem is null
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder dynamicItem(Function<MenuContext, ItemStack> dynamicItem) {
-            Preconditions.checkNotNull(dynamicItem, "dynamicItem cannot be null");
-
-            this.dynamicItem = dynamicItem;
-            return this;
-        }
-
-        /**
          * Sets the interval between dynamic content updates in ticks.
          *
          * @param updateInterval ticks between updates (must be positive)
@@ -795,54 +649,6 @@ public class Button extends MenuComponent {
         @Contract(value = "_ -> this", mutates = "this")
         public Builder stopUpdatesOnHide(boolean stopUpdatesOnHide) {
             this.stopUpdatesOnHide = stopUpdatesOnHide;
-            return this;
-        }
-
-        /**
-         * Sets the width of the button in slots.
-         *
-         * @param width the width in slots (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-
-            this.width = width;
-            return this;
-        }
-
-        /**
-         * Sets the height of the button in rows.
-         *
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if height is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-
-            this.height = height;
-            return this;
-        }
-
-        /**
-         * Sets both width and height of the button.
-         *
-         * @param width  the width in slots (must be positive)
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width or height is less than 1
-         */
-        @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-
-            this.width = width;
-            this.height = height;
             return this;
         }
 

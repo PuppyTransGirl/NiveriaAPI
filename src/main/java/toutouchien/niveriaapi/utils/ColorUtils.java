@@ -7,7 +7,7 @@ import org.jspecify.annotations.NullMarked;
  * Utility class for managing text colors used in the Niveria API.
  */
 @NullMarked
-public class ColorUtils {
+public final class ColorUtils {
     private ColorUtils() {
         throw new IllegalStateException("Utility class");
     }

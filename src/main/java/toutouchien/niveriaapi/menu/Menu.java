@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jspecify.annotations.NullMarked;
@@ -21,15 +22,11 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
  */
 @NullMarked
 public abstract class Menu implements InventoryHolder {
-    @Nullable
-    private Inventory inventory;
-    private final Player player;
     protected final MenuContext context;
-
+    private final Player player;
     private final Object2ObjectOpenHashMap<String, MenuComponent> componentIDs;
-
-    @Nullable
-    private MenuComponent root;
+    @Nullable private Inventory inventory;
+    @Nullable private MenuComponent root;
 
     /**
      * Constructs a new Menu for the specified player.
@@ -45,21 +42,21 @@ public abstract class Menu implements InventoryHolder {
         this.componentIDs = new Object2ObjectOpenHashMap<>();
     }
 
-	/**
-	 * Constructs a new Menu with the specified player and context.
-	 *
-	 * @param player  the player who will interact with this menu
-	 * @param context the menu context for component interaction
-	 * @throws NullPointerException if player or context is null
-	 */
+    /**
+     * Constructs a new Menu with the specified player and context.
+     *
+     * @param player  the player who will interact with this menu
+     * @param context the menu context for component interaction
+     * @throws NullPointerException if player or context is null
+     */
     protected Menu(Player player, MenuContext context) {
-		Preconditions.checkNotNull(player, "player cannot be null");
-		Preconditions.checkNotNull(context, "context cannot be null");
+        Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(context, "context cannot be null");
 
-		this.player = player;
-		this.context = context;
+        this.player = player;
+        this.context = context;
         this.componentIDs = new Object2ObjectOpenHashMap<>();
-	}
+    }
 
     /**
      * Opens the menu for the player.
@@ -69,7 +66,7 @@ public abstract class Menu implements InventoryHolder {
      */
     public void open() {
         this.componentIDs.clear();
-		context.menu(this);
+        context.menu(this);
 
         Component title = this.title();
         this.root = this.root(this.context);
@@ -103,19 +100,31 @@ public abstract class Menu implements InventoryHolder {
     }
 
     /**
-     * Closes the menu and performs cleanup.
-     *
-     * @param event whether this close was triggered by an inventory close event.
-     *              If false, the player's inventory will be closed programmatically.
+     * Closes the menu for the player.
+     * <p>
+     * This method performs cleanup and closes the player's inventory.
      */
-    public void close(boolean event) {
-        this.root.onRemove(this.context);
+    public void close() {
+        this.close(InventoryCloseEvent.Reason.PLUGIN);
+    }
 
-        if (!event)
+    /**
+     * Closes the menu for the player with a specified reason.
+     *
+     * @param reason the reason for closing the inventory
+     */
+    public void close(InventoryCloseEvent.Reason reason) {
+        // If root is null, it means the menu was never opened or was already closed, so we can skip onRemove
+        if (this.root != null)
+            this.root.onRemove(this.context);
+
+        if (reason == InventoryCloseEvent.Reason.PLUGIN)
             this.player.closeInventory();
 
-        this.context.close();
-        this.onClose();
+        if (this.context.menu() == this)
+            this.context.close();
+
+        this.onClose(reason);
     }
 
     /**
@@ -151,9 +160,6 @@ public abstract class Menu implements InventoryHolder {
         Preconditions.checkNotNull(id, "id cannot be null");
         Preconditions.checkArgument(!id.isEmpty(), "id cannot be empty");
         Preconditions.checkNotNull(component, "component cannot be null");
-
-        if (this.componentIDs.containsKey(id))
-            throw new IllegalStateException("A component with id '" + id + "' is already registered.");
 
         this.componentIDs.put(id, component);
     }
@@ -216,9 +222,11 @@ public abstract class Menu implements InventoryHolder {
      * Called when the menu is closed.
      * <p>
      * Subclasses can override this method to perform actions when the menu
-     * is closed.
+     * is closed, such as cleanup or saving state.
+     *
+     * @param reason the reason for closing the inventory
      */
-    protected void onClose() {
+    protected void onClose(InventoryCloseEvent.Reason reason) {
 
     }
 
@@ -229,6 +237,15 @@ public abstract class Menu implements InventoryHolder {
      */
     public Player player() {
         return player;
+    }
+
+    /**
+     * Returns the Bukkit inventory associated with this menu.
+     *
+     * @return the inventory instance for this menu
+     */
+    public Inventory inventory() {
+        return this.getInventory();
     }
 
     /**

@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
-import toutouchien.niveriaapi.NiveriaAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,17 +40,10 @@ import java.util.function.Supplier;
  *     <li><b>Caffeine cache:</b> High-performance, auto-evicting component cache</li>
  *     <li><b>MiniMessage placeholders:</b> Named placeholders instead of positional arguments</li>
  *     <li><b>Lazy loading:</b> Locales loaded on-demand</li>
- *     <li><b>Centralized config:</b> Reads locale settings from NiveriaAPI config.yml</li>
  *     <li><b>Flexible configuration:</b> Builder pattern with sensible defaults</li>
  *     <li><b>Custom tag resolvers:</b> Extensible tag system per plugin</li>
  *     <li><b>Better error handling:</b> Graceful degradation with detailed logging</li>
  * </ul>
- * <p>
- * <b>NiveriaAPI config.yml settings:</b>
- * <pre>
- * lang: en_US              # Default server locale
- * use_player_locale: true  # Use player's client locale
- * </pre>
  * <p>
  * <b>Usage Example:</b>
  * <pre>{@code
@@ -62,34 +54,27 @@ import java.util.function.Supplier;
  *
  * // Language file (en_US.yml):
  * welcome:
- *   message: "<green>Welcome <niveriaapi_player_name>! There are <niveriaapi_player_count> players online."
- *   join: "<gray>[<green>+<gray>] <niveriaapi_player_name>"
+ *   message: "<green>Welcome %player_name%! There are %server_online% players online."
+ *   join: "<gray>[<green>+<gray>] %player_name"
  *
  * // Send messages with named placeholders:
- * lang.sendMessage(player, "welcome.message",
- *     Placeholder.parsed("niveriaapi_player_name", player.getName()),
- *     Placeholder.parsed("niveriaapi_player_count", String.valueOf(Bukkit.getOnlinePlayers().size()))
- * );
+ * lang.sendMessage(player, "welcome.message");
  *
  * // Or use helper methods:
- * lang.sendMessage(player, "welcome.join",
- *     Lang.placeholder("niveriaapi_player_name", player.getName())
- * );
+ * lang.sendMessage(player, "welcome.join");
  *
  * // Get a component:
  * Component msg = lang.get(player, "error.not_found",
- *     Lang.placeholder("niveriaapi_item", "Diamond Sword")
+ *     Lang.placeholder("item", "Diamond Sword")
  * );
  * }</pre>
  */
+@SuppressWarnings("unused")
 @NullMarked
 public class Lang {
     private final JavaPlugin plugin;
     private final Logger logger;
     private final MiniMessage miniMessage;
-
-    private Locale defaultLocale = Locale.US;
-    private boolean usePlayerLocale = false;
 
     private final boolean cacheComponents;
     private final MissingKeyBehavior missingKeyBehavior;
@@ -98,10 +83,12 @@ public class Lang {
 
     private final Object2ObjectMap<Locale, Object2ObjectMap<String, String>> messages;
     private final Object2ObjectMap<Locale, Object2ObjectMap<String, Object2ObjectMap<String, String>>> specialTags;
-    @Nullable
-    private final Object componentCache;
+    @Nullable private final Object componentCache;
     private final ObjectSet<Locale> loadedLocales;
     private final Object2ObjectMap<String, TagResolver> customTagResolvers;
+
+    private Locale defaultLocale = Locale.US;
+    private boolean usePlayerLocale = false;
 
     /**
      * Private constructor - use {@link LangBuilder} instead.
@@ -163,7 +150,7 @@ public class Lang {
     /**
      * Creates a parsed placeholder (value will be parsed for MiniMessage tags).
      *
-     * @param key   The placeholder key (e.g., "niveriaapi_player_name")
+     * @param key   The placeholder key (e.g., "player_name")
      * @param value The value to replace with
      * @return TagResolver for this placeholder
      */
@@ -175,7 +162,7 @@ public class Lang {
     /**
      * Creates an unparsed placeholder (value will NOT be parsed for MiniMessage tags).
      *
-     * @param key   The placeholder key (e.g., "niveriaapi_player_name")
+     * @param key   The placeholder key (e.g., "player_name")
      * @param value The value to replace with
      * @return TagResolver for this placeholder
      */
@@ -213,15 +200,15 @@ public class Lang {
      */
     @SuppressWarnings("java:S2629")
     private void initialize() {
-        FileConfiguration config = NiveriaAPI.instance().getConfig();
-        String langCode = config.getString("lang", LangUtils.DEFAULT_LANG_CODE);
+        FileConfiguration config = this.plugin.getConfig();
+        String langCode = config.getString("lang.default", LangUtils.DEFAULT_LANG_CODE);
         this.defaultLocale = Locale.forLanguageTag(langCode.replace('_', '-'));
-        this.usePlayerLocale = config.getBoolean("use_player_locale", false);
+        this.usePlayerLocale = config.getBoolean("lang.use-player-locale", false);
 
         saveDefaultLanguageFiles();
         ensureLocaleLoaded(defaultLocale);
 
-        logger.info("Initialized Lang system for {} with default locale: {} (use_player_locale: {}, cache: {})",
+        this.logger.info("Initialized Lang system for {} with default locale: {} (use-player-locale: {}, cache: {})",
                 plugin.getName(),
                 defaultLocale.toLanguageTag(),
                 usePlayerLocale,
@@ -533,6 +520,7 @@ public class Lang {
      * @param supplier The component supplier if not cached
      * @return The component
      */
+    @SuppressWarnings("unchecked")
     private Component getOrCacheComponent(LangCacheKey cacheKey, Supplier<Component> supplier) {
         if (componentCache == null)
             return supplier.get();
@@ -569,6 +557,34 @@ public class Lang {
     }
 
     /**
+     * Gets a raw message string (without MiniMessage parsing).
+     *
+     * @param key  The message key
+     * @param args Arguments to format into the message
+     * @return The formatted message string
+     */
+    public String getString(String key, Object... args) {
+        Preconditions.checkNotNull(key, "key cannot be null");
+        return rawMessage(defaultLocale, key).formatted(args);
+    }
+
+    /**
+     * Gets a raw message string for an audience (without MiniMessage parsing).
+     *
+     * @param audience The audience
+     * @param key      The message key
+     * @param args     Arguments to format into the message
+     * @return The formatted message string
+     */
+    public String getString(Audience audience, String key, Object... args) {
+        Preconditions.checkNotNull(audience, "audience cannot be null");
+        Preconditions.checkNotNull(key, "key cannot be null");
+
+        Locale locale = resolveLocale(audience);
+        return rawMessage(locale, key).formatted(args);
+    }
+
+    /**
      * Gets a message as a Component.
      *
      * @param key The message key
@@ -590,8 +606,8 @@ public class Lang {
      * Example:
      * <pre>{@code
      * Component msg = lang.get("welcome.message",
-     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
+     *     Lang.placeholder("player_name", player.getName()),
+     *     Lang.numberPlaceholder("player_count", playerCount)
      * );
      * }</pre>
      *
@@ -634,8 +650,8 @@ public class Lang {
      * Example:
      * <pre>{@code
      * Component msg = lang.get(player, "welcome.message",
-     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
+     *     Lang.placeholder("player_name", player.getName()),
+     *     Lang.numberPlaceholder("player_count", playerCount)
      * );
      * }</pre>
      *
@@ -782,8 +798,8 @@ public class Lang {
      * Example usage:
      * <pre>{@code
      * lang.sendMessage(player, "welcome.message",
-     *     Lang.placeholder("niveriaapi_player_name", player.getName()),
-     *     Lang.numberPlaceholder("niveriaapi_player_count", playerCount)
+     *     Lang.placeholder("player_name", player.getName()),
+     *     Lang.numberPlaceholder("player_count", playerCount)
      * );
      * }</pre>
      *
@@ -888,8 +904,10 @@ public class Lang {
 
     /**
      * Reloads all language files and configuration from disk.
-     * Clears all caches and re-reads NiveriaAPI config.
+     * Clears all caches and re-reads configs.
+     * Don't forget to reload your plugin's config before calling this if you want to apply config changes (e.g., default locale, use-player-locale).
      */
+    @SuppressWarnings("unchecked")
     public void reload() {
         logger.info("Reloading language files for {}", plugin.getName());
 
@@ -910,6 +928,7 @@ public class Lang {
      *
      * @return Cache statistics string
      */
+    @SuppressWarnings("unchecked")
     public String cacheStats() {
         int totalMessages;
         synchronized (messages) {
@@ -939,7 +958,7 @@ public class Lang {
     }
 
     /**
-     * Gets the current default locale (from NiveriaAPI config).
+     * Gets the current default locale.
      *
      * @return The default locale
      */
@@ -948,7 +967,7 @@ public class Lang {
     }
 
     /**
-     * Gets whether player locales are used (from NiveriaAPI config).
+     * Gets whether player locales are used.
      *
      * @return True if player locales are used
      */

@@ -11,7 +11,7 @@ import org.jspecify.annotations.NullMarked;
  * using MiniMessage and JSON formats.
  */
 @NullMarked
-public class ComponentUtils {
+public final class ComponentUtils {
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
     private static final JSONComponentSerializer jsonSerializer = JSONComponentSerializer.json();
 

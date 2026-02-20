@@ -12,7 +12,7 @@ import org.jspecify.annotations.NullMarked;
  * Utility class for command-related operations.
  */
 @NullMarked
-public class CommandUtils {
+public final class CommandUtils {
     private CommandUtils() {
         throw new IllegalStateException("Utility class");
     }

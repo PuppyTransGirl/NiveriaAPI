@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Utility class for scheduling synchronous and asynchronous tasks in a server.
  */
 @NullMarked
-public class Task {
+public final class Task {
     private Task() {
         throw new IllegalStateException("Utility class");
     }

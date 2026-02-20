@@ -28,7 +28,7 @@ import java.util.function.DoubleFunction;
  * All methods are static; the class cannot be instantiated.
  */
 @Shivery
-public class ParticleUtils {
+public final class ParticleUtils {
     private ParticleUtils() {
         throw new IllegalStateException("Utility class");
     }

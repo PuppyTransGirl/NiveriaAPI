@@ -10,7 +10,7 @@ import java.util.Set;
  * Utility class for file-related operations, including validation of file names.
  */
 @NullMarked
-public class FileUtils {
+public final class FileUtils {
     private static String[] invalidCharacters;
     private static String[] invalidWords;
     private static String os;

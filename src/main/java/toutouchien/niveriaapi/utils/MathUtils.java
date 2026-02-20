@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 /**
  * Utility class for mathematical operations.
  */
-public class MathUtils {
+public final class MathUtils {
     private MathUtils() {
         throw new IllegalStateException("Utility class");
     }

@@ -12,7 +12,7 @@ import static toutouchien.niveriaapi.NiveriaAPI.LANG;
  * Utility class for time conversions and formatting.
  */
 @NullMarked
-public class TimeUtils {
+public final class TimeUtils {
     private TimeUtils() {
         throw new IllegalStateException("Utility class");
     }

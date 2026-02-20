@@ -13,25 +13,21 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+import java.util.Collections;
 
 @NullMarked
 public class LangBuilder {
     final JavaPlugin plugin;
-
+    final ObjectList<String> defaultLanguageFiles = new ObjectArrayList<>();
+    final Object2ObjectMap<String, TagResolver> customTagResolvers = new Object2ObjectOpenHashMap<>();
     @Nullable Logger logger;
-
     boolean cacheComponents = true;
     int maxCacheSize = LangUtils.DEFAULT_MAX_CACHE;
     @Nullable Duration cacheExpireAfterAccess = LangUtils.DEFAULT_CACHE_EXPIRE;
     @Nullable Duration cacheExpireAfterWrite = null;
     boolean recordStats = false;
-
     MissingKeyBehavior missingKeyBehavior = MissingKeyBehavior.RETURN_KEY;
-
     String langDirectory = "lang";
-    final ObjectList<String> defaultLanguageFiles = new ObjectArrayList<>();
-
-    final Object2ObjectMap<String, TagResolver> customTagResolvers = new Object2ObjectOpenHashMap<>();
 
     LangBuilder(JavaPlugin plugin) {
         this.plugin = Preconditions.checkNotNull(plugin, "plugin cannot be null");
@@ -97,7 +93,7 @@ public class LangBuilder {
     public LangBuilder addDefaultLanguageFiles(String... files) {
         Preconditions.checkNotNull(files, "files cannot be null");
 
-        this.defaultLanguageFiles.addAll(ObjectArrayList.wrap(files));
+        Collections.addAll(defaultLanguageFiles, files);
         return this;
     }
 

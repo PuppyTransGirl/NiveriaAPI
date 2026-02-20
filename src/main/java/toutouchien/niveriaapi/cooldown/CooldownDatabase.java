@@ -87,7 +87,7 @@ public class CooldownDatabase {
      */
     @SuppressWarnings("PatternValidation")
     public List<Cooldown> loadAllCooldowns() {
-        if (NiveriaAPI.isUnitTestVersion())
+        if (NiveriaAPI.isUnitTest())
             return new ArrayList<>();
 
         List<Cooldown> activeCooldowns = new ArrayList<>();
