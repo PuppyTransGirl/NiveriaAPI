@@ -19,6 +19,7 @@ import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+import toutouchien.niveriaapi.utils.BackwardUtils;
 import toutouchien.niveriaapi.utils.Task;
 
 import java.util.EnumSet;
@@ -435,7 +436,7 @@ public class Button extends MenuComponent {
         @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
-                Sound.Source.UI,
+                BackwardUtils.UI_SOUND_SOURCE,
                 1F,
                 1F
         );
@@ -567,7 +568,7 @@ public class Button extends MenuComponent {
             Preconditions.checkNotNull(clickTypes, "clickTypes cannot be null");
             Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-            this.onClickMap.put(clickTypes, onClick);
+            this.onClickMap.put(EnumSet.copyOf(clickTypes), onClick);
             return this;
         }
 

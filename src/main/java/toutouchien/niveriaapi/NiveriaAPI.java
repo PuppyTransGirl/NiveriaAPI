@@ -23,12 +23,12 @@ import java.util.Arrays;
 
 public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+    private static final String MODRINTH_PROJECT_ID = "ll0lc5oW";
     private static final int BSTATS_PLUGIN_ID = 28754;
 
     private static NiveriaAPI instance;
 
     public static Lang LANG;
-    private final String MODRINTH_PROJECT_ID = "ll0lc5oW";
 
     private ChatInputManager chatInputManager;
     private CooldownManager cooldownManager;

@@ -1,12 +1,7 @@
 package toutouchien.niveriaapi.utils;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockbukkit.mockbukkit.MockBukkit;
-import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.mock.MockBukkitHelper;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -14,17 +9,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TimeUtilsTest {
-    @BeforeEach
-    void setUp() {
-        MockBukkitHelper.safeMock();
-        MockBukkit.load(NiveriaAPI.class);
-    }
-
-    @AfterEach
-    void tearDown() {
-        MockBukkitHelper.safeUnmock();
-    }
-
     @Test
     @DisplayName("Test parseMillis with various durations")
     void testParseMillis() {

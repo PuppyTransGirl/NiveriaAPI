@@ -33,7 +33,7 @@ public class UpdateCheckerListener implements Listener {
         if (!player.hasPermission(pluginName + ".update-checker"))
             return;
 
-        LANG.sendMessage(player, "new-update",
+        LANG.sendMessage(player, "update.available",
                 Lang.unparsedPlaceholder("current_version", this.currentVersion),
                 Lang.unparsedPlaceholder("latest_version", this.latestVersion)
         );

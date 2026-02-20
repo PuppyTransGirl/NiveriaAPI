@@ -14,6 +14,7 @@ import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
 import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
+import toutouchien.niveriaapi.utils.BackwardUtils;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -325,7 +326,7 @@ public class Selector<T> extends MenuComponent {
         @Nullable
         private Sound sound = Sound.sound(
                 Key.key("minecraft", "ui.button.click"),
-                Sound.Source.UI,
+                BackwardUtils.UI_SOUND_SOURCE,
                 1F,
                 1F
         );

@@ -17,7 +17,7 @@ public class NiveriaAPILoader implements PluginLoader {
 
         try {
             resolver.addRepository(new RemoteRepository.Builder("central", "default", MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build());
-        } catch (NoSuchMethodError err) {
+        } catch (NoSuchFieldError err) {
             resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://maven-central.storage-download.googleapis.com/maven2").build());
         }
 

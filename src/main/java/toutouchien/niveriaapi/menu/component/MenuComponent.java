@@ -137,20 +137,11 @@ public abstract class MenuComponent {
      * @return a map from slot indices to the provided ItemStack
      */
     protected Int2ObjectMap<ItemStack> items(MenuContext context, ItemStack itemStack) {
-        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(this.height * this.width);
-        if (!this.visible())
-            return items;
-
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                items.put(slot, itemStack);
-            }
+        IntSet slotSet = this.slots(context);
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(slotSet.size());
+        for (int slot : slotSet) {
+            items.put(slot, itemStack);
         }
-
         return items;
     }
 

@@ -25,21 +25,21 @@ special-tags:
 
 homeplugin:
   deletehome:
-    doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
-    deleted: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" deleted successfully.</ncolor>"
+    doesnt_exists: "<prefix:home> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
+    deleted: "<prefix:home> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" deleted successfully.</ncolor>"
 
   home:
-    doesnt_exists: "<prefix:home/> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
-    teleported: "<prefix:home/> <separator> <ncolor:hpsuccess>You have been teleported to your home.</ncolor>"
+    doesnt_exists: "<prefix:home> <separator> <ncolor:hperror>This home does not exist.</ncolor>"
+    teleported: "<prefix:home> <separator> <ncolor:hpsuccess>You have been teleported to your home.</ncolor>"
 
   sethome:
-    too_long: "<prefix:home/> <separator> <ncolor:hperror>The home name is too long.</ncolor>"
-    already_exists: "<prefix:home/> <separator> <ncolor:hperror>This home name already exists.</ncolor>"
-    created: "<prefix:home/> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" created successfully.</ncolor>"
-    invalid_character: "<prefix:home/> <separator> <ncolor:hperror>The home name contains invalid characters.</ncolor>"
+    too_long: "<prefix:home> <separator> <ncolor:hperror>The home name is too long.</ncolor>"
+    already_exists: "<prefix:home> <separator> <ncolor:hperror>This home name already exists.</ncolor>"
+    created: "<prefix:home> <separator> <ncolor:hpsuccess>Home \"<homeplugin_home_name>\" created successfully.</ncolor>"
+    invalid_character: "<prefix:home> <separator> <ncolor:hperror>The home name contains invalid characters.</ncolor>"
 
   homes:
-    no_homes: "<prefix:home/> <separator> <ncolor:hperror>You have not set any home.</ncolor>"
+    no_homes: "<prefix:home> <separator> <ncolor:hperror>You have not set any home.</ncolor>"
 
   menu:
     title: "<ncolor:hpprimary>Your Homes</ncolor>"
@@ -65,4 +65,4 @@ homeplugin:
     last_page: "<ncolor:hpsecondary>Last Page</ncolor>"
 
   reload:
-    done: "<prefix:home/> <separator> <ncolor:hpsuccess>HomePlugin has been reloaded. (<homeplugin_time_ms> ms)</ncolor>"
+    done: "<prefix:home> <separator> <ncolor:hpsuccess>HomePlugin has been reloaded. (<homeplugin_time_ms> ms)</ncolor>"

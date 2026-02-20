@@ -51,7 +51,7 @@ public class UpdateChecker {
         URI tempURI = null;
         try {
             String gameVersionArray = "[\"%s\"]".formatted(Bukkit.getMinecraftVersion());
-            tempURI = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_version=%s".formatted(
+            tempURI = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=%s".formatted(
                     modrinthID,
                     URLEncoder.encode(gameVersionArray, StandardCharsets.UTF_8)
             ));
@@ -76,7 +76,7 @@ public class UpdateChecker {
             if (this.noNewVersion)
                 return;
 
-            LANG.sendMessage(Bukkit.getConsoleSender(), "new-update",
+            LANG.sendMessage(Bukkit.getConsoleSender(), "update.available",
                     Lang.unparsedPlaceholder("current_version", this.currentVersion),
                     Lang.unparsedPlaceholder("latest_version", this.latestVersion)
             );
