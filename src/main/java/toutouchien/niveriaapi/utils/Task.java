@@ -23,53 +23,53 @@ public final class Task {
     /**
      * Schedules a synchronous task to run immediately.
      *
-     * @param runnable The task to run.
+     * @param consumer The task to run.
      * @param plugin   The plugin scheduling the task.
-     * @return The scheduled BukkitTask.
+     * @return The scheduled ScheduledTask.
      */
-    public static BukkitTask sync(Runnable runnable, Plugin plugin) {
-        Preconditions.checkNotNull(runnable, "runnable cannot be null");
+    public static ScheduledTask sync(Consumer<ScheduledTask> consumer, Plugin plugin) {
+        Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
 
-        return Bukkit.getScheduler().runTask(plugin, runnable);
+        return Bukkit.getGlobalRegionScheduler().run(plugin, consumer);
     }
 
     /**
      * Schedules a synchronous task to run after a specified delay.
      *
-     * @param runnable The task to run.
+     * @param consumer The task to run.
      * @param plugin   The plugin scheduling the task.
      * @param delay    The delay before the task is executed.
      * @param timeUnit The time unit of the delay.
-     * @return The scheduled BukkitTask.
+     * @return The scheduled ScheduledTask.
      */
-    public static BukkitTask syncLater(Runnable runnable, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
-        Preconditions.checkNotNull(runnable, "runnable cannot be null");
+    public static ScheduledTask syncLater(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, TimeUnit timeUnit) {
+        Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskLater(plugin, runnable, timeUnit.toMillis(delay) / 50);
+        return Bukkit.getGlobalRegionScheduler().runDelayed(plugin, consumer, timeUnit.toMillis(delay) / 50);
     }
 
     /**
      * Schedules a synchronous repeating task.
      *
-     * @param runnable The task to run.
+     * @param consumer The task to run.
      * @param plugin   The plugin scheduling the task.
      * @param delay    The delay before the first execution.
      * @param interval The interval between subsequent executions.
      * @param timeUnit The time unit of the delay and interval.
-     * @return The scheduled BukkitTask.
+     * @return The scheduled ScheduledTask.
      */
-    public static BukkitTask syncRepeat(Runnable runnable, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
-        Preconditions.checkNotNull(runnable, "runnable cannot be null");
+    public static ScheduledTask syncRepeat(Consumer<ScheduledTask> consumer, Plugin plugin, @NonNegative long delay, @NonNegative long interval, TimeUnit timeUnit) {
+        Preconditions.checkNotNull(consumer, "consumer cannot be null");
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkArgument(delay >= 0, "delay cannot be less than 0: %s", delay);
         Preconditions.checkArgument(interval >= 0, "interval cannot be less than 0: %s", interval);
         Preconditions.checkNotNull(timeUnit, "timeUnit cannot be null");
 
-        return Bukkit.getScheduler().runTaskTimer(plugin, runnable, timeUnit.toMillis(delay) / 50, timeUnit.toMillis(interval) / 50);
+        return Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, consumer, timeUnit.toMillis(delay) / 50, timeUnit.toMillis(interval) / 50);
     }
 
     /**

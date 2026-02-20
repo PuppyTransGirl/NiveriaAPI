@@ -1,5 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.CraftParticle;
@@ -511,8 +512,8 @@ public final class ParticleUtils {
      * @param interval      interval in ticks between spawns
      * @return the scheduled {@link BukkitTask}
      */
-    public static BukkitTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
-        BukkitTask task = Task.syncRepeat(() -> {
+    public static ScheduledTask followEntity(Entity entity, Plugin plugin, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long durationTicks, long interval) {
+        ScheduledTask task = Task.syncRepeat(ignored -> {
             if (!entity.isValid())
                 return;
 
@@ -567,7 +568,7 @@ public final class ParticleUtils {
     public static void animateParticles(Plugin plugin, List<Location> frames, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed, long ticksPerFrame, long durationTicks, boolean loop) {
         final int[] currentFrame = {0};
 
-        BukkitTask task = Task.syncRepeat(() -> {
+        ScheduledTask task = Task.syncRepeat(ignored -> {
             if (currentFrame[0] >= frames.size() && loop)
                 currentFrame[0] = 0; // Loop animation (optional)
 

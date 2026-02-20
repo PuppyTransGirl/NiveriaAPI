@@ -8,6 +8,8 @@ load: STARTUP
 authors: [ Toutouchien ]
 website: https://niveria.fr
 
+folia-supported: true
+
 dependencies:
   server:
     BlueMap:
