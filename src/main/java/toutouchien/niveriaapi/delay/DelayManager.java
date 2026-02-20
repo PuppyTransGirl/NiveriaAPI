@@ -111,7 +111,7 @@ public class DelayManager implements Listener {
 
         Player player = delay.player();
         int delayRemaining = delay.delayRemaining();
-        Component text = delay.text().replaceText(builder -> builder.matchLiteral("<niveriaapi_delay_seconds>").replacement(String.valueOf(delayRemaining)));
+        Component text = delay.text().replaceText(builder -> builder.matchLiteral("<delay_seconds>").replacement(String.valueOf(delayRemaining)));
 
         if (delay.actionbar())
             player.sendActionBar(text);

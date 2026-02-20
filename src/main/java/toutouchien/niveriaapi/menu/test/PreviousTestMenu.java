@@ -28,25 +28,6 @@ public class PreviousTestMenu extends Menu {
         super(player, context);
     }
 
-    @Override
-    protected Component title() {
-        return Component.text("Menu ID: " + System.identityHashCode(this), ColorUtils.primaryColor());
-    }
-
-    @Override
-    protected MenuComponent root(MenuContext context) {
-        return Grid.create()
-                .size(9, 3)
-                .add(0, previousMenuButton())
-                .add(4, Icon.create()
-                        .item(ItemBuilder.of(Material.BOOK)
-                                .name(Component.text("Current Menu ID: " + System.identityHashCode(this)))
-                                .build())
-                        .build())
-                .add(8, nextMenuButton())
-                .build();
-    }
-
     private static Button previousMenuButton() {
         return Button.create()
                 .item(ItemBuilder.of(Material.ARROW)
@@ -72,6 +53,25 @@ public class PreviousTestMenu extends Menu {
                 .onClick(event -> {
                     new PreviousTestMenu(event.player(), event.context()).open();
                 })
+                .build();
+    }
+
+    @Override
+    protected Component title() {
+        return Component.text("Menu ID: " + System.identityHashCode(this), ColorUtils.primaryColor());
+    }
+
+    @Override
+    protected MenuComponent root(MenuContext context) {
+        return Grid.create()
+                .size(9, 3)
+                .add(0, previousMenuButton())
+                .add(4, Icon.create()
+                        .item(ItemBuilder.of(Material.BOOK)
+                                .name(Component.text("Current Menu ID: " + System.identityHashCode(this)))
+                                .build())
+                        .build())
+                .add(8, nextMenuButton())
                 .build();
     }
 }

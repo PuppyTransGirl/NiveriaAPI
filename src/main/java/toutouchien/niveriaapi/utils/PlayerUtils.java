@@ -15,7 +15,7 @@ import java.util.*;
  */
 @SuppressWarnings("deprecation")
 @NullMarked
-public class PlayerUtils {
+public final class PlayerUtils {
     private PlayerUtils() {
         throw new IllegalStateException("Utility class");
     }

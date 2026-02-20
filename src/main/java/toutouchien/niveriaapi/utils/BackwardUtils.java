@@ -2,7 +2,7 @@ package toutouchien.niveriaapi.utils;
 
 import net.kyori.adventure.sound.Sound;
 
-public class BackwardUtils {
+public final class BackwardUtils {
     private BackwardUtils() {
         throw new IllegalStateException("Utility class");
     }

@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import toutouchien.niveriaapi.NiveriaAPI;
 import toutouchien.niveriaapi.lang.Lang;
 import toutouchien.niveriaapi.utils.StringUtils;
 import toutouchien.niveriaapi.utils.Task;
@@ -21,7 +22,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static toutouchien.niveriaapi.NiveriaAPI.LANG;
@@ -32,35 +32,38 @@ public class UpdateChecker {
     private final Gson gson = new Gson();
 
     private final JavaPlugin plugin;
-    private final URI uri;
     private final String currentVersion;
-    private final String langKey;
+    @Nullable
+    private final URI uri;
 
     @Nullable
     private String latestVersion;
     private boolean noNewVersion;
 
-    @SuppressWarnings("java:S112")
-    public UpdateChecker(JavaPlugin plugin, String modrinthID, String langKey) {
+    public UpdateChecker(JavaPlugin plugin, String modrinthID) {
         Preconditions.checkNotNull(plugin, "plugin cannot be null");
         Preconditions.checkNotNull(modrinthID, "modrinthID cannot be null");
-        Preconditions.checkNotNull(langKey, "langKey cannot be null");
 
         this.plugin = plugin;
 
+        this.currentVersion = plugin.getPluginMeta().getVersion();
+
+        URI tempURI = null;
         try {
-            String gameVersionsArray = "[\"%s\"]".formatted(Bukkit.getMinecraftVersion());
-            this.uri = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=%s".formatted(
+            String gameVersionArray = "[\"%s\"]".formatted(Bukkit.getMinecraftVersion());
+            tempURI = new URI("https://api.modrinth.com/v2/project/%s/version?include_changelog=false&game_versions=%s".formatted(
                     modrinthID,
-                    URLEncoder.encode(gameVersionsArray, StandardCharsets.UTF_8)
+                    URLEncoder.encode(gameVersionArray, StandardCharsets.UTF_8)
             ));
         } catch (URISyntaxException e) {
-            // should not happen
-            throw new RuntimeException(e);
+            // Should not happen
+            NiveriaAPI.instance().getSLF4JLogger().error("Failed to create URI for update checker", e);
+        } finally {
+            this.uri = tempURI;
         }
 
-        this.currentVersion = plugin.getPluginMeta().getVersion();
-        this.langKey = langKey;
+        if (this.uri == null)
+            return;
 
         this.startTask();
     }
@@ -73,15 +76,13 @@ public class UpdateChecker {
             if (this.noNewVersion)
                 return;
 
-            String pluginName = this.plugin.getName().toLowerCase(Locale.ROOT);
-            LANG.sendMessage(Bukkit.getConsoleSender(), this.langKey,
-                    Lang.unparsedPlaceholder(pluginName + "_current_version", this.currentVersion),
-                    Lang.unparsedPlaceholder(pluginName + "_latest_version", this.latestVersion)
+            LANG.sendMessage(Bukkit.getConsoleSender(), "update.available",
+                    Lang.unparsedPlaceholder("current_version", this.currentVersion),
+                    Lang.unparsedPlaceholder("latest_version", this.latestVersion)
             );
 
             Bukkit.getPluginManager().registerEvents(new UpdateCheckerListener(
                     this.plugin,
-                    this.langKey,
                     this.currentVersion,
                     this.latestVersion
             ), this.plugin);

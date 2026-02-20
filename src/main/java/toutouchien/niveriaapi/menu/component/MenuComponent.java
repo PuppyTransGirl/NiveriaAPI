@@ -2,11 +2,12 @@ package toutouchien.niveriaapi.menu.component;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.Positive;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -31,13 +32,51 @@ public abstract class MenuComponent {
     private int x = 0;
     private int y = 0;
 
+    protected final int width, height;
+
     /**
      * Constructs a new MenuComponent with the specified ID.
      *
-     * @param id the unique identifier for this component, or null for a default ID
+     * @param builder the builder containing the component configuration
      */
-    protected MenuComponent(@Nullable String id) {
-        this.id = id;
+    protected MenuComponent(Builder<?> builder) {
+        this.id = builder.id;
+        this.width = builder.width;
+        this.height = builder.height;
+    }
+
+    /**
+     * Converts an inventory slot index to its x-coordinate.
+     *
+     * @param slot the slot index
+     * @return the x-coordinate (0-8)
+     */
+    @NonNegative
+    public static int toX(int slot) {
+        return slot % 9;
+    }
+
+    /**
+     * Converts an inventory slot index to its y-coordinate.
+     *
+     * @param slot the slot index
+     * @return the y-coordinate (0+)
+     */
+    @NonNegative
+    public static int toY(int slot) {
+        return slot / 9;
+    }
+
+    /**
+     * Converts x and y coordinates to an inventory slot index.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return the slot index
+     */
+    @NonNegative
+    public static int toSlot(int x, int y) {
+        return y * 9 + x;
     }
 
     /**
@@ -88,6 +127,25 @@ public abstract class MenuComponent {
     public abstract Int2ObjectMap<ItemStack> items(MenuContext context);
 
     /**
+     * Helper method to create a uniform item map for the component's area.
+     * <p>
+     * This method fills all slots within the component's widthxheight area
+     * with the same ItemStack. Returns an empty map if not visible.
+     *
+     * @param context   the menu context
+     * @param itemStack the ItemStack to fill the component area with
+     * @return a map from slot indices to the provided ItemStack
+     */
+    protected Int2ObjectMap<ItemStack> items(MenuContext context, ItemStack itemStack) {
+        IntSet slotSet = this.slots(context);
+        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>(slotSet.size());
+        for (int slot : slotSet) {
+            items.put(slot, itemStack);
+        }
+        return items;
+    }
+
+    /**
      * Returns the set of inventory slot indices that this component occupies.
      * <p>
      * This method must be implemented by subclasses to define which slots
@@ -96,7 +154,23 @@ public abstract class MenuComponent {
      * @param context the menu context
      * @return a set of slot indices
      */
-    public abstract IntSet slots(MenuContext context);
+    public IntSet slots(MenuContext context) {
+        IntSet slots = new IntOpenHashSet(this.width * this.height);
+        if (!this.visible())
+            return slots;
+
+        int baseSlot = this.slot();
+        int rowLength = 9;
+
+        for (int row = 0; row < this.height; row++) {
+            for (int col = 0; col < this.width; col++) {
+                int slot = baseSlot + col + (row * rowLength);
+                slots.add(slot);
+            }
+        }
+
+        return slots;
+    }
 
     /**
      * Renders this component to the menu's inventory.
@@ -118,7 +192,7 @@ public abstract class MenuComponent {
 
         for (int slot : slots) {
             ItemStack item = items.get(slot);
-            context.menu().getInventory().setItem(slot, item);
+            context.menu().inventory().setItem(slot, item);
         }
     }
 
@@ -135,24 +209,6 @@ public abstract class MenuComponent {
 
         this.x = x;
         this.y = y;
-    }
-
-    /**
-     * Sets the visibility state of this component.
-     *
-     * @param visible true to make the component visible, false to hide it
-     */
-    public void visible(boolean visible) {
-        this.visible = visible;
-    }
-
-    /**
-     * Sets the enabled state of this component.
-     *
-     * @param enabled true to enable the component, false to disable it
-     */
-    public void enabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**
@@ -186,20 +242,24 @@ public abstract class MenuComponent {
     }
 
     /**
-     * Returns the width of this component in inventory slots.
+     * Returns the width of this component in slots.
      *
-     * @return the component width (must be positive)
+     * @return the component width
      */
     @Positive
-    public abstract int width();
+    public int width() {
+        return this.width;
+    }
 
     /**
-     * Returns the height of this component in inventory rows.
+     * Returns the height of this component in rows.
      *
-     * @return the component height (must be positive)
+     * @return the component height
      */
     @Positive
-    public abstract int height();
+    public int height() {
+        return this.height;
+    }
 
     /**
      * Returns the inventory slot index for this component's top-left position.
@@ -221,12 +281,30 @@ public abstract class MenuComponent {
     }
 
     /**
+     * Sets the visibility state of this component.
+     *
+     * @param visible true to make the component visible, false to hide it
+     */
+    public void visible(boolean visible) {
+        this.visible = visible;
+    }
+
+    /**
      * Returns whether this component is currently enabled.
      *
      * @return true if enabled, false otherwise
      */
     public boolean enabled() {
         return enabled;
+    }
+
+    /**
+     * Sets the enabled state of this component.
+     *
+     * @param enabled true to enable the component, false to disable it
+     */
+    public void enabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
@@ -240,9 +318,11 @@ public abstract class MenuComponent {
         return this.visible && this.enabled;
     }
 
+    @SuppressWarnings("unchecked")
     protected static class Builder<T> {
-        @Nullable
-        protected String id;
+        @Nullable protected String id;
+        protected int width = 1;
+        protected int height = 1;
 
         /**
          * Sets the ID for this component.
@@ -251,7 +331,6 @@ public abstract class MenuComponent {
          * @return this builder for method chaining
          * @throws NullPointerException if id is null
          */
-        @SuppressWarnings("unchecked")
         @Contract(value = "_ -> this", mutates = "this")
         public T id(String id) {
             Preconditions.checkNotNull(id, "id cannot be null");
@@ -260,43 +339,52 @@ public abstract class MenuComponent {
             return (T) this;
         }
 
-        @ApiStatus.Internal
-        public String id() {
-            return id;
+        /**
+         * Sets the width of the component in slots.
+         *
+         * @param width the width in slots (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width is less than 1
+         */
+        @Contract(value = "_ -> this", mutates = "this")
+        public T width(@Positive int width) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+
+            this.width = width;
+            return (T) this;
         }
-    }
 
-    /**
-     * Converts an inventory slot index to its x-coordinate.
-     *
-     * @param slot the slot index
-     * @return the x-coordinate (0-8)
-     */
-    @NonNegative
-    public static int toX(int slot) {
-        return slot % 9;
-    }
+        /**
+         * Sets the height of the component in rows.
+         *
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if height is less than 1
+         */
+        @Contract(value = "_ -> this", mutates = "this")
+        public T height(@Positive int height) {
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
 
-    /**
-     * Converts an inventory slot index to its y-coordinate.
-     *
-     * @param slot the slot index
-     * @return the y-coordinate (0+)
-     */
-    @NonNegative
-    public static int toY(int slot) {
-        return slot / 9;
-    }
+            this.height = height;
+            return (T) this;
+        }
 
-    /**
-     * Converts x and y coordinates to an inventory slot index.
-     *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @return the slot index
-     */
-    @NonNegative
-    public static int toSlot(int x, int y) {
-        return y * 9 + x;
+        /**
+         * Sets both width and height of the component.
+         *
+         * @param width  the width in slots (must be positive)
+         * @param height the height in rows (must be positive)
+         * @return this builder for method chaining
+         * @throws IllegalArgumentException if width or height is less than 1
+         */
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public T size(@Positive int width, @Positive int height) {
+            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
+            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
+
+            this.width = width;
+            this.height = height;
+            return (T) this;
+        }
     }
 }

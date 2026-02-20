@@ -14,13 +14,11 @@ import static toutouchien.niveriaapi.NiveriaAPI.LANG;
 
 public class UpdateCheckerListener implements Listener {
     private final JavaPlugin plugin;
-    private final String langKey;
     private final String currentVersion;
     private final String latestVersion;
 
-    public UpdateCheckerListener(JavaPlugin plugin, String langKey, String currentVersion, String latestVersion) {
+    public UpdateCheckerListener(JavaPlugin plugin, String currentVersion, String latestVersion) {
         this.plugin = plugin;
-        this.langKey = langKey;
         this.currentVersion = currentVersion;
         this.latestVersion = latestVersion;
     }
@@ -31,13 +29,13 @@ public class UpdateCheckerListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        String smallPluginName = this.plugin.getName().toLowerCase(Locale.ROOT);
-        if (!player.hasPermission(smallPluginName + ".update-checker"))
+        String pluginName = this.plugin.getName().toLowerCase(Locale.ROOT);
+        if (!player.hasPermission(pluginName + ".update-checker"))
             return;
 
-        LANG.sendMessage(player, this.langKey,
-                Lang.unparsedPlaceholder(smallPluginName + "_current_version", this.currentVersion),
-                Lang.unparsedPlaceholder(smallPluginName + "_latest_version", this.latestVersion)
+        LANG.sendMessage(player, "update.available",
+                Lang.unparsedPlaceholder("current_version", this.currentVersion),
+                Lang.unparsedPlaceholder("latest_version", this.latestVersion)
         );
     }
 }

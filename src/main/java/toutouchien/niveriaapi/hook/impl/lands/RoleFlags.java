@@ -5,7 +5,7 @@ import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.RoleFlag;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import toutouchien.niveriaapi.utils.StringUtils;
+import toutouchien.niveriaapi.utils.EnumUtils;
 
 import java.util.Optional;
 
@@ -71,7 +71,7 @@ public enum RoleFlags {
     public static Optional<RoleFlags> byName(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
-        return StringUtils.match(name, RoleFlags.class);
+        return EnumUtils.match(name, RoleFlags.class);
     }
 
     /**

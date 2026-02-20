@@ -12,7 +12,7 @@ import static toutouchien.niveriaapi.NiveriaAPI.LANG;
  * Utility class for time conversions and formatting.
  */
 @NullMarked
-public class TimeUtils {
+public final class TimeUtils {
     private TimeUtils() {
         throw new IllegalStateException("Utility class");
     }
@@ -38,7 +38,7 @@ public class TimeUtils {
      */
     public static String parseMillis(long millis) {
         if (millis < 1000)
-            return "0 seconde";
+            return "0 " + LANG.getString("timeutils.second");
 
         long seconds = millis / 1000;
         long minutes = seconds / 60;

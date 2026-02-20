@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * would be invalid for air items.
  */
 @SuppressWarnings({"UnstableApiUsage", "ClassCanBeRecord", "unused", "UnusedReturnValue"})
-public class ItemBuilder {
+public final class ItemBuilder {
     private final ItemStack itemStack;
 
     private ItemBuilder(ItemStack itemStack) {
@@ -140,7 +140,7 @@ public class ItemBuilder {
     /**
      * Set the amount (stack size) for this ItemStack.
      *
-     * @param amount the desired amount (must be &gt; 0)
+     * @param amount the desired amount (must be > 0)
      * @return this builder
      * @throws IllegalArgumentException if amount is out of range
      */
@@ -269,7 +269,13 @@ public class ItemBuilder {
      */
     @NonNegative
     public int durability() {
-        return itemStack.getData(DataComponentTypes.MAX_DAMAGE) - itemStack.getData(DataComponentTypes.DAMAGE);
+        Integer maxDamageComponent = itemStack.getData(DataComponentTypes.MAX_DAMAGE);
+        Integer damageComponent = itemStack.getData(DataComponentTypes.DAMAGE);
+
+        int maxDamage = maxDamageComponent == null ? itemStack.getType().getMaxDurability() : maxDamageComponent;
+        int damage = damageComponent == null ? 0 : damageComponent;
+
+        return maxDamage - damage;
     }
 
     /**
@@ -721,8 +727,12 @@ public class ItemBuilder {
         Preconditions.checkNotNull(line, "line cannot be null");
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
-        ItemLore itemLore = ItemLore.lore()
-                .lines(data.lines())
+
+        ItemLore.Builder builder = ItemLore.lore();
+        if (data != null)
+            builder.lines(data.lines());
+
+        ItemLore itemLore = builder
                 .addLine(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE))
                 .build();
 
@@ -743,6 +753,9 @@ public class ItemBuilder {
         Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
         ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+        if (data == null)
+            throw new IndexOutOfBoundsException("Cannot set lore line, item has no lore");
+
         List<Component> lore = new ArrayList<>(data.lines());
         if (lore.size() <= index)
             throw new IndexOutOfBoundsException("Lore index out of bounds: " + index + ", size: " + lore.size());
@@ -763,7 +776,11 @@ public class ItemBuilder {
     public ItemBuilder removeLoreLine(Component line) {
         Preconditions.checkNotNull(line, "line cannot be null");
 
-        List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).lines());
+        ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+        if (data == null)
+            return this;
+
+        List<Component> lore = new ArrayList<>(data.lines());
         lore.remove(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
 
         itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
@@ -780,7 +797,11 @@ public class ItemBuilder {
     public ItemBuilder removeLoreLine(@NonNegative int index) {
         Preconditions.checkArgument(index >= 0, "index cannot be negative: %s", index);
 
-        List<Component> lore = new ArrayList<>(itemStack.getData(DataComponentTypes.LORE).lines());
+        ItemLore data = itemStack.getData(DataComponentTypes.LORE);
+        if (data == null)
+            throw new IndexOutOfBoundsException("Cannot remove lore line, item has no lore");
+
+        List<Component> lore = new ArrayList<>(data.lines());
         lore.remove(index);
 
         itemStack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
@@ -840,7 +861,13 @@ public class ItemBuilder {
 
         ItemAttributeModifiers data = itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS);
         if (data != null)
-            data.modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+            data.modifiers().forEach(attModifier ->
+                    itemAttributeModifiers.addModifier(
+                            attModifier.attribute(),
+                            attModifier.modifier(),
+                            attModifier.getGroup()
+                    )
+            );
 
         itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, itemAttributeModifiers.build());
         return this;
@@ -858,7 +885,13 @@ public class ItemBuilder {
 
         ItemAttributeModifiers.Builder itemAttributeModifiers = ItemAttributeModifiers.itemAttributes();
         if (itemStack.hasData(DataComponentTypes.ATTRIBUTE_MODIFIERS))
-            itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+            itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().forEach(attModifier ->
+                    itemAttributeModifiers.addModifier(
+                            attModifier.attribute(),
+                            attModifier.modifier(),
+                            attModifier.getGroup()
+                    )
+            );
 
         attributeModifiers.forEach(itemAttributeModifiers::addModifier);
 
@@ -919,7 +952,13 @@ public class ItemBuilder {
 
         itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().stream()
                 .filter(attModifier -> !attModifier.attribute().equals(attribute))
-                .forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+                .forEach(attModifier ->
+                        itemAttributeModifiers.addModifier(
+                                attModifier.attribute(),
+                                attModifier.modifier(),
+                                attModifier.getGroup()
+                        )
+                );
 
         itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, itemAttributeModifiers.build());
         return this;
@@ -942,7 +981,13 @@ public class ItemBuilder {
 
         itemStack.getData(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().stream()
                 .filter(attModifier -> !list.contains(attModifier.attribute()))
-                .forEach(attModifier -> itemAttributeModifiers.addModifier(attModifier.attribute(), attModifier.modifier(), attModifier.getGroup()));
+                .forEach(attModifier ->
+                        itemAttributeModifiers.addModifier(
+                                attModifier.attribute(),
+                                attModifier.modifier(),
+                                attModifier.getGroup()
+                        )
+                );
 
         itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, itemAttributeModifiers.build());
         return this;
@@ -980,7 +1025,8 @@ public class ItemBuilder {
                 : data.modifiers().stream()
                 .collect(Collectors.toMap(
                         ItemAttributeModifiers.Entry::attribute,
-                        ItemAttributeModifiers.Entry::modifier
+                        ItemAttributeModifiers.Entry::modifier,
+                        (existing, replacement) -> replacement
                 ));
     }
 

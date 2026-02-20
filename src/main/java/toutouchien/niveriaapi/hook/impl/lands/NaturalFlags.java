@@ -5,7 +5,7 @@ import me.angeschossen.lands.api.flags.type.Flags;
 import me.angeschossen.lands.api.flags.type.NaturalFlag;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import toutouchien.niveriaapi.utils.StringUtils;
+import toutouchien.niveriaapi.utils.EnumUtils;
 
 import java.util.Optional;
 
@@ -47,7 +47,7 @@ public enum NaturalFlags {
     public static Optional<NaturalFlags> byName(String name) {
         Preconditions.checkNotNull(name, "name cannot be null");
 
-        return StringUtils.match(name, NaturalFlags.class);
+        return EnumUtils.match(name, NaturalFlags.class);
     }
 
     /**

@@ -1,6 +1,6 @@
 package toutouchien.niveriaapi.utils;
 
-public class Direction {
+public final class Direction {
     private Direction() {
         throw new IllegalStateException("Utility class");
     }

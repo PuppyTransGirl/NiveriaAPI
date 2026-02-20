@@ -16,14 +16,14 @@ import toutouchien.niveriaapi.menu.test.PreviousTestMenu;
 import toutouchien.niveriaapi.utils.CommandUtils;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
-public class NiveriaAPITestCommand {
-    private NiveriaAPITestCommand() {
+public final class NiveriaAPIDebugMenuCommand {
+    private NiveriaAPIDebugMenuCommand() {
         throw new IllegalStateException("Command class");
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
-        return Commands.literal("test")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test", true))
+        return Commands.literal("menu")
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu", true))
                 .then(basicCommand())
                 .then(confirmationCommand())
                 .then(dynamicCommand())
@@ -33,7 +33,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> basicCommand() {
         return Commands.literal("basic")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.basic", true))
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu.basic", true))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     BasicTestMenu menu = new BasicTestMenu(player);
@@ -45,7 +45,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> confirmationCommand() {
         return Commands.literal("confirmation")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.confirmation", true))
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu.confirmation", true))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     ConfirmationMenu menu = new ConfirmationMenu(
@@ -65,7 +65,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> dynamicCommand() {
         return Commands.literal("dynamic")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.dynamic", true))
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu.dynamic", true))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     DynamicTestMenu menu = new DynamicTestMenu(player);
@@ -77,7 +77,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> paginatorCommand() {
         return Commands.literal("paginator")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.paginator", true))
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu.paginator", true))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     PaginatedTestMenu menu = new PaginatedTestMenu(player);
@@ -89,7 +89,7 @@ public class NiveriaAPITestCommand {
 
     private static LiteralArgumentBuilder<CommandSourceStack> previousCommand() {
         return Commands.literal("previous")
-                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.test.previous"))
+                .requires(css -> CommandUtils.defaultRequirements(css, "niveriaapi.command.niveriaapi.debug.menu.previous"))
                 .executes(ctx -> {
                     Player player = (Player) ctx.getSource().getExecutor();
                     new PreviousTestMenu(player).open();

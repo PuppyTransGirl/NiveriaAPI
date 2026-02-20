@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 @Shivery
 @NullMarked
-public class NMSUtils {
+public final class NMSUtils {
     private NMSUtils() {
         throw new IllegalStateException("Utility class");
     }
@@ -30,7 +30,7 @@ public class NMSUtils {
      * @param player The Bukkit Player.
      * @return The corresponding NMS ServerPlayer.
      */
-    public static ServerPlayer getNMSPlayer(Player player) {
+    public static ServerPlayer nmsPlayer(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
         return ((CraftPlayer) player).getHandle();
@@ -42,10 +42,10 @@ public class NMSUtils {
      * @param player The Bukkit Player.
      * @return The corresponding ServerGamePacketListenerImpl.
      */
-    public static ServerGamePacketListenerImpl getConnection(Player player) {
+    public static ServerGamePacketListenerImpl connection(Player player) {
         Preconditions.checkNotNull(player, "player cannot be null");
 
-        return getNMSPlayer(player).connection;
+        return nmsPlayer(player).connection;
     }
 
     /**
@@ -58,7 +58,7 @@ public class NMSUtils {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(packet, "packet cannot be null");
 
-        getConnection(player).send(packet);
+        connection(player).send(packet);
     }
 
     /**
@@ -71,7 +71,7 @@ public class NMSUtils {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(packets, "packets cannot be null");
 
-        ServerGamePacketListenerImpl connection = getConnection(player);
+        ServerGamePacketListenerImpl connection = connection(player);
         Arrays.stream(packets).forEach(connection::send);
     }
 
@@ -85,7 +85,7 @@ public class NMSUtils {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(packets, "packets cannot be null");
 
-        ServerGamePacketListenerImpl connection = getConnection(player);
+        ServerGamePacketListenerImpl connection = connection(player);
         Arrays.stream(packets).filter(Objects::nonNull).forEach(connection::send);
     }
 
@@ -99,7 +99,7 @@ public class NMSUtils {
         Preconditions.checkNotNull(player, "player cannot be null");
         Preconditions.checkNotNull(packets, "packets cannot be null");
 
-        ServerGamePacketListenerImpl connection = getConnection(player);
+        ServerGamePacketListenerImpl connection = connection(player);
         packets.forEach(connection::send);
     }
 
@@ -109,13 +109,11 @@ public class NMSUtils {
      * @param player  The Bukkit Player.
      * @param packets The collection of packets to send.
      */
-    public static void sendNonNullPackets(Player player, @Nullable Collection<Packet<?>> packets) {
+    public static void sendNonNullPackets(Player player, Collection<@Nullable Packet<?>> packets) {
         Preconditions.checkNotNull(player, "player cannot be null");
+        Preconditions.checkNotNull(packets, "packets cannot be null");
 
-        if (packets == null)
-            return;
-
-        ServerGamePacketListenerImpl connection = getConnection(player);
+        ServerGamePacketListenerImpl connection = connection(player);
         packets.stream().filter(Objects::nonNull).forEach(connection::send);
     }
 }

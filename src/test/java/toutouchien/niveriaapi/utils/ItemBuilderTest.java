@@ -158,8 +158,8 @@ class ItemBuilderTest {
         @Test
         @DisplayName("amount() should return current stack size of the item")
         void amountGetter_shouldReturnCurrentStackSizeWhenCalled() {
-            ItemBuilder builer = ItemBuilder.of(Material.APPLE, 7);
-            assertEquals(7, builer.amount());
+            ItemBuilder builder = ItemBuilder.of(Material.APPLE, 7);
+            assertEquals(7, builder.amount());
         }
 
         @Test
@@ -1111,3 +1111,4 @@ class ItemBuilderTest {
         }
     }
 }
+

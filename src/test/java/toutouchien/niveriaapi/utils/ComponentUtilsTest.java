@@ -1,28 +1,12 @@
 package toutouchien.niveriaapi.utils;
 
 import net.kyori.adventure.text.Component;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockbukkit.mockbukkit.MockBukkit;
-import toutouchien.niveriaapi.NiveriaAPI;
-import toutouchien.niveriaapi.mock.MockBukkitHelper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ComponentUtilsTest {
-    @BeforeEach
-    void setUp() {
-        MockBukkitHelper.safeMock();
-        MockBukkit.load(NiveriaAPI.class);
-    }
-
-    @AfterEach
-    void tearDown() {
-        MockBukkitHelper.safeUnmock();
-    }
-
     @Test
     @DisplayName("MiniMessage serialization and deserialization")
     void testMiniMessageSerializationDeserialization() {

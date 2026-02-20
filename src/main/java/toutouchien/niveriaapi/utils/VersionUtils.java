@@ -14,14 +14,14 @@ public enum VersionUtils {
     v1_21_5(770),
     v1_21_4(769);
 
-    private static VersionUtils serverVersion;
+    private static volatile VersionUtils serverVersion;
     public final int value;
 
     VersionUtils(int value) {
         this.value = value;
     }
 
-    public static VersionUtils version() {
+    public static synchronized VersionUtils version() {
         if (serverVersion != null)
             return serverVersion;
 
@@ -40,17 +40,15 @@ public enum VersionUtils {
         String minecraftVersion = "v" + Bukkit.getMinecraftVersion()
                 .replace(".", "_"); // e.g. "1.21.4" -> "v1_21_4"
 
-        return StringUtils.match(minecraftVersion, VersionUtils.class, null);
+        return EnumUtils.match(minecraftVersion, VersionUtils.class, null);
     }
 
     @SuppressWarnings("deprecation") // We need to use Bukkit.getUnsafe() for this method
     private static VersionUtils protocolVersionMethod() {
         int protocol = Bukkit.getUnsafe().getProtocolVersion(); // e.g. 769
-        for (VersionUtils protocolVersion : VersionUtils.values()) {
-            if (protocolVersion.value != protocol)
-                continue;
-
-            return protocolVersion;
+        for (VersionUtils version : VersionUtils.values()) {
+            if (version.value == protocol)
+                return version;
         }
 
         return null;
@@ -72,12 +70,16 @@ public enum VersionUtils {
         return version().value <= target.value;
     }
 
+    @SuppressWarnings("java:S1201")
     public static boolean equals(VersionUtils target) {
         return version().value == target.value;
     }
 
     @Override
     public String toString() {
+        if (this == UNKNOWN)
+            return "UNKNOWN";
+
         return this.name()
                 .substring(1)
                 .replace("_", ".");

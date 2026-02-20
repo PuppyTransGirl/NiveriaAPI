@@ -23,27 +23,25 @@ special-tags:
 # ======================== FEATURES ==========================
 # ============================================================
 
-niveriaapi:
+command:
   fixcommands:
-    single: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de <niveriaapi_player_amount> joueur.</ncolor>"
-    multiple: "<prefix:niveria/> <separator> <ncolor:success>Vous avez rechargé les commandes de <niveriaapi_player_amount> joueurs.</ncolor>"
+    single: "<prefix:niveria> <separator> <ncolor:success>Vous avez rechargé les commandes de <player_amount> joueur.</ncolor>"
+    multiple: "<prefix:niveria> <separator> <ncolor:success>Vous avez rechargé les commandes de <player_amount> joueurs.</ncolor>"
 
   ping:
-    header: "<prefix:niveria/> <separator> <ncolor:default>Ping des bases de données</ncolor>"
-    line: "<ncolor:primary><niveriaapi_database_name></ncolor> <ncolor:default>-</ncolor> <niveriaapi_ping_ms> ms"
+    header: "<prefix:niveria> <separator> <ncolor:default>Ping des bases de données</ncolor>"
+    line: "<ncolor:primary><database_name></ncolor> <ncolor:default>-</ncolor> <ping_ms> ms"
 
   reload:
-    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI a été rechargé. (<niveriaapi_time_ms> ms)</ncolor>"
-
-  new_update: |-
-    <prefix:niveria/> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><niveriaapi_current_version></ncolor> → <ncolor:success><niveriaapi_latest_version></ncolor></ncolor>
-    <ncolor:default>Lien de téléchargement: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
+    start: "<prefix:niveria> <separator> <ncolor:default>Rechargement de NiveriaAPI...</ncolor>"
+    done: "<prefix:niveria> <separator> <ncolor:success>NiveriaAPI a été rechargé. (<time_ms> ms)</ncolor>"
+    error: "<prefix:niveria> <separator> <ncolor:error>Une erreur s'est produite lors du rechargement de NiveriaAPI. Veuillez vérifier la console pour plus d'informations.</ncolor>"
 
 
 delay:
-  start: "<prefix:niveria/> <separator> <ncolor:default>Téléportation dans <ncolor:secondary><niveriaapi_delay_seconds></ncolor> secondes</ncolor>"
-  moved: "<prefix:niveria/> <separator> <ncolor:error>Votre demande de téléportation a été annulée car vous avez bougé.</ncolor>"
-  already: "<prefix:niveria/> <separator> <ncolor:error>Vous avez déjà une demande de téléportation.</ncolor>"
+  start: "<prefix:niveria> <separator> <ncolor:default>Téléportation dans <ncolor:secondary><delay_seconds></ncolor> secondes</ncolor>"
+  moved: "<prefix:niveria> <separator> <ncolor:error>Votre demande de téléportation a été annulée car vous avez bougé.</ncolor>"
+  already: "<prefix:niveria> <separator> <ncolor:error>Vous avez déjà une demande de téléportation.</ncolor>"
 
 
 timeutils:
@@ -61,3 +59,9 @@ timeutils:
   minutes: "minutes"
   second: "seconde"
   seconds: "secondes"
+
+
+update:
+  available: |-
+    <prefix:niveria> <separator> <ncolor:default>Il y a une nouvelle version de <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><current_version></ncolor> → <ncolor:success><latest_version></ncolor></ncolor>
+    <ncolor:default>Lien de téléchargement: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>

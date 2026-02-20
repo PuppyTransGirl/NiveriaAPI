@@ -23,27 +23,25 @@ special-tags:
 # ======================== FEATURES ==========================
 # ============================================================
 
-niveriaapi:
+command:
   fixcommands:
-    single: "<prefix:niveria/> <separator> <ncolor:success>You have reloaded commands for <niveriaapi_player_amount> player.</ncolor>"
-    multiple: "<prefix:niveria/> <separator> <ncolor:success>You have reloaded commands for <niveriaapi_player_amount> players.</ncolor>"
+    single: "<prefix:niveria> <separator> <ncolor:success>You have reloaded commands for <player_amount> player.</ncolor>"
+    multiple: "<prefix:niveria> <separator> <ncolor:success>You have reloaded commands for <player_amount> players.</ncolor>"
 
   ping:
-    header: "<prefix:niveria/> <separator> <ncolor:default>Database ping</ncolor>"
-    line: "<ncolor:primary><niveriaapi_database_name></ncolor> <ncolor:default>-</ncolor> <niveriaapi_ping_ms> ms"
+    header: "<prefix:niveria> <separator> <ncolor:default>Database ping</ncolor>"
+    line: "<ncolor:primary><database_name></ncolor> <ncolor:default>-</ncolor> <ping_ms> ms"
 
   reload:
-    done: "<prefix:niveria/> <separator> <ncolor:success>NiveriaAPI has been reloaded. (<niveriaapi_time_ms> ms)</ncolor>"
-
-  new_update: |-
-    <prefix:niveria/> <separator> <ncolor:default>There is a new version of <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><niveriaapi_current_version></ncolor> → <ncolor:success><niveriaapi_latest_version></ncolor></ncolor>
-    <ncolor:default>Download link: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>
+    start: "<prefix:niveria> <separator> <ncolor:default>Reloading NiveriaAPI...</ncolor>"
+    done: "<prefix:niveria> <separator> <ncolor:success>NiveriaAPI has been reloaded. (<time_ms> ms)</ncolor>"
+    error: "<prefix:niveria> <separator> <ncolor:error>An error occurred while reloading NiveriaAPI. Please check the console for more information.</ncolor>"
 
 
 delay:
-  start: "<prefix:niveria/> <separator> <ncolor:default>Teleporting in <ncolor:secondary><niveriaapi_delay_seconds></ncolor> seconds</ncolor>"
-  moved: "<prefix:niveria/> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
-  already: "<prefix:niveria/> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
+  start: "<prefix:niveria> <separator> <ncolor:default>Teleporting in <ncolor:secondary><delay_seconds></ncolor> seconds</ncolor>"
+  moved: "<prefix:niveria> <separator> <ncolor:error>Your teleport request has been cancelled because you moved.</ncolor>"
+  already: "<prefix:niveria> <separator> <ncolor:error>You already have a teleport request.</ncolor>"
 
 
 timeutils:
@@ -61,3 +59,9 @@ timeutils:
   minutes: "minutes"
   second: "second"
   seconds: "seconds"
+
+
+update:
+  available: |-
+    <prefix:niveria> <separator> <ncolor:default>There is a new version of <ncolor:primary>NiveriaAPI</ncolor>: <ncolor:error><current_version></ncolor> → <ncolor:success><latest_version></ncolor></ncolor>
+    <ncolor:default>Download link: <ncolor:secondary><click:open_url:"https://modrinth.com/plugin/niveriaapi">https://modrinth.com/plugin/niveriaapi</click></ncolor></ncolor>

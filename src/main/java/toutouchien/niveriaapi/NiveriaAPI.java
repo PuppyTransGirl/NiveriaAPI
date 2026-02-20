@@ -23,10 +23,13 @@ import java.util.Arrays;
 
 public class NiveriaAPI extends JavaPlugin {
     private static final String MONGODB_ENV_KEY = "NIVERIAAPI_MONGODB_CONNECTION_STRING";
+    private static final String MOCKBUKKIT_VERSION_MARKER = "MockBukkit";
+    private static final String MODRINTH_PROJECT_ID = "ll0lc5oW";
     private static final int BSTATS_PLUGIN_ID = 28754;
 
     private static NiveriaAPI instance;
 
+    @SuppressWarnings({"java:S1104", "java:S1444", "java:S3008"})
     public static Lang LANG;
 
     private ChatInputManager chatInputManager;
@@ -45,20 +48,63 @@ public class NiveriaAPI extends JavaPlugin {
         instance = this;
     }
 
+    @ApiStatus.Internal
+    public static boolean isUnitTest() {
+        return Bukkit.getServer().getVersion().contains(MOCKBUKKIT_VERSION_MARKER);
+    }
+
+    private void preLoadUtilsClasses() {
+        String[] classes = {
+                "BackwardUtils",
+                "ColorUtils",
+                "CommandUtils",
+                "ComponentUtils",
+                "Direction",
+                "EnumUtils",
+                "FileUtils",
+                "ItemBuilder",
+                "MathUtils",
+                "PlayerUtils",
+                "SerializeUtils",
+                "StringUtils",
+                "Task",
+                "TimeUtils",
+                "VersionUtils"
+        };
+
+        this.getSLF4JLogger().info("Starting to preload utility classes");
+
+        int loadedCount = 0;
+        String prefix = "toutouchien.niveriaapi.utils.";
+        for (String className : classes) {
+            try {
+                Class.forName(prefix + className);
+                loadedCount++;
+            } catch (ClassNotFoundException e) {
+                this.getSLF4JLogger().error("Couldn't load {}. Please report this to the developer.", className, e);
+            }
+        }
+
+        this.getSLF4JLogger().info(
+                "Finished preloading utility classes. Successfully loaded {}/{} classes.",
+                loadedCount, classes.length
+        );
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
 
         preLoadUtilsClasses();
 
-        if (!isUnitTestVersion())
+        if (!isUnitTest())
             this.bStats = new Metrics(this, BSTATS_PLUGIN_ID);
 
         LANG = Lang.builder(this)
                 .addDefaultLanguageFiles("en_US.yml", "fr_FR.yml")
                 .build();
 
-        if (!isUnitTestVersion()) {
+        if (!isUnitTest()) {
             try {
                 String mongoDBEnv = System.getenv(MONGODB_ENV_KEY);
                 String mongoDBConnectionString;
@@ -91,7 +137,7 @@ public class NiveriaAPI extends JavaPlugin {
         }
 
         this.chatInputManager = new ChatInputManager();
-        if (!isUnitTestVersion()) {
+        if (!isUnitTest()) {
             CooldownDatabase database = this.databaseDisabled ? null : new CooldownDatabase(niveriaDatabaseManager, this.getSLF4JLogger());
             this.cooldownManager = new CooldownManager(this, database);
         }
@@ -101,54 +147,7 @@ public class NiveriaAPI extends JavaPlugin {
         registerListeners();
 
         if (this.getConfig().getBoolean("update-checker.enabled", true))
-            new UpdateChecker(this, "ll0lc5oW", "niveriaapi.new_update");
-    }
-
-    private void preLoadUtilsClasses() {
-        String[] classes = {
-                "ColorUtils",
-                "CommandUtils",
-                "ComponentUtils",
-                "FileUtils",
-                "ItemBuilder",
-                "MathUtils",
-                "PlayerUtils",
-                "SerializeUtils",
-                "StringUtils",
-                "Task",
-                "TimeUtils"
-        };
-
-        this.getSLF4JLogger().info("Starting to preload utility classes");
-
-        int loadedCount = 0;
-        String prefix = "toutouchien.niveriaapi.utils.";
-        for (int i = 0; i < classes.length; i++) {
-            try {
-                Class.forName(prefix + classes[i]);
-                loadedCount++;
-            } catch (ClassNotFoundException e) {
-                this.getSLF4JLogger().error("Couldn't load {}", classes[i], e);
-            }
-        }
-
-        this.getSLF4JLogger().info(
-                "Finished preloading utility classes. Successfully loaded {}/{} classes.",
-                loadedCount,
-                classes.length
-        );
-    }
-
-    private void registerListeners() {
-        PluginManager pluginManager = getServer().getPluginManager();
-        Arrays.asList(
-                this.chatInputManager,
-                new HookListener(this.hookManager),
-                new MenuListener()
-        ).forEach(listener -> pluginManager.registerEvents(listener, this));
-
-        if (!isUnitTestVersion() && this.niveriaDatabaseManager != null)
-            pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
+            new UpdateChecker(this, MODRINTH_PROJECT_ID);
     }
 
     public void reload() {
@@ -160,20 +159,16 @@ public class NiveriaAPI extends JavaPlugin {
         this.getSLF4JLogger().info("NiveriaAPI reloaded.");
     }
 
-    @Override
-    public void onDisable() {
-        if (!isUnitTestVersion())
-            this.bStats.shutdown();
+    private void registerListeners() {
+        PluginManager pluginManager = getServer().getPluginManager();
+        Arrays.asList(
+                this.chatInputManager,
+                new HookListener(this.hookManager),
+                new MenuListener()
+        ).forEach(listener -> pluginManager.registerEvents(listener, this));
 
-        this.hookManager.onDisable();
-
-        if (!isUnitTestVersion() && !this.databaseDisabled)
-            this.cooldownManager.shutdown();
-
-        if (!isUnitTestVersion() && !this.databaseDisabled)
-            this.mongoManager.shutdown();
-
-        Bukkit.getScheduler().cancelTasks(this);
+        if (!isUnitTest() && this.niveriaDatabaseManager != null)
+            pluginManager.registerEvents(new PlayerListener(this.niveriaDatabaseManager), this);
     }
 
     private void registerSharedDefaults() {
@@ -213,7 +208,19 @@ public class NiveriaAPI extends JavaPlugin {
         return instance;
     }
 
-    public static boolean isUnitTestVersion() {
-        return Bukkit.getServer().getVersion().contains("MockBukkit");
+    @Override
+    public void onDisable() {
+        if (!isUnitTest())
+            this.bStats.shutdown();
+
+        this.hookManager.onDisable();
+
+        if (!isUnitTest() && !this.databaseDisabled)
+            this.cooldownManager.shutdown();
+
+        if (!isUnitTest() && !this.databaseDisabled)
+            this.mongoManager.shutdown();
+
+        Bukkit.getScheduler().cancelTasks(this);
     }
 }

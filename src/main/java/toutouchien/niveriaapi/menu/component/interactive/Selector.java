@@ -2,16 +2,12 @@ package toutouchien.niveriaapi.menu.component.interactive;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -41,30 +37,34 @@ public class Selector<T> extends MenuComponent {
     private Function<MenuContext, T> defaultOption;
     @Nullable
     private Consumer<SelectionChangeEvent<T>> onSelectionChange;
-
     @Nullable
     private Sound sound;
-
-    private final int width, height;
-
     private int currentIndex;
 
     /**
-     * Constructs a new Selector with the specified properties.
+     * Constructs a new Selector with the specified configuration.
      *
      * @param builder the builder containing the selector configuration
      */
     private Selector(Builder<T> builder) {
-        super(builder.id());
+        super(builder);
         this.options = new ObjectArrayList<>(builder.options);
         this.defaultOption = builder.defaultOption;
         this.onSelectionChange = builder.onSelectionChange;
         this.currentIndex = builder.defaultIndex;
 
         this.sound = builder.sound;
+    }
 
-        this.width = builder.width;
-        this.height = builder.height;
+    /**
+     * Creates a new Selector builder instance.
+     *
+     * @param <T> the type of values for selector options
+     * @return a new Selector.Builder for constructing selectors
+     */
+    @Contract(value = "-> new", pure = true)
+    public static <T> Builder<T> create() {
+        return new Builder<>();
     }
 
     /**
@@ -81,7 +81,7 @@ public class Selector<T> extends MenuComponent {
             return;
 
         T appliedDefaultOption = this.defaultOption.apply(context);
-        this.selection(appliedDefaultOption);
+        this.setSelection(appliedDefaultOption);
     }
 
     /**
@@ -111,12 +111,12 @@ public class Selector<T> extends MenuComponent {
         if (this.sound != null)
             context.player().playSound(this.sound, Sound.Emitter.self());
 
-        Option<T> oldOption = this.currentOption();
+        Option<T> oldOption = this.getCurrentOption();
         int oldIndex = this.currentIndex;
         this.currentIndex = Math.floorMod(this.currentIndex + operation, this.options.size());
-        Option<T> newOption = this.currentOption();
+        Option<T> newOption = this.getCurrentOption();
 
-        if (this.onSelectionChange == null)
+        if (this.onSelectionChange == null || oldIndex == this.currentIndex)
             return;
 
         SelectionChangeEvent<T> selectionChangeEvent = new SelectionChangeEvent<>(
@@ -141,50 +141,7 @@ public class Selector<T> extends MenuComponent {
      */
     @Override
     public Int2ObjectMap<ItemStack> items(MenuContext context) {
-        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-        if (!this.visible())
-            return items;
-
-        ItemStack baseItem = this.currentItem(context);
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                items.put(slot, baseItem);
-            }
-        }
-
-        return items;
-    }
-
-    /**
-     * Returns the set of slots occupied by this selector.
-     * <p>
-     * Includes all slots within the selector's widthxheight area.
-     * Returns an empty set if not visible.
-     *
-     * @param context the menu context
-     * @return a set of slot indices
-     */
-    @Override
-    public IntSet slots(MenuContext context) {
-        IntSet slots = new IntOpenHashSet(this.width * this.height);
-        if (!this.visible())
-            return slots;
-
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                slots.add(slot);
-            }
-        }
-
-        return slots;
+        return this.items(context, this.getCurrentItem(context));
     }
 
     /**
@@ -192,7 +149,7 @@ public class Selector<T> extends MenuComponent {
      *
      * @param value the value to select
      */
-    private void selection(T value) {
+    private void setSelection(T value) {
         for (int i = 0; i < this.options.size(); i++) {
             if (Objects.equals(this.options.get(i).value, value)) {
                 this.currentIndex = i;
@@ -206,7 +163,7 @@ public class Selector<T> extends MenuComponent {
      *
      * @return the current Option instance
      */
-    private Option<T> currentOption() {
+    private Option<T> getCurrentOption() {
         return this.options.get(this.currentIndex);
     }
 
@@ -216,34 +173,8 @@ public class Selector<T> extends MenuComponent {
      * @param context the menu context
      * @return the ItemStack for the current option
      */
-    private ItemStack currentItem(MenuContext context) {
-        return this.currentOption().item.apply(context);
-    }
-
-    /**
-     * Event record containing information about a selection change.
-     *
-     * @param context  the menu context where the change occurred
-     * @param oldValue the previously selected value
-     * @param newValue the newly selected value
-     * @param oldIndex the previous selection index
-     * @param newIndex the new selection index
-     * @param <T>      the type of values in the selector
-     */
-    public record SelectionChangeEvent<T>(MenuContext context, @Nullable T oldValue, @Nullable T newValue,
-                                          @NonNegative int oldIndex, @NonNegative int newIndex) {
-
-    }
-
-    /**
-     * Record representing a selectable option in the selector.
-     *
-     * @param item  function that provides the ItemStack to display for this option
-     * @param value the value associated with this option (may be null)
-     * @param <T>   the type of the option value
-     */
-    public record Option<T>(Function<MenuContext, ItemStack> item, @Nullable T value) {
-
+    private ItemStack getCurrentItem(MenuContext context) {
+        return this.getCurrentOption().item.apply(context);
     }
 
     /**
@@ -283,12 +214,9 @@ public class Selector<T> extends MenuComponent {
      *
      * @param value the value of the option to remove
      * @return this selector for method chaining
-     * @throws NullPointerException if value is null
      */
     @Contract(value = "_ -> this", mutates = "this")
-    public Selector<T> removeOption(T value) {
-        Preconditions.checkNotNull(value, "value cannot be null");
-
+    public Selector<T> removeOption(@Nullable T value) {
         int removedIndex = -1;
         for (int i = 0; i < this.options.size(); i++) {
             if (Objects.equals(this.options.get(i).value, value)) {
@@ -297,9 +225,15 @@ public class Selector<T> extends MenuComponent {
             }
         }
 
-        this.options.removeIf(option -> Objects.equals(option.value, value));
+        if (removedIndex == -1)
+            return this;
 
-        if (removedIndex >= 0 && removedIndex < this.currentIndex)
+        if (this.options.size() == 1)
+            throw new IllegalStateException("Cannot remove the last option from the selector");
+
+        this.options.remove(removedIndex);
+
+        if (removedIndex < this.currentIndex)
             this.currentIndex--;
         else if (this.currentIndex >= this.options.size())
             this.currentIndex = Math.max(0, this.options.size() - 1);
@@ -350,36 +284,29 @@ public class Selector<T> extends MenuComponent {
     }
 
     /**
-     * Returns the width of this selector in slots.
+     * Event record containing information about a selection change.
      *
-     * @return the selector width
+     * @param context  the menu context where the change occurred
+     * @param oldValue the previously selected value
+     * @param newValue the newly selected value
+     * @param oldIndex the previous selection index
+     * @param newIndex the new selection index
+     * @param <T>      the type of values in the selector
      */
-    @Positive
-    @Override
-    public int width() {
-        return this.width;
+    public record SelectionChangeEvent<T>(MenuContext context, @Nullable T oldValue, @Nullable T newValue,
+                                          @NonNegative int oldIndex, @NonNegative int newIndex) {
+
     }
 
     /**
-     * Returns the height of this selector in rows.
+     * Record representing a selectable option in the selector.
      *
-     * @return the selector height
+     * @param item  function that provides the ItemStack to display for this option
+     * @param value the value associated with this option (may be null)
+     * @param <T>   the type of the option value
      */
-    @Positive
-    @Override
-    public int height() {
-        return this.height;
-    }
+    public record Option<T>(Function<MenuContext, ItemStack> item, @Nullable T value) {
 
-    /**
-     * Creates a new Selector builder instance.
-     *
-     * @param <T> the type of values for selector options
-     * @return a new Selector.Builder for constructing selectors
-     */
-    @Contract(value = "-> new", pure = true)
-    public static <T> Builder<T> create() {
-        return new Builder<>();
     }
 
     /**
@@ -403,9 +330,6 @@ public class Selector<T> extends MenuComponent {
                 1F,
                 1F
         );
-
-        private int width = 1;
-        private int height = 1;
 
         /**
          * Adds an option to the selector with a static ItemStack.
@@ -497,60 +421,18 @@ public class Selector<T> extends MenuComponent {
         }
 
         /**
-         * Sets the width of the selector in slots.
-         *
-         * @param width the width in slots (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder<T> width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-
-            this.width = width;
-            return this;
-        }
-
-        /**
-         * Sets the height of the selector in rows.
-         *
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if height is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder<T> height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-            this.height = height;
-            return this;
-        }
-
-        /**
-         * Sets both width and height of the selector.
-         *
-         * @param width  the width in slots (must be positive)
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width or height is less than 1
-         */
-        @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder<T> size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-
-            this.width = width;
-            this.height = height;
-            return this;
-        }
-
-        /**
          * Builds and returns the configured Selector instance.
          *
          * @return a new Selector with the specified configuration
          */
         public Selector<T> build() {
             Preconditions.checkArgument(
-                    this.options.isEmpty() || this.defaultIndex < this.options.size(),
+                    !this.options.isEmpty(),
+                    "Selector must have at least one option"
+            );
+
+            Preconditions.checkArgument(
+                    this.defaultIndex < this.options.size(),
                     "defaultIndex (%s) must be less than options size (%s)",
                     this.defaultIndex, this.options.size()
             );

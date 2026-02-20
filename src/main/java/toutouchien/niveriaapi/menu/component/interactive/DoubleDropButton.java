@@ -2,16 +2,14 @@ package toutouchien.niveriaapi.menu.component.interactive;
 
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
-import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -22,6 +20,8 @@ import toutouchien.niveriaapi.menu.event.NiveriaInventoryClickEvent;
 import toutouchien.niveriaapi.utils.BackwardUtils;
 import toutouchien.niveriaapi.utils.Task;
 
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,42 +39,41 @@ public class DoubleDropButton extends MenuComponent {
     private Function<MenuContext, ItemStack> item;
     private Function<MenuContext, ItemStack> dropItem;
 
-    @Nullable
-    private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
+    private final Object2ObjectMap<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> onClickMap;
+    @Nullable private Consumer<NiveriaInventoryClickEvent> onDoubleDrop;
 
-    @Nullable
-    private Sound sound;
+    @Nullable private Sound sound;
 
-    private final int width, height;
-
-    @Nullable
-    private BukkitTask dropTask;
+    @Nullable private BukkitTask dropTask;
 
     /**
-     * Constructs a new DoubleDropButton with the specified properties.
+     * Constructs a new DoubleDropButton with the specified configuration.
      *
-     * @param builder the builder containing the button configuration
+     * @param builder the builder containing the double drop button configuration
      */
     private DoubleDropButton(Builder builder) {
-        super(builder.id());
+        super(builder);
         this.item = builder.item;
         this.dropItem = builder.dropItem;
 
-        this.onClick = builder.onClick;
-        this.onLeftClick = builder.onLeftClick;
-        this.onRightClick = builder.onRightClick;
-        this.onShiftLeftClick = builder.onShiftLeftClick;
-        this.onShiftRightClick = builder.onShiftRightClick;
+        this.onClickMap = new Object2ObjectLinkedOpenHashMap<>(builder.onClickMap);
         this.onDoubleDrop = builder.onDoubleDrop;
 
         this.sound = builder.sound;
-
-        this.width = builder.width;
-        this.height = builder.height;
     }
 
     /**
-     * Called when this button is removed from a menu.
+     * Creates a new DoubleDropButton builder instance.
+     *
+     * @return a new DoubleDropBuilder for constructing buttons
+     */
+    @Contract(value = "-> new", pure = true)
+    public static Builder create() {
+        return new Builder();
+    }
+
+    /**
+     * Called when this double drop button is removed from a menu.
      * <p>
      * Cancels any pending drop task to prevent memory leaks and
      * ensure proper cleanup.
@@ -88,12 +87,12 @@ public class DoubleDropButton extends MenuComponent {
     }
 
     /**
-     * Handles click events on this button.
+     * Handles click events on this double drop button.
      * <p>
-     * The button supports several interaction modes:
-     * - Drop clicks: First drop enters "drop state", second drop within 3 seconds triggers double-drop
-     * - Specific click handlers: Left, right, shift+left, shift+right clicks
-     * - General click handler: Fallback for other mouse clicks
+     * The double drop button supports several interaction modes with priority handling:
+     * 1. Drop clicks: First drop enters "drop state", second drop within 3 seconds triggers double-drop
+     * 2. Specific click handlers (left, right, shift variants, drop)
+     * 3. General click handler for other mouse clicks
      *
      * @param event   the inventory click event
      * @param context the menu context
@@ -109,28 +108,28 @@ public class DoubleDropButton extends MenuComponent {
             return;
         }
 
-        Consumer<NiveriaInventoryClickEvent> handler = switch (event.getClick()) {
-            case LEFT, DOUBLE_CLICK -> this.onLeftClick;
-            case RIGHT -> this.onRightClick;
-            case SHIFT_LEFT -> this.onShiftLeftClick;
-            case SHIFT_RIGHT -> this.onShiftRightClick;
-            default -> null;
-        };
+        Consumer<NiveriaInventoryClickEvent> handler = null;
+        for (Map.Entry<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> entry : this.onClickMap.entrySet()) {
+            EnumSet<ClickType> clickTypes = entry.getKey();
+            if (!clickTypes.contains(event.getClick()))
+                continue;
 
-        if (handler != null) {
-            handler.accept(event);
+            handler = entry.getValue();
 
-            if (this.sound != null)
-                context.player().playSound(this.sound, Sound.Emitter.self());
+            // Check for a onClick method usage
+            // We want to prioritize other more specific method used
+            // So we wait for another one to maybe overwrite the onClick
+            if (clickTypes.size() != ClickType.values().length)
+                break;
+        }
+
+        if (handler == null)
             return;
-        }
 
-        if (this.onClick != null && click.isMouseClick()) {
-            this.onClick.accept(event);
+        handler.accept(event);
 
-            if (this.sound != null)
-                context.player().playSound(this.sound, Sound.Emitter.self());
-        }
+        if (this.sound != null)
+            context.player().playSound(this.sound, Sound.Emitter.self());
     }
 
     /**
@@ -161,9 +160,9 @@ public class DoubleDropButton extends MenuComponent {
     }
 
     /**
-     * Returns the items to be displayed by this button.
+     * Returns the items to be displayed by this double drop button.
      * <p>
-     * The button fills all slots within its widthxheight area with the
+     * The double drop button fills all slots within its widthxheight area with the
      * current item (normal or drop state). Returns an empty map if not visible.
      *
      * @param context the menu context
@@ -171,50 +170,7 @@ public class DoubleDropButton extends MenuComponent {
      */
     @Override
     public Int2ObjectMap<ItemStack> items(MenuContext context) {
-        Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-        if (!this.visible())
-            return items;
-
-        ItemStack baseItem = this.currentItem(context);
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                items.put(slot, baseItem);
-            }
-        }
-
-        return items;
-    }
-
-    /**
-     * Returns the set of slots occupied by this button.
-     * <p>
-     * Includes all slots within the button's widthxheight area.
-     * Returns an empty set if not visible.
-     *
-     * @param context the menu context
-     * @return a set of slot indices
-     */
-    @Override
-    public IntSet slots(MenuContext context) {
-        IntSet slots = new IntOpenHashSet(this.width * this.height);
-        if (!this.visible())
-            return slots;
-
-        int baseSlot = this.slot();
-        int rowLength = 9;
-
-        for (int row = 0; row < this.height; row++) {
-            for (int col = 0; col < this.width; col++) {
-                int slot = baseSlot + col + (row * rowLength);
-                slots.add(slot);
-            }
-        }
-
-        return slots;
+        return this.items(context, this.getCurrentItem(context));
     }
 
     /**
@@ -288,7 +244,7 @@ public class DoubleDropButton extends MenuComponent {
     public DoubleDropButton onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
         Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-        this.onClick = onClick;
+        this.onClickMap.put(EnumSet.allOf(ClickType.class), onClick);
         return this;
     }
 
@@ -303,7 +259,7 @@ public class DoubleDropButton extends MenuComponent {
     public DoubleDropButton onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
         Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
-        this.onLeftClick = onLeftClick;
+        this.onClickMap.put(EnumSet.of(ClickType.LEFT), onLeftClick);
         return this;
     }
 
@@ -318,37 +274,7 @@ public class DoubleDropButton extends MenuComponent {
     public DoubleDropButton onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
         Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
-        this.onRightClick = onRightClick;
-        return this;
-    }
-
-    /**
-     * Sets the shift+left click handler.
-     *
-     * @param onShiftLeftClick the shift+left click handler
-     * @return this double drop button for method chaining
-     * @throws NullPointerException if onShiftLeftClick is null
-     */
-    @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
-        Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
-
-        this.onShiftLeftClick = onShiftLeftClick;
-        return this;
-    }
-
-    /**
-     * Sets the shift+right click handler.
-     *
-     * @param onShiftRightClick the shift+right click handler
-     * @return this double drop button for method chaining
-     * @throws NullPointerException if onShiftRightClick is null
-     */
-    @Contract(value = "_ -> this", mutates = "this")
-    public DoubleDropButton onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
-        Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
-
-        this.onShiftRightClick = onShiftRightClick;
+        this.onClickMap.put(EnumSet.of(ClickType.RIGHT), onRightClick);
         return this;
     }
 
@@ -380,45 +306,13 @@ public class DoubleDropButton extends MenuComponent {
     }
 
     /**
-     * Returns the width of this button in slots.
-     *
-     * @return the button width
-     */
-    @Positive
-    @Override
-    public int width() {
-        return this.width;
-    }
-
-    /**
-     * Returns the height of this button in rows.
-     *
-     * @return the button height
-     */
-    @Positive
-    @Override
-    public int height() {
-        return this.height;
-    }
-
-    /**
      * Gets the ItemStack to display based on the current button state.
      *
      * @param context the menu context
      * @return the normal item if no drop task is active, otherwise the drop item
      */
-    private ItemStack currentItem(MenuContext context) {
+    private ItemStack getCurrentItem(MenuContext context) {
         return this.dropTask == null ? this.item.apply(context) : this.dropItem.apply(context);
-    }
-
-    /**
-     * Creates a new DoubleDropButton builder instance.
-     *
-     * @return a new DoubleDropButton.Builder for constructing buttons
-     */
-    @Contract(value = "-> new", pure = true)
-    public static Builder create() {
-        return new Builder();
     }
 
     /**
@@ -428,8 +322,8 @@ public class DoubleDropButton extends MenuComponent {
         private Function<MenuContext, ItemStack> item = context -> ItemStack.of(Material.STONE);
         private Function<MenuContext, ItemStack> dropItem = context -> ItemStack.of(Material.DIRT);
 
-        @Nullable
-        private Consumer<NiveriaInventoryClickEvent> onClick, onLeftClick, onRightClick, onShiftLeftClick, onShiftRightClick, onDoubleDrop;
+        private final Object2ObjectMap<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> onClickMap = new Object2ObjectLinkedOpenHashMap<>();
+        @Nullable private Consumer<NiveriaInventoryClickEvent> onDoubleDrop;
 
         @Nullable
         private Sound sound = Sound.sound(
@@ -438,9 +332,6 @@ public class DoubleDropButton extends MenuComponent {
                 1F,
                 1F
         );
-
-        private int width = 1;
-        private int height = 1;
 
         /**
          * Sets the ItemStack to display in normal state.
@@ -513,7 +404,7 @@ public class DoubleDropButton extends MenuComponent {
         public Builder onClick(Consumer<NiveriaInventoryClickEvent> onClick) {
             Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-            this.onClick = onClick;
+            this.onClickMap.put(EnumSet.allOf(ClickType.class), onClick);
             return this;
         }
 
@@ -528,7 +419,7 @@ public class DoubleDropButton extends MenuComponent {
         public Builder onLeftClick(Consumer<NiveriaInventoryClickEvent> onLeftClick) {
             Preconditions.checkNotNull(onLeftClick, "onLeftClick cannot be null");
 
-            this.onLeftClick = onLeftClick;
+            this.onClickMap.put(EnumSet.of(ClickType.LEFT), onLeftClick);
             return this;
         }
 
@@ -543,37 +434,41 @@ public class DoubleDropButton extends MenuComponent {
         public Builder onRightClick(Consumer<NiveriaInventoryClickEvent> onRightClick) {
             Preconditions.checkNotNull(onRightClick, "onRightClick cannot be null");
 
-            this.onRightClick = onRightClick;
+            this.onClickMap.put(EnumSet.of(ClickType.RIGHT), onRightClick);
             return this;
         }
 
         /**
-         * Sets the shift+left click handler.
+         * Sets a click handler for specific click types.
          *
-         * @param onShiftLeftClick the shift+left click handler
+         * @param clickType the click type to handle
+         * @param onClick   the click handler
          * @return this builder for method chaining
-         * @throws NullPointerException if onShiftLeftClick is null
+         * @throws NullPointerException if clickType or onClick is null
          */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftLeftClick(Consumer<NiveriaInventoryClickEvent> onShiftLeftClick) {
-            Preconditions.checkNotNull(onShiftLeftClick, "onShiftLeftClick cannot be null");
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder onClick(ClickType clickType, Consumer<NiveriaInventoryClickEvent> onClick) {
+            Preconditions.checkNotNull(clickType, "clickType cannot be null");
+            Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-            this.onShiftLeftClick = onShiftLeftClick;
+            this.onClickMap.put(EnumSet.of(clickType), onClick);
             return this;
         }
 
         /**
-         * Sets the shift+right click handler.
+         * Sets a click handler for multiple click types.
          *
-         * @param onShiftRightClick the shift+right click handler
+         * @param clickTypes the click types to handle
+         * @param onClick    the click handler
          * @return this builder for method chaining
-         * @throws NullPointerException if onShiftRightClick is null
+         * @throws NullPointerException if clickTypes or onClick is null
          */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder onShiftRightClick(Consumer<NiveriaInventoryClickEvent> onShiftRightClick) {
-            Preconditions.checkNotNull(onShiftRightClick, "onShiftRightClick cannot be null");
+        @Contract(value = "_, _ -> this", mutates = "this")
+        public Builder onClick(EnumSet<ClickType> clickTypes, Consumer<NiveriaInventoryClickEvent> onClick) {
+            Preconditions.checkNotNull(clickTypes, "clickTypes cannot be null");
+            Preconditions.checkNotNull(onClick, "onClick cannot be null");
 
-            this.onShiftRightClick = onShiftRightClick;
+            this.onClickMap.put(EnumSet.copyOf(clickTypes), onClick);
             return this;
         }
 
@@ -593,7 +488,7 @@ public class DoubleDropButton extends MenuComponent {
         }
 
         /**
-         * Sets the sound to play when the button is clicked.
+         * Sets the sound to play when the double drop button is clicked.
          *
          * @param sound the sound to play, or null for no sound
          * @return this builder for method chaining
@@ -601,54 +496,6 @@ public class DoubleDropButton extends MenuComponent {
         @Contract(value = "_ -> this", mutates = "this")
         public Builder sound(@Nullable Sound sound) {
             this.sound = sound;
-            return this;
-        }
-
-        /**
-         * Sets the width of the button in slots.
-         *
-         * @param width the width in slots (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder width(@Positive int width) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-
-            this.width = width;
-            return this;
-        }
-
-        /**
-         * Sets the height of the button in rows.
-         *
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if height is less than 1
-         */
-        @Contract(value = "_ -> this", mutates = "this")
-        public Builder height(@Positive int height) {
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-
-            this.height = height;
-            return this;
-        }
-
-        /**
-         * Sets both width and height of the button.
-         *
-         * @param width  the width in slots (must be positive)
-         * @param height the height in rows (must be positive)
-         * @return this builder for method chaining
-         * @throws IllegalArgumentException if width or height is less than 1
-         */
-        @Contract(value = "_, _ -> this", mutates = "this")
-        public Builder size(@Positive int width, @Positive int height) {
-            Preconditions.checkArgument(width >= 1, "width cannot be less than 1: %s", width);
-            Preconditions.checkArgument(height >= 1, "height cannot be less than 1: %s", height);
-
-            this.width = width;
-            this.height = height;
             return this;
         }
 
