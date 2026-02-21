@@ -137,7 +137,7 @@ public class Grid extends MenuComponent {
                 if (items.containsKey(slot))
                     continue;
 
-                if (this.border != null && this.isBorder(x + this.x(), y + this.y()))
+                if (this.border != null && this.border(x + this.x(), y + this.y()))
                     items.put(slot, this.border);
                 else if (this.fill != null)
                     items.put(slot, this.fill);
@@ -154,7 +154,7 @@ public class Grid extends MenuComponent {
      * @param y the absolute y-coordinate
      * @return true if the position is on the grid border, false otherwise
      */
-    private boolean isBorder(int x, int y) {
+    private boolean border(int x, int y) {
         return x == this.x()
                 || x == this.x() + this.width - 1
                 || y == this.y()

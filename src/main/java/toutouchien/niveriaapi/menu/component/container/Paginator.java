@@ -147,7 +147,7 @@ public class Paginator extends MenuComponent {
         if (!this.interactable())
             return;
 
-        ObjectList<MenuComponent> pageComponents = this.getCurrentPageComponents();
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
         for (int i = 0; i < pageComponents.size(); i++) {
             if (i >= this.layoutSlots.size())
                 break; // Should not happen if page size matches, but safety check
@@ -172,7 +172,7 @@ public class Paginator extends MenuComponent {
     @Override
     public Int2ObjectMap<ItemStack> items(MenuContext context) {
         Int2ObjectMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-        ObjectList<MenuComponent> pageComponents = this.getCurrentPageComponents();
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
 
         for (int i = 0; i < pageComponents.size(); i++) {
             if (i >= this.layoutSlots.size()) break;
@@ -217,7 +217,7 @@ public class Paginator extends MenuComponent {
      *
      * @return a list of components for the current page
      */
-    private ObjectList<MenuComponent> getCurrentPageComponents() {
+    private ObjectList<MenuComponent> currentPageComponents() {
         if (this.cachedPageComponents != null)
             return this.cachedPageComponents;
 
@@ -251,7 +251,7 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the previous page
      */
-    public Button getBackButton() {
+    public Button backButton() {
         return Button.create()
                 .item(context -> {
                     if (this.page > 0)
@@ -280,10 +280,10 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the next page
      */
-    public Button getNextButton() {
+    public Button nextButton() {
         return Button.create()
                 .item(context -> {
-                    if (this.page < this.getMaxPage())
+                    if (this.page < this.maxPage())
                         return this.nextItem.apply(context);
 
                     if (this.offNextItem != null)
@@ -292,7 +292,7 @@ public class Paginator extends MenuComponent {
                     return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
-                    if (this.page >= this.getMaxPage())
+                    if (this.page >= this.maxPage())
                         return;
 
                     this.page++;
@@ -309,7 +309,7 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the first page
      */
-    public Button getFirstPageButton() {
+    public Button firstPageButton() {
         return Button.create()
                 .item(context -> {
                     if (this.page > 0 && this.firstPageItem != null)
@@ -338,10 +338,10 @@ public class Paginator extends MenuComponent {
      *
      * @return a Button for going to the last page
      */
-    public Button getLastPageButton() {
+    public Button lastPageButton() {
         return Button.create()
                 .item(context -> {
-                    if (this.page < this.getMaxPage() && this.lastPageItem != null)
+                    if (this.page < this.maxPage() && this.lastPageItem != null)
                         return this.lastPageItem.apply(context);
 
                     if (this.offLastPageItem != null)
@@ -350,7 +350,7 @@ public class Paginator extends MenuComponent {
                     return ItemStack.of(Material.AIR);
                 })
                 .onClick(event -> {
-                    int maxPage = this.getMaxPage();
+                    int maxPage = this.maxPage();
                     if (this.page >= maxPage)
                         return;
 
@@ -365,7 +365,7 @@ public class Paginator extends MenuComponent {
      *
      * @return the highest valid page index, or -1 if no components exist
      */
-    public int getMaxPage() {
+    public int maxPage() {
         int maxItemsPerPage = this.width * this.height;
         int totalItems = this.components.size();
         return (int) Math.ceil((double) totalItems / maxItemsPerPage) - 1;
@@ -425,7 +425,7 @@ public class Paginator extends MenuComponent {
         Preconditions.checkNotNull(context, "context cannot be null");
         Preconditions.checkArgument(slot >= 0, "slot cannot be less than 0: %s", slot);
 
-        ObjectList<MenuComponent> pageComponents = this.getCurrentPageComponents();
+        ObjectList<MenuComponent> pageComponents = this.currentPageComponents();
         for (int i = 0; i < pageComponents.size(); i++) {
             if (i >= this.layoutSlots.size())
                 break;

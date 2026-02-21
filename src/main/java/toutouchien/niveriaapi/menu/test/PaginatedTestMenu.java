@@ -99,10 +99,10 @@ public class PaginatedTestMenu extends Menu {
 
         return Grid.create()
                 .size(9, 6)
-                .add(45, paginator.getFirstPageButton())
-                .add(46, paginator.getBackButton())
-                .add(52, paginator.getNextButton())
-                .add(53, paginator.getLastPageButton())
+                .add(45, paginator.firstPageButton())
+                .add(46, paginator.backButton())
+                .add(52, paginator.nextButton())
+                .add(53, paginator.lastPageButton())
                 .add(10, paginator)
                 .build();
     }
