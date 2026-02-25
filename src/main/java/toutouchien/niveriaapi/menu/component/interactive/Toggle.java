@@ -75,6 +75,8 @@ public class Toggle extends MenuComponent {
         if (!this.interactable())
             return;
 
+        event.component(this);
+
         if (this.sound != null)
             context.player().playSound(this.sound, Sound.Emitter.self());
 

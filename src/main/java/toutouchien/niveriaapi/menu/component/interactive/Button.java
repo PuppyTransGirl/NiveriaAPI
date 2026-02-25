@@ -11,7 +11,6 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.index.qual.Positive;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
@@ -130,6 +129,8 @@ public class Button extends MenuComponent {
     public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
+
+        event.component(this);
 
         Consumer<NiveriaInventoryClickEvent> handler = null;
         for (Map.Entry<EnumSet<ClickType>, Consumer<NiveriaInventoryClickEvent>> entry : this.onClickMap.entrySet()) {
