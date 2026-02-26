@@ -99,6 +99,8 @@ public class Selector<T> extends MenuComponent {
         if (!this.interactable())
             return;
 
+        event.component(this);
+
         int operation = switch (event.getClick()) {
             case LEFT, SHIFT_LEFT, DOUBLE_CLICK -> 1;
             case RIGHT, SHIFT_RIGHT -> -1;

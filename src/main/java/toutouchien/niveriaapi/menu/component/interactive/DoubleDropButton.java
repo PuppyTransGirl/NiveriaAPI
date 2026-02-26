@@ -10,7 +10,6 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -102,6 +101,8 @@ public class DoubleDropButton extends MenuComponent {
     public void onClick(NiveriaInventoryClickEvent event, MenuContext context) {
         if (!this.interactable())
             return;
+
+        event.component(this);
 
         ClickType click = event.getClick();
         if (click == ClickType.DROP || click == ClickType.CONTROL_DROP) {

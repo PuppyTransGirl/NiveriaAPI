@@ -103,6 +103,8 @@ public class Grid extends MenuComponent {
         if (!this.interactable())
             return;
 
+        event.component(this);
+
         for (MenuComponent component : this.slotComponents) {
             if (component.slots(context).contains(event.getSlot())) {
                 component.onClick(event, context);

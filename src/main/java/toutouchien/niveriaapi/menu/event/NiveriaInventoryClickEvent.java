@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import toutouchien.niveriaapi.menu.MenuContext;
+import toutouchien.niveriaapi.menu.component.MenuComponent;
 import toutouchien.niveriaapi.utils.ItemBuilder;
 
 import java.util.function.Consumer;
@@ -21,6 +22,8 @@ import java.util.function.Consumer;
 @NullMarked
 public class NiveriaInventoryClickEvent extends InventoryClickEvent {
     private final MenuContext context;
+
+    @Nullable private MenuComponent component;
 
     /**
      * Creates a new NiveriaInventoryClickEvent from an existing InventoryClickEvent.
@@ -69,13 +72,17 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
         this.setCurrentItem(builder.build());
     }
 
+    public void component(MenuComponent component) {
+        this.component = component;
+    }
+
     /**
      * Returns the player who clicked in the inventory.
      *
      * @return the player who performed the click action
      */
     public Player player() {
-        return (Player) getWhoClicked();
+        return (Player) this.getWhoClicked();
     }
 
     /**
@@ -84,7 +91,7 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      * @return the clicked slot index
      */
     public int slot() {
-        return getSlot();
+        return this.getSlot();
     }
 
     /**
@@ -94,5 +101,15 @@ public class NiveriaInventoryClickEvent extends InventoryClickEvent {
      */
     public MenuContext context() {
         return this.context;
+    }
+
+    /**
+     * Returns the menu component associated with the clicked item, if any.
+     *
+     * @return the menu component for the clicked item, or null if there is none
+     */
+    @Nullable
+    public MenuComponent component() {
+        return this.component;
     }
 }
